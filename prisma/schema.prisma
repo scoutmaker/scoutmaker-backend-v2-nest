@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Country {
-  id         String   @default(cuid())
+  id         String   @id @default(cuid())
   name       String   @unique
   code       String   @unique
   isEuMember Boolean  @default(false)

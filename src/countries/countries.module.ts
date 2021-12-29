@@ -4,6 +4,6 @@ import { CountriesController } from './countries.controller';
 
 @Module({
   controllers: [CountriesController],
-  providers: [CountriesService]
+  providers: [CountriesService],
 })
 export class CountriesModule {}
