@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
@@ -16,7 +16,10 @@ export class CountriesService {
   }
 
   findOne(id: string) {
-    return this.prisma.country.findUnique({ where: { id } });
+    return this.prisma.country.findUnique({
+      where: { id },
+      rejectOnNotFound: true,
+    });
   }
 
   update(id: string, updateCountryDto: UpdateCountryDto) {

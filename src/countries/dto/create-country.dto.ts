@@ -1,9 +1,4 @@
-import {
-  IsBooleanString,
-  IsNotEmpty,
-  IsOptional,
-  MaxLength,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 
 export class CreateCountryDto {
   @IsNotEmpty()
@@ -15,6 +10,6 @@ export class CreateCountryDto {
   code: string;
 
   @IsOptional()
-  @IsBooleanString()
+  @IsBoolean()
   isEuMember?: boolean = false;
 }
