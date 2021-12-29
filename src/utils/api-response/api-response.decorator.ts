@@ -1,15 +1,23 @@
-import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiResponseDto } from './api-response.dto';
 
 type Options = {
-  isArray: boolean;
+  isArray?: boolean;
+  type: 'create' | 'read' | 'update' | 'delete';
 };
 
 export const ApiResponse = <TModel extends Type<any>>(
   model: TModel,
-  options?: Options,
+  options: Options,
 ) => {
+  const ResponseDecorator =
+    options.type === 'create' ? ApiCreatedResponse : ApiOkResponse;
   const reference = getSchemaPath(model);
 
   const data = options?.isArray
@@ -24,7 +32,7 @@ export const ApiResponse = <TModel extends Type<any>>(
 
   return applyDecorators(
     ApiExtraModels(model, ApiResponseDto),
-    ApiOkResponse({
+    ResponseDecorator({
       schema: {
         allOf: [
           { $ref: getSchemaPath(ApiResponseDto) },
