@@ -8,8 +8,4 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
-
-  getTest() {
-    return this.prisma.test.findMany();
-  }
 }

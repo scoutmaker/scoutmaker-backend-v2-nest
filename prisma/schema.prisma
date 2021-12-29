@@ -11,7 +11,11 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model Test {
-  id   String @id @default(cuid())
-  name String
+model Country {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  code       String   @unique
+  isEuMember Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
