@@ -18,4 +18,20 @@ model Country {
   isEuMember Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  // Relation fields
+  regions Region[]
+}
+
+model Region {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  country   Country @relation(fields: [countryId], references: [id])
+  countryId String
+
+  @@unique([name, countryId])
 }
