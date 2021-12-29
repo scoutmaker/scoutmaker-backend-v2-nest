@@ -24,7 +24,7 @@ export class CountriesController {
   constructor(private readonly countriesService: CountriesService) {}
 
   @Post()
-  @ApiResponse(CountryEntity)
+  @ApiResponse(CountryEntity, { type: 'create' })
   async create(
     @Body() createCountryDto: CreateCountryDto,
   ): Promise<SingleCountryResponse> {
@@ -33,7 +33,7 @@ export class CountriesController {
   }
 
   @Get()
-  @ApiResponse(CountryEntity, { isArray: true })
+  @ApiResponse(CountryEntity, { isArray: true, type: 'read' })
   async findAll(): Promise<MultipleCountriesResponse> {
     const countries = await this.countriesService.findAll();
     return formatSuccessResponse(
@@ -43,7 +43,7 @@ export class CountriesController {
   }
 
   @Get(':id')
-  @ApiResponse(CountryEntity)
+  @ApiResponse(CountryEntity, { type: 'read' })
   async findOne(@Param('id') id: string): Promise<SingleCountryResponse> {
     const country = await this.countriesService.findOne(id);
     return formatSuccessResponse(
@@ -53,7 +53,7 @@ export class CountriesController {
   }
 
   @Patch(':id')
-  @ApiResponse(CountryEntity)
+  @ApiResponse(CountryEntity, { type: 'update' })
   async update(
     @Param('id') id: string,
     @Body() updateCountryDto: UpdateCountryDto,
@@ -66,7 +66,7 @@ export class CountriesController {
   }
 
   @Delete(':id')
-  @ApiResponse(CountryEntity)
+  @ApiResponse(CountryEntity, { type: 'delete' })
   async remove(@Param('id') id: string): Promise<SingleCountryResponse> {
     const country = await this.countriesService.remove(id);
     return formatSuccessResponse(
