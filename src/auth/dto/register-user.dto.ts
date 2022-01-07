@@ -45,4 +45,8 @@ export class RegisterUserDto {
   @IsNumber()
   @Min(0)
   activeRadius?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  regionId: string;
 }
