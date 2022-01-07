@@ -5,6 +5,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CountriesModule } from './countries/countries.module';
 import { RegionsModule } from './regions/regions.module';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { ConfigModule } from '@nestjs/config';
     PrismaModule,
     CountriesModule,
     RegionsModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
