@@ -13,7 +13,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v2');
 
   // Validation pipeline
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   // apply PrismaClientExceptionFilter to entire application, requires HttpAdapterHost because it extends BaseExceptionFilter
   const { httpAdapter } = app.get(HttpAdapterHost);
