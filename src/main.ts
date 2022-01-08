@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { PrismaClientExceptionFilter } from './utils/filters/prisma-client-exception.filter';
 
@@ -12,6 +13,9 @@ async function bootstrap() {
   // Set global prefix for all routes
   app.setGlobalPrefix('api/v2');
 
+  // Cookie parser
+  app.use(cookieParser());
+
   // Validation pipeline
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
@@ -19,6 +23,7 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
+  // Swagger Open API Docs
   const config = new DocumentBuilder()
     .setTitle('Scoutmaker Pro API v2')
     .setVersion('2.0')
