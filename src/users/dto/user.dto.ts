@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { AccountStatus, UserRole } from '@prisma/client';
 import { Expose } from 'class-transformer';
 import { RegionEntity } from 'src/regions/entities/region.entity';
@@ -7,9 +8,11 @@ export class UserDto {
   id: string;
 
   @Expose()
+  @ApiProperty({ enum: UserRole })
   role: UserRole;
 
   @Expose()
+  @ApiProperty({ enum: AccountStatus })
   status: AccountStatus;
 
   @Expose()
