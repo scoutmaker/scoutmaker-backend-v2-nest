@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   Matches,
@@ -23,6 +24,7 @@ export class RegisterUserDto {
   @IsString()
   lastName: string;
 
+  @IsOptional()
   @IsPhoneNumber()
   phone?: string;
 
@@ -39,7 +41,9 @@ export class RegisterUserDto {
 
   @IsString()
   @MinLength(6)
-  @MatchesProperty(RegisterUserDto, (s) => s.password)
+  @MatchesProperty(RegisterUserDto, (s) => s.password, {
+    message: 'Passwords do not match',
+  })
   passwordConfirm: string;
 
   @IsNumber()

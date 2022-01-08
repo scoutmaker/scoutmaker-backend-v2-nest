@@ -5,6 +5,9 @@ import { add } from 'date-fns';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { convertJwtExpiresInToNumber } from '../utils/helpers';
+import { Prisma } from '@prisma/client';
+
+const include: Prisma.UserInclude = { region: { include: { country: true } } };
 
 @Injectable()
 export class AuthService {
@@ -34,6 +37,7 @@ export class AuthService {
 
     return this.prisma.user.create({
       data: { ...rest, confirmationCode, confirmationCodeExpiryDate },
+      include,
     });
   }
 }
