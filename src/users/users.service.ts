@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -49,6 +49,13 @@ export class UsersService {
         confirmationCode: null,
         confirmationCodeExpiryDate: null,
       },
+    });
+  }
+
+  changeRole(id: string, role: UserRole) {
+    return this.prisma.user.update({
+      where: { id },
+      data: { role },
     });
   }
 }
