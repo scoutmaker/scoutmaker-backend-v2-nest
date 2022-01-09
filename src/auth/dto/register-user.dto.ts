@@ -9,7 +9,8 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { MatchesProperty } from '../decorators/matches-property.decorator';
+import { MatchesProperty } from '../../decorators/matches-property.decorator';
+import { PASSWORD_REGEXP } from '../../utils/constants';
 
 export class RegisterUserDto {
   @IsNotEmpty()
@@ -33,7 +34,7 @@ export class RegisterUserDto {
 
   @IsString()
   @MinLength(6)
-  @Matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/, {
+  @Matches(PASSWORD_REGEXP, {
     message:
       'Password must contain at least 1 lowercase letter, 1 uppercase letter and 1 digit',
   })

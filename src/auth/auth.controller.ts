@@ -5,12 +5,12 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { CookieOptions, Request, Response } from 'express';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { add } from 'date-fns';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -19,11 +19,23 @@ import { UserDto } from '../users/dto/user.dto';
 import { Serialize } from '../interceptors/serialize.interceptor';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
+import { UsersService } from '../users/users.service';
+import { AuthGuard } from '../guards/auth.guard';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { UpdatePasswordDto } from '../users/dto/update-password.dto';
+
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  expires: add(new Date(), { days: 30 }),
+};
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('register')
   @ApiResponse(UserDto, { type: 'create' })
@@ -44,10 +56,62 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const { user, token, expiresIn } = await this.authService.login(loginDto);
-    response.cookie('token', token, {
-      httpOnly: true,
-      expires: add(new Date(), { days: 30 }),
-    });
+    response.cookie('token', token, cookieOptions);
     return formatSuccessResponse('Successfully logged in', { user, expiresIn });
+  }
+
+  @Get('verify/:confirmationCode')
+  @ApiResponse(UserDto, { type: 'read' })
+  @Serialize(UserDto)
+  async verify(@Param('confirmationCode') confirmationCode: string) {
+    const user = await this.usersService.verify(confirmationCode);
+    return formatSuccessResponse(
+      'Account activated successfully, you can now log in to the app!',
+      user,
+    );
+  }
+
+  @Get('account')
+  @ApiResponse(UserDto, { type: 'read' })
+  @Serialize(UserDto)
+  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  async getAccount(@Req() request: Request) {
+    const user = await this.usersService.findOne(request.user.id);
+    return formatSuccessResponse('Successfully fetched account', user);
+  }
+
+  @Patch('update-account')
+  @ApiResponse(UserDto, { type: 'update' })
+  @Serialize(UserDto)
+  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  async updateAccount(
+    @Req() request: Request,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const user = await this.usersService.update(request.user.id, updateUserDto);
+    return formatSuccessResponse('Account details updated successfully', user);
+  }
+
+  @Patch('update-password')
+  @ApiResponse(UserDto, { type: 'update' })
+  @Serialize(UserDto, 'user')
+  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  async updatePassword(
+    @Req() request: Request,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { user, token, expiresIn } = await this.authService.updatePassword(
+      request.user.id,
+      updatePasswordDto,
+    );
+    response.cookie('token', token, cookieOptions);
+    return formatSuccessResponse('Password updated successfully!', {
+      user,
+      expiresIn,
+    });
   }
 }

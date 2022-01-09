@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { add } from 'date-fns';
@@ -9,6 +9,7 @@ import { convertJwtExpiresInToNumber } from '../utils/helpers';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
+import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 
 const include: Prisma.UserInclude = { region: { include: { country: true } } };
 
@@ -19,6 +20,26 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {}
+
+  private getAndVerifyJwt(id: string, role: UserRole) {
+    const token = jwt.sign(
+      { id, role },
+      this.configService.get<string>('JWT_SECRET'),
+      {
+        expiresIn: this.configService.get<string>('JWT_EXPIRE'),
+      },
+    );
+
+    const decoded = jwt.verify(
+      token,
+      this.configService.get<string>('JWT_SECRET'),
+    );
+
+    return {
+      token,
+      expiresIn: typeof decoded !== 'string' ? decoded.exp : null,
+    };
+  }
 
   register(registerUserDto: RegisterUserDto) {
     // Filter out passwordConfirm from registerUserDto
@@ -67,24 +88,21 @@ export class AuthService {
 
     // Generate token
     const { id, role } = user;
-
-    const token = jwt.sign(
-      { id, role },
-      this.configService.get<string>('JWT_SECRET'),
-      {
-        expiresIn: this.configService.get<string>('JWT_EXPIRE'),
-      },
-    );
-
-    const decoded = jwt.verify(
-      token,
-      this.configService.get<string>('JWT_SECRET'),
-    );
+    const { token, expiresIn } = this.getAndVerifyJwt(id, role);
 
     return {
       user,
       token,
-      expiresIn: typeof decoded !== 'string' ? decoded.exp : null,
+      expiresIn,
     };
+  }
+
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    const user = await this.usersService.updatePassword(id, updatePasswordDto);
+
+    const { role } = user;
+    const { token, expiresIn } = this.getAndVerifyJwt(id, role);
+
+    return { user, token, expiresIn };
   }
 }
