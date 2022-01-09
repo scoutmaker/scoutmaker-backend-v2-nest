@@ -4,34 +4,51 @@ import {
   NestInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
-import { ClassConstructor, plainToInstance } from 'class-transformer';
+import {
+  ClassConstructor,
+  plainToInstance,
+  ClassTransformOptions,
+} from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export class SerializeInterceptor implements NestInterceptor {
-  constructor(private readonly dto: ClassConstructor<any>) {}
+  constructor(
+    private readonly dto: ClassConstructor<any>,
+    private readonly target?: string,
+  ) {}
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    const request = context.switchToHttp().getRequest();
-    console.log("I'm running before the handler", request.body);
-
     return next.handle().pipe(
       map((data: any) => {
-        console.log("I'm running before the response is sent out", data);
-
-        return {
-          ...data,
-          data: plainToInstance(this.dto, data.data, {
-            excludeExtraneousValues: true,
-          }),
+        const options: ClassTransformOptions = {
+          excludeExtraneousValues: true,
         };
+
+        const result = this.target
+          ? {
+              ...data,
+              data: {
+                ...data.data,
+                [this.target]: plainToInstance(
+                  this.dto,
+                  data.data[this.target],
+                  options,
+                ),
+              },
+            }
+          : {
+              ...data,
+              data: plainToInstance(this.dto, data.data, options),
+            };
+        return result;
       }),
     );
   }
 }
 
-export function Serialize(dto: ClassConstructor<any>) {
-  return UseInterceptors(new SerializeInterceptor(dto));
+export function Serialize(dto: ClassConstructor<any>, target?: string) {
+  return UseInterceptors(new SerializeInterceptor(dto, target));
 }
