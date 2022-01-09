@@ -11,6 +11,41 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+enum UserRole {
+  SCOUT
+  PLAYMAKER_SCOUT
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}
+
+model User {
+  id                         String        @id @default(cuid())
+  role                       UserRole      @default(SCOUT)
+  status                     AccountStatus @default(PENDING)
+  email                      String        @unique
+  firstName                  String
+  lastName                   String
+  phone                      String?
+  city                       String?
+  password                   String
+  activeRadius               Int           @default(0)
+  confirmationCode           String?       @unique
+  confirmationCodeExpiryDate DateTime?
+  resetPasswordToken         String?       @unique
+  resetPasswordExpiryDate    DateTime?
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @updatedAt
+
+  // Relation fields
+  region   Region @relation(fields: [regionId], references: [id])
+  regionId String
+}
+
 model Country {
   id         String   @id @default(cuid())
   name       String   @unique
@@ -32,6 +67,7 @@ model Region {
   // Relation fields
   country   Country @relation(fields: [countryId], references: [id])
   countryId String
+  users     User[]
 
   @@unique([name, countryId])
 }

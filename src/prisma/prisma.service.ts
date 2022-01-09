@@ -6,6 +6,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { hashPasswordMiddleware } from './middlewares/hash-password.middleware';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -19,6 +20,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     await this.$connect();
+    // Hash the password on every user creation
+    this.$use(hashPasswordMiddleware);
   }
 
   async enableShutdownHooks(app: INestApplication) {
