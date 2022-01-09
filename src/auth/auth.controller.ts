@@ -11,23 +11,23 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiResponse } from '../utils/api-response/api-response.decorator';
-import { formatSuccessResponse } from '../utils/helpers';
+import { add } from 'date-fns';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { LoginDto } from './dto/login.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { Serialize } from '../interceptors/serialize.interceptor';
-import { LoginDto } from './dto/login.dto';
-import { add } from 'date-fns';
+import { ApiResponse } from '../utils/api-response/api-response.decorator';
+import { formatSuccessResponse } from '../utils/helpers';
 
 @Controller('auth')
 @ApiTags('auth')
-@Serialize(UserDto)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @ApiResponse(UserDto, { type: 'create' })
+  @Serialize(UserDto)
   async register(@Body() registerUserDto: RegisterUserDto) {
     const user = await this.authService.register(registerUserDto);
     return formatSuccessResponse(
@@ -38,6 +38,7 @@ export class AuthController {
 
   @Post('login')
   @ApiResponse(UserDto, { type: 'read' })
+  @Serialize(UserDto, 'user')
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,

@@ -6,8 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { CountriesService } from './countries.service';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
@@ -15,11 +16,14 @@ import { CountryEntity } from './entities/country.entity';
 import { ApiResponseDto } from '../utils/api-response/api-response.dto';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
+import { AuthGuard } from '../guards/auth.guard';
 
 type SingleCountryResponse = ApiResponseDto<CountryEntity>;
 type MultipleCountriesResponse = ApiResponseDto<CountryEntity[]>;
 @Controller('countries')
 @ApiTags('countries')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
 export class CountriesController {
   constructor(private readonly countriesService: CountriesService) {}
 

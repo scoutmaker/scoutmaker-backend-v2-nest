@@ -6,8 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { formatSuccessResponse } from 'src/utils/helpers';
 import { Serialize } from '../interceptors/serialize.interceptor';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
@@ -16,6 +18,8 @@ import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('users')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

@@ -6,21 +6,27 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { RegionsService } from './regions.service';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { UpdateRegionDto } from './dto/update-region.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from 'src/utils/api-response/api-response.dto';
 import { RegionEntity } from './entities/region.entity';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
+import { AuthGuard } from '../guards/auth.guard';
 
 type SingleRegionResponse = ApiResponseDto<RegionEntity>;
 type MultipleRegionsResponse = ApiResponseDto<RegionEntity[]>;
 
 @Controller('regions')
 @ApiTags('regions')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
 export class RegionsController {
   constructor(private readonly regionsService: RegionsService) {}
 
