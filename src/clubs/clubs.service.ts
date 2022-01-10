@@ -1,12 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
 
 @Injectable()
 export class ClubsService {
-  create(createClubDto: CreateClubDto) {
-    return 'This action adds a new club';
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(createClubDto: CreateClubDto, authorId: string) {
+    const { regionId, ...rest } = createClubDto;
+    return this.prisma.club.create({
+      data: {
+        ...rest,
+        region: { connect: { id: regionId } },
+        author: { connect: { id: authorId } },
+      },
+    });
   }
 
   findAll({}: PaginationOptionsDto, findAllDto: any) {

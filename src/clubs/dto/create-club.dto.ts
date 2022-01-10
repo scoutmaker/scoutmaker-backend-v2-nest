@@ -27,7 +27,7 @@ export class CreateClubDto {
   city?: string;
 
   @IsOptional()
-  @IsPostalCode()
+  @IsPostalCode('any')
   postalCode?: string;
 
   @IsOptional()
