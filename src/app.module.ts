@@ -7,6 +7,7 @@ import { RegionsModule } from './regions/regions.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ClubsModule } from './clubs/clubs.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
     RegionsModule,
     UsersModule,
     AuthModule,
+    ClubsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
