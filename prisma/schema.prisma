@@ -44,6 +44,7 @@ model User {
   // Relation fields
   region   Region @relation(fields: [regionId], references: [id])
   regionId String
+  clubs    Club[]
 }
 
 model Country {
@@ -68,6 +69,30 @@ model Region {
   country   Country @relation(fields: [countryId], references: [id])
   countryId String
   users     User[]
+  clubs     Club[]
 
   @@unique([name, countryId])
+}
+
+model Club {
+  id         String   @id @default(cuid())
+  name       String
+  lnpID      String?
+  city       String?
+  postalCode String?
+  street     String?
+  website    String?
+  twitter    String?
+  facebook   String?
+  instagram  String?
+  isPublic   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+
+  // Relation fields
+  region   Region @relation(fields: [regionId], references: [id])
+  regionId String
+  author   User   @relation(fields: [userId], references: [id])
+  userId   String
 }
