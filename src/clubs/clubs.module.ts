@@ -1,9 +1,16 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ClubsService } from './clubs.service';
 import { ClubsController } from './clubs.controller';
+import { PrepareQueryMiddleware } from '../middleware/prepare-query.middleware';
 
 @Module({
   controllers: [ClubsController],
-  providers: [ClubsService]
+  providers: [ClubsService],
 })
-export class ClubsModule {}
+export class ClubsModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PrepareQueryMiddleware)
+      .forRoutes({ path: 'clubs', method: RequestMethod.GET });
+  }
+}

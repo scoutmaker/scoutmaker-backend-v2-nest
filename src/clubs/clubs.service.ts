@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
 
@@ -8,19 +9,19 @@ export class ClubsService {
     return 'This action adds a new club';
   }
 
-  findAll() {
+  findAll({}: PaginationOptionsDto, findAllDto: any) {
     return `This action returns all clubs`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} club`;
   }
 
-  update(id: number, updateClubDto: UpdateClubDto) {
+  update(id: string, updateClubDto: UpdateClubDto) {
     return `This action updates a #${id} club`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} club`;
   }
 }
