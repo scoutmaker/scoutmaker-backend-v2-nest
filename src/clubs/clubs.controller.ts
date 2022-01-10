@@ -8,19 +8,19 @@ import {
   Delete,
   UseGuards,
   Query,
-  Req,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ClubsService } from './clubs.service';
+import { ClubDto } from './dto/club.dto';
+import { CreateClubDto } from './dto/create-club.dto';
+import { UpdateClubDto } from './dto/update-club.dto';
 import { PaginationOptions } from '../pagination/pagination-options.decorator';
 import { PaginationOptionsDto } from '../pagination/pagination-options.dto';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
 import { AuthGuard } from '../guards/auth.guard';
-import { ClubsService } from './clubs.service';
-import { ClubDto } from './dto/club.dto';
-import { CreateClubDto } from './dto/create-club.dto';
-import { UpdateClubDto } from './dto/update-club.dto';
-import { Request } from 'express';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 
 @Controller('clubs')
 @ApiTags('clubs')
@@ -31,11 +31,12 @@ export class ClubsController {
 
   @Post()
   @ApiResponse(ClubDto, { type: 'read' })
-  async create(@Body() createClubDto: CreateClubDto, @Req() request: Request) {
-    const club = await this.clubsService.create(
-      createClubDto,
-      request?.user.id,
-    );
+  async create(
+    @Body() createClubDto: CreateClubDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    console.log(user);
+    const club = await this.clubsService.create(createClubDto, user.id);
     return formatSuccessResponse('Successfully created new club', club);
   }
 

@@ -3,7 +3,7 @@ import { Club } from '@prisma/client';
 export class ClubEntity implements Club {
   id: string;
   name: string;
-  lnpID: string;
+  lnpId: string;
   city: string;
   postalCode: string;
   street: string;

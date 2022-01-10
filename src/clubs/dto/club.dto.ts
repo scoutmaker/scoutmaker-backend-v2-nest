@@ -9,7 +9,7 @@ export class ClubDto {
   name: string;
 
   @Expose()
-  lnpID?: string;
+  lnpId?: string;
 
   @Expose()
   city?: string;

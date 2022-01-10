@@ -77,7 +77,7 @@ model Region {
 model Club {
   id         String   @id @default(cuid())
   name       String
-  lnpID      String?
+  lnpId      String?
   city       String?
   postalCode String?
   street     String?
