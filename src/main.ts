@@ -18,7 +18,13 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Validation pipeline
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      validateCustomDecorators: true,
+    }),
+  );
 
   // apply PrismaClientExceptionFilter to entire application, requires HttpAdapterHost because it extends BaseExceptionFilter
   const { httpAdapter } = app.get(HttpAdapterHost);

@@ -7,8 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CountriesService } from './countries.service';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
@@ -17,6 +18,9 @@ import { ApiResponseDto } from '../utils/api-response/api-response.dto';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
 import { AuthGuard } from '../guards/auth.guard';
+import { PaginationOptions } from '../pagination/pagination-options.decorator';
+import { PaginationOptionsDto } from '../pagination/pagination-options.dto';
+import { FindAllDto } from './dto/find-all.dto';
 
 type SingleCountryResponse = ApiResponseDto<CountryEntity>;
 type MultipleCountriesResponse = ApiResponseDto<CountryEntity[]>;
@@ -38,12 +42,13 @@ export class CountriesController {
 
   @Get()
   @ApiResponse(CountryEntity, { isArray: true, type: 'read' })
-  async findAll(): Promise<MultipleCountriesResponse> {
-    const countries = await this.countriesService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all countries',
-      countries,
-    );
+  @ApiQuery({ type: PaginationOptionsDto })
+  async findAll(
+    @PaginationOptions() paginationOptions: PaginationOptionsDto,
+    @Query() query: FindAllDto,
+  ) {
+    const data = await this.countriesService.findAll(paginationOptions, query);
+    return formatSuccessResponse('Successfully fetched all countries', data);
   }
 
   @Get(':id')
