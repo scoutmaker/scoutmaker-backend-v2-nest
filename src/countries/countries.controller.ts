@@ -19,8 +19,7 @@ import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
 import { AuthGuard } from '../guards/auth.guard';
 import { PaginationOptions } from '../pagination/pagination-options.decorator';
-import { PaginationOptionsDto } from '../pagination/pagination-options.dto';
-import { FindAllDto } from './dto/find-all.dto';
+import { FindAllCountriesDto } from './dto/find-all-countries.dto';
 import { CountriesPaginationOptionDto } from './dto/countries-pagination-options.dto';
 
 type SingleCountryResponse = ApiResponseDto<CountryEntity>;
@@ -46,7 +45,7 @@ export class CountriesController {
   @ApiQuery({ type: CountriesPaginationOptionDto })
   async findAll(
     @PaginationOptions() paginationOptions: CountriesPaginationOptionDto,
-    @Query() query: FindAllDto,
+    @Query() query: FindAllCountriesDto,
   ) {
     const data = await this.countriesService.findAll(paginationOptions, query);
     return formatSuccessResponse('Successfully fetched all countries', data);

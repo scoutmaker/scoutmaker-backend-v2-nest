@@ -12,11 +12,17 @@ export class PrepareQueryMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { sortBy, sortingOrder, limit, page, ...rest } = req.query;
     req.query = rest;
+    console.log(typeof limit);
     req.paginationOptions = {
-      sortBy: (sortBy as string) || DEFAULT_SORT,
-      sortingOrder: (sortingOrder as 'asc' | 'desc') || DEFAULT_ORDER,
-      limit: parseInt(limit as string) || DEFAULT_LIMIT,
-      page: parseInt(page as string) || DEFAULT_PAGE,
+      sortBy: typeof sortBy === 'string' ? sortBy : DEFAULT_SORT,
+      sortingOrder:
+        typeof sortingOrder === 'string' ? sortingOrder : DEFAULT_ORDER,
+      limit:
+        typeof limit !== 'undefined'
+          ? parseInt(limit as string)
+          : DEFAULT_LIMIT,
+      page:
+        typeof page !== 'undefined' ? parseInt(page as string) : DEFAULT_PAGE,
     };
     next();
   }

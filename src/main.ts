@@ -23,6 +23,7 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       validateCustomDecorators: true,
+      enableDebugMessages: true,
     }),
   );
 

@@ -8,14 +8,16 @@ import {
   Delete,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ClubsService } from './clubs.service';
 import { ClubDto } from './dto/club.dto';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
+import { FindAllClubsDto } from './dto/find-all-clubs.dto';
+import { ClubsPaginationOptionsDto } from './dto/clubs-pagination-options.dto';
 import { PaginationOptions } from '../pagination/pagination-options.decorator';
-import { PaginationOptionsDto } from '../pagination/pagination-options.dto';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
 import { AuthGuard } from '../guards/auth.guard';
@@ -35,18 +37,21 @@ export class ClubsController {
     @Body() createClubDto: CreateClubDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    console.log(user);
     const club = await this.clubsService.create(createClubDto, user.id);
     return formatSuccessResponse('Successfully created new club', club);
   }
 
   @Get()
   @ApiResponse(ClubDto, { isArray: true, type: 'read' })
-  @ApiQuery({ type: PaginationOptionsDto })
+  @ApiQuery({ type: ClubsPaginationOptionsDto })
   async findAll(
-    @PaginationOptions() paginationOptions: PaginationOptionsDto,
-    @Query() query: any,
+    @PaginationOptions() paginationOptions: ClubsPaginationOptionsDto,
+    @Query() query: FindAllClubsDto,
+    @Req() request: any,
   ) {
+    // console.log(ClubsPaginationOptionsDto);
+    console.log('CONTROLLER', request.paginationOptions);
+
     const data = await this.clubsService.findAll(paginationOptions, query);
     return formatSuccessResponse('Successfully fetched all clubs', data);
   }

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { calculateSkip, formatPaginatedResponse } from '../utils/helpers';
 import { CountriesPaginationOptionDto } from './dto/countries-pagination-options.dto';
 import { CreateCountryDto } from './dto/create-country.dto';
-import { FindAllDto } from './dto/find-all.dto';
+import { FindAllCountriesDto } from './dto/find-all-countries.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 
 @Injectable()
@@ -16,18 +17,18 @@ export class CountriesService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: CountriesPaginationOptionDto,
-    { isEuMember }: FindAllDto,
+    { isEuMember }: FindAllCountriesDto,
   ) {
+    const where: Prisma.CountryWhereInput = { isEuMember };
+
     const countries = await this.prisma.country.findMany({
-      where: {
-        isEuMember,
-      },
+      where,
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: { [sortBy]: sortingOrder },
     });
 
-    const total = await this.prisma.country.count();
+    const total = await this.prisma.country.count({ where });
 
     return formatPaginatedResponse({
       docs: countries,
