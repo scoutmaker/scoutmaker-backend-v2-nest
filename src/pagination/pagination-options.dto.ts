@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class PaginationOptionsDto {
-  @IsOptional()
-  @IsString()
-  sortBy?: string;
-
   @IsOptional()
   @IsEnum(['asc', 'desc'])
   @ApiProperty({ type: 'string' })

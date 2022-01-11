@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PaginationOptionsDto } from 'src/pagination/pagination-options.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
+
+const include: Prisma.ClubInclude = { region: { include: { country: true } } };
 
 @Injectable()
 export class ClubsService {
@@ -16,6 +19,7 @@ export class ClubsService {
         region: { connect: { id: regionId } },
         author: { connect: { id: authorId } },
       },
+      include,
     });
   }
 

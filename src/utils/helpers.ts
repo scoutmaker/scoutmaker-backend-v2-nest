@@ -1,5 +1,4 @@
 import { ApiResponseDto, PaginatedData } from './api-response/api-response.dto';
-import { PaginationOptionsDto } from '../pagination/pagination-options.dto';
 
 export function formatSuccessResponse<Data>(
   message: string,
@@ -22,17 +21,8 @@ export function convertJwtExpiresInToNumber(expiresIn: string): number {
   );
 }
 
-export function transformPaginationOptions({
-  limit,
-  page,
-  sortBy,
-  sortingOrder,
-}: PaginationOptionsDto) {
-  return {
-    take: limit,
-    orderBy: { [sortBy]: sortingOrder },
-    skip: (page - 1) * limit,
-  };
+export function calculateSkip(page: number, limit: number) {
+  return (page - 1) * limit;
 }
 
 export type PaginatedResponseArgs<T> = {
