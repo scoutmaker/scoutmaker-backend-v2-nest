@@ -69,14 +69,18 @@ export class ClubsService {
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} club`;
+    return this.prisma.club.findUnique({ where: { id }, include });
   }
 
   update(id: string, updateClubDto: UpdateClubDto) {
-    return `This action updates a #${id} club`;
+    return this.prisma.club.update({
+      where: { id },
+      data: updateClubDto,
+      include,
+    });
   }
 
   remove(id: string) {
-    return `This action removes a #${id} club`;
+    return this.prisma.club.delete({ where: { id }, include });
   }
 }
