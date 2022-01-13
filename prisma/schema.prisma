@@ -123,6 +123,7 @@ model Competition {
 }
 
 model RegionOnCompetitions {
+  // Relation fields
   region        Region      @relation(fields: [regionId], references: [id])
   regionId      String
   competition   Competition @relation(fields: [competitionId], references: [id])
