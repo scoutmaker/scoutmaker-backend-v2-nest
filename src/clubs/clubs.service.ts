@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { calculateSkip, formatPaginatedResponse } from '../utils/helpers';
 import { ClubsPaginationOptionsDto } from './dto/clubs-pagination-options.dto';
 import { CreateClubDto } from './dto/create-club.dto';
 import { FindAllClubsDto } from './dto/find-all-clubs.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { calculateSkip, formatPaginatedResponse } from '../utils/helpers';
 
 const include: Prisma.ClubInclude = { region: { include: { country: true } } };
 

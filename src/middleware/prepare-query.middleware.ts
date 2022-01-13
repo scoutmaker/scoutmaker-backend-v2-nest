@@ -11,8 +11,8 @@ import {
 export class PrepareQueryMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { sortBy, sortingOrder, limit, page, ...rest } = req.query;
+
     req.query = rest;
-    console.log(typeof limit);
     req.paginationOptions = {
       sortBy: typeof sortBy === 'string' ? sortBy : DEFAULT_SORT,
       sortingOrder:
@@ -24,6 +24,7 @@ export class PrepareQueryMiddleware implements NestMiddleware {
       page:
         typeof page !== 'undefined' ? parseInt(page as string) : DEFAULT_PAGE,
     };
+
     next();
   }
 }

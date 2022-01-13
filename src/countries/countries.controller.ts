@@ -21,6 +21,7 @@ import { AuthGuard } from '../guards/auth.guard';
 import { PaginationOptions } from '../pagination/pagination-options.decorator';
 import { FindAllCountriesDto } from './dto/find-all-countries.dto';
 import { CountriesPaginationOptionDto } from './dto/countries-pagination-options.dto';
+import { ApiPaginatedResponse } from '../utils/api-response/api-paginated-response.decorator';
 
 type SingleCountryResponse = ApiResponseDto<CountryEntity>;
 type MultipleCountriesResponse = ApiResponseDto<CountryEntity[]>;
@@ -41,7 +42,7 @@ export class CountriesController {
   }
 
   @Get()
-  @ApiResponse(CountryEntity, { isArray: true, type: 'read' })
+  @ApiPaginatedResponse(CountryEntity)
   @ApiQuery({ type: CountriesPaginationOptionDto })
   async findAll(
     @PaginationOptions() paginationOptions: CountriesPaginationOptionDto,

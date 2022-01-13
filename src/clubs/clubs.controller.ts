@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Query,
-  Req,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ClubsService } from './clubs.service';
@@ -23,6 +22,7 @@ import { formatSuccessResponse } from '../utils/helpers';
 import { AuthGuard } from '../guards/auth.guard';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
+import { ApiPaginatedResponse } from '../utils/api-response/api-paginated-response.decorator';
 
 @Controller('clubs')
 @ApiTags('clubs')
@@ -42,16 +42,12 @@ export class ClubsController {
   }
 
   @Get()
-  @ApiResponse(ClubDto, { isArray: true, type: 'read' })
+  @ApiPaginatedResponse(ClubDto)
   @ApiQuery({ type: ClubsPaginationOptionsDto })
   async findAll(
     @PaginationOptions() paginationOptions: ClubsPaginationOptionsDto,
     @Query() query: FindAllClubsDto,
-    @Req() request: any,
   ) {
-    // console.log(ClubsPaginationOptionsDto);
-    console.log('CONTROLLER', request.paginationOptions);
-
     const data = await this.clubsService.findAll(paginationOptions, query);
     return formatSuccessResponse('Successfully fetched all clubs', data);
   }
