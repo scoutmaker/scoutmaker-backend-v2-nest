@@ -19,36 +19,37 @@ import { RegionEntity } from './entities/region.entity';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
 import { AuthGuard } from '../guards/auth.guard';
+import { RegionDto } from './dto/region.dto';
+import { Serialize } from '../interceptors/serialize.interceptor';
 
-type SingleRegionResponse = ApiResponseDto<RegionEntity>;
-type MultipleRegionsResponse = ApiResponseDto<RegionEntity[]>;
+type SingleRegionResponse = ApiResponseDto<RegionDto>;
+type MultipleRegionsResponse = ApiResponseDto<RegionDto[]>;
 
 @Controller('regions')
 @ApiTags('regions')
 @UseGuards(AuthGuard)
 @ApiCookieAuth()
+@Serialize(RegionDto)
 export class RegionsController {
   constructor(private readonly regionsService: RegionsService) {}
 
   @Post()
   @ApiResponse(RegionEntity, { type: 'create' })
-  async create(
-    @Body() createRegionDto: CreateRegionDto,
-  ): Promise<SingleRegionResponse> {
+  async create(@Body() createRegionDto: CreateRegionDto) {
     const region = await this.regionsService.create(createRegionDto);
     return formatSuccessResponse('Successfully created new region', region);
   }
 
   @Get()
   @ApiResponse(RegionEntity, { type: 'read', isArray: true })
-  async findAll(): Promise<MultipleRegionsResponse> {
+  async findAll() {
     const regions = await this.regionsService.findAll();
     return formatSuccessResponse('Successfully fetched all regions', regions);
   }
 
   @Get(':id')
   @ApiResponse(RegionEntity, { type: 'read' })
-  async findOne(@Param('id') id: string): Promise<SingleRegionResponse> {
+  async findOne(@Param('id') id: string) {
     const region = await this.regionsService.findOne(id);
     return formatSuccessResponse(
       `Successfully fetched region with the id of ${id}`,
@@ -61,7 +62,7 @@ export class RegionsController {
   async update(
     @Param('id') id: string,
     @Body() updateRegionDto: UpdateRegionDto,
-  ): Promise<SingleRegionResponse> {
+  ) {
     const region = await this.regionsService.update(id, updateRegionDto);
     return formatSuccessResponse(
       `Successfully updated region with the id of ${id}`,
@@ -71,7 +72,7 @@ export class RegionsController {
 
   @Delete(':id')
   @ApiResponse(RegionEntity, { type: 'delete' })
-  async remove(@Param('id') id: string): Promise<SingleRegionResponse> {
+  async remove(@Param('id') id: string) {
     const region = await this.regionsService.remove(id);
     return formatSuccessResponse(
       `Successfully removed region with the id of ${id}`,

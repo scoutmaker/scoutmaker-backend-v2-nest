@@ -13,7 +13,6 @@ import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CountriesService } from './countries.service';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
-import { CountryEntity } from './entities/country.entity';
 import { ApiResponseDto } from '../utils/api-response/api-response.dto';
 import { ApiResponse } from '../utils/api-response/api-response.decorator';
 import { formatSuccessResponse } from '../utils/helpers';
@@ -22,9 +21,11 @@ import { PaginationOptions } from '../pagination/pagination-options.decorator';
 import { FindAllCountriesDto } from './dto/find-all-countries.dto';
 import { CountriesPaginationOptionDto } from './dto/countries-pagination-options.dto';
 import { ApiPaginatedResponse } from '../utils/api-response/api-paginated-response.decorator';
+import { CountryDto } from './dto/country.dto';
+import { Serialize } from '../interceptors/serialize.interceptor';
 
-type SingleCountryResponse = ApiResponseDto<CountryEntity>;
-type MultipleCountriesResponse = ApiResponseDto<CountryEntity[]>;
+type SingleCountryResponse = ApiResponseDto<CountryDto>;
+type MultipleCountriesResponse = ApiResponseDto<CountryDto[]>;
 @Controller('countries')
 @ApiTags('countries')
 @UseGuards(AuthGuard)
@@ -33,7 +34,8 @@ export class CountriesController {
   constructor(private readonly countriesService: CountriesService) {}
 
   @Post()
-  @ApiResponse(CountryEntity, { type: 'create' })
+  @ApiResponse(CountryDto, { type: 'create' })
+  @Serialize(CountryDto)
   async create(
     @Body() createCountryDto: CreateCountryDto,
   ): Promise<SingleCountryResponse> {
@@ -42,8 +44,9 @@ export class CountriesController {
   }
 
   @Get()
-  @ApiPaginatedResponse(CountryEntity)
+  @ApiPaginatedResponse(CountryDto)
   @ApiQuery({ type: CountriesPaginationOptionDto })
+  @Serialize(CountryDto, 'docs')
   async findAll(
     @PaginationOptions() paginationOptions: CountriesPaginationOptionDto,
     @Query() query: FindAllCountriesDto,
@@ -53,7 +56,8 @@ export class CountriesController {
   }
 
   @Get(':id')
-  @ApiResponse(CountryEntity, { type: 'read' })
+  @ApiResponse(CountryDto, { type: 'read' })
+  @Serialize(CountryDto)
   async findOne(@Param('id') id: string): Promise<SingleCountryResponse> {
     const country = await this.countriesService.findOne(id);
     return formatSuccessResponse(
@@ -63,7 +67,8 @@ export class CountriesController {
   }
 
   @Patch(':id')
-  @ApiResponse(CountryEntity, { type: 'update' })
+  @ApiResponse(CountryDto, { type: 'update' })
+  @Serialize(CountryDto)
   async update(
     @Param('id') id: string,
     @Body() updateCountryDto: UpdateCountryDto,
@@ -76,7 +81,8 @@ export class CountriesController {
   }
 
   @Delete(':id')
-  @ApiResponse(CountryEntity, { type: 'delete' })
+  @ApiResponse(CountryDto, { type: 'delete' })
+  @Serialize(CountryDto)
   async remove(@Param('id') id: string): Promise<SingleCountryResponse> {
     const country = await this.countriesService.remove(id);
     return formatSuccessResponse(

@@ -55,3 +55,11 @@ export function formatPaginatedResponse<T>({
     nextPage: hasNextPage ? page + 1 : null,
   };
 }
+
+export function formatSortingEnumErrorMessage(
+  availableEnum: Record<string, unknown>,
+) {
+  return `Available sorting options are ${Object.keys(availableEnum).join(
+    ', ',
+  )}`;
+}

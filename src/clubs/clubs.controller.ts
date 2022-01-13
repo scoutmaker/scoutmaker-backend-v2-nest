@@ -23,6 +23,7 @@ import { AuthGuard } from '../guards/auth.guard';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { ApiPaginatedResponse } from '../utils/api-response/api-paginated-response.decorator';
+import { Serialize } from '../interceptors/serialize.interceptor';
 
 @Controller('clubs')
 @ApiTags('clubs')
@@ -33,6 +34,7 @@ export class ClubsController {
 
   @Post()
   @ApiResponse(ClubDto, { type: 'read' })
+  @Serialize(ClubDto)
   async create(
     @Body() createClubDto: CreateClubDto,
     @CurrentUser() user: CurrentUserDto,
@@ -44,6 +46,7 @@ export class ClubsController {
   @Get()
   @ApiPaginatedResponse(ClubDto)
   @ApiQuery({ type: ClubsPaginationOptionsDto })
+  @Serialize(ClubDto, 'docs')
   async findAll(
     @PaginationOptions() paginationOptions: ClubsPaginationOptionsDto,
     @Query() query: FindAllClubsDto,
@@ -54,6 +57,7 @@ export class ClubsController {
 
   @Get(':id')
   @ApiResponse(ClubDto, { type: 'read' })
+  @Serialize(ClubDto)
   async findOne(@Param('id') id: string) {
     const club = await this.clubsService.findOne(id);
     return formatSuccessResponse(
@@ -64,6 +68,7 @@ export class ClubsController {
 
   @Patch(':id')
   @ApiResponse(ClubDto, { type: 'update' })
+  @Serialize(ClubDto)
   async update(@Param('id') id: string, @Body() updateClubDto: UpdateClubDto) {
     const club = await this.clubsService.update(id, updateClubDto);
     return formatSuccessResponse(
@@ -73,6 +78,7 @@ export class ClubsController {
   }
 
   @Delete(':id')
+  @Serialize(ClubDto)
   async remove(@Param('id') id: string) {
     const club = await this.clubsService.remove(id);
     return formatSuccessResponse(

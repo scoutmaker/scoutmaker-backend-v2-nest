@@ -1,11 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { PaginationOptionsDto } from '../../pagination/pagination-options.dto';
+import { formatSortingEnumErrorMessage } from '../../utils/helpers';
+
+enum CountriesSortBy {
+  id = 'id',
+  name = 'name',
+  code = 'code',
+  isEuMember = 'isEuMember',
+}
 
 export class CountriesPaginationOptionDto extends PaginationOptionsDto {
   @IsOptional()
-  @IsString()
-  @IsEnum(['name', 'code', 'isEuMember'])
-  @ApiProperty({ type: 'string' })
-  sortBy?: 'name' | 'code' | 'isEuMember';
+  @IsEnum(CountriesSortBy, {
+    message: formatSortingEnumErrorMessage(CountriesSortBy),
+  })
+  sortBy?: CountriesSortBy;
 }

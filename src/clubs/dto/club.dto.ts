@@ -1,5 +1,5 @@
-import { Expose } from 'class-transformer';
-import { RegionEntity } from '../../regions/entities/region.entity';
+import { Expose, plainToClass, Transform } from 'class-transformer';
+import { RegionDto } from '../../regions/dto/region.dto';
 
 export class ClubDto {
   @Expose()
@@ -32,12 +32,9 @@ export class ClubDto {
   @Expose()
   instagram?: string;
 
+  @Transform(({ value }) =>
+    plainToClass(RegionDto, value, { excludeExtraneousValues: true }),
+  )
   @Expose()
-  createdAt: Date;
-
-  @Expose()
-  updatedAt: Date;
-
-  @Expose()
-  region: RegionEntity;
+  region: RegionDto;
 }

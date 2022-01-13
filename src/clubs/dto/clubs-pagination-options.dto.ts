@@ -1,5 +1,6 @@
 import { IsEnum, IsOptional } from 'class-validator';
 import { PaginationOptionsDto } from '../../pagination/pagination-options.dto';
+import { formatSortingEnumErrorMessage } from '../../utils/helpers';
 
 enum ClubsSortBy {
   id = 'id',
@@ -11,8 +12,7 @@ enum ClubsSortBy {
 export class ClubsPaginationOptionsDto extends PaginationOptionsDto {
   @IsOptional()
   @IsEnum(ClubsSortBy, {
-    message:
-      'Available sorting options are "id", "name", "countryId" or "regionId"',
+    message: formatSortingEnumErrorMessage(ClubsSortBy),
   })
   sortBy?: ClubsSortBy;
 }
