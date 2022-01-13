@@ -66,10 +66,11 @@ model Region {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  country   Country @relation(fields: [countryId], references: [id])
-  countryId String
-  users     User[]
-  clubs     Club[]
+  country      Country                @relation(fields: [countryId], references: [id])
+  countryId    String
+  users        User[]
+  clubs        Club[]
+  competitions RegionOnCompetitions[]
 
   @@unique([name, countryId])
 }
@@ -105,4 +106,27 @@ model Season {
   endDate   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Competition {
+  id          String   @id @default(cuid())
+  name        String
+  group       String?
+  isJunior    Boolean? @default(false)
+  isWomen     Boolean? @default(false)
+  juniorLevel String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation fields
+  regions RegionOnCompetitions[]
+}
+
+model RegionOnCompetitions {
+  region        Region      @relation(fields: [regionId], references: [id])
+  regionId      String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId String
+
+  @@id([regionId, competitionId])
 }
