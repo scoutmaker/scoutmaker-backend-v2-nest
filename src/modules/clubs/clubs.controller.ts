@@ -16,14 +16,14 @@ import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
 import { FindAllClubsDto } from './dto/find-all-clubs.dto';
 import { ClubsPaginationOptionsDto } from './dto/clubs-pagination-options.dto';
-import { PaginationOptions } from '../pagination/pagination-options.decorator';
-import { ApiResponse } from '../utils/api-response/api-response.decorator';
-import { formatSuccessResponse } from '../utils/helpers';
-import { AuthGuard } from '../guards/auth.guard';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { formatSuccessResponse } from '../../utils/helpers';
+import { AuthGuard } from '../../guards/auth.guard';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { ApiPaginatedResponse } from '../utils/api-response/api-paginated-response.decorator';
-import { Serialize } from '../interceptors/serialize.interceptor';
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
+import { Serialize } from '../../interceptors/serialize.interceptor';
 
 @Controller('clubs')
 @ApiTags('clubs')

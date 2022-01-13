@@ -1,5 +1,5 @@
-import { ApiResponseDto } from './api-response/api-response.dto';
-import { PaginatedData } from './api-response/api-paginated-response.dto';
+import { ApiResponseDto } from '../api-response/api-response.dto';
+import { PaginatedData } from '../api-response/api-paginated-response.dto';
 
 export function formatSuccessResponse<Data>(
   message: string,

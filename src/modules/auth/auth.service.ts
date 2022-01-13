@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { add } from 'date-fns';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { convertJwtExpiresInToNumber } from '../utils/helpers';
+import { convertJwtExpiresInToNumber } from '../../utils/helpers';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';

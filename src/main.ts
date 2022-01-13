@@ -3,8 +3,8 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { JwtExceptionFilter } from './utils/filters/jwt-exception.filter';
-import { PrismaClientExceptionFilter } from './utils/filters/prisma-client-exception.filter';
+import { JwtExceptionFilter } from './filters/jwt-exception.filter';
+import { PrismaClientExceptionFilter } from './filters/prisma-client-exception.filter';
 
 const port = process.env.PORT || 3000;
 

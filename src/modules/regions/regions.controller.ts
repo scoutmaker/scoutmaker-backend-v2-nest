@@ -7,23 +7,16 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { RegionsService } from './regions.service';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { UpdateRegionDto } from './dto/update-region.dto';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto } from 'src/utils/api-response/api-response.dto';
-import { RegionEntity } from './entities/region.entity';
-import { ApiResponse } from '../utils/api-response/api-response.decorator';
-import { formatSuccessResponse } from '../utils/helpers';
-import { AuthGuard } from '../guards/auth.guard';
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { formatSuccessResponse } from '../../utils/helpers';
+import { AuthGuard } from '../../guards/auth.guard';
 import { RegionDto } from './dto/region.dto';
-import { Serialize } from '../interceptors/serialize.interceptor';
-
-type SingleRegionResponse = ApiResponseDto<RegionDto>;
-type MultipleRegionsResponse = ApiResponseDto<RegionDto[]>;
+import { Serialize } from '../../interceptors/serialize.interceptor';
 
 @Controller('regions')
 @ApiTags('regions')
@@ -34,21 +27,21 @@ export class RegionsController {
   constructor(private readonly regionsService: RegionsService) {}
 
   @Post()
-  @ApiResponse(RegionEntity, { type: 'create' })
+  @ApiResponse(RegionDto, { type: 'create' })
   async create(@Body() createRegionDto: CreateRegionDto) {
     const region = await this.regionsService.create(createRegionDto);
     return formatSuccessResponse('Successfully created new region', region);
   }
 
   @Get()
-  @ApiResponse(RegionEntity, { type: 'read', isArray: true })
+  @ApiResponse(RegionDto, { type: 'read', isArray: true })
   async findAll() {
     const regions = await this.regionsService.findAll();
     return formatSuccessResponse('Successfully fetched all regions', regions);
   }
 
   @Get(':id')
-  @ApiResponse(RegionEntity, { type: 'read' })
+  @ApiResponse(RegionDto, { type: 'read' })
   async findOne(@Param('id') id: string) {
     const region = await this.regionsService.findOne(id);
     return formatSuccessResponse(
@@ -58,7 +51,7 @@ export class RegionsController {
   }
 
   @Patch(':id')
-  @ApiResponse(RegionEntity, { type: 'update' })
+  @ApiResponse(RegionDto, { type: 'update' })
   async update(
     @Param('id') id: string,
     @Body() updateRegionDto: UpdateRegionDto,
@@ -71,7 +64,7 @@ export class RegionsController {
   }
 
   @Delete(':id')
-  @ApiResponse(RegionEntity, { type: 'delete' })
+  @ApiResponse(RegionDto, { type: 'delete' })
   async remove(@Param('id') id: string) {
     const region = await this.regionsService.remove(id);
     return formatSuccessResponse(

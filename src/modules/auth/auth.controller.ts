@@ -16,11 +16,11 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserDto } from '../users/dto/user.dto';
-import { Serialize } from '../interceptors/serialize.interceptor';
-import { ApiResponse } from '../utils/api-response/api-response.decorator';
-import { formatSuccessResponse } from '../utils/helpers';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { UsersService } from '../users/users.service';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 

@@ -1,5 +1,5 @@
 import { Region } from '@prisma/client';
-import { CountryEntity } from 'src/countries/entities/country.entity';
+import { CountryEntity } from '../../countries/entities/country.entity';
 
 export class RegionEntity implements Region {
   id: string;

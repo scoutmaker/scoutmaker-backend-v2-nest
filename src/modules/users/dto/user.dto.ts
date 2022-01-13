@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AccountStatus, UserRole } from '@prisma/client';
-import { Expose } from 'class-transformer';
-import { RegionEntity } from 'src/regions/entities/region.entity';
+import { Expose, plainToClass, Transform } from 'class-transformer';
+import { RegionDto } from '../../regions/dto/region.dto';
 
 export class UserDto {
   @Expose()
@@ -39,6 +39,9 @@ export class UserDto {
   @Expose()
   updatedAt: Date;
 
+  @Transform(({ value }) =>
+    plainToClass(RegionDto, value, { excludeExtraneousValues: true }),
+  )
   @Expose()
-  region: RegionEntity;
+  region: RegionDto;
 }

@@ -9,8 +9,8 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { MatchesProperty } from '../../decorators/matches-property.decorator';
-import { PASSWORD_REGEXP } from '../../utils/constants';
+import { MatchesProperty } from '../../../decorators/matches-property.decorator';
+import { PASSWORD_REGEXP } from '../../../utils/constants';
 
 export class RegisterUserDto {
   @IsNotEmpty()
