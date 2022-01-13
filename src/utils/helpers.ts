@@ -1,5 +1,5 @@
-import { ApiResponseDto, PaginatedData } from './api-response/api-response.dto';
-import { PaginationOptionsDto } from '../pagination/pagination-options.dto';
+import { ApiResponseDto } from '../api-response/api-response.dto';
+import { PaginatedData } from '../api-response/api-paginated-response.dto';
 
 export function formatSuccessResponse<Data>(
   message: string,
@@ -22,17 +22,8 @@ export function convertJwtExpiresInToNumber(expiresIn: string): number {
   );
 }
 
-export function transformPaginationOptions({
-  limit,
-  page,
-  sortBy,
-  sortingOrder,
-}: PaginationOptionsDto) {
-  return {
-    take: limit,
-    orderBy: { [sortBy]: sortingOrder },
-    skip: (page - 1) * limit,
-  };
+export function calculateSkip(page: number, limit: number) {
+  return (page - 1) * limit;
 }
 
 export type PaginatedResponseArgs<T> = {
@@ -63,4 +54,12 @@ export function formatPaginatedResponse<T>({
     prevPage: hasPrevPage ? page - 1 : null,
     nextPage: hasNextPage ? page + 1 : null,
   };
+}
+
+export function formatSortingEnumErrorMessage(
+  availableEnum: Record<string, unknown>,
+) {
+  return `Available sorting options are ${Object.keys(availableEnum).join(
+    ', ',
+  )}`;
 }
