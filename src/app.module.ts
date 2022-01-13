@@ -8,6 +8,7 @@ import { RegionsModule } from './modules/regions/regions.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClubsModule } from './modules/clubs/clubs.module';
+import { SeasonsModule } from './modules/seasons/seasons.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ClubsModule } from './modules/clubs/clubs.module';
     UsersModule,
     AuthModule,
     ClubsModule,
+    SeasonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
