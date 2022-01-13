@@ -1,9 +1,8 @@
 import { Transform } from 'class-transformer';
 import {
-  IsBoolean,
+  IsDate,
   IsDateString,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
@@ -15,15 +14,13 @@ export class CreateSeasonDto {
   @Transform(({ value }) => value.trim())
   name: string;
 
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-
   @IsNotEmpty()
-  @IsDateString()
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
   startDate: string;
 
   @IsNotEmpty()
-  @IsDateString()
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
   endDate: string;
 }
