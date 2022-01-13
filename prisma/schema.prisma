@@ -100,7 +100,7 @@ model Club {
 model Season {
   id        String   @id @default(cuid())
   name      String   @unique
-  isActive  Boolean  @default(false)
+  isActive  Boolean? @unique
   startDate DateTime
   endDate   DateTime
   createdAt DateTime @default(now())

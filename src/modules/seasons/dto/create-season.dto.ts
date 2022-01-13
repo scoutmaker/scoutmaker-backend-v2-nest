@@ -17,7 +17,7 @@ export class CreateSeasonDto {
 
   @IsOptional()
   @IsBoolean()
-  isActive = false;
+  isActive?: boolean;
 
   @IsNotEmpty()
   @IsDateString()
