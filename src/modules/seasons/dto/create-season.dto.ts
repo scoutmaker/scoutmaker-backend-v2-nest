@@ -1,11 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsDate,
-  IsDateString,
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateSeasonDto {
   @IsNotEmpty()

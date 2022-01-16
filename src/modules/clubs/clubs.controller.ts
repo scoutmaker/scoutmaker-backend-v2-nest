@@ -33,7 +33,7 @@ export class ClubsController {
   constructor(private readonly clubsService: ClubsService) {}
 
   @Post()
-  @ApiResponse(ClubDto, { type: 'read' })
+  @ApiResponse(ClubDto, { type: 'create' })
   @Serialize(ClubDto)
   async create(
     @Body() createClubDto: CreateClubDto,
