@@ -50,8 +50,31 @@ export class CompetitionsService {
     return this.prisma.competition.findUnique({ where: { id }, include });
   }
 
-  update(id: number, updateCompetitionDto: UpdateCompetitionDto) {
-    return `This action updates a #${id} competition`;
+  async update(id: string, updateCompetitionDto: UpdateCompetitionDto) {
+    const { regionsIds, countryId, ...rest } = updateCompetitionDto;
+
+    if (regionsIds) {
+      await this.prisma.regionsOnCompetitions.deleteMany({
+        where: { competitionId: id },
+      });
+    }
+
+    return this.prisma.competition.update({
+      where: { id },
+      data: {
+        ...rest,
+        country: countryId ? { connect: { id: countryId } } : undefined,
+        regions:
+          regionsIds && regionsIds.length > 0
+            ? {
+                createMany: {
+                  data: regionsIds.map((regionId) => ({ regionId })),
+                },
+              }
+            : undefined,
+      },
+      include,
+    });
   }
 
   async remove(id: string) {

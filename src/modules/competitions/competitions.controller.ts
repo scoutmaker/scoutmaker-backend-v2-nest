@@ -9,7 +9,7 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RoleGuard } from '../../guards/role.guard';
@@ -62,14 +62,23 @@ export class CompetitionsController {
   }
 
   @Patch(':id')
-  update(
+  @ApiResponse(CompetitionDto, { type: 'update' })
+  async update(
     @Param('id') id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
   ) {
-    return this.competitionsService.update(+id, updateCompetitionDto);
+    const competition = await this.competitionsService.update(
+      id,
+      updateCompetitionDto,
+    );
+    return formatSuccessResponse(
+      `Successfully updated competition with the id of ${id}`,
+      competition,
+    );
   }
 
   @Delete(':id')
+  @ApiResponse(CompetitionDto, { type: 'delete' })
   async remove(@Param('id') id: string) {
     const competition = await this.competitionsService.remove(id);
     return formatSuccessResponse(
