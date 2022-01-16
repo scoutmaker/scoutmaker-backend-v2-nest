@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompetitionDto } from './dto/create-competition.dto';
+import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 const include: Prisma.CompetitionInclude = {
   country: true,
@@ -30,8 +31,19 @@ export class CompetitionsService {
     });
   }
 
-  findAll() {
-    return this.prisma.competition.findMany({ include });
+  findAll({ countryId, regionId, isJunior, isWomen }: FindAllCompetitionsDto) {
+    const where: Prisma.CompetitionWhereInput = {
+      countryId,
+      regions: {
+        some: {
+          regionId,
+        },
+      },
+      isJunior,
+      isWomen,
+    };
+
+    return this.prisma.competition.findMany({ where, include });
   }
 
   findOne(id: string) {

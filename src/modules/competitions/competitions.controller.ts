@@ -7,8 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RoleGuard } from '../../guards/role.guard';
@@ -17,6 +18,7 @@ import { formatSuccessResponse } from '../../utils/helpers';
 import { CompetitionsService } from './competitions.service';
 import { CompetitionDto } from './dto/competition.dto';
 import { CreateCompetitionDto } from './dto/create-competition.dto';
+import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
 
 @Controller('competitions')
@@ -41,8 +43,8 @@ export class CompetitionsController {
 
   @Get()
   @ApiResponse(CompetitionDto, { type: 'read' })
-  async findAll() {
-    const competitions = await this.competitionsService.findAll();
+  async findAll(@Query() query: FindAllCompetitionsDto) {
+    const competitions = await this.competitionsService.findAll(query);
     return formatSuccessResponse(
       'Successfully fetched all competitions',
       competitions,
