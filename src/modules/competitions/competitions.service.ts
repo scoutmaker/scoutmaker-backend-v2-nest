@@ -1,15 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
 
+const include: Prisma.CompetitionInclude = {
+  country: true,
+  regions: { include: { region: true } },
+};
+
 @Injectable()
 export class CompetitionsService {
+  constructor(private readonly prisma: PrismaService) {}
+
   create(createCompetitionDto: CreateCompetitionDto) {
-    return 'This action adds a new competition';
+    const { regionsIds, countryId, ...rest } = createCompetitionDto;
+
+    return this.prisma.competition.create({
+      data: {
+        ...rest,
+        country: { connect: { id: countryId } },
+        regions: {
+          createMany: {
+            data: regionsIds.map((regionId) => ({ regionId })),
+          },
+        },
+      },
+      include,
+    });
   }
 
   findAll() {
-    return `This action returns all competitions`;
+    return this.prisma.competition.findMany({ include });
   }
 
   findOne(id: number) {
