@@ -50,8 +50,13 @@ export class CompetitionsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.competitionsService.findOne(+id);
+  @ApiResponse(CompetitionDto, { type: 'read' })
+  async findOne(@Param('id') id: string) {
+    const competition = await this.competitionsService.findOne(id);
+    return formatSuccessResponse(
+      `Successfully fetched competition with the id of ${id}`,
+      competition,
+    );
   }
 
   @Patch(':id')
@@ -63,7 +68,11 @@ export class CompetitionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.competitionsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const competition = await this.competitionsService.remove(id);
+    return formatSuccessResponse(
+      `Successfully deleted competition with the id of ${id}`,
+      competition,
+    );
   }
 }

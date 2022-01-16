@@ -34,15 +34,20 @@ export class CompetitionsService {
     return this.prisma.competition.findMany({ include });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} competition`;
+  findOne(id: string) {
+    return this.prisma.competition.findUnique({ where: { id }, include });
   }
 
   update(id: number, updateCompetitionDto: UpdateCompetitionDto) {
     return `This action updates a #${id} competition`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} competition`;
+  async remove(id: string) {
+    // Delete all region-on-competition entities for the given competition
+    await this.prisma.regionsOnCompetitions.deleteMany({
+      where: { competitionId: id },
+    });
+    // Delete an actual competition
+    return this.prisma.competition.delete({ where: { id }, include });
   }
 }
