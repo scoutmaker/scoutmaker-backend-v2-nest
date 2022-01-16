@@ -122,6 +122,7 @@ model Competition {
   juniorLevel String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  // TODO: add competition type (league, cup, etc.)
 
   // Relation fields
   country   Country                    @relation(fields: [countryId], references: [id])
