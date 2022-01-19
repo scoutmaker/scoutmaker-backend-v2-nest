@@ -59,6 +59,7 @@ model Country {
   // Relation fields
   regions      Region[]
   competitions Competition[]
+  clubs        Club[]
 }
 
 model Region {
@@ -94,11 +95,13 @@ model Club {
 
 
   // Relation fields
-  region   Region @relation(fields: [regionId], references: [id])
-  regionId String
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-  teams    Team[]
+  country   Country @relation(fields: [countryId], references: [id])
+  countryId String
+  region    Region  @relation(fields: [regionId], references: [id])
+  regionId  String
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  String
+  teams     Team[]
 }
 
 model Team {
