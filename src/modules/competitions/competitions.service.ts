@@ -21,11 +21,14 @@ export class CompetitionsService {
       data: {
         ...rest,
         country: { connect: { id: countryId } },
-        regions: {
-          createMany: {
-            data: regionsIds.map((regionId) => ({ regionId })),
-          },
-        },
+        regions:
+          regionsIds && regionsIds.length > 0
+            ? {
+                createMany: {
+                  data: regionsIds.map((regionId) => ({ regionId })),
+                },
+              }
+            : undefined,
       },
       include,
     });

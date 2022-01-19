@@ -1,4 +1,10 @@
-import { Expose, plainToClass, Transform } from 'class-transformer';
+import {
+  Expose,
+  plainToClass,
+  plainToInstance,
+  Transform,
+} from 'class-transformer';
+import { CompetitionsOnClubDto } from './competitions-on-club.dto';
 import { RegionDto } from '../../regions/dto/region.dto';
 
 export class ClubDto {
@@ -37,4 +43,12 @@ export class ClubDto {
   )
   @Expose()
   region: RegionDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionsOnClubDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  competitions: CompetitionsOnClubDto[];
 }

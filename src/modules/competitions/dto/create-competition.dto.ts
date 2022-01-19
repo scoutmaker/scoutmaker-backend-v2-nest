@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
-  ArrayNotEmpty,
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsOptional,
@@ -27,9 +27,10 @@ export class CreateCompetitionDto {
   @MaxLength(30)
   countryId: string;
 
-  @ArrayNotEmpty()
+  @IsOptional()
+  @IsArray()
   @IsString({ each: true })
-  regionsIds: string[];
+  regionsIds?: string[];
 
   @IsOptional()
   @IsBoolean()

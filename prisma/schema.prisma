@@ -93,10 +93,11 @@ model Club {
 
 
   // Relation fields
-  region   Region @relation(fields: [regionId], references: [id])
-  regionId String
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
+  region       Region                     @relation(fields: [regionId], references: [id])
+  regionId     String
+  author       User                       @relation(fields: [authorId], references: [id])
+  authorId     String
+  competitions CompetitionParticipation[]
 }
 
 model Season {
@@ -107,6 +108,9 @@ model Season {
   endDate   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Realation fields
+  competitionParticipations CompetitionParticipation[]
 }
 
 model Competition {
@@ -118,11 +122,13 @@ model Competition {
   juniorLevel String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  // TODO: add competition type (league, cup, etc.)
 
   // Relation fields
-  country   Country                 @relation(fields: [countryId], references: [id])
+  country   Country                    @relation(fields: [countryId], references: [id])
   countryId String
   regions   RegionsOnCompetitions[]
+  clubs     CompetitionParticipation[]
 }
 
 model RegionsOnCompetitions {
@@ -133,4 +139,16 @@ model RegionsOnCompetitions {
   competitionId String
 
   @@id([regionId, competitionId])
+}
+
+model CompetitionParticipation {
+  // Relation fields
+  club          Club        @relation(fields: [clubId], references: [id])
+  clubId        String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId String
+  season        Season      @relation(fields: [seasonId], references: [id])
+  seasonId      String
+
+  @@id([clubId, competitionId, seasonId])
 }

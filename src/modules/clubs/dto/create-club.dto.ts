@@ -18,6 +18,10 @@ export class CreateClubDto {
   @IsString()
   regionId: string;
 
+  @IsNotEmpty()
+  @IsString()
+  leagueId: string;
+
   @IsOptional()
   @IsString()
   lnpId?: string;
@@ -52,5 +56,5 @@ export class CreateClubDto {
 
   @IsOptional()
   @IsBoolean()
-  isPublic?: boolean = false;
+  isPublic?: boolean;
 }

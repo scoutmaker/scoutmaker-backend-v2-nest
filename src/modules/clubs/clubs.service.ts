@@ -7,19 +7,31 @@ import { UpdateClubDto } from './dto/update-club.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 
-const include: Prisma.ClubInclude = { region: { include: { country: true } } };
+const include: Prisma.ClubInclude = {
+  region: { include: { country: true } },
+  competitions: {
+    include: { competition: true, season: true },
+    orderBy: { season: { isActive: 'asc' } },
+  },
+};
 
 @Injectable()
 export class ClubsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createClubDto: CreateClubDto, authorId: string) {
-    const { regionId, ...rest } = createClubDto;
+    const { regionId, leagueId, ...rest } = createClubDto;
     return this.prisma.club.create({
       data: {
         ...rest,
         region: { connect: { id: regionId } },
         author: { connect: { id: authorId } },
+        competitions: {
+          create: {
+            competition: { connect: { id: leagueId } },
+            season: { connect: { isActive: true } },
+          },
+        },
       },
       include,
     });
@@ -73,9 +85,19 @@ export class ClubsService {
   }
 
   update(id: string, updateClubDto: UpdateClubDto) {
+    const { leagueId, ...rest } = updateClubDto;
+
     return this.prisma.club.update({
       where: { id },
-      data: updateClubDto,
+      data: {
+        ...rest,
+        competitions: {
+          create: {
+            competition: { connect: { id: leagueId } },
+            season: { connect: { isActive: true } },
+          },
+        },
+      },
       include,
     });
   }
