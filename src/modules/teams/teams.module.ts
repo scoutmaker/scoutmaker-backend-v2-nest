@@ -1,16 +1,16 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ClubsService } from './clubs.service';
-import { ClubsController } from './clubs.controller';
+import { TeamsService } from './teams.service';
+import { TeamsController } from './teams.controller';
 import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
 
 @Module({
-  controllers: [ClubsController],
-  providers: [ClubsService],
+  controllers: [TeamsController],
+  providers: [TeamsService],
 })
-export class ClubsModule {
+export class TeamsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(PrepareQueryMiddleware)
-      .forRoutes({ path: 'teams', method: RequestMethod.GET });
+      .forRoutes({ path: 'clubs', method: RequestMethod.GET });
   }
 }

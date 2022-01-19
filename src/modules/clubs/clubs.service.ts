@@ -8,11 +8,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 
 const include: Prisma.ClubInclude = {
-  region: { include: { country: true } },
-  competitions: {
-    include: { competition: true, season: true },
-    orderBy: { season: { isActive: 'asc' } },
-  },
+  region: true,
+  country: true,
 };
 
 @Injectable()
@@ -20,18 +17,13 @@ export class ClubsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createClubDto: CreateClubDto, authorId: string) {
-    const { regionId, leagueId, ...rest } = createClubDto;
+    const { regionId, countryId, ...rest } = createClubDto;
     return this.prisma.club.create({
       data: {
         ...rest,
+        country: { connect: { id: countryId } },
         region: { connect: { id: regionId } },
         author: { connect: { id: authorId } },
-        competitions: {
-          create: {
-            competition: { connect: { id: leagueId } },
-            season: { connect: { isActive: true } },
-          },
-        },
       },
       include,
     });
@@ -50,7 +42,7 @@ export class ClubsService {
       case 'regionId':
         sort = { region: { name: sortingOrder } };
       case 'countryId':
-        sort = { region: { country: { name: sortingOrder } } };
+        sort = { country: { name: sortingOrder } };
       default:
         sort = undefined;
         break;
@@ -59,7 +51,7 @@ export class ClubsService {
     const where: Prisma.ClubWhereInput = {
       name,
       regionId,
-      region: { countryId },
+      countryId,
     };
 
     const clubs = await this.prisma.club.findMany({
@@ -85,19 +77,9 @@ export class ClubsService {
   }
 
   update(id: string, updateClubDto: UpdateClubDto) {
-    const { leagueId, ...rest } = updateClubDto;
-
     return this.prisma.club.update({
       where: { id },
-      data: {
-        ...rest,
-        competitions: {
-          create: {
-            competition: { connect: { id: leagueId } },
-            season: { connect: { isActive: true } },
-          },
-        },
-      },
+      data: updateClubDto,
       include,
     });
   }

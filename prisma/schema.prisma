@@ -45,6 +45,7 @@ model User {
   region   Region @relation(fields: [regionId], references: [id])
   regionId String
   clubs    Club[]
+  teams    Team[]
 }
 
 model Country {
@@ -58,6 +59,7 @@ model Country {
   // Relation fields
   regions      Region[]
   competitions Competition[]
+  clubs        Club[]
 }
 
 model Region {
@@ -93,10 +95,30 @@ model Club {
 
 
   // Relation fields
-  region       Region                     @relation(fields: [regionId], references: [id])
-  regionId     String
-  author       User                       @relation(fields: [authorId], references: [id])
-  authorId     String
+  country   Country @relation(fields: [countryId], references: [id])
+  countryId String
+  region    Region  @relation(fields: [regionId], references: [id])
+  regionId  String
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  String
+  teams     Team[]
+}
+
+model Team {
+  id               String   @id @default(cuid())
+  name             String
+  minut90url       String?
+  transfermarktUrl String?
+  lnpId            String?
+  isPublic         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relation fields
+  club         Club                       @relation(fields: [clubId], references: [id])
+  clubId       String
+  author       User                       @relation(fields: [userId], references: [id])
+  userId       String
   competitions CompetitionParticipation[]
 }
 
@@ -143,12 +165,12 @@ model RegionsOnCompetitions {
 
 model CompetitionParticipation {
   // Relation fields
-  club          Club        @relation(fields: [clubId], references: [id])
-  clubId        String
+  team          Team        @relation(fields: [teamId], references: [id])
+  teamId        String
   competition   Competition @relation(fields: [competitionId], references: [id])
   competitionId String
   season        Season      @relation(fields: [seasonId], references: [id])
   seasonId      String
 
-  @@id([clubId, competitionId, seasonId])
+  @@id([competitionId, seasonId])
 }
