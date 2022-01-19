@@ -1,26 +1,94 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { FindAllTeamsDto } from './dto/find-all-teams.dto';
+import { TeamsPaginationOptionsDto } from './dto/teams-pagination-options.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 
+const include: Prisma.TeamInclude = { club: true };
 @Injectable()
 export class TeamsService {
-  create(createTeamDto: CreateTeamDto) {
-    return 'This action adds a new team';
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(createTeamDto: CreateTeamDto, authorId: string) {
+    const { clubId, ...rest } = createTeamDto;
+
+    return this.prisma.team.create({
+      data: {
+        ...rest,
+        club: { connect: { id: clubId } },
+        author: { connect: { id: authorId } },
+      },
+      include,
+    });
   }
 
-  findAll() {
-    return `This action returns all teams`;
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
+    { name, clubId, regionId, countryId }: FindAllTeamsDto,
+  ) {
+    let sort: Prisma.TeamOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'name':
+        sort = { name: sortingOrder };
+        break;
+      case 'clubId':
+        sort = { club: { name: sortingOrder } };
+        break;
+      case 'regionId':
+        sort = { club: { region: { name: sortingOrder } } };
+        break;
+      case 'countryId':
+        sort = { club: { country: { name: sortingOrder } } };
+        break;
+      default:
+        sort = undefined;
+        break;
+    }
+
+    const where: Prisma.TeamWhereInput = {
+      name,
+      clubId,
+      club:
+        regionId || countryId
+          ? { region: { id: regionId }, country: { id: countryId } }
+          : undefined,
+    };
+
+    const teams = await this.prisma.team.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: sort,
+      include,
+    });
+
+    const total = await this.prisma.team.count({ where });
+
+    return formatPaginatedResponse({
+      docs: teams,
+      totalDocs: total,
+      limit,
+      page,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  findOne(id: string) {
+    return this.prisma.team.findUnique({ where: { id }, include });
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
-    return `This action updates a #${id} team`;
+  update(id: string, updateTeamDto: UpdateTeamDto) {
+    return this.prisma.team.update({
+      where: { id },
+      data: updateTeamDto,
+      include,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  remove(id: string) {
+    return this.prisma.team.delete({ where: { id }, include });
   }
 }

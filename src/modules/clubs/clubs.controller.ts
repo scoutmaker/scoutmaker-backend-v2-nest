@@ -78,6 +78,7 @@ export class ClubsController {
   }
 
   @Delete(':id')
+  @ApiResponse(ClubDto, { type: 'delete' })
   @Serialize(ClubDto)
   async remove(@Param('id') id: string) {
     const club = await this.clubsService.remove(id);
