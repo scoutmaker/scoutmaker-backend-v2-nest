@@ -18,6 +18,10 @@ export class CreateClubDto {
   @IsString()
   regionId: string;
 
+  @IsNotEmpty()
+  @IsString()
+  countryId: string;
+
   @IsOptional()
   @IsString()
   lnpId?: string;

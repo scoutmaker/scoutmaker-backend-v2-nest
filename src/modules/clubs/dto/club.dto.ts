@@ -1,10 +1,6 @@
-import {
-  Expose,
-  plainToClass,
-  plainToInstance,
-  Transform,
-} from 'class-transformer';
-import { RegionDto } from '../../regions/dto/region.dto';
+import { Expose, plainToInstance, Transform } from 'class-transformer';
+import { CountryDto } from '../../countries/dto/country.dto';
+import { RegionWithoutCountryDto } from '../../regions/dto/region-without-country.dto';
 
 export class ClubDto {
   @Expose()
@@ -38,8 +34,18 @@ export class ClubDto {
   instagram?: string;
 
   @Transform(({ value }) =>
-    plainToClass(RegionDto, value, { excludeExtraneousValues: true }),
+    plainToInstance(CountryDto, value, {
+      excludeExtraneousValues: true,
+    }),
   )
   @Expose()
-  region: RegionDto;
+  country: CountryDto;
+
+  @Transform(({ value }) =>
+    plainToInstance(RegionWithoutCountryDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  region: RegionWithoutCountryDto;
 }

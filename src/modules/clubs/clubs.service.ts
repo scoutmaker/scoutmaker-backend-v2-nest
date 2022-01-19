@@ -8,7 +8,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 
 const include: Prisma.ClubInclude = {
-  region: { include: { country: true } },
+  region: true,
+  country: true,
 };
 
 @Injectable()
@@ -16,10 +17,11 @@ export class ClubsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createClubDto: CreateClubDto, authorId: string) {
-    const { regionId, ...rest } = createClubDto;
+    const { regionId, countryId, ...rest } = createClubDto;
     return this.prisma.club.create({
       data: {
         ...rest,
+        country: { connect: { id: countryId } },
         region: { connect: { id: regionId } },
         author: { connect: { id: authorId } },
       },
@@ -40,7 +42,7 @@ export class ClubsService {
       case 'regionId':
         sort = { region: { name: sortingOrder } };
       case 'countryId':
-        sort = { region: { country: { name: sortingOrder } } };
+        sort = { country: { name: sortingOrder } };
       default:
         sort = undefined;
         break;
@@ -49,7 +51,7 @@ export class ClubsService {
     const where: Prisma.ClubWhereInput = {
       name,
       regionId,
-      region: { countryId },
+      countryId,
     };
 
     const clubs = await this.prisma.club.findMany({
