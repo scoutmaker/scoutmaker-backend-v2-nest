@@ -69,11 +69,11 @@ model Region {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  country      Country                 @relation(fields: [countryId], references: [id])
-  countryId    String
-  users        User[]
-  clubs        Club[]
-  competitions RegionsOnCompetitions[]
+  country           Country                      @relation(fields: [countryId], references: [id])
+  countryId         String
+  users             User[]
+  clubs             Club[]
+  competitionGroups RegionsOnCompetitionGroups[]
 
   @@unique([name, countryId])
 }
@@ -135,42 +135,88 @@ model Season {
   competitionParticipations CompetitionParticipation[]
 }
 
-model Competition {
-  id          String   @id @default(cuid())
-  name        String
-  group       String?
-  isJunior    Boolean? @default(false)
-  isWomen     Boolean? @default(false)
-  juniorLevel String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  // TODO: add competition type (league, cup, etc.)
-
-  // Relation fields
-  country   Country                    @relation(fields: [countryId], references: [id])
-  countryId String
-  regions   RegionsOnCompetitions[]
-  clubs     CompetitionParticipation[]
+enum Gender {
+  MALE
+  FEMALE
 }
 
-model RegionsOnCompetitions {
-  // Relation fields
-  region        Region      @relation(fields: [regionId], references: [id])
-  regionId      String
-  competition   Competition @relation(fields: [competitionId], references: [id])
-  competitionId String
+model Competition {
+  id        String   @id @default(cuid())
+  name      String
+  level     Int
+  gender    Gender   @default(MALE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@id([regionId, competitionId])
+  // Relation fields
+  country       Country                    @relation(fields: [countryId], references: [id])
+  countryId     String
+  ageCategory   CompetitionAgeCategory     @relation(fields: [ageCategoryId], references: [id])
+  ageCategoryId String
+  type          CompetitionType            @relation(fields: [typeId], references: [id])
+  typeId        String
+  juniorLevel   CompetitionJuniorLevel?    @relation(fields: [juniorLevelId], references: [id])
+  juniorLevelId String?
+  clubs         CompetitionParticipation[]
+  groups        CompetitionGroup[]
+}
+
+model CompetitionGroup {
+  id   String @id @default(cuid())
+  name String
+
+  // Relation fields
+  competition   Competition                  @relation(fields: [competitionId], references: [id])
+  competitionId String
+  regions       RegionsOnCompetitionGroups[]
+  teams         CompetitionParticipation[]
+}
+
+model RegionsOnCompetitionGroups {
+  // Relation fields
+  region   Region           @relation(fields: [regionId], references: [id])
+  regionId String
+  group    CompetitionGroup @relation(fields: [groupId], references: [id])
+  groupId  String
+
+  @@id([regionId, groupId])
+}
+
+model CompetitionAgeCategory {
+  id   String @id @default(cuid())
+  name String
+
+  // Relation fields
+  competitions Competition[]
+}
+
+model CompetitionType {
+  id   String @id @default(cuid())
+  name String
+
+  // Relation fields
+  competitions Competition[]
+}
+
+model CompetitionJuniorLevel {
+  id    String @id @default(cuid())
+  name  String
+  level Int
+
+  // Relation fields
+  Competition Competition[]
 }
 
 model CompetitionParticipation {
   // Relation fields
-  team          Team        @relation(fields: [teamId], references: [id])
+  team          Team              @relation(fields: [teamId], references: [id])
   teamId        String
-  competition   Competition @relation(fields: [competitionId], references: [id])
+  competition   Competition       @relation(fields: [competitionId], references: [id])
   competitionId String
-  season        Season      @relation(fields: [seasonId], references: [id])
+  season        Season            @relation(fields: [seasonId], references: [id])
   seasonId      String
+  group         CompetitionGroup? @relation(fields: [groupId], references: [id])
+  groupId       String?
 
-  @@id([competitionId, seasonId])
+  @@id([teamId, competitionId, seasonId])
 }
