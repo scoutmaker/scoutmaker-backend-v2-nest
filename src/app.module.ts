@@ -12,6 +12,7 @@ import { SeasonsModule } from './modules/seasons/seasons.module';
 import { CompetitionsModule } from './modules/competitions/competitions.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { CompetitionAgeCategoriesModule } from './modules/competition-age-categories/competition-age-categories.module';
+import { CompetitionTypesModule } from './modules/competition-types/competition-types.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CompetitionAgeCategoriesModule } from './modules/competition-age-catego
     CompetitionsModule,
     TeamsModule,
     CompetitionAgeCategoriesModule,
+    CompetitionTypesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
