@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompetitionJuniorLevelDto } from './dto/create-competition-junior-level.dto';
 import { UpdateCompetitionJuniorLevelDto } from './dto/update-competition-junior-level.dto';
 
 @Injectable()
 export class CompetitionJuniorLevelsService {
+  constructor(private readonly prisma: PrismaService) {}
+
   create(createCompetitionJuniorLevelDto: CreateCompetitionJuniorLevelDto) {
-    return 'This action adds a new competitionJuniorLevel';
+    return this.prisma.competitionJuniorLevel.create({
+      data: createCompetitionJuniorLevelDto,
+    });
   }
 
   findAll() {
-    return `This action returns all competitionJuniorLevels`;
+    return this.prisma.competitionJuniorLevel.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} competitionJuniorLevel`;
+  findOne(id: string) {
+    return this.prisma.competitionJuniorLevel.findUnique({ where: { id } });
   }
 
-  update(id: number, updateCompetitionJuniorLevelDto: UpdateCompetitionJuniorLevelDto) {
-    return `This action updates a #${id} competitionJuniorLevel`;
+  update(
+    id: string,
+    updateCompetitionJuniorLevelDto: UpdateCompetitionJuniorLevelDto,
+  ) {
+    return this.prisma.competitionJuniorLevel.update({
+      where: { id },
+      data: updateCompetitionJuniorLevelDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} competitionJuniorLevel`;
+  remove(id: string) {
+    return this.prisma.competitionJuniorLevel.delete({ where: { id } });
   }
 }

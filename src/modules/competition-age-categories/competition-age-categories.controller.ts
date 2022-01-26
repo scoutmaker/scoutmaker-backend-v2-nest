@@ -11,6 +11,7 @@ import {
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
+import { RoleGuard } from '../../guards/role.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CompetitionAgeCategoriesService } from './competition-age-categories.service';
@@ -20,7 +21,7 @@ import { UpdateCompetitionAgeCategoryDto } from './dto/update-competition-age-ca
 
 @Controller('competition-age-categories')
 @ApiTags('competition age categories')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
 @ApiCookieAuth()
 @Serialize(CompetitionAgeCategoryDto)
 export class CompetitionAgeCategoriesController {
