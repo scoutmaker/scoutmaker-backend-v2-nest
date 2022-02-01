@@ -1,48 +1,49 @@
-import { Transform } from 'class-transformer';
 import {
-  IsArray,
-  IsBoolean,
+  IsEnum,
+  IsInt,
   IsNotEmpty,
   IsOptional,
-  IsString,
-  MaxLength,
+  Max,
+  Min,
 } from 'class-validator';
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
+
+enum GenderEnum {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
 
 export class CreateCompetitionDto {
-  @IsNotEmpty()
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @MaxLength(30)
+  @IsRequiredStringWithMaxLength(30)
   name: string;
 
+  @IsInt()
+  @Min(1)
+  @Max(15)
+  level: number;
+
   @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @MaxLength(30)
-  group?: string;
+  @IsEnum(GenderEnum, {
+    message: `Gender must be a valid enum value. Available values: ${Object.keys(
+      GenderEnum,
+    ).join(', ')}`,
+  })
+  gender?: GenderEnum;
 
   @IsNotEmpty()
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @MaxLength(30)
+  @IsCuid()
   countryId: string;
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  regionsIds?: string[];
+  @IsNotEmpty()
+  @IsCuid()
+  ageCategoryId: string;
+
+  @IsNotEmpty()
+  @IsCuid()
+  typeId: string;
 
   @IsOptional()
-  @IsBoolean()
-  isJunior?: boolean = false;
-
-  @IsOptional()
-  @IsBoolean()
-  isWomen?: boolean = false;
-
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @MaxLength(30)
-  juniorLevel?: string;
+  @IsCuid()
+  juniorLevelId?: string;
 }

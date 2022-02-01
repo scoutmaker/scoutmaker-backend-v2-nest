@@ -25,12 +25,12 @@ import { UpdateCompetitionDto } from './dto/update-competition.dto';
 @ApiTags('competitions')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
 @ApiCookieAuth()
-@Serialize(CompetitionDto)
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
 
   @Post()
   @ApiResponse(CompetitionDto, { type: 'create' })
+  @Serialize(CompetitionDto)
   async create(@Body() createCompetitionDto: CreateCompetitionDto) {
     const competition = await this.competitionsService.create(
       createCompetitionDto,
@@ -43,6 +43,7 @@ export class CompetitionsController {
 
   @Get()
   @ApiResponse(CompetitionDto, { type: 'read' })
+  @Serialize(CompetitionDto, 'docs')
   async findAll(@Query() query: FindAllCompetitionsDto) {
     const competitions = await this.competitionsService.findAll(query);
     return formatSuccessResponse(
@@ -53,6 +54,7 @@ export class CompetitionsController {
 
   @Get(':id')
   @ApiResponse(CompetitionDto, { type: 'read' })
+  @Serialize(CompetitionDto)
   async findOne(@Param('id') id: string) {
     const competition = await this.competitionsService.findOne(id);
     return formatSuccessResponse(
@@ -63,6 +65,7 @@ export class CompetitionsController {
 
   @Patch(':id')
   @ApiResponse(CompetitionDto, { type: 'update' })
+  @Serialize(CompetitionDto)
   async update(
     @Param('id') id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
@@ -79,6 +82,7 @@ export class CompetitionsController {
 
   @Delete(':id')
   @ApiResponse(CompetitionDto, { type: 'delete' })
+  @Serialize(CompetitionDto)
   async remove(@Param('id') id: string) {
     const competition = await this.competitionsService.remove(id);
     return formatSuccessResponse(

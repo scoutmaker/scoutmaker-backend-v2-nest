@@ -7,6 +7,9 @@ import { PrismaService } from '../prisma/prisma.service';
 
 const include: Prisma.CompetitionInclude = {
   country: true,
+  ageCategory: true,
+  type: true,
+  juniorLevel: true,
 };
 
 @Injectable()
@@ -14,15 +17,21 @@ export class CompetitionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createCompetitionDto: CreateCompetitionDto) {
-    const { regionsIds, countryId, ...rest } = createCompetitionDto;
+    const { countryId, ageCategoryId, typeId, juniorLevelId, ...rest } =
+      createCompetitionDto;
 
-    // return this.prisma.competition.create({
-    //   data: {
-    //     ...rest,
-    //     country: { connect: { id: countryId } },
-    //   },
-    //   include,
-    // });
+    return this.prisma.competition.create({
+      data: {
+        ...rest,
+        country: { connect: { id: countryId } },
+        ageCategory: { connect: { id: ageCategoryId } },
+        type: { connect: { id: typeId } },
+        juniorLevel: juniorLevelId
+          ? { connect: { id: juniorLevelId } }
+          : undefined,
+      },
+      include,
+    });
   }
 
   findAll({ countryId, regionId, isJunior, isWomen }: FindAllCompetitionsDto) {
@@ -38,7 +47,7 @@ export class CompetitionsService {
   }
 
   async update(id: string, updateCompetitionDto: UpdateCompetitionDto) {
-    const { regionsIds, countryId, ...rest } = updateCompetitionDto;
+    const { countryId, ...rest } = updateCompetitionDto;
 
     // return this.prisma.competition.update({
     //   where: { id },
