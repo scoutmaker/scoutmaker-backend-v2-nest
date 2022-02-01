@@ -1,22 +1,39 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { GenderEnum } from '../types';
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
 
 export class FindAllCompetitionsDto {
   @IsOptional()
   @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(15)
+  level?: number;
+
+  @IsOptional()
+  @IsEnum(GenderEnum, {
+    message: `Gender must be a valid enum value. Available values: ${Object.keys(
+      GenderEnum,
+    ).join(', ')}`,
+  })
+  gender?: GenderEnum;
+
+  @IsOptional()
+  @IsCuid()
   countryId?: string;
 
   @IsOptional()
-  @IsString()
-  regionId?: string;
+  @IsCuid()
+  ageCategoryId?: string;
 
   @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  isJunior?: boolean;
+  @IsCuid()
+  typeId?: string;
 
   @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  isWomen?: boolean;
+  @IsCuid()
+  juniorLevelId?: string;
 }

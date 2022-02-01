@@ -6,13 +6,9 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { GenderEnum } from '../types';
 import { IsCuid } from '../../../decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
-
-enum GenderEnum {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}
 
 export class CreateCompetitionDto {
   @IsRequiredStringWithMaxLength(30)

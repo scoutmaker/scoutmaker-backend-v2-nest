@@ -9,14 +9,16 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RoleGuard } from '../../guards/role.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CompetitionsService } from './competitions.service';
 import { CompetitionDto } from './dto/competition.dto';
+import { CompetitionsPaginationOptionsDto } from './dto/competitions-pagination-options.dto';
 import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
@@ -43,13 +45,17 @@ export class CompetitionsController {
 
   @Get()
   @ApiResponse(CompetitionDto, { type: 'read' })
+  @ApiQuery({ type: CompetitionsPaginationOptionsDto })
   @Serialize(CompetitionDto, 'docs')
-  async findAll(@Query() query: FindAllCompetitionsDto) {
-    const competitions = await this.competitionsService.findAll(query);
-    return formatSuccessResponse(
-      'Successfully fetched all competitions',
-      competitions,
+  async findAll(
+    @PaginationOptions() paginationOptions: CompetitionsPaginationOptionsDto,
+    @Query() query: FindAllCompetitionsDto,
+  ) {
+    const data = await this.competitionsService.findAll(
+      paginationOptions,
+      query,
     );
+    return formatSuccessResponse('Successfully fetched all competitions', data);
   }
 
   @Get(':id')

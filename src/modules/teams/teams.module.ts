@@ -11,6 +11,6 @@ export class TeamsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(PrepareQueryMiddleware)
-      .forRoutes({ path: 'clubs', method: RequestMethod.GET });
+      .forRoutes({ path: 'teams', method: RequestMethod.GET });
   }
 }

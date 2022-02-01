@@ -4,6 +4,11 @@ import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  CompetitionsPaginationOptionsDto,
+  CompetitionsSortByUnion,
+} from './dto/competitions-pagination-options.dto';
+import { calculateSkip } from '../../utils/helpers';
 
 const include: Prisma.CompetitionInclude = {
   country: true,
@@ -34,12 +39,40 @@ export class CompetitionsService {
     });
   }
 
-  findAll({ countryId, regionId, isJunior, isWomen }: FindAllCompetitionsDto) {
-    const where: Prisma.CompetitionWhereInput = {
-      countryId,
-    };
+  findAll(
+    { limit, page, sortBy, sortingOrder }: CompetitionsPaginationOptionsDto,
+    query: FindAllCompetitionsDto,
+  ) {
+    let sort: Prisma.CompetitionOrderByWithRelationInput;
 
-    return this.prisma.competition.findMany({ where, include });
+    const regularSortBy: CompetitionsSortByUnion[] = [
+      'name',
+      'level',
+      'gender',
+    ];
+
+    const relationSortBy: CompetitionsSortByUnion[] = [
+      'country',
+      'ageCategory',
+      'type',
+      'juniorLevel',
+    ];
+
+    if (regularSortBy.includes(sortBy)) {
+      sort = { [sortBy]: sortingOrder };
+    }
+
+    if (relationSortBy.includes(sortBy)) {
+      sort = { [sortBy]: { name: sortingOrder } };
+    }
+
+    return this.prisma.competition.findMany({
+      where: query,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: sort,
+      include,
+    });
   }
 
   findOne(id: string) {
@@ -47,24 +80,14 @@ export class CompetitionsService {
   }
 
   async update(id: string, updateCompetitionDto: UpdateCompetitionDto) {
-    const { countryId, ...rest } = updateCompetitionDto;
-
-    // return this.prisma.competition.update({
-    //   where: { id },
-    //   data: {
-    //     ...rest,
-    //     country: countryId ? { connect: { id: countryId } } : undefined,
-    //   },
-    //   include,
-    // });
+    return this.prisma.competition.update({
+      where: { id },
+      data: updateCompetitionDto,
+      include,
+    });
   }
 
   async remove(id: string) {
-    // Delete all region-on-competition entities for the given competition
-    // await this.prisma.regionsOnCompetitions.deleteMany({
-    //   where: { competitionId: id },
-    // });
-    // Delete an actual competition
     return this.prisma.competition.delete({ where: { id }, include });
   }
 }
