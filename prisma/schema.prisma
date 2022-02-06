@@ -159,6 +159,8 @@ model Competition {
   juniorLevelId String?
   clubs         CompetitionParticipation[]
   groups        CompetitionGroup[]
+
+  @@unique([level, countryId])
 }
 
 model CompetitionGroup {
@@ -172,6 +174,8 @@ model CompetitionGroup {
   competitionId String
   regions       RegionsOnCompetitionGroups[]
   teams         CompetitionParticipation[]
+
+  @@unique([name, competitionId])
 }
 
 model RegionsOnCompetitionGroups {
