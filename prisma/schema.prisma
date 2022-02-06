@@ -159,55 +159,71 @@ model Competition {
   juniorLevelId String?
   clubs         CompetitionParticipation[]
   groups        CompetitionGroup[]
+
+  @@unique([level, countryId])
 }
 
 model CompetitionGroup {
-  id   String @id @default(cuid())
-  name String
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relation fields
   competition   Competition                  @relation(fields: [competitionId], references: [id])
   competitionId String
   regions       RegionsOnCompetitionGroups[]
   teams         CompetitionParticipation[]
+
+  @@unique([name, competitionId])
 }
 
 model RegionsOnCompetitionGroups {
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   // Relation fields
-  region   Region           @relation(fields: [regionId], references: [id])
-  regionId String
-  group    CompetitionGroup @relation(fields: [groupId], references: [id])
-  groupId  String
+  region    Region           @relation(fields: [regionId], references: [id])
+  regionId  String
+  group     CompetitionGroup @relation(fields: [groupId], references: [id])
+  groupId   String
 
   @@id([regionId, groupId])
 }
 
 model CompetitionAgeCategory {
-  id   String @id @default(cuid())
-  name String
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relation fields
   competitions Competition[]
 }
 
 model CompetitionType {
-  id   String @id @default(cuid())
-  name String
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relation fields
   competitions Competition[]
 }
 
 model CompetitionJuniorLevel {
-  id    String @id @default(cuid())
-  name  String
-  level Int
+  id        String   @id @default(cuid())
+  name      String
+  level     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relation fields
   Competition Competition[]
 }
 
 model CompetitionParticipation {
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
   // Relation fields
   team          Team              @relation(fields: [teamId], references: [id])
   teamId        String
