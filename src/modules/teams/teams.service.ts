@@ -11,7 +11,7 @@ const include: Prisma.TeamInclude = {
   club: true,
   competitions: {
     where: { season: { isActive: true } },
-    include: { competition: true, group: true },
+    include: { competition: true, group: true, season: true },
   },
 };
 @Injectable()
