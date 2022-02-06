@@ -7,19 +7,32 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 
-const include: Prisma.TeamInclude = { club: true };
+const include: Prisma.TeamInclude = {
+  club: true,
+  competitions: {
+    where: { season: { isActive: true } },
+    include: { competition: true, group: true },
+  },
+};
 @Injectable()
 export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createTeamDto: CreateTeamDto, authorId: string) {
-    const { clubId, ...rest } = createTeamDto;
+    const { clubId, competitionId, groupId, ...rest } = createTeamDto;
 
     return this.prisma.team.create({
       data: {
         ...rest,
         club: { connect: { id: clubId } },
         author: { connect: { id: authorId } },
+        competitions: {
+          create: {
+            competition: { connect: { id: competitionId } },
+            group: groupId ? { connect: { id: groupId } } : undefined,
+            season: { connect: { isActive: true } },
+          },
+        },
       },
       include,
     });

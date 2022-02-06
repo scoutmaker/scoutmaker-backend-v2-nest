@@ -9,6 +9,9 @@ export class TeamDto {
   name: string;
 
   @Expose()
+  competitions: any;
+
+  @Expose()
   minut90url?: string;
 
   @Expose()
