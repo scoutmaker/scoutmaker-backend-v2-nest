@@ -1,6 +1,9 @@
-import { Expose, plainToClass, Transform } from 'class-transformer';
+import { CompetitionJuniorLevel, Gender } from '@prisma/client';
+import { Expose, plainToInstance, Transform } from 'class-transformer';
+import { CompetitionAgeCategoryDto } from '../../competition-age-categories/dto/competition-age-category.dto';
+import { CompetitionJuniorLevelDto } from '../../competition-junior-levels/dto/competition-junior-level.dto';
+import { CompetitionTypeDto } from '../../competition-types/dto/competition-type.dto';
 import { CountryDto } from '../../countries/dto/country.dto';
-import { RegionWithoutCountryDto } from '../../regions/dto/region-without-country.dto';
 
 export class CompetitionDto {
   @Expose()
@@ -10,29 +13,38 @@ export class CompetitionDto {
   name: string;
 
   @Expose()
-  group?: string;
+  level: number;
+
+  @Expose()
+  gender: Gender;
 
   @Transform(({ value }) =>
-    plainToClass(CountryDto, value, { excludeExtraneousValues: true }),
+    plainToInstance(CountryDto, value, { excludeExtraneousValues: true }),
   )
   @Expose()
   country: CountryDto;
 
-  @Transform(({ value }) => {
-    const regions = value.map((item) => item.region);
-    return plainToClass(RegionWithoutCountryDto, regions, {
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionAgeCategoryDto, value, {
       excludeExtraneousValues: true,
-    });
-  })
+    }),
+  )
   @Expose()
-  regions: RegionWithoutCountryDto[];
+  ageCategory: CompetitionAgeCategoryDto;
 
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionAgeCategoryDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
   @Expose()
-  isJunior: boolean;
+  type: CompetitionTypeDto;
 
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionJuniorLevelDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
   @Expose()
-  isWomen: boolean;
-
-  @Expose()
-  juniorLevel?: string;
+  juniorLevel?: CompetitionJuniorLevel;
 }
