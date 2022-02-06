@@ -1,5 +1,7 @@
+import { OmitType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 import { ClubDto } from '../../clubs/dto/club.dto';
+import { CompetitionParticipationWithoutTeamDto } from '../../competition-participations/dto/competition-participation-without-team.dto';
 
 export class TeamDto {
   @Expose()
@@ -7,6 +9,14 @@ export class TeamDto {
 
   @Expose()
   name: string;
+
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionParticipationWithoutTeamDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  competitions: CompetitionParticipationWithoutTeamDto[];
 
   @Expose()
   minut90url?: string;
@@ -25,3 +35,8 @@ export class TeamDto {
   @Expose()
   club: ClubDto;
 }
+
+export class TeamWithoutCompetitionsAndClubDto extends OmitType(TeamDto, [
+  'competitions',
+  'club',
+]) {}

@@ -1,21 +1,20 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-  MaxLength,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsUrl } from 'class-validator';
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
 
 export class CreateTeamDto {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(30)
+  @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsCuid()
   clubId: string;
+
+  @IsCuid()
+  competitionId: string;
+
+  @IsOptional()
+  @IsCuid()
+  groupId?: string;
 
   @IsOptional()
   @IsUrl()
@@ -26,7 +25,7 @@ export class CreateTeamDto {
   transfermarktUrl?: string;
 
   @IsOptional()
-  @IsString()
+  @IsCuid()
   lnpId?: string;
 
   @IsOptional()
