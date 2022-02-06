@@ -1,15 +1,23 @@
 import { IsString, Length, Matches } from 'class-validator';
 
-export function IsCuid(): PropertyDecorator {
+type Args = { each?: boolean };
+
+export function IsCuid(args?: Args): PropertyDecorator {
+  const { each } = args || {};
+
   return function (target: any, propertyKey: string | symbol): void {
-    IsString()(target, propertyKey);
-    Length(25, 25, { message: `${String(propertyKey)} must be a valid cuid` })(
-      target,
-      propertyKey,
-    );
-    Matches(/c*/, { message: `${String(propertyKey)} must be a valid cuid` })(
-      target,
-      propertyKey,
-    );
+    IsString({ each })(target, propertyKey);
+    Length(25, 25, {
+      message: `${String(propertyKey)} must be a valid cuid ${
+        each ? 'array' : null
+      }`,
+      each,
+    })(target, propertyKey);
+    Matches(/c*/, {
+      message: `${String(propertyKey)} must be a valid cuid ${
+        each ? 'array' : null
+      }`,
+      each,
+    })(target, propertyKey);
   };
 }

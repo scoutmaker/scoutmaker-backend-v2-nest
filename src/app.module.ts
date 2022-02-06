@@ -15,6 +15,7 @@ import { CompetitionAgeCategoriesModule } from './modules/competition-age-catego
 import { CompetitionTypesModule } from './modules/competition-types/competition-types.module';
 import { CompetitionJuniorLevelsModule } from './modules/competition-junior-levels/competition-junior-levels.module';
 import { CompetitionParticipationsModule } from './modules/competition-participations/competition-participations.module';
+import { CompetitionGroupsModule } from './modules/competition-groups/competition-groups.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CompetitionParticipationsModule } from './modules/competition-participa
     CompetitionTypesModule,
     CompetitionJuniorLevelsModule,
     CompetitionParticipationsModule,
+    CompetitionGroupsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
