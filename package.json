@@ -15,6 +15,7 @@
     "start:prod": "node dist/main",
     "migrate:postgres": "dotenv -e .env.development -- npx prisma migrate dev",
     "push:postgres": "dotenv -e .env.development -- npx prisma db push",
+    "seed": "dotenv -e .env.development -- ts-node prisma/seed.ts",
     "studio": "dotenv -e .env.development -- npx prisma studio",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "dotenv -e .env.test jest",
