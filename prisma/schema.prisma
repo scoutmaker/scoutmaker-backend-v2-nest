@@ -42,10 +42,11 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region   Region @relation(fields: [regionId], references: [id])
+  region   Region   @relation(fields: [regionId], references: [id])
   regionId String
   clubs    Club[]
   teams    Team[]
+  players  Player[]
 }
 
 model Country {
@@ -60,6 +61,7 @@ model Country {
   regions      Region[]
   competitions Competition[]
   clubs        Club[]
+  players      Player[]
 }
 
 model Region {
@@ -120,6 +122,7 @@ model Team {
   author       User                       @relation(fields: [authorId], references: [id])
   authorId     String
   competitions CompetitionParticipation[]
+  players      TeamAffiliation[]
 }
 
 model Season {
@@ -218,7 +221,7 @@ model CompetitionJuniorLevel {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  Competition Competition[]
+  competitions Competition[]
 }
 
 model CompetitionParticipation {
@@ -235,4 +238,76 @@ model CompetitionParticipation {
   groupId       String?
 
   @@id([teamId, competitionId, seasonId])
+}
+
+model PlayerPosition {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  players          Player[]
+  playersSecondary SecondaryPositionsOnPlayers[]
+}
+
+enum Foot {
+  LEFT
+  RIGHT
+  BOTH
+}
+
+model Player {
+  id               String   @id @default(cuid())
+  firstName        String
+  lastName         String
+  yearOfBirth      Int
+  height           Int?
+  weight           Int?
+  footed           Foot
+  lnpId            String?
+  lnpUrl           String?
+  minut90id        String?
+  minut90url       String?
+  transfermarktId  String?
+  transfermarktUrl String?
+  isPublic         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relation fields
+  country            Country                       @relation(fields: [countryId], references: [id])
+  countryId          String
+  primaryPosition    PlayerPosition                @relation(fields: [primaryPositionId], references: [id])
+  primaryPositionId  String
+  author             User                          @relation(fields: [authorId], references: [id])
+  authorId           String
+  secondaryPositions SecondaryPositionsOnPlayers[]
+  teams              TeamAffiliation[]
+}
+
+model SecondaryPositionsOnPlayers {
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  // Relation fields
+  player           Player         @relation(fields: [playerId], references: [id])
+  playerId         String
+  position         PlayerPosition @relation(fields: [playerPositionId], references: [id])
+  playerPositionId String
+
+  @@id([playerId, playerPositionId])
+}
+
+model TeamAffiliation {
+  id        String    @id @default(cuid())
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  // Relation fields
+  player    Player    @relation(fields: [playerId], references: [id])
+  playerId  String
+  team      Team      @relation(fields: [teamId], references: [id])
+  teamId    String
 }
