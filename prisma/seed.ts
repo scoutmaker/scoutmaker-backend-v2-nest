@@ -288,6 +288,8 @@ async function main() {
       author: { connect: { id: admin.id } },
     },
   });
+
+  // TODO: seed player positions
 }
 
 main()
