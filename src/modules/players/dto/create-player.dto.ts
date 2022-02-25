@@ -27,9 +27,10 @@ export class CreatePlayerDto {
   @IsCuid()
   primaryPositionId: string;
 
+  @IsOptional()
   @IsArray()
   @IsCuid({ each: true })
-  secondaryPositionIds: string[];
+  secondaryPositionIds?: string[];
 
   @IsCuid()
   teamId: string;
@@ -56,7 +57,7 @@ export class CreatePlayerDto {
       FootEnum,
     ).join(', ')}`,
   })
-  footed?: FootEnum;
+  footed: FootEnum;
 
   @IsOptional()
   @IsString()

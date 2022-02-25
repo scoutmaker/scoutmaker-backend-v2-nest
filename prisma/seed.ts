@@ -16,6 +16,12 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.region.deleteMany();
   await prisma.country.deleteMany();
+  // delete secondary positions on players
+  await prisma.secondaryPositionsOnPlayers.deleteMany();
+  // delete players
+  await prisma.player.deleteMany();
+  // delete positions
+  await prisma.playerPosition.deleteMany();
 
   // Create Poland
   const poland = await prisma.country.create({
@@ -289,7 +295,80 @@ async function main() {
     },
   });
 
-  // TODO: seed player positions
+  const gkPromise = prisma.playerPosition.create({
+    data: { name: 'bramkarz', code: 'GK' },
+  });
+
+  const lbPromise = prisma.playerPosition.create({
+    data: { name: 'lewy obrońca', code: 'LB' },
+  });
+
+  const rbPromise = prisma.playerPosition.create({
+    data: { name: 'prawy obrońca', code: 'RB' },
+  });
+
+  const lwPromise = prisma.playerPosition.create({
+    data: { name: 'lewy wahadłowy', code: 'LW' },
+  });
+
+  const cmPromise = prisma.playerPosition.create({
+    data: { name: 'środkowy pomocnik', code: 'CM' },
+  });
+
+  const lmPromise = prisma.playerPosition.create({
+    data: { name: 'lewy pomocnik', code: 'LM' },
+  });
+
+  const fPromise = prisma.playerPosition.create({
+    data: { name: 'napastnik', code: 'F' },
+  });
+
+  const [gk, lb, rb, lw, cm, lm, f] = await Promise.all([
+    gkPromise,
+    lbPromise,
+    rbPromise,
+    lwPromise,
+    cmPromise,
+    lmPromise,
+    fPromise,
+  ]);
+
+  const marchwinskiPromise = prisma.player.create({
+    data: {
+      firstName: 'Filip',
+      lastName: 'Marchwiński',
+      yearOfBirth: 2002,
+      footed: 'RIGHT',
+      country: { connect: { id: poland.id } },
+      teams: {
+        create: { startDate: new Date(), endDate: null, teamId: lechFirst.id },
+      },
+      primaryPosition: { connect: { id: cm.id } },
+      secondaryPositions: { create: { playerPositionId: lm.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const skibickiPromise = prisma.player.create({
+    data: {
+      firstName: 'Kacper',
+      lastName: 'Skibicki',
+      yearOfBirth: 2001,
+      footed: 'RIGHT',
+      country: { connect: { id: poland.id } },
+      teams: {
+        create: { startDate: new Date(), endDate: null, teamId: legiaFirst.id },
+      },
+      primaryPosition: { connect: { id: lm.id } },
+      secondaryPositions: { create: { playerPositionId: lw.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const [marchwinski, skibicki] = await Promise.all([
+    marchwinskiPromise,
+    skibickiPromise,
+  ]);
 }
 
 main()
