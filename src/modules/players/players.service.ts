@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+
+const include: Prisma.PlayerInclude = {
+  country: true,
+  primaryPosition: true,
+  secondaryPositions: { include: { position: true } },
+  teams: true,
+};
 
 @Injectable()
 export class PlayersService {
@@ -34,11 +42,12 @@ export class PlayersService {
         teams: { create: { teamId, startDate: new Date(), endDate: null } },
         author: { connect: { id: authorId } },
       },
+      include,
     });
   }
 
   findAll() {
-    return `This action returns all players`;
+    return this.prisma.player.findMany({ include });
   }
 
   findOne(id: string) {

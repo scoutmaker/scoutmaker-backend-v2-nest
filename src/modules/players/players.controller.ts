@@ -16,6 +16,9 @@ import { AuthGuard } from '../../guards/auth.guard';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PlayerDto } from './dto/player.dto';
+import { ApiResponse } from '../../api-response/api-response.decorator';
 
 @Controller('players')
 @ApiTags('players')
@@ -25,6 +28,7 @@ export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
   @Post()
+  @ApiResponse(PlayerDto, { type: 'create' })
   async create(
     @Body() createPlayerDto: CreatePlayerDto,
     @CurrentUser() user: CurrentUserDto,
@@ -34,8 +38,11 @@ export class PlayersController {
   }
 
   @Get()
+  @ApiResponse(PlayerDto, { type: 'read', isArray: true })
+  @Serialize(PlayerDto)
   async findAll() {
     const players = await this.playersService.findAll();
+    return formatSuccessResponse('Successfully fetched all players', players);
   }
 
   @Get(':id')
