@@ -18,7 +18,7 @@ import { CompetitionParticipationsModule } from './modules/competition-participa
 import { CompetitionGroupsModule } from './modules/competition-groups/competition-groups.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
 import { PlayersModule } from './modules/players/players.module';
-import { TeamAffiliationsModule } from './team-affiliations/team-affiliations.module';
+import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 
 @Module({
   imports: [
