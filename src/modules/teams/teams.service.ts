@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { FindAllTeamsDto } from './dto/find-all-teams.dto';
 import { TeamsPaginationOptionsDto } from './dto/teams-pagination-options.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 
 const include: Prisma.TeamInclude = {
   club: true,

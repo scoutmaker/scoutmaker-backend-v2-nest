@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsDate, IsOptional } from 'class-validator';
+
 import { IsCuid } from '../../../decorators/is-cuid.decorator';
 
 export class CreateTeamAffiliationDto {

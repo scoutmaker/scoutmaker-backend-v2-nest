@@ -1,8 +1,8 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Foot } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
-import { CountryDto } from 'src/modules/countries/dto/country.dto';
-import { PlayerPositionDto } from 'src/modules/player-positions/dto/player-position.dto';
+import { CountryDto } from '../../countries/dto/country.dto';
+import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { ClubDto } from '../../clubs/dto/club.dto';
 
 export class PlayerDto {

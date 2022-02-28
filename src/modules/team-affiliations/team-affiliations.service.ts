@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
 import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';

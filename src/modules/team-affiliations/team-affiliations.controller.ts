@@ -1,22 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
-import { TeamAffiliationsService } from './team-affiliations.service';
-import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
-import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';
-import { AuthGuard } from '../../guards/auth.guard';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { Serialize } from '../../interceptors/serialize.interceptor';
-import { TeamAffiliationDto } from './dto/team-affiliation.dto';
+
 import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
+import { TeamAffiliationDto } from './dto/team-affiliation.dto';
+import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';
+import { TeamAffiliationsService } from './team-affiliations.service';
 
 @Controller('team-affiliations')
 @ApiTags('team affiliations')

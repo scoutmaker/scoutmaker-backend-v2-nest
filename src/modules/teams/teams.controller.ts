@@ -1,29 +1,30 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
-import { TeamDto } from './dto/team.dto';
-import { AuthGuard } from '../../guards/auth.guard';
+
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { formatSuccessResponse } from '../../utils/helpers';
-import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
-import { TeamsPaginationOptionsDto } from './dto/teams-pagination-options.dto';
-import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { CreateTeamDto } from './dto/create-team.dto';
 import { FindAllTeamsDto } from './dto/find-all-teams.dto';
+import { TeamDto } from './dto/team.dto';
+import { TeamsPaginationOptionsDto } from './dto/teams-pagination-options.dto';
+import { UpdateTeamDto } from './dto/update-team.dto';
+import { TeamsService } from './teams.service';
 
 @Controller('teams')
 @ApiTags('teams')
