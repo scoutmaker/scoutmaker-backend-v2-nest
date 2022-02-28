@@ -1,9 +1,10 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { Foot } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
+
 import { CountryDto } from '../../countries/dto/country.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
-import { ClubDto } from '../../clubs/dto/club.dto';
+import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
 
 export class PlayerDto {
   @Expose()
@@ -70,5 +71,27 @@ export class PlayerDto {
   @Expose()
   secondaryPositions: PlayerPositionDto[];
 
-  // TODO: team affiliations
+  @Transform(({ value }) =>
+    plainToInstance(TeamAffiliationWithoutPlayerDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  teams: TeamAffiliationWithoutPlayerDto[];
 }
+
+export class PlayerBasicDataDto extends PickType(PlayerDto, [
+  'id',
+  'firstName',
+  'lastName',
+  'country',
+  'yearOfBirth',
+  'primaryPosition',
+  'footed',
+  'teams',
+]) {}
+
+export class PlayerBasicDataWithoutTeamsDto extends OmitType(
+  PlayerBasicDataDto,
+  ['teams'],
+) {}

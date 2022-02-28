@@ -1,4 +1,4 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { ClubDto } from '../../clubs/dto/club.dto';
@@ -41,3 +41,5 @@ export class TeamWithoutCompetitionsAndClubDto extends OmitType(TeamDto, [
   'competitions',
   'club',
 ]) {}
+
+export class TeamBasicDataDto extends PickType(TeamDto, ['id', 'name']) {}

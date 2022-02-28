@@ -1,27 +1,28 @@
 import { OmitType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
-import { PlayerDto } from '../../players/dto/player.dto';
-import { TeamDto } from '../../teams/dto/team.dto';
+
+import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
+import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 
 export class TeamAffiliationDto {
   @Expose()
   id: string;
 
   @Transform(({ value }) =>
-    plainToInstance(PlayerDto, value, {
+    plainToInstance(PlayerBasicDataWithoutTeamsDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  player: PlayerDto;
+  player: PlayerBasicDataWithoutTeamsDto;
 
   @Transform(({ value }) =>
-    plainToInstance(TeamDto, value, {
+    plainToInstance(TeamBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  team: TeamDto;
+  team: TeamBasicDataDto;
 
   @Expose()
   startDate: Date;

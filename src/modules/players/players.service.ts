@@ -9,7 +9,19 @@ const include: Prisma.PlayerInclude = {
   country: true,
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
-  teams: true,
+  teams: {
+    include: {
+      team: {
+        include: {
+          club: true,
+          competitions: {
+            where: { season: { isActive: true } },
+            include: { competition: true, group: true, season: true },
+          },
+        },
+      },
+    },
+  },
 };
 
 @Injectable()
