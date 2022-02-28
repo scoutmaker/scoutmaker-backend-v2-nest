@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { CreateCompetitionDto } from './dto/create-competition.dto';
-import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
-import { UpdateCompetitionDto } from './dto/update-competition.dto';
+
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CompetitionsPaginationOptionsDto,
   CompetitionsSortByUnion,
 } from './dto/competitions-pagination-options.dto';
-import { calculateSkip } from '../../utils/helpers';
+import { CreateCompetitionDto } from './dto/create-competition.dto';
+import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
+import { UpdateCompetitionDto } from './dto/update-competition.dto';
 
 const include: Prisma.CompetitionInclude = {
   country: true,
@@ -39,7 +40,7 @@ export class CompetitionsService {
     });
   }
 
-  findAll(
+  async findAll(
     { limit, page, sortBy, sortingOrder }: CompetitionsPaginationOptionsDto,
     query: FindAllCompetitionsDto,
   ) {
@@ -66,12 +67,25 @@ export class CompetitionsService {
       sort = { [sortBy]: { name: sortingOrder } };
     }
 
-    return this.prisma.competition.findMany({
-      where: query,
+    const where: Prisma.CompetitionWhereInput = {
+      ...query,
+    };
+
+    const competitions = await this.prisma.competition.findMany({
+      where,
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
       include,
+    });
+
+    const total = await this.prisma.competition.count({ where });
+
+    return formatPaginatedResponse({
+      docs: competitions,
+      totalDocs: total,
+      limit,
+      page,
     });
   }
 

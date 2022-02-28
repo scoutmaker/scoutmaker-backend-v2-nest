@@ -1,24 +1,30 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { PlayersService } from './players.service';
-import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
+import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { formatSuccessResponse } from '../../utils/helpers';
-import { Serialize } from '../../interceptors/serialize.interceptor';
+import { CreatePlayerDto } from './dto/create-player.dto';
+import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayerDto } from './dto/player.dto';
-import { ApiResponse } from '../../api-response/api-response.decorator';
+import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
+import { UpdatePlayerDto } from './dto/update-player.dto';
+import { PlayersService } from './players.service';
 
 @Controller('players')
 @ApiTags('players')
@@ -38,11 +44,17 @@ export class PlayersController {
   }
 
   @Get()
-  @ApiResponse(PlayerDto, { type: 'read', isArray: true })
-  @Serialize(PlayerDto)
-  async findAll() {
-    const players = await this.playersService.findAll();
-    return formatSuccessResponse('Successfully fetched all players', players);
+  @ApiPaginatedResponse(PlayerDto)
+  @ApiQuery({ type: PlayersPaginationOptionsDto })
+  @Serialize(PlayerDto, 'docs')
+  async findAll(
+    @PaginationOptions() paginationOptions: PlayersPaginationOptionsDto,
+    @Query() query: FindAllPlayersDto,
+  ) {
+    console.log({ query });
+
+    const data = await this.playersService.findAll(paginationOptions, query);
+    return formatSuccessResponse('Successfully fetched all players', data);
   }
 
   @Get(':id')
