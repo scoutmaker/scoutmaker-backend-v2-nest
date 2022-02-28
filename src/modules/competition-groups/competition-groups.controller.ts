@@ -37,7 +37,7 @@ export class CompetitionGroupsController {
   }
 
   @Get()
-  @ApiResponse(CompetitionGroupDto, { type: 'read' })
+  @ApiResponse(CompetitionGroupDto, { type: 'read', isArray: true })
   async findAll() {
     const groups = await this.groupsService.findAll();
     return formatSuccessResponse(

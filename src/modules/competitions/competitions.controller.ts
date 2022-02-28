@@ -1,15 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RoleGuard } from '../../guards/role.guard';
@@ -44,7 +46,7 @@ export class CompetitionsController {
   }
 
   @Get()
-  @ApiResponse(CompetitionDto, { type: 'read' })
+  @ApiPaginatedResponse(CompetitionDto)
   @ApiQuery({ type: CompetitionsPaginationOptionsDto })
   @Serialize(CompetitionDto, 'docs')
   async findAll(
