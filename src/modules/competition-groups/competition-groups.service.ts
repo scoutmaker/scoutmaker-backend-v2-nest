@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompetitionGroupDto } from './dto/create-competition-group.dto';
 import { UpdateCompetitionGroupDto } from './dto/update-competition-group.dto';

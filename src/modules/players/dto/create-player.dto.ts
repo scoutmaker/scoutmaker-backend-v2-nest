@@ -1,7 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
   IsArray,
-  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
@@ -86,8 +85,4 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsUrl()
   transfermarktUrl?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isPublic?: boolean;
 }

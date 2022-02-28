@@ -46,7 +46,7 @@ export class CompetitionsController {
   }
 
   @Get()
-  @ApiResponse(CompetitionDto, { type: 'read' })
+  @ApiPaginatedResponse(CompetitionDto)
   @ApiQuery({ type: CompetitionsPaginationOptionsDto })
   @Serialize(CompetitionDto, 'docs')
   async findAll(
@@ -61,8 +61,8 @@ export class CompetitionsController {
   }
 
   @Get(':id')
-  @ApiPaginatedResponse(CompetitionDto)
-  @Serialize(CompetitionDto, 'docs')
+  @ApiResponse(CompetitionDto, { type: 'read' })
+  @Serialize(CompetitionDto)
   async findOne(@Param('id') id: string) {
     const competition = await this.competitionsService.findOne(id);
     return formatSuccessResponse(

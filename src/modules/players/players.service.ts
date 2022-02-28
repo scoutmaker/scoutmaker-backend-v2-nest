@@ -22,6 +22,12 @@ const include: Prisma.PlayerInclude = {
   },
 };
 
+const listInclude: Prisma.PlayerInclude = {
+  country: true,
+  primaryPosition: true,
+  teams: { where: { endDate: null }, include: { team: true } },
+};
+
 @Injectable()
 export class PlayersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -72,8 +78,14 @@ export class PlayersService {
       'yearOfBirth',
     ];
 
+    const relationSortBy: PlayersSortByUnion[] = ['country', 'primaryPosition'];
+
     if (regularSortBy.includes(sortBy)) {
       sort = { [sortBy]: sortingOrder };
+    }
+
+    if (relationSortBy.includes(sortBy)) {
+      sort = { [sortBy]: { name: sortingOrder } };
     }
 
     const where: Prisma.PlayerWhereInput = {
@@ -119,15 +131,44 @@ export class PlayersService {
     });
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} player`;
+  getList() {
+    return this.prisma.player.findMany({ include: listInclude });
   }
 
-  update(id: string, updatePlayerDto: UpdatePlayerDto) {
-    return null;
+  findOne(id: string) {
+    return this.prisma.player.findUnique({ where: { id }, include });
+  }
+
+  async update(id: string, updatePlayerDto: UpdatePlayerDto) {
+    const { secondaryPositionIds, ...rest } = updatePlayerDto;
+
+    // If user wants to update players secondary positions, first we need to delete all existing SecondaryPositionsOnPlayers records, then create new ones
+    if (secondaryPositionIds && secondaryPositionIds.length !== 0) {
+      await this.prisma.secondaryPositionsOnPlayers.deleteMany({
+        where: { playerId: id },
+      });
+    }
+
+    return this.prisma.player.update({
+      where: { id },
+      data: {
+        ...rest,
+        secondaryPositions:
+          secondaryPositionIds && secondaryPositionIds.length > 0
+            ? {
+                createMany: {
+                  data: secondaryPositionIds.map((id) => ({
+                    playerPositionId: id,
+                  })),
+                },
+              }
+            : undefined,
+      },
+      include,
+    });
   }
 
   remove(id: string) {
-    return `This action removes a #${id} player`;
+    return this.prisma.player.delete({ where: { id } });
   }
 }
