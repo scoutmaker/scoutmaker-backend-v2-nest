@@ -18,6 +18,7 @@ import { CompetitionParticipationsModule } from './modules/competition-participa
 import { CompetitionGroupsModule } from './modules/competition-groups/competition-groups.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
 import { PlayersModule } from './modules/players/players.module';
+import { TeamAffiliationsModule } from './team-affiliations/team-affiliations.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { PlayersModule } from './modules/players/players.module';
     CompetitionGroupsModule,
     PlayerPositionsModule,
     PlayersModule,
+    TeamAffiliationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
