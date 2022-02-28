@@ -182,6 +182,7 @@ model CompetitionGroup {
   competitionId String
   regions       RegionsOnCompetitionGroups[]
   teams         CompetitionParticipation[]
+  matches       Match[]
 
   @@unique([name, competitionId])
 }
@@ -330,14 +331,16 @@ model Match {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  homeTeam      Team        @relation(fields: [homeTeamId], references: [id], name: "homeTeam")
+  homeTeam      Team              @relation(fields: [homeTeamId], references: [id], name: "homeTeam")
   homeTeamId    String
-  awayTeam      Team        @relation(fields: [awayTeamId], references: [id], name: "awayTeam")
+  awayTeam      Team              @relation(fields: [awayTeamId], references: [id], name: "awayTeam")
   awayTeamId    String
-  competition   Competition @relation(fields: [competitionId], references: [id])
+  competition   Competition       @relation(fields: [competitionId], references: [id])
   competitionId String
-  season        Season      @relation(fields: [seasonId], references: [id])
+  group         CompetitionGroup? @relation(fields: [groupId], references: [id])
+  groupId       String?
+  season        Season            @relation(fields: [seasonId], references: [id])
   seasonId      String
-  author        User        @relation(fields: [authorId], references: [id])
+  author        User              @relation(fields: [authorId], references: [id])
   authorId      String
 }
