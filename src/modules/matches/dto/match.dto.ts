@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CompetitionGroupBasicDataDto } from '../../competition-groups/dto/competition-group.dto';
@@ -57,3 +58,11 @@ export class MatchDto {
   )
   season: SeasonBasicDataDto;
 }
+
+export class MatchBasicDataDto extends PickType(MatchDto, [
+  'id',
+  'date',
+  'homeTeam',
+  'awayTeam',
+  'competition',
+]) {}

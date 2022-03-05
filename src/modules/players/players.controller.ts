@@ -35,6 +35,7 @@ export class PlayersController {
 
   @Post()
   @ApiResponse(PlayerDto, { type: 'create' })
+  @Serialize(PlayerDto)
   async create(
     @Body() createPlayerDto: CreatePlayerDto,
     @CurrentUser() user: CurrentUserDto,
