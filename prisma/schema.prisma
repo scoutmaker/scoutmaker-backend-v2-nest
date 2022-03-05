@@ -47,6 +47,7 @@ model User {
   clubs    Club[]
   teams    Team[]
   players  Player[]
+  matches  Match[]
 }
 
 model Country {
@@ -123,6 +124,8 @@ model Team {
   authorId     String
   competitions CompetitionParticipation[]
   players      TeamAffiliation[]
+  homeMatches  Match[]                    @relation("homeTeam")
+  awayMatches  Match[]                    @relation("awayTeam")
 }
 
 model Season {
@@ -136,6 +139,7 @@ model Season {
 
   // Realation fields
   competitionParticipations CompetitionParticipation[]
+  matches                   Match[]
 }
 
 enum Gender {
@@ -162,6 +166,7 @@ model Competition {
   juniorLevelId String?
   clubs         CompetitionParticipation[]
   groups        CompetitionGroup[]
+  matches       Match[]
 
   @@unique([level, countryId])
 }
@@ -177,6 +182,7 @@ model CompetitionGroup {
   competitionId String
   regions       RegionsOnCompetitionGroups[]
   teams         CompetitionParticipation[]
+  matches       Match[]
 
   @@unique([name, competitionId])
 }
@@ -288,8 +294,9 @@ model Player {
 }
 
 model SecondaryPositionsOnPlayers {
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relation fields
   player           Player         @relation(fields: [playerId], references: [id])
   playerId         String
@@ -305,9 +312,35 @@ model TeamAffiliation {
   endDate   DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
   // Relation fields
-  player    Player    @relation(fields: [playerId], references: [id])
-  playerId  String
-  team      Team      @relation(fields: [teamId], references: [id])
-  teamId    String
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+  team     Team   @relation(fields: [teamId], references: [id])
+  teamId   String
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  date      DateTime
+  homeGoals Int?
+  awayGoals Int?
+  videoUrl  String?
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  homeTeam      Team              @relation(fields: [homeTeamId], references: [id], name: "homeTeam")
+  homeTeamId    String
+  awayTeam      Team              @relation(fields: [awayTeamId], references: [id], name: "awayTeam")
+  awayTeamId    String
+  competition   Competition       @relation(fields: [competitionId], references: [id])
+  competitionId String
+  group         CompetitionGroup? @relation(fields: [groupId], references: [id])
+  groupId       String?
+  season        Season            @relation(fields: [seasonId], references: [id])
+  seasonId      String
+  author        User              @relation(fields: [authorId], references: [id])
+  authorId      String
 }

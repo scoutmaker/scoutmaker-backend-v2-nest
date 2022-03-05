@@ -1,4 +1,6 @@
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
+
 import { CompetitionDto } from '../../competitions/dto/competition.dto';
 import { SeasonDto } from '../../seasons/dto/season.dto';
 import { TeamWithoutCompetitionsAndClubDto } from '../../teams/dto/team.dto';
@@ -26,3 +28,7 @@ export class CompetitionParticipationDto {
 
   // TODO: add competition group
 }
+
+export class CompetitionParticipationWithoutTeamDto extends PartialType(
+  OmitType(CompetitionParticipationDto, ['team']),
+) {}

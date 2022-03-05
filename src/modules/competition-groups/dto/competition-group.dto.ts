@@ -1,4 +1,6 @@
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
+
 import { CompetitionDto } from '../../competitions/dto/competition.dto';
 import { RegionWithoutCountryDto } from '../../regions/dto/region-without-country.dto';
 
@@ -27,3 +29,8 @@ export class CompetitionGroupDto {
   @Expose()
   regions: RegionWithoutCountryDto[];
 }
+
+export class CompetitionGroupBasicDataDto extends PickType(
+  CompetitionGroupDto,
+  ['id', 'name'],
+) {}
