@@ -114,15 +114,23 @@ export class MatchesService {
     });
   }
 
+  getList() {
+    return this.prisma.match.findMany({ include: listInclude });
+  }
+
   findOne(id: string) {
-    return `This action returns a #${id} match`;
+    return this.prisma.match.findUnique({ where: { id }, include });
   }
 
   update(id: string, updateMatchDto: UpdateMatchDto) {
-    return `This action updates a #${id} match`;
+    return this.prisma.match.update({
+      where: { id },
+      data: updateMatchDto,
+      include,
+    });
   }
 
   remove(id: string) {
-    return `This action removes a #${id} match`;
+    return this.prisma.match.delete({ where: { id }, include });
   }
 }

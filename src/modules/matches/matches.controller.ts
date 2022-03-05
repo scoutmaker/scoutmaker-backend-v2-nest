@@ -60,11 +60,11 @@ export class MatchesController {
   @ApiResponse(MatchBasicDataDto, { type: 'read' })
   @Serialize(MatchBasicDataDto)
   async getList() {
-    // const matches = await this.matchesService.findAll();
-    // return formatSuccessResponse(
-    //   'Successfully fetched all matches list',
-    //   matches,
-    // );
+    const matches = await this.matchesService.getList();
+    return formatSuccessResponse(
+      'Successfully fetched all matches list',
+      matches,
+    );
   }
 
   @Get(':id')
