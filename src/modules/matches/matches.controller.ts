@@ -15,6 +15,8 @@ import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { MatchBasicDataDto, MatchDto } from './dto/match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
@@ -30,8 +32,11 @@ export class MatchesController {
   @Post()
   @ApiResponse(MatchDto, { type: 'create' })
   @Serialize(MatchDto)
-  async create(@Body() createMatchDto: CreateMatchDto) {
-    const match = await this.matchesService.create(createMatchDto);
+  async create(
+    @Body() createMatchDto: CreateMatchDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const match = await this.matchesService.create(createMatchDto, user.id);
     return formatSuccessResponse('Successfully created new match', match);
   }
 
