@@ -14,6 +14,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   await prisma.competitionParticipation.deleteMany();
+  await prisma.note.deleteMany();
   await prisma.match.deleteMany();
   await prisma.teamAffiliation.deleteMany();
   await prisma.team.deleteMany();
@@ -441,6 +442,57 @@ async function main() {
       zaglebieGornikPromise,
       gornikZaglebieResPromise,
     ]);
+
+  const marchwinskiNotePromise = prisma.note.create({
+    data: {
+      shirtNo: 11,
+      description:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      maxRatingScore: 4,
+      rating: 3,
+      percentageRating: 75,
+      player: { connect: { id: marchwinski.id } },
+      match: { connect: { id: lechLegiaMatch.id } },
+      positionPlayed: { connect: { id: cm.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const skibickiNotePromise = prisma.note.create({
+    data: {
+      shirtNo: 22,
+      description:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      maxRatingScore: 4,
+      rating: 2,
+      percentageRating: 50,
+      player: { connect: { id: skibicki.id } },
+      match: { connect: { id: lechLegiaMatch.id } },
+      positionPlayed: { connect: { id: cm.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const winglarekNotePromise = prisma.note.create({
+    data: {
+      shirtNo: 50,
+      description:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      maxRatingScore: 4,
+      rating: 2,
+      percentageRating: 50,
+      player: { connect: { id: winglarek.id } },
+      match: { connect: { id: gornikZaglebieResMatch.id } },
+      positionPlayed: { connect: { id: cb.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const [marchwinskiNote, skibickiNote, winglarekNote] = await Promise.all([
+    marchwinskiNotePromise,
+    skibickiNotePromise,
+    winglarekNotePromise,
+  ]);
 }
 
 main()
