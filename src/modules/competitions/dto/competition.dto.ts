@@ -1,5 +1,7 @@
+import { PickType } from '@nestjs/swagger';
 import { CompetitionJuniorLevel, Gender } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
+
 import { CompetitionAgeCategoryDto } from '../../competition-age-categories/dto/competition-age-category.dto';
 import { CompetitionJuniorLevelDto } from '../../competition-junior-levels/dto/competition-junior-level.dto';
 import { CompetitionTypeDto } from '../../competition-types/dto/competition-type.dto';
@@ -48,3 +50,9 @@ export class CompetitionDto {
   @Expose()
   juniorLevel?: CompetitionJuniorLevel;
 }
+
+export class CompetitionBasicDataDto extends PickType(CompetitionDto, [
+  'id',
+  'name',
+  'level',
+]) {}
