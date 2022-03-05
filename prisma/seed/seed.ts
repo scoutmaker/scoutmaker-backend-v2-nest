@@ -434,6 +434,13 @@ async function main() {
       author: { connect: { id: admin.id } },
     },
   });
+
+  const [lechLegiaMatch, zaglebieGornikMatch, gornikZaglebieResMatch] =
+    await Promise.all([
+      lechLegiaPromise,
+      zaglebieGornikPromise,
+      gornikZaglebieResPromise,
+    ]);
 }
 
 main()
