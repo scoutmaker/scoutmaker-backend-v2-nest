@@ -67,7 +67,7 @@ export class PlayersService {
     { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
     query: FindAllPlayersDto,
   ) {
-    let sort: Prisma.PlayerOrderByWithAggregationInput;
+    let sort: Prisma.PlayerOrderByWithRelationInput;
 
     const regularSortBy: PlayersSortByUnion[] = [
       'firstName',

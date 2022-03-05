@@ -6,19 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateMatchDto } from './dto/create-match.dto';
+import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchBasicDataDto, MatchDto } from './dto/match.dto';
+import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { MatchesService } from './matches.service';
 
@@ -42,9 +46,13 @@ export class MatchesController {
 
   @Get()
   @ApiPaginatedResponse(MatchDto)
+  @ApiQuery({ type: MatchesPaginationOptionsDto })
   @Serialize(MatchDto, 'docs')
-  async findAll() {
-    const matches = await this.matchesService.findAll();
+  async findAll(
+    @PaginationOptions() paginationOptions: MatchesPaginationOptionsDto,
+    @Query() query: FindAllMatchesDto,
+  ) {
+    const matches = await this.matchesService.findAll(paginationOptions, query);
     return formatSuccessResponse('Successfully fetched all matches', matches);
   }
 
@@ -52,11 +60,11 @@ export class MatchesController {
   @ApiResponse(MatchBasicDataDto, { type: 'read' })
   @Serialize(MatchBasicDataDto)
   async getList() {
-    const matches = await this.matchesService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all matches list',
-      matches,
-    );
+    // const matches = await this.matchesService.findAll();
+    // return formatSuccessResponse(
+    //   'Successfully fetched all matches list',
+    //   matches,
+    // );
   }
 
   @Get(':id')
