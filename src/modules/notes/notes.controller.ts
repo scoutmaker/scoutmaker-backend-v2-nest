@@ -6,18 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateNoteDto } from './dto/create-note.dto';
+import { FindAllNotesDto } from './dto/find-all-notes.dto';
 import { NoteDto } from './dto/note.dto';
+import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { NotesService } from './notes.service';
 
@@ -40,11 +45,15 @@ export class NotesController {
   }
 
   @Get()
-  @ApiResponse(NoteDto, { type: 'read' })
-  @Serialize(NoteDto)
-  async findAll() {
-    const notes = await this.notesService.findAll();
-    return formatSuccessResponse('Successfully fetched all notes', notes);
+  @ApiPaginatedResponse(NoteDto)
+  @ApiQuery({ type: NotesPaginationOptionsDto })
+  @Serialize(NoteDto, 'docs')
+  async findAll(
+    @PaginationOptions() paginationOptions: NotesPaginationOptionsDto,
+    @Query() query: FindAllNotesDto,
+  ) {
+    const data = await this.notesService.findAll(paginationOptions, query);
+    return formatSuccessResponse('Successfully fetched all notes', data);
   }
 
   @Get(':id')

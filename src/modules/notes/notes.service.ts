@@ -1,9 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { calculatePercentageRating } from '../../utils/helpers';
+import {
+  calculatePercentageRating,
+  calculateSkip,
+  formatPaginatedResponse,
+} from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateNoteDto } from './dto/create-note.dto';
+import { FindAllNotesDto } from './dto/find-all-notes.dto';
+import {
+  NotesPaginationOptionsDto,
+  NotesSortByUnion,
+} from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
 const include: Prisma.NoteInclude = {
@@ -52,8 +61,82 @@ export class NotesService {
     });
   }
 
-  findAll() {
-    return `This action returns all notes`;
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: NotesPaginationOptionsDto,
+    {
+      playerId,
+      positionId,
+      teamId,
+      matchId,
+      percentageRatingRangeStart,
+      percentageRatingRangeEnd,
+    }: FindAllNotesDto,
+  ) {
+    let sort: Prisma.NoteOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'percentageRating':
+      case 'createdAt':
+        sort = { [sortBy]: sortingOrder };
+        break;
+      case 'match':
+        sort = { match: { date: sortingOrder } };
+        break;
+      case 'player':
+      case 'author':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      case 'positionPlayed':
+        sort = { positionPlayed: { name: sortingOrder } };
+        break;
+      default:
+        sort = undefined;
+        break;
+    }
+
+    const where: Prisma.NoteWhereInput = {
+      player: { id: playerId },
+      match: { id: matchId },
+      percentageRating: {
+        gte: percentageRatingRangeStart,
+        lte: percentageRatingRangeEnd,
+      },
+      AND: [
+        {
+          OR: [
+            { positionPlayed: { id: positionId } },
+            { player: { primaryPosition: { id: positionId } } },
+          ],
+        },
+        {
+          OR: [
+            { match: { homeTeam: { id: teamId } } },
+            { match: { awayTeam: { id: teamId } } },
+          ],
+        },
+      ],
+    };
+
+    const notes = await this.prisma.note.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: sort,
+      include,
+    });
+
+    const total = await this.prisma.note.count({ where });
+
+    return formatPaginatedResponse({
+      docs: notes,
+      totalDocs: total,
+      limit,
+      page,
+    });
+  }
+
+  getList() {
+    return this.prisma.note.findMany({ include: listInclude });
   }
 
   findOne(id: string) {
