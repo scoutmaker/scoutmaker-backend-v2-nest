@@ -1,5 +1,5 @@
-import { ApiResponseDto } from '../api-response/api-response.dto';
 import { PaginatedData } from '../api-response/api-paginated-response.dto';
+import { ApiResponseDto } from '../api-response/api-response.dto';
 
 export function formatSuccessResponse<Data>(
   message: string,
@@ -24,6 +24,13 @@ export function convertJwtExpiresInToNumber(expiresIn: string): number {
 
 export function calculateSkip(page: number, limit: number) {
   return (page - 1) * limit;
+}
+
+export function calculatePercentageRating(
+  rating: number,
+  maxRatingScore: number,
+) {
+  return parseFloat(((rating / maxRatingScore) * 100).toFixed(2));
 }
 
 export type PaginatedResponseArgs<T> = {

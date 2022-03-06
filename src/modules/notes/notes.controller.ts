@@ -14,6 +14,8 @@ import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NoteDto } from './dto/note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
@@ -29,8 +31,11 @@ export class NotesController {
   @Post()
   @ApiResponse(NoteDto, { type: 'create' })
   @Serialize(NoteDto)
-  async create(@Body() createNoteDto: CreateNoteDto) {
-    const note = await this.notesService.create(createNoteDto);
+  async create(
+    @Body() createNoteDto: CreateNoteDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const note = await this.notesService.create(createNoteDto, user.id);
     return formatSuccessResponse('Successfully created new note', note);
   }
 
