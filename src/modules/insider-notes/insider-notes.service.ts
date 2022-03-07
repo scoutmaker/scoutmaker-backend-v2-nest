@@ -68,14 +68,21 @@ export class InsiderNotesService {
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} insiderNote`;
+    return this.prisma.insiderNote.findUnique({ where: { id }, include });
   }
 
   update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {
-    return `This action updates a #${id} insiderNote`;
+    return this.prisma.insiderNote.update({
+      where: { id },
+      data: updateInsiderNoteDto,
+      include,
+    });
   }
 
   remove(id: string) {
-    return `This action removes a #${id} insiderNote`;
+    return this.prisma.insiderNote.delete({
+      where: { id },
+      include,
+    });
   }
 }
