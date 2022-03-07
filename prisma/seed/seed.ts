@@ -12,8 +12,12 @@ import { generateUser } from './user';
 
 const prisma = new PrismaClient();
 
+const description =
+  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+
 async function main() {
   await prisma.competitionParticipation.deleteMany();
+  await prisma.insiderNote.deleteMany();
   await prisma.note.deleteMany();
   await prisma.match.deleteMany();
   await prisma.teamAffiliation.deleteMany();
@@ -446,8 +450,7 @@ async function main() {
   const marchwinskiNotePromise = prisma.note.create({
     data: {
       shirtNo: 11,
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      description,
       maxRatingScore: 4,
       rating: 3,
       percentageRating: 75,
@@ -461,8 +464,7 @@ async function main() {
   const skibickiNotePromise = prisma.note.create({
     data: {
       shirtNo: 22,
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      description,
       maxRatingScore: 4,
       rating: 2,
       percentageRating: 50,
@@ -476,8 +478,7 @@ async function main() {
   const winglarekNotePromise = prisma.note.create({
     data: {
       shirtNo: 50,
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+      description,
       maxRatingScore: 4,
       rating: 2,
       percentageRating: 50,
@@ -493,6 +494,38 @@ async function main() {
     skibickiNotePromise,
     winglarekNotePromise,
   ]);
+
+  const marchwinskiInsiderNotePromise = prisma.insiderNote.create({
+    data: {
+      informant: 'kierownik',
+      description,
+      player: { connect: { id: marchwinski.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const skibickiInsiderNotePromise = prisma.insiderNote.create({
+    data: {
+      description,
+      player: { connect: { id: skibicki.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const winglarekInsiderNotePromise = prisma.insiderNote.create({
+    data: {
+      description,
+      player: { connect: { id: winglarek.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const [marchwinskiInsiderNote, skibickiInsiderNote, winglarekInsiderNote] =
+    await Promise.all([
+      marchwinskiInsiderNotePromise,
+      skibickiInsiderNotePromise,
+      winglarekInsiderNotePromise,
+    ]);
 }
 
 main()

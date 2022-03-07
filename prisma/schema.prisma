@@ -42,13 +42,14 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region   Region   @relation(fields: [regionId], references: [id])
-  regionId String
-  clubs    Club[]
-  teams    Team[]
-  players  Player[]
-  matches  Match[]
-  notes    Note[]
+  region       Region        @relation(fields: [regionId], references: [id])
+  regionId     String
+  clubs        Club[]
+  teams        Team[]
+  players      Player[]
+  matches      Match[]
+  notes        Note[]
+  insiderNotes InsiderNote[]
 }
 
 model Country {
@@ -294,6 +295,7 @@ model Player {
   secondaryPositions SecondaryPositionsOnPlayers[]
   teams              TeamAffiliation[]
   notes              Note[]
+  insiderNotes       InsiderNote[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -369,4 +371,18 @@ model Note {
   positionPlayedId String?
   author           User            @relation(fields: [authorId], references: [id])
   authorId         String
+}
+
+model InsiderNote {
+  id          String   @id @default(cuid())
+  informant   String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation fields
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
 }

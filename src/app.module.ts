@@ -12,6 +12,7 @@ import { CompetitionParticipationsModule } from './modules/competition-participa
 import { CompetitionTypesModule } from './modules/competition-types/competition-types.module';
 import { CompetitionsModule } from './modules/competitions/competitions.module';
 import { CountriesModule } from './modules/countries/countries.module';
+import { InsiderNotesModule } from './modules/insider-notes/insider-notes.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
@@ -48,6 +49,7 @@ import { UsersModule } from './modules/users/users.module';
     TeamAffiliationsModule,
     MatchesModule,
     NotesModule,
+    InsiderNotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
