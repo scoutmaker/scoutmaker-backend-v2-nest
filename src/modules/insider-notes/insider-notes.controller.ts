@@ -1,34 +1,99 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { InsiderNotesService } from './insider-notes.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { formatSuccessResponse } from '../../utils/helpers';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateInsiderNoteDto } from './dto/create-insider-note.dto';
+import { InsiderNoteDto } from './dto/insider-note.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
+import { InsiderNotesService } from './insider-notes.service';
 
 @Controller('insider-notes')
+@ApiTags('insider notes')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
 export class InsiderNotesController {
   constructor(private readonly insiderNotesService: InsiderNotesService) {}
 
   @Post()
-  create(@Body() createInsiderNoteDto: CreateInsiderNoteDto) {
-    return this.insiderNotesService.create(createInsiderNoteDto);
+  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @Serialize(InsiderNoteDto)
+  async create(
+    @Body() createInsiderNoteDto: CreateInsiderNoteDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const insiderNote = await this.insiderNotesService.create(
+      createInsiderNoteDto,
+      user.id,
+    );
+    return formatSuccessResponse(
+      'Successfully created new insider note',
+      insiderNote,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.insiderNotesService.findAll();
+  @ApiPaginatedResponse(InsiderNoteDto)
+  // @ApiQuery({type: })
+  @Serialize(InsiderNoteDto, 'docs')
+  async findAll() {
+    const data = await this.insiderNotesService.findAll();
+    return formatSuccessResponse(
+      'Successfully fetched all insider notes',
+      data,
+    );
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.insiderNotesService.findOne(+id);
+  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @Serialize(InsiderNoteDto)
+  async findOne(@Param('id') id: string) {
+    const insiderNote = await this.insiderNotesService.findOne(id);
+    return formatSuccessResponse(
+      `Successfully fetched insider note with id: ${id}`,
+      insiderNote,
+    );
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInsiderNoteDto: UpdateInsiderNoteDto) {
-    return this.insiderNotesService.update(+id, updateInsiderNoteDto);
+  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @Serialize(InsiderNoteDto)
+  async update(
+    @Param('id') id: string,
+    @Body() updateInsiderNoteDto: UpdateInsiderNoteDto,
+  ) {
+    const insiderNote = await this.insiderNotesService.update(
+      id,
+      updateInsiderNoteDto,
+    );
+    return formatSuccessResponse(
+      `Successfully updated insider note with id: ${id}`,
+      insiderNote,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.insiderNotesService.remove(+id);
+  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @Serialize(InsiderNoteDto)
+  async remove(@Param('id') id: string) {
+    const insiderNote = await this.insiderNotesService.remove(id);
+    return formatSuccessResponse(
+      `Successfully removed insider note with id: ${id}`,
+      insiderNote,
+    );
   }
 }
