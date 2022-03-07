@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -14,11 +15,14 @@ import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateInsiderNoteDto } from './dto/create-insider-note.dto';
+import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import { InsiderNoteDto } from './dto/insider-note.dto';
+import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
 import { InsiderNotesService } from './insider-notes.service';
 
@@ -48,10 +52,16 @@ export class InsiderNotesController {
 
   @Get()
   @ApiPaginatedResponse(InsiderNoteDto)
-  // @ApiQuery({type: })
+  @ApiQuery({ type: InsiderNotesPaginationOptionsDto })
   @Serialize(InsiderNoteDto, 'docs')
-  async findAll() {
-    const data = await this.insiderNotesService.findAll();
+  async findAll(
+    @PaginationOptions() paginationOptions: InsiderNotesPaginationOptionsDto,
+    @Query() query: FindAllInsiderNotesDto,
+  ) {
+    const data = await this.insiderNotesService.findAll(
+      paginationOptions,
+      query,
+    );
     return formatSuccessResponse(
       'Successfully fetched all insider notes',
       data,
