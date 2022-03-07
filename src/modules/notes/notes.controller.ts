@@ -20,8 +20,8 @@ import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { FindAllNotesDto } from './dto/find-all-notes.dto';
-import { NoteDto } from './dto/note.dto';
+import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
+import { NoteBasicDataDto, NoteDto } from './dto/note.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { NotesService } from './notes.service';
@@ -54,6 +54,14 @@ export class NotesController {
   ) {
     const data = await this.notesService.findAll(paginationOptions, query);
     return formatSuccessResponse('Successfully fetched all notes', data);
+  }
+
+  @Get('list')
+  @ApiResponse(NoteBasicDataDto, { type: 'read' })
+  @Serialize(NoteBasicDataDto)
+  async getList(@Query() query: GetNotesListDto) {
+    const notes = await this.notesService.getList(query);
+    return formatSuccessResponse('Successully fetched all notes list', notes);
   }
 
   @Get(':id')

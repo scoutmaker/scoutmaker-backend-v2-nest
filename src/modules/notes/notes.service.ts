@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Note, Prisma } from '@prisma/client';
 
 import {
   calculatePercentageRating,
@@ -8,11 +8,8 @@ import {
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { FindAllNotesDto } from './dto/find-all-notes.dto';
-import {
-  NotesPaginationOptionsDto,
-  NotesSortByUnion,
-} from './dto/notes-pagination-options.dto';
+import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
+import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
 const include: Prisma.NoteInclude = {
@@ -135,19 +132,50 @@ export class NotesService {
     });
   }
 
-  getList() {
-    return this.prisma.note.findMany({ include: listInclude });
+  getList({ matchId }: GetNotesListDto) {
+    return this.prisma.note.findMany({
+      where: { match: { id: matchId } },
+      include: listInclude,
+    });
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} note`;
+    return this.prisma.note.findUnique({ where: { id }, include });
   }
 
-  update(id: string, updateNoteDto: UpdateNoteDto) {
-    return `This action updates a #${id} note`;
+  async update(id: string, updateNoteDto: UpdateNoteDto) {
+    const { rating, maxRatingScore } = updateNoteDto;
+
+    let percentageRating: number;
+    let note: Note;
+
+    if (rating && maxRatingScore) {
+      percentageRating = calculatePercentageRating(rating, maxRatingScore);
+    }
+
+    if ((!rating && maxRatingScore) || (rating && !maxRatingScore)) {
+      note = await this.prisma.note.findUnique({ where: { id } });
+      const newRating = rating || note.rating;
+      const newMaxRatingScore = maxRatingScore || note.maxRatingScore;
+      if (newRating && newMaxRatingScore) {
+        percentageRating = calculatePercentageRating(
+          newRating,
+          newMaxRatingScore,
+        );
+      }
+    }
+
+    return this.prisma.note.update({
+      where: { id },
+      data: {
+        ...updateNoteDto,
+        percentageRating: percentageRating || undefined,
+      },
+      include,
+    });
   }
 
   remove(id: string) {
-    return `This action removes a #${id} note`;
+    return this.prisma.note.delete({ where: { id }, include });
   }
 }

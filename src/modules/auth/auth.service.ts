@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, UserRole } from '@prisma/client';
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { add } from 'date-fns';
-import { RegisterUserDto } from './dto/register-user.dto';
+import * as jwt from 'jsonwebtoken';
+
 import { convertJwtExpiresInToNumber } from '../../utils/helpers';
-import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersService } from '../users/users.service';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
+import { UsersService } from '../users/users.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 const include: Prisma.UserInclude = { region: { include: { country: true } } };
 
