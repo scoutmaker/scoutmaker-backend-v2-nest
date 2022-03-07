@@ -13,6 +13,7 @@ import { CompetitionTypesModule } from './modules/competition-types/competition-
 import { CompetitionsModule } from './modules/competitions/competitions.module';
 import { CountriesModule } from './modules/countries/countries.module';
 import { MatchesModule } from './modules/matches/matches.module';
+import { NotesModule } from './modules/notes/notes.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
 import { PlayersModule } from './modules/players/players.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -46,6 +47,7 @@ import { UsersModule } from './modules/users/users.module';
     PlayersModule,
     TeamAffiliationsModule,
     MatchesModule,
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

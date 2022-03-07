@@ -1,13 +1,14 @@
-import { Controller, Get, Body, Patch, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { UsersService } from './users.service';
-import { UserDto } from './dto/user.dto';
-import { ChangeRoleDto } from './dto/change-user-role.dto';
+
+import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RoleGuard } from '../../guards/role.guard';
-import { formatSuccessResponse } from '../../utils/helpers';
 import { Serialize } from '../../interceptors/serialize.interceptor';
-import { ApiResponse } from '../../api-response/api-response.decorator';
+import { formatSuccessResponse } from '../../utils/helpers';
+import { ChangeRoleDto } from './dto/change-user-role.dto';
+import { UserDto } from './dto/user.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('users')

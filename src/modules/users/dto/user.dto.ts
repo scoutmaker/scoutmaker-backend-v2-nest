@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { AccountStatus, UserRole } from '@prisma/client';
 import { Expose, plainToClass, Transform } from 'class-transformer';
+
 import { RegionDto } from '../../regions/dto/region.dto';
 
 export class UserDto {
@@ -45,3 +46,9 @@ export class UserDto {
   @Expose()
   region: RegionDto;
 }
+
+export class UserBasicDataDto extends PickType(UserDto, [
+  'id',
+  'firstName',
+  'lastName',
+]) {}

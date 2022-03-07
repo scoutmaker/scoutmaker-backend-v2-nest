@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, IsUrl } from 'class-validator';
+
 import { IsCuid } from '../../../decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
 
