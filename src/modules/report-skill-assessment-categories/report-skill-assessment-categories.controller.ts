@@ -28,7 +28,7 @@ import { ReportSkillAssessmentCategoriesService } from './report-skill-assessmen
 @Serialize(ReportSkillAssessmentCategoryDto)
 export class ReportSkillAssessmentCategoriesController {
   constructor(
-    private readonly reportSkillAssessmentCategoriesService: ReportSkillAssessmentCategoriesService,
+    private readonly categoriesService: ReportSkillAssessmentCategoriesService,
   ) {}
 
   @Post()
@@ -38,7 +38,7 @@ export class ReportSkillAssessmentCategoriesController {
     createReportSkillAssessmentCategoryDto: CreateReportSkillAssessmentCategoryDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    const category = await this.reportSkillAssessmentCategoriesService.create(
+    const category = await this.categoriesService.create(
       createReportSkillAssessmentCategoryDto,
       user.id,
     );
@@ -48,8 +48,7 @@ export class ReportSkillAssessmentCategoriesController {
   @Get()
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
   async findAll() {
-    const categories =
-      await this.reportSkillAssessmentCategoriesService.findAll();
+    const categories = await this.categoriesService.findAll();
     return formatSuccessResponse(
       'Successfully fetched all categories',
       categories,
@@ -59,9 +58,7 @@ export class ReportSkillAssessmentCategoriesController {
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
   async findOne(@Param('id') id: string) {
-    const category = await this.reportSkillAssessmentCategoriesService.findOne(
-      id,
-    );
+    const category = await this.categoriesService.findOne(id);
     return formatSuccessResponse(
       `Successfully fetched category #${id}`,
       category,
@@ -75,7 +72,7 @@ export class ReportSkillAssessmentCategoriesController {
     @Body()
     updateReportSkillAssessmentCategoryDto: UpdateReportSkillAssessmentCategoryDto,
   ) {
-    const category = await this.reportSkillAssessmentCategoriesService.update(
+    const category = await this.categoriesService.update(
       id,
       updateReportSkillAssessmentCategoryDto,
     );
@@ -88,9 +85,7 @@ export class ReportSkillAssessmentCategoriesController {
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'delete' })
   async remove(@Param('id') id: string) {
-    const category = await this.reportSkillAssessmentCategoriesService.remove(
-      id,
-    );
+    const category = await this.categoriesService.remove(id);
     return formatSuccessResponse(
       `Successfully deleted category #${id}`,
       category,

@@ -20,6 +20,7 @@ import { PlayersModule } from './modules/players/players.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { RegionsModule } from './modules/regions/regions.module';
 import { ReportSkillAssessmentCategoriesModule } from './modules/report-skill-assessment-categories/report-skill-assessment-categories.module';
+import { ReportSkillAssessmentTemplatesModule } from './modules/report-skill-assessment-templates/report-skill-assessment-templates.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 import { TeamsModule } from './modules/teams/teams.module';
@@ -52,6 +53,7 @@ import { UsersModule } from './modules/users/users.module';
     NotesModule,
     InsiderNotesModule,
     ReportSkillAssessmentCategoriesModule,
+    ReportSkillAssessmentTemplatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
