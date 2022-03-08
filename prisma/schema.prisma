@@ -42,14 +42,18 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region       Region        @relation(fields: [regionId], references: [id])
-  regionId     String
-  clubs        Club[]
-  teams        Team[]
-  players      Player[]
-  matches      Match[]
-  notes        Note[]
-  insiderNotes InsiderNote[]
+  region                          Region                          @relation(fields: [regionId], references: [id])
+  regionId                        String
+  clubs                           Club[]
+  teams                           Team[]
+  players                         Player[]
+  matches                         Match[]
+  notes                           Note[]
+  insiderNotes                    InsiderNote[]
+  reportSkillAssessmentCategories ReportSkillAssessmentCategory[]
+  reportSkillAssessmentTemplates  ReportSkillAssessmentTemplate[]
+  reportTemplates                 ReportTemplate[]
+  reports                         Report[]
 }
 
 model Country {
@@ -258,7 +262,8 @@ model PlayerPosition {
   // Relation fields
   players          Player[]
   playersSecondary SecondaryPositionsOnPlayers[]
-  Note             Note[]
+  notes            Note[]
+  reports          Report[]
 }
 
 enum Foot {
@@ -296,6 +301,7 @@ model Player {
   teams              TeamAffiliation[]
   notes              Note[]
   insiderNotes       InsiderNote[]
+  reports            Report[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -349,6 +355,7 @@ model Match {
   author        User              @relation(fields: [authorId], references: [id])
   authorId      String
   notes         Note[]
+  reports       Report[]
 }
 
 model Note {
@@ -385,4 +392,112 @@ model InsiderNote {
   playerId String
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
+}
+
+model ReportSkillAssessmentCategory {
+  id        String   @id @default(cuid())
+  name      String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  author                         User                            @relation(fields: [authorId], references: [id])
+  authorId                       String
+  reportSkillAssessmentTemplates ReportSkillAssessmentTemplate[]
+}
+
+model ReportSkillAssessmentTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  shortName String
+  hasScore  Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  category        ReportSkillAssessmentCategory               @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  author          User                                        @relation(fields: [authorId], references: [id])
+  authorId        String
+  reportTemplates SkillAssessmentTemplatesOnReportTemplates[]
+  assessments     ReportSkillAssessment[]
+}
+
+model ReportTemplate {
+  id             String   @id @default(cuid())
+  name           String
+  maxRatingScore Int
+  isPublic       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relation fields
+  author                   User                                        @relation(fields: [authorId], references: [id])
+  authorId                 String
+  skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
+  Report                   Report[]
+}
+
+model SkillAssessmentTemplatesOnReportTemplates {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  reportTemplate            ReportTemplate                @relation(fields: [reportTemplateId], references: [id])
+  reportTemplateId          String
+  skillAssessmentTemplate   ReportSkillAssessmentTemplate @relation(fields: [skillAssessmentTemplateId], references: [id])
+  skillAssessmentTemplateId String
+
+  @@id([reportTemplateId, skillAssessmentTemplateId])
+}
+
+model ReportSkillAssessment {
+  id          String   @id @default(cuid())
+  rating      Int?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation fields
+  template   ReportSkillAssessmentTemplate @relation(fields: [templateId], references: [id])
+  templateId String
+  report     Report                        @relation(fields: [reportId], references: [id])
+  reportId   String
+}
+
+enum ReportStatus {
+  IN_PROGRESS
+  FINISHED
+}
+
+model Report {
+  id               String       @id @default(cuid())
+  shirtNo          Int?
+  minutesPlayed    Int?
+  goals            Int?
+  assists          Int?
+  yellowCards      Int?
+  redCards         Int?
+  videoUrl         String?
+  videoDescription String?
+  finalRating      Int?
+  summary          String?
+  avgRating        Int?
+  percentageRating Float?
+  status           ReportStatus @default(IN_PROGRESS)
+
+  // Relation fields
+  template         ReportTemplate          @relation(fields: [templateId], references: [id])
+  templateId       String
+  player           Player                  @relation(fields: [playerId], references: [id])
+  playerId         String
+  positionPlayed   PlayerPosition?         @relation(fields: [positionPlayedId], references: [id])
+  positionPlayedId String?
+  match            Match?                  @relation(fields: [matchId], references: [id])
+  matchId          String?
+  // TODO: add optional order
+  author           User                    @relation(fields: [authorId], references: [id])
+  authorId         String
+  skills           ReportSkillAssessment[]
 }
