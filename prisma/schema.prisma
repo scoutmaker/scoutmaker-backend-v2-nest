@@ -436,7 +436,7 @@ model ReportTemplate {
   author                   User                                        @relation(fields: [authorId], references: [id])
   authorId                 String
   skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
-  Report                   Report[]
+  reports                  Report[]
 }
 
 model SkillAssessmentTemplatesOnReportTemplates {
