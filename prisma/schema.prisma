@@ -473,6 +473,7 @@ enum ReportStatus {
 
 model Report {
   id               String       @id @default(cuid())
+  docNumber        Int          @default(autoincrement())
   shirtNo          Int?
   minutesPlayed    Int?
   goals            Int?

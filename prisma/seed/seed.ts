@@ -19,6 +19,7 @@ const description =
 async function main() {
   await prisma.competitionParticipation.deleteMany();
   await prisma.skillAssessmentTemplatesOnReportTemplates.deleteMany();
+  await prisma.reportSkillAssessment.deleteMany();
   await prisma.report.deleteMany();
   await prisma.reportTemplate.deleteMany();
   await prisma.reportSkillAssessmentTemplate.deleteMany();
@@ -651,7 +652,7 @@ async function main() {
   const skibickiReportPromise = prisma.report.create({
     data: {
       template: { connect: { id: defaultReportTemplate.id } },
-      player: { connect: { id: marchwinski.id } },
+      player: { connect: { id: skibicki.id } },
       author: { connect: { id: admin.id } },
       skills: {
         createMany: {

@@ -21,6 +21,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { RegionsModule } from './modules/regions/regions.module';
 import { ReportSkillAssessmentCategoriesModule } from './modules/report-skill-assessment-categories/report-skill-assessment-categories.module';
 import { ReportSkillAssessmentTemplatesModule } from './modules/report-skill-assessment-templates/report-skill-assessment-templates.module';
+import { ReportSkillAssessmentsModule } from './modules/report-skill-assessments/report-skill-assessments.module';
 import { ReportTemplatesModule } from './modules/report-templates/report-templates.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
@@ -56,6 +57,7 @@ import { UsersModule } from './modules/users/users.module';
     ReportSkillAssessmentCategoriesModule,
     ReportSkillAssessmentTemplatesModule,
     ReportTemplatesModule,
+    ReportSkillAssessmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
