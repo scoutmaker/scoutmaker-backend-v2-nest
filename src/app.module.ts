@@ -23,6 +23,7 @@ import { ReportSkillAssessmentCategoriesModule } from './modules/report-skill-as
 import { ReportSkillAssessmentTemplatesModule } from './modules/report-skill-assessment-templates/report-skill-assessment-templates.module';
 import { ReportSkillAssessmentsModule } from './modules/report-skill-assessments/report-skill-assessments.module';
 import { ReportTemplatesModule } from './modules/report-templates/report-templates.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 import { TeamsModule } from './modules/teams/teams.module';
@@ -58,6 +59,7 @@ import { UsersModule } from './modules/users/users.module';
     ReportSkillAssessmentTemplatesModule,
     ReportTemplatesModule,
     ReportSkillAssessmentsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

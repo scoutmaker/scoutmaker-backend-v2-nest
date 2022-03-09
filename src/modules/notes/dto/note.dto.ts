@@ -34,6 +34,7 @@ export class NoteDto {
   @Transform(({ value }) =>
     plainToInstance(PlayerBasicDataWithoutTeamsDto, value, {
       excludeExtraneousValues: true,
+      enableCircularCheck: true,
     }),
   )
   @Expose()

@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { ReportSkillAssessmentTemplateDto } from '../../report-skill-assessment-templates/dto/report-skill-assessment-template.dto';
@@ -26,3 +27,9 @@ export class ReportTemplateDto {
   @Expose()
   skillAssessmentTemplates: ReportSkillAssessmentTemplateDto[];
 }
+
+export class ReportTemplateBasicDataDto extends PickType(ReportTemplateDto, [
+  'id',
+  'name',
+  'maxRatingScore',
+]) {}

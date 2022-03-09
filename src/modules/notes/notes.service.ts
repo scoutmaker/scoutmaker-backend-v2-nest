@@ -13,8 +13,8 @@ import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
 const include: Prisma.NoteInclude = {
-  player: true,
-  match: { include: { homeTeam: true, awayTeam: true } },
+  player: { include: { country: true, primaryPosition: true } },
+  match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   positionPlayed: true,
   author: true,
 };
