@@ -92,19 +92,11 @@ export class ReportDto {
   @Expose()
   author: UserBasicDataDto;
 
-  @Transform(({ value }) => {
-    console.log({ value });
-    const transformed = plainToInstance(
-      ReportSkillAssessmentBasicDataDto,
-      value,
-      {
-        excludeExtraneousValues: true,
-      },
-    );
-    console.log({ transformed });
-    console.log(transformed[0].template);
-    return transformed;
-  })
+  @Transform(({ value }) =>
+    plainToInstance(ReportSkillAssessmentBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
   @Expose()
   skills: ReportSkillAssessmentBasicDataDto[];
 }

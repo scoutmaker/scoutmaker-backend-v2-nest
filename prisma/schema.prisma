@@ -484,7 +484,7 @@ model Report {
   videoDescription String?
   finalRating      Int?
   summary          String?
-  avgRating        Int?
+  avgRating        Float?
   percentageRating Float?
   status           ReportStatus @default(IN_PROGRESS)
 
