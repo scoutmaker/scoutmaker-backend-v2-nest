@@ -7,6 +7,7 @@ import { generateCompetitions } from './competitions';
 import { generateCountries } from './countries';
 import { generatePositions } from './positions';
 import { generateRegions } from './regions';
+import { generateReportSkillAssessmentCategories } from './report-skill-assessment-categories';
 import { generateSeasons } from './season';
 import { generateUser } from './user';
 
@@ -17,6 +18,12 @@ const description =
 
 async function main() {
   await prisma.competitionParticipation.deleteMany();
+  await prisma.skillAssessmentTemplatesOnReportTemplates.deleteMany();
+  await prisma.reportSkillAssessment.deleteMany();
+  await prisma.report.deleteMany();
+  await prisma.reportTemplate.deleteMany();
+  await prisma.reportSkillAssessmentTemplate.deleteMany();
+  await prisma.reportSkillAssessmentCategory.deleteMany();
   await prisma.insiderNote.deleteMany();
   await prisma.note.deleteMany();
   await prisma.match.deleteMany();
@@ -526,6 +533,140 @@ async function main() {
       skibickiInsiderNotePromise,
       winglarekInsiderNotePromise,
     ]);
+
+  const { defense, individual, mental, offense, physical, teamplay } =
+    await generateReportSkillAssessmentCategories(admin.id);
+
+  const ballReceptionTemplatePromise =
+    prisma.reportSkillAssessmentTemplate.create({
+      data: {
+        name: 'Przyjęcie piłki',
+        shortName: 'RCPT',
+        hasScore: true,
+        categoryId: individual.id,
+        authorId: admin.id,
+      },
+    });
+  const attackPhaseTemplatePromise =
+    prisma.reportSkillAssessmentTemplate.create({
+      data: {
+        name: 'Faza ataku',
+        shortName: 'ATT',
+        hasScore: true,
+        categoryId: teamplay.id,
+        authorId: admin.id,
+      },
+    });
+  const finishingTemplatePromise = prisma.reportSkillAssessmentTemplate.create({
+    data: {
+      name: 'Wykończenie akcji',
+      shortName: 'FIN',
+      hasScore: true,
+      categoryId: individual.id,
+      authorId: admin.id,
+    },
+  });
+  const creationTemplatePromise = prisma.reportSkillAssessmentTemplate.create({
+    data: {
+      name: 'Kreowanie',
+      shortName: 'KREOW',
+      hasScore: true,
+      categoryId: offense.id,
+      authorId: admin.id,
+    },
+  });
+  const neglectedTemplatePromise = prisma.reportSkillAssessmentTemplate.create({
+    data: {
+      name: 'Cechy zaniedbane',
+      shortName: 'NEGL',
+      hasScore: false,
+      categoryId: physical.id,
+      authorId: admin.id,
+    },
+  });
+  const defenseWorkTemplatePromise =
+    prisma.reportSkillAssessmentTemplate.create({
+      data: {
+        name: 'Praca w obronie',
+        shortName: '1v11v2',
+        hasScore: true,
+        categoryId: defense.id,
+        authorId: admin.id,
+      },
+    });
+  const mentalCharTemplatePromise = prisma.reportSkillAssessmentTemplate.create(
+    {
+      data: {
+        name: 'Cechy mentalne',
+        shortName: 'MENCHA',
+        hasScore: false,
+        categoryId: mental.id,
+        authorId: admin.id,
+      },
+    },
+  );
+
+  const skillAssessmentTemplates = await Promise.all([
+    ballReceptionTemplatePromise,
+    attackPhaseTemplatePromise,
+    finishingTemplatePromise,
+    creationTemplatePromise,
+    neglectedTemplatePromise,
+    defenseWorkTemplatePromise,
+    mentalCharTemplatePromise,
+  ]);
+
+  const defaultReportTemplate = await prisma.reportTemplate.create({
+    data: {
+      name: 'Default',
+      maxRatingScore: 4,
+      isPublic: true,
+      authorId: admin.id,
+      skillAssessmentTemplates: {
+        createMany: {
+          data: skillAssessmentTemplates.map((template) => ({
+            skillAssessmentTemplateId: template.id,
+          })),
+        },
+      },
+    },
+  });
+
+  const marchwinskiReportPromise = prisma.report.create({
+    data: {
+      template: { connect: { id: defaultReportTemplate.id } },
+      player: { connect: { id: marchwinski.id } },
+      author: { connect: { id: admin.id } },
+      skills: {
+        createMany: {
+          data: skillAssessmentTemplates.map((template) => ({
+            templateId: template.id,
+            rating: 3,
+            description,
+          })),
+        },
+      },
+    },
+  });
+
+  const skibickiReportPromise = prisma.report.create({
+    data: {
+      template: { connect: { id: defaultReportTemplate.id } },
+      player: { connect: { id: skibicki.id } },
+      author: { connect: { id: admin.id } },
+      skills: {
+        createMany: {
+          data: skillAssessmentTemplates.map((template) => ({
+            templateId: template.id,
+            rating: 3,
+            description,
+          })),
+        },
+      },
+    },
+  });
+
+  await Promise.all([marchwinskiReportPromise, skibickiReportPromise]);
 }
 
 main()

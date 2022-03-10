@@ -33,6 +33,12 @@ export function calculatePercentageRating(
   return parseFloat(((rating / maxRatingScore) * 100).toFixed(2));
 }
 
+export function calculateAvg(array: number[]) {
+  return parseFloat(
+    (array.reduce((a, b) => a + b, 0) / array.length).toFixed(2),
+  );
+}
+
 export type PaginatedResponseArgs<T> = {
   docs: T[];
   totalDocs: number;
