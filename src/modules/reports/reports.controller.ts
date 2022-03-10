@@ -6,19 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportDto } from './dto/create-report.dto';
+import { FindAllReportsDto } from './dto/find-all-reports.dto';
 import { ReportDto } from './dto/report.dto';
+import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { ReportsService } from './reports.service';
 
@@ -42,9 +46,13 @@ export class ReportsController {
 
   @Get()
   @ApiPaginatedResponse(ReportDto)
+  @ApiQuery({ type: ReportsPaginationOptionsDto })
   @Serialize(ReportDto, 'docs')
-  async findAll() {
-    const data = await this.reportsService.findAll();
+  async findAll(
+    @PaginationOptions() paginationOptions: ReportsPaginationOptionsDto,
+    @Query() query: FindAllReportsDto,
+  ) {
+    const data = await this.reportsService.findAll(paginationOptions, query);
     return formatSuccessResponse('Successfully fetched all reports', data);
   }
 
