@@ -54,6 +54,8 @@ model User {
   reportSkillAssessmentTemplates  ReportSkillAssessmentTemplate[]
   reportTemplates                 ReportTemplate[]
   reports                         Report[]
+  createdOrders                   Order[]                         @relation("author")
+  acceptedOrders                  Order[]                         @relation("scout")
 }
 
 model Country {
@@ -302,6 +304,7 @@ model Player {
   notes              Note[]
   insiderNotes       InsiderNote[]
   reports            Report[]
+  orders             Order[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -356,6 +359,7 @@ model Match {
   authorId      String
   notes         Note[]
   reports       Report[]
+  order         Order[]
 }
 
 model Note {
@@ -487,8 +491,12 @@ model Report {
   avgRating        Float?
   percentageRating Float?
   status           ReportStatus @default(IN_PROGRESS)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
   // Relation fields
+  author           User                    @relation(fields: [authorId], references: [id])
+  authorId         String
   template         ReportTemplate          @relation(fields: [templateId], references: [id])
   templateId       String
   player           Player                  @relation(fields: [playerId], references: [id])
@@ -497,8 +505,35 @@ model Report {
   positionPlayedId String?
   match            Match?                  @relation(fields: [matchId], references: [id])
   matchId          String?
-  // TODO: add optional order
-  author           User                    @relation(fields: [authorId], references: [id])
-  authorId         String
+  order            Order?                  @relation(fields: [orderId], references: [id])
+  orderId          String?
   skills           ReportSkillAssessment[]
+}
+
+enum OrderStatus {
+  OPEN
+  ACCEPTED
+  CLOSED
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  docNumber   Int         @default(autoincrement())
+  status      OrderStatus @default(OPEN)
+  description String?
+  acceptDate  DateTime?
+  closeDate   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relation fields
+  author   User     @relation(fields: [authorId], references: [id], name: "author")
+  authorId String
+  scout    User?    @relation(fields: [scoutId], references: [id], name: "scout")
+  scoutId  String?
+  player   Player?  @relation(fields: [playerId], references: [id])
+  playerId String?
+  match    Match?   @relation(fields: [matchId], references: [id])
+  matchId  String?
+  reports  Report[]
 }
