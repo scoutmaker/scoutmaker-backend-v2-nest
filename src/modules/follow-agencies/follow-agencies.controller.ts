@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
