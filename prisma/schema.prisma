@@ -56,6 +56,7 @@ model User {
   reports                         Report[]
   createdOrders                   Order[]                         @relation("author")
   acceptedOrders                  Order[]                         @relation("scout")
+  agencies                        Agency[]
 }
 
 model Country {
@@ -71,6 +72,7 @@ model Country {
   competitions Competition[]
   clubs        Club[]
   players      Player[]
+  agencies     Agency[]
 }
 
 model Region {
@@ -305,6 +307,7 @@ model Player {
   insiderNotes       InsiderNote[]
   reports            Report[]
   orders             Order[]
+  agencies           AgencyAffiliation[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -536,4 +539,41 @@ model Order {
   match    Match?   @relation(fields: [matchId], references: [id])
   matchId  String?
   reports  Report[]
+}
+
+model Agency {
+  id               String   @id @default(cuid())
+  name             String
+  city             String?
+  postalCode       String?
+  street           String?
+  transfermarktUrl String?
+  email            String?
+  website          String?
+  twitter          String?
+  facebook         String?
+  instagram        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relation fields
+  country   Country             @relation(fields: [countryId], references: [id])
+  countryId String
+  author    User                @relation(fields: [authorId], references: [id])
+  authorId  String
+  players   AgencyAffiliation[]
+}
+
+model AgencyAffiliation {
+  id        String    @id @default(cuid())
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relation fields
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+  agency   Agency @relation(fields: [agencyId], references: [id])
+  agencyId String
 }
