@@ -13,7 +13,6 @@ import { hashPasswordMiddleware } from './middlewares/hash-password.middleware';
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
-      log: ['error', 'info', 'query', 'warn'],
       rejectOnNotFound: (err) =>
         new HttpException(err.message, HttpStatus.NOT_FOUND),
     });

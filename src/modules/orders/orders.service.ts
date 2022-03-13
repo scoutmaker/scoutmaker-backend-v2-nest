@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChangeOrderStatusDto } from './dto/change-order-status.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { FindAllOrdersDto } from './dto/find-all-orders.dto';
+import { OrdersPaginationOptionsDto } from './dto/orders-pagination-options.dto';
 
 const include: Prisma.OrderInclude = {
   author: true,
@@ -13,6 +16,8 @@ const include: Prisma.OrderInclude = {
 };
 
 const { author, scout, ...listInclude } = include;
+
+listInclude.player = true;
 
 @Injectable()
 export class OrdersService {
@@ -32,16 +37,73 @@ export class OrdersService {
     });
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  private generateWhereClause({
+    userId,
+    playerId,
+    matchId,
+    status,
+    createdAfter,
+    createdBefore,
+  }: FindAllOrdersDto): Prisma.OrderWhereInput {
+    return {
+      createdAt: {
+        gte: createdAfter ? new Date(createdAfter) : undefined,
+        lte: createdBefore ? new Date(createdBefore) : undefined,
+      },
+      status,
+      matchId,
+      playerId,
+      scout: { id: userId },
+    };
   }
 
-  getList() {
-    return 'This action returns all orders list';
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: OrdersPaginationOptionsDto,
+    query: FindAllOrdersDto,
+  ) {
+    let sort: Prisma.OrderOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'player':
+      case 'scout':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      case 'position':
+        sort = { player: { primaryPosition: { name: sortingOrder } } };
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where = this.generateWhereClause(query);
+
+    const orders = await this.prisma.order.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: sort,
+      include,
+    });
+
+    const total = await this.prisma.order.count({ where });
+
+    return formatPaginatedResponse({
+      docs: orders,
+      totalDocs: total,
+      limit,
+      page,
+    });
+  }
+
+  getList(query: FindAllOrdersDto) {
+    return this.prisma.order.findMany({
+      where: this.generateWhereClause(query),
+      include: listInclude,
+    });
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} order`;
+    return this.prisma.order.findUnique({ where: { id }, include });
   }
 
   changeStatus(
@@ -53,6 +115,6 @@ export class OrdersService {
   }
 
   remove(id: string) {
-    return `This action removes a #${id} order`;
+    return this.prisma.order.delete({ where: { id }, include });
   }
 }

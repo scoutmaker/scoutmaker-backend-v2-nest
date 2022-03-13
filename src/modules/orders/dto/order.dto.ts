@@ -1,4 +1,4 @@
-import { OrderStatus } from '@prisma/client';
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
@@ -59,4 +59,24 @@ export class OrderDto {
   )
   @Expose()
   match?: MatchBasicDataDto;
+}
+
+class PlayerSuperBasicInfoDto extends PickType(PlayerBasicDataWithoutTeamsDto, [
+  'id',
+  'firstName',
+  'lastName',
+]) {}
+
+export class OrderBasicDataDto extends PickType(OrderDto, [
+  'id',
+  'docNumber',
+  'match',
+]) {
+  @Transform(({ value }) =>
+    plainToInstance(PlayerSuperBasicInfoDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  player?: PlayerSuperBasicInfoDto;
 }
