@@ -4,6 +4,7 @@ import { Expose, plainToInstance, Transform } from 'class-transformer';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
 import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
+import { OrderStatusEnum } from '../types';
 
 export class OrderDto {
   @Expose()
@@ -13,7 +14,7 @@ export class OrderDto {
   docNumber: number;
 
   @Expose()
-  status: OrderStatus;
+  status: OrderStatusEnum;
 
   @Expose()
   description?: string;
