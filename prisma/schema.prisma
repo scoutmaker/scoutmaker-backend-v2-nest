@@ -57,6 +57,11 @@ model User {
   createdOrders                   Order[]                         @relation("author")
   acceptedOrders                  Order[]                         @relation("scout")
   agencies                        Agency[]
+  followedPlayers                 FollowPlayer[]
+  followedTeams                   FollowTeam[]
+  followedScouts                  FollowScout[]                   @relation("follower")
+  followedAgencies                FollowAgency[]
+  followedBy                      FollowScout[]                   @relation("followee")
 }
 
 model Country {
@@ -136,6 +141,7 @@ model Team {
   players      TeamAffiliation[]
   homeMatches  Match[]                    @relation("homeTeam")
   awayMatches  Match[]                    @relation("awayTeam")
+  followedBy   FollowTeam[]
 }
 
 model Season {
@@ -308,6 +314,7 @@ model Player {
   reports            Report[]
   orders             Order[]
   agencies           AgencyAffiliation[]
+  followedBy         FollowPlayer[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -557,11 +564,12 @@ model Agency {
   updatedAt        DateTime @updatedAt
 
   // Relation fields
-  country   Country             @relation(fields: [countryId], references: [id])
-  countryId String
-  author    User                @relation(fields: [authorId], references: [id])
-  authorId  String
-  players   AgencyAffiliation[]
+  country    Country             @relation(fields: [countryId], references: [id])
+  countryId  String
+  author     User                @relation(fields: [authorId], references: [id])
+  authorId   String
+  players    AgencyAffiliation[]
+  followedBy FollowAgency[]
 }
 
 model AgencyAffiliation {
@@ -576,4 +584,56 @@ model AgencyAffiliation {
   playerId String
   agency   Agency @relation(fields: [agencyId], references: [id])
   agencyId String
+}
+
+model FollowPlayer {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  player     Player @relation(fields: [playerId], references: [id])
+  playerId   String
+  follower   User   @relation(fields: [followerId], references: [id])
+  followerId String
+
+  @@id([playerId, followerId])
+}
+
+model FollowTeam {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  team       Team   @relation(fields: [teamId], references: [id])
+  teamId     String
+  follower   User   @relation(fields: [followerId], references: [id])
+  followerId String
+
+  @@id([teamId, followerId])
+}
+
+model FollowScout {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  scout      User   @relation(fields: [scoutId], references: [id], name: "followee")
+  scoutId    String
+  follower   User   @relation(fields: [followerId], references: [id], name: "follower")
+  followerId String
+
+  @@id([scoutId, followerId])
+}
+
+model FollowAgency {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  agency     Agency @relation(fields: [agencyId], references: [id])
+  agencyId   String
+  follower   User   @relation(fields: [followerId], references: [id])
+  followerId String
+
+  @@id([agencyId, followerId])
 }
