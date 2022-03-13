@@ -1,9 +1,17 @@
-import { Module } from '@nestjs/common';
-import { OrdersService } from './orders.service';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+
+import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
 import { OrdersController } from './orders.controller';
+import { OrdersService } from './orders.service';
 
 @Module({
   controllers: [OrdersController],
-  providers: [OrdersService]
+  providers: [OrdersService],
 })
-export class OrdersModule {}
+export class OrdersModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PrepareQueryMiddleware)
+      .forRoutes({ path: 'orders', method: RequestMethod.GET });
+  }
+}
