@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AgenciesModule } from './modules/agencies/agencies.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClubsModule } from './modules/clubs/clubs.module';
 import { CompetitionAgeCategoriesModule } from './modules/competition-age-categories/competition-age-categories.module';
@@ -62,6 +63,7 @@ import { UsersModule } from './modules/users/users.module';
     ReportSkillAssessmentsModule,
     ReportsModule,
     OrdersModule,
+    AgenciesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

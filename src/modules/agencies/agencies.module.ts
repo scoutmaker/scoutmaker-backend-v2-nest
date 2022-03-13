@@ -1,0 +1,17 @@
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+
+import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
+import { AgenciesController } from './agencies.controller';
+import { AgenciesService } from './agencies.service';
+
+@Module({
+  controllers: [AgenciesController],
+  providers: [AgenciesService],
+})
+export class AgenciesModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PrepareQueryMiddleware)
+      .forRoutes({ path: 'agencies', method: RequestMethod.GET });
+  }
+}
