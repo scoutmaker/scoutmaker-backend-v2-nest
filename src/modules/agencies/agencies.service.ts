@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
+
+import { AgenciesPaginationOptions } from './dto/agencies-pagination-options.dto';
 import { CreateAgencyDto } from './dto/create-agency.dto';
+import { FindAllAgenciesDto } from './dto/find-all-agencies.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
 
 @Injectable()
@@ -8,19 +11,23 @@ export class AgenciesService {
     return 'This action adds a new agency';
   }
 
-  findAll() {
+  findAll({}: AgenciesPaginationOptions, {}: FindAllAgenciesDto) {
     return `This action returns all agencies`;
   }
 
-  findOne(id: number) {
+  getList() {
+    return `This action returns all agencies list`;
+  }
+
+  findOne(id: string) {
     return `This action returns a #${id} agency`;
   }
 
-  update(id: number, updateAgencyDto: UpdateAgencyDto) {
+  update(id: string, updateAgencyDto: UpdateAgencyDto) {
     return `This action updates a #${id} agency`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} agency`;
   }
 }
