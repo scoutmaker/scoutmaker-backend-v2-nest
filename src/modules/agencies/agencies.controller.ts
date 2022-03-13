@@ -16,6 +16,8 @@ import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { AgenciesService } from './agencies.service';
 import { AgenciesPaginationOptions } from './dto/agencies-pagination-options.dto';
 import { AgencyBasicInfoDto, AgencyDto } from './dto/agency.dto';
@@ -33,15 +35,18 @@ export class AgenciesController {
   @Post()
   @ApiResponse(AgencyDto, { type: 'create' })
   @Serialize(AgencyDto)
-  async create(@Body() createAgencyDto: CreateAgencyDto) {
-    const agency = await this.agenciesService.create(createAgencyDto);
+  async create(
+    @Body() createAgencyDto: CreateAgencyDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const agency = await this.agenciesService.create(createAgencyDto, user.id);
     return formatSuccessResponse('Successfully created new agency', agency);
   }
 
   @Get()
   @ApiResponse(AgencyDto, { type: 'read' })
   @ApiQuery({ type: AgenciesPaginationOptions })
-  @Serialize(AgencyDto)
+  @Serialize(AgencyDto, 'docs')
   async findAll(
     @PaginationOptions() paginationOptions: AgenciesPaginationOptions,
     @Query() query: FindAllAgenciesDto,
