@@ -1,12 +1,25 @@
 import { Injectable } from '@nestjs/common';
 
+import { PrismaService } from '../prisma/prisma.service';
+
 @Injectable()
 export class FollowScoutsService {
-  create() {
-    return 'This action adds a new followScout';
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(scoutId: string, userId: string) {
+    return this.prisma.followScout.create({
+      data: {
+        scout: { connect: { id: scoutId } },
+        follower: { connect: { id: userId } },
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} followScout`;
+  remove(scoutId: string, userId: string) {
+    return this.prisma.followScout.delete({
+      where: {
+        scoutId_followerId: { scoutId, followerId: userId },
+      },
+    });
   }
 }
