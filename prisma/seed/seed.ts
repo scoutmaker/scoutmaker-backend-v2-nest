@@ -21,6 +21,7 @@ async function main() {
   await prisma.skillAssessmentTemplatesOnReportTemplates.deleteMany();
   await prisma.reportSkillAssessment.deleteMany();
   await prisma.report.deleteMany();
+  await prisma.order.deleteMany();
   await prisma.reportTemplate.deleteMany();
   await prisma.reportSkillAssessmentTemplate.deleteMany();
   await prisma.reportSkillAssessmentCategory.deleteMany();
@@ -667,6 +668,33 @@ async function main() {
   });
 
   await Promise.all([marchwinskiReportPromise, skibickiReportPromise]);
+
+  const marchwinskiOrderPromise = prisma.order.create({
+    data: {
+      player: { connect: { id: marchwinski.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const skibickiOrderPromise = prisma.order.create({
+    data: {
+      player: { connect: { id: skibicki.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  const matchOrderPromise = prisma.order.create({
+    data: {
+      match: { connect: { id: lechLegiaMatch.id } },
+      author: { connect: { id: admin.id } },
+    },
+  });
+
+  await Promise.all([
+    marchwinskiOrderPromise,
+    skibickiOrderPromise,
+    matchOrderPromise,
+  ]);
 }
 
 main()
