@@ -1,14 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
-import { CreateFollowAgencyDto } from './dto/create-follow-agency.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
+const include: Prisma.FollowAgencyInclude = {
+  agency: true,
+  follower: true,
+};
 @Injectable()
 export class FollowAgenciesService {
-  create(createFollowAgencyDto: CreateFollowAgencyDto) {
-    return 'This action adds a new followAgency';
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(agencyId: string, userId: string) {
+    return this.prisma.followAgency.create({
+      data: {
+        agency: { connect: { id: agencyId } },
+        follower: { connect: { id: userId } },
+      },
+      include,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} followAgency`;
+  remove(agencyId: string, userId: string) {
+    return this.prisma.followAgency.delete({
+      where: {
+        agencyId_followerId: { agencyId, followerId: userId },
+      },
+      include,
+    });
   }
 }

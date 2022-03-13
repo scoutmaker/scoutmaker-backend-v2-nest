@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateFollowScoutDto } from './dto/create-follow-scout.dto';
-
 @Injectable()
 export class FollowScoutsService {
-  create(createFollowScoutDto: CreateFollowScoutDto) {
+  create() {
     return 'This action adds a new followScout';
   }
 

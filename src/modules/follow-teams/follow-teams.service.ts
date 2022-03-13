@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateFollowTeamDto } from './dto/create-follow-team.dto';
-
 @Injectable()
 export class FollowTeamsService {
-  create(createFollowTeamDto: CreateFollowTeamDto) {
+  create() {
     return 'This action adds a new followTeam';
   }
 
