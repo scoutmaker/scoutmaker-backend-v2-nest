@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma, UserRole } from '@prisma/client';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
-import { ChangeOrderStatusDto } from './dto/change-order-status.dto';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FindAllOrdersDto } from './dto/find-all-orders.dto';
 import { OrdersPaginationOptionsDto } from './dto/orders-pagination-options.dto';
@@ -106,12 +110,79 @@ export class OrdersService {
     return this.prisma.order.findUnique({ where: { id }, include });
   }
 
-  changeStatus(
-    id: string,
-    changeOrderStatusDto: ChangeOrderStatusDto,
-    userRole: UserRole,
-  ) {
-    return `This action updates a #${id} order`;
+  async accept(id: string, userId: string) {
+    const order = await this.findOne(id);
+
+    if (order.status !== 'OPEN') {
+      throw new BadRequestException('Order is already accepted or closed');
+    }
+
+    return this.prisma.order.update({
+      where: { id },
+      data: {
+        status: 'ACCEPTED',
+        scout: { connect: { id: userId } },
+        acceptDate: new Date(),
+      },
+      include,
+    });
+  }
+
+  async reject(id: string, userId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: { ...include, reports: true },
+    });
+
+    if (order.status !== 'ACCEPTED') {
+      throw new BadRequestException(
+        'You cannot reject an order with the status other than ACCEPTED',
+      );
+    }
+
+    if (order.scoutId !== userId) {
+      throw new BadRequestException(
+        'You cannot reject an order that you did not accept',
+      );
+    }
+
+    if (order.reports.length > 0) {
+      throw new BadRequestException(
+        'You cannot reject an order with reports already assigned to it',
+      );
+    }
+
+    return this.prisma.order.update({
+      where: { id },
+      data: {
+        status: 'OPEN',
+        scout: { disconnect: true },
+        acceptDate: null,
+      },
+      include,
+    });
+  }
+
+  async close(id: string, user: CurrentUserDto) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: { ...include, reports: true },
+    });
+
+    if (order.authorId !== user.id || user.role !== 'ADMIN') {
+      throw new UnauthorizedException(
+        'You are not authorized to close this order',
+      );
+    }
+
+    return this.prisma.order.update({
+      where: { id },
+      data: {
+        status: 'CLOSED',
+        closeDate: new Date(),
+      },
+      include,
+    });
   }
 
   remove(id: string) {

@@ -20,7 +20,6 @@ import { PaginationOptions } from '../../pagination/pagination-options.decorator
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { ChangeOrderStatusDto } from './dto/change-order-status.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FindAllOrdersDto } from './dto/find-all-orders.dto';
 import { OrderBasicDataDto, OrderDto } from './dto/order.dto';
@@ -76,21 +75,35 @@ export class OrdersController {
     return formatSuccessResponse(`Successfully fetched order #${id}`, order);
   }
 
-  @Patch(':id/change-status')
+  @Patch(':id/accept')
   @ApiResponse(OrderDto, { type: 'update' })
   @Serialize(OrderDto)
-  async update(
-    @Param('id') id: string,
-    @Body() changeOrderStatusDto: ChangeOrderStatusDto,
-    @CurrentUser() user: CurrentUserDto,
-  ) {
-    const order = await this.ordersService.changeStatus(
-      id,
-      changeOrderStatusDto,
-      user.role,
-    );
+  async accept(@Param('id') id: string, @CurrentUser() user: CurrentUserDto) {
+    const order = await this.ordersService.accept(id, user.id);
     return formatSuccessResponse(
-      `Successfully changed order #${id} status`,
+      `Successfully accepted order with the id of ${id}`,
+      order,
+    );
+  }
+
+  @Patch(':id/reject')
+  @ApiResponse(OrderDto, { type: 'update' })
+  @Serialize(OrderDto)
+  async reject(@Param('id') id: string, @CurrentUser() user: CurrentUserDto) {
+    const order = await this.ordersService.reject(id, user.id);
+    return formatSuccessResponse(
+      `Successfully rejected order with the id of ${id}`,
+      order,
+    );
+  }
+
+  @Patch(':id/close')
+  @ApiResponse(OrderDto, { type: 'update' })
+  @Serialize(OrderDto)
+  async close(@Param('id') id: string, @CurrentUser() user: CurrentUserDto) {
+    const order = await this.ordersService.close(id, user);
+    return formatSuccessResponse(
+      `Successfully closed order with the id of ${id}`,
       order,
     );
   }
