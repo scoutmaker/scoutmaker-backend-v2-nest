@@ -1,34 +1,67 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UserFootballRolesService } from './user-football-roles.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { CreateUserFootballRoleDto } from './dto/create-user-football-role.dto';
 import { UpdateUserFootballRoleDto } from './dto/update-user-football-role.dto';
+import { UserFootballRoleDto } from './dto/user-football-role.dto';
+import { UserFootballRolesService } from './user-football-roles.service';
 
 @Controller('user-football-roles')
+@ApiTags('user football roles')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
+@Serialize(UserFootballRoleDto)
 export class UserFootballRolesController {
-  constructor(private readonly userFootballRolesService: UserFootballRolesService) {}
+  constructor(private readonly rolesService: UserFootballRolesService) {}
 
   @Post()
-  create(@Body() createUserFootballRoleDto: CreateUserFootballRoleDto) {
-    return this.userFootballRolesService.create(createUserFootballRoleDto);
+  @ApiResponse(UserFootballRoleDto, { type: 'read' })
+  async create(@Body() createUserFootballRoleDto: CreateUserFootballRoleDto) {
+    const role = await this.rolesService.create(createUserFootballRoleDto);
+    return formatSuccessResponse('Successfully created new role', role);
   }
 
   @Get()
-  findAll() {
-    return this.userFootballRolesService.findAll();
+  @ApiResponse(UserFootballRoleDto, { type: 'read' })
+  async findAll() {
+    const roles = await this.rolesService.findAll();
+    return formatSuccessResponse('Successfully fetched all roles', roles);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userFootballRolesService.findOne(+id);
+  @ApiResponse(UserFootballRoleDto, { type: 'read' })
+  async findOne(@Param('id') id: string) {
+    const role = await this.rolesService.findOne(id);
+    return formatSuccessResponse(`Successfully fetched role ${id}`, role);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserFootballRoleDto: UpdateUserFootballRoleDto) {
-    return this.userFootballRolesService.update(+id, updateUserFootballRoleDto);
+  @ApiResponse(UserFootballRoleDto, { type: 'read' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserFootballRoleDto: UpdateUserFootballRoleDto,
+  ) {
+    const role = await this.rolesService.update(id, updateUserFootballRoleDto);
+    return formatSuccessResponse(`Successfully updated role ${id}`, role);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userFootballRolesService.remove(+id);
+  @ApiResponse(UserFootballRoleDto, { type: 'read' })
+  async remove(@Param('id') id: string) {
+    const role = await this.rolesService.remove(id);
+    return formatSuccessResponse(`Successfully removed role ${id}`, role);
   }
 }
