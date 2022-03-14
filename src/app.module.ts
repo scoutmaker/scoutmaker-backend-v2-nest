@@ -33,6 +33,7 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 import { TeamsModule } from './modules/teams/teams.module';
+import { UserFootballRolesModule } from './modules/user-football-roles/user-football-roles.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -72,6 +73,7 @@ import { UsersModule } from './modules/users/users.module';
     FollowTeamsModule,
     FollowScoutsModule,
     FollowAgenciesModule,
+    UserFootballRolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
