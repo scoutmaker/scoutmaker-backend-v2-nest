@@ -6,6 +6,7 @@ import { generateAgeCategories } from './competition-age-categories';
 import { generateCompetitionTypes } from './competition-types';
 import { generateCompetitions } from './competitions';
 import { generateCountries } from './countries';
+import { generateFootballRoles } from './football-roles';
 import { generatePositions } from './positions';
 import { generateRegions } from './regions';
 import { generateReportSkillAssessmentCategories } from './report-skill-assessment-categories';
@@ -44,6 +45,7 @@ async function main() {
   await prisma.secondaryPositionsOnPlayers.deleteMany();
   await prisma.player.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.userFootballRole.deleteMany();
   await prisma.region.deleteMany();
   await prisma.country.deleteMany();
   await prisma.playerPosition.deleteMany();
@@ -703,6 +705,8 @@ async function main() {
     admin.id,
     poland.id,
   );
+
+  await generateFootballRoles();
 }
 
 main()

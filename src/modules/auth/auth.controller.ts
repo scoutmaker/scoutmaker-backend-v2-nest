@@ -1,28 +1,29 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
+  Patch,
+  Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { CookieOptions, Request, Response } from 'express';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { add } from 'date-fns';
-import { AuthService } from './auth.service';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { UserDto } from '../users/dto/user.dto';
-import { Serialize } from '../../interceptors/serialize.interceptor';
+import { CookieOptions, Request, Response } from 'express';
+
 import { ApiResponse } from '../../api-response/api-response.decorator';
-import { formatSuccessResponse } from '../../utils/helpers';
-import { UsersService } from '../users/users.service';
 import { AuthGuard } from '../../guards/auth.guard';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { UserDto } from '../users/dto/user.dto';
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 const cookieOptions: CookieOptions = {
   httpOnly: true,

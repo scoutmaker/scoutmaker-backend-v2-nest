@@ -42,26 +42,40 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region                          Region                          @relation(fields: [regionId], references: [id])
-  regionId                        String
-  clubs                           Club[]
-  teams                           Team[]
-  players                         Player[]
-  matches                         Match[]
-  notes                           Note[]
-  insiderNotes                    InsiderNote[]
-  reportSkillAssessmentCategories ReportSkillAssessmentCategory[]
-  reportSkillAssessmentTemplates  ReportSkillAssessmentTemplate[]
-  reportTemplates                 ReportTemplate[]
-  reports                         Report[]
-  createdOrders                   Order[]                         @relation("author")
-  acceptedOrders                  Order[]                         @relation("scout")
-  agencies                        Agency[]
-  followedPlayers                 FollowPlayer[]
-  followedTeams                   FollowTeam[]
-  followedScouts                  FollowScout[]                   @relation("follower")
-  followedAgencies                FollowAgency[]
-  followedBy                      FollowScout[]                   @relation("followee")
+  region                                 Region                          @relation(fields: [regionId], references: [id])
+  regionId                               String
+  footballRole                           UserFootballRole?               @relation(fields: [footballRoleId], references: [id])
+  footballRoleId                         String?
+  club                                   Club?                           @relation(fields: [clubId], references: [id], name: "club")
+  clubId                                 String?
+  createdClubs                           Club[]                          @relation("created-clubs")
+  createdTeams                           Team[]
+  createdPlayers                         Player[]
+  createdMatches                         Match[]
+  createdNotes                           Note[]
+  createdInsiderNotes                    InsiderNote[]
+  createdReportSkillAssessmentCategories ReportSkillAssessmentCategory[]
+  createdReportSkillAssessmentTemplates  ReportSkillAssessmentTemplate[]
+  createdReportTemplates                 ReportTemplate[]
+  createdAgencies                        Agency[]
+  createdReports                         Report[]
+  createdOrders                          Order[]                         @relation("author")
+  acceptedOrders                         Order[]                         @relation("scout")
+  followedPlayers                        FollowPlayer[]
+  followedTeams                          FollowTeam[]
+  followedScouts                         FollowScout[]                   @relation("follower")
+  followedAgencies                       FollowAgency[]
+  followedBy                             FollowScout[]                   @relation("followee")
+}
+
+model UserFootballRole {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  users User[]
 }
 
 model Country {
@@ -117,9 +131,10 @@ model Club {
   countryId String
   region    Region  @relation(fields: [regionId], references: [id])
   regionId  String
-  author    User    @relation(fields: [authorId], references: [id])
+  author    User    @relation(fields: [authorId], references: [id], name: "created-clubs")
   authorId  String
   teams     Team[]
+  users     User[]  @relation("club")
 }
 
 model Team {
