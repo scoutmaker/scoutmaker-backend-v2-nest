@@ -12,7 +12,11 @@ import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 
-const include: Prisma.UserInclude = { region: { include: { country: true } } };
+const include: Prisma.UserInclude = {
+  region: { include: { country: true } },
+  footballRole: true,
+  club: true,
+};
 
 @Injectable()
 export class AuthService {

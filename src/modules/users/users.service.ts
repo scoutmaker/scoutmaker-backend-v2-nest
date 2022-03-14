@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-const include: Prisma.UserInclude = { region: { include: { country: true } } };
+const include: Prisma.UserInclude = {
+  region: { include: { country: true } },
+  footballRole: true,
+  club: true,
+};
 
 @Injectable()
 export class UsersService {

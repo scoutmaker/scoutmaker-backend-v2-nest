@@ -9,6 +9,8 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
 import { MatchesProperty } from '../../../decorators/matches-property.decorator';
 import { PASSWORD_REGEXP } from '../../../utils/constants';
 
@@ -24,6 +26,14 @@ export class RegisterUserDto {
   @IsNotEmpty()
   @IsString()
   lastName: string;
+
+  @IsOptional()
+  @IsCuid()
+  clubId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  footballRoleId?: string;
 
   @IsOptional()
   @IsPhoneNumber()
