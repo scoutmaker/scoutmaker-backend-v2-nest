@@ -1,4 +1,6 @@
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
+
 import { CountryDto } from '../../countries/dto/country.dto';
 import { RegionWithoutCountryDto } from '../../regions/dto/region-without-country.dto';
 
@@ -49,3 +51,5 @@ export class ClubDto {
   @Expose()
   region: RegionWithoutCountryDto;
 }
+
+export class ClubBasicDataDto extends PickType(ClubDto, ['id', 'name']) {}

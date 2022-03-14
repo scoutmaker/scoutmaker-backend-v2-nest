@@ -1,5 +1,4 @@
 import {
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
@@ -7,27 +6,39 @@ import {
   Min,
 } from 'class-validator';
 
-export class UpdateUserDto {
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
 
-  @IsNotEmpty()
+export class UpdateUserDto {
+  @IsOptional()
   @IsString()
-  lastName: string;
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsCuid()
+  clubId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  footballRoleId?: string;
 
   @IsOptional()
   @IsPhoneNumber()
   phone?: string;
 
+  @IsOptional()
   @IsString()
   city?: string;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
   activeRadius?: number;
 
-  @IsString()
-  @IsNotEmpty()
-  regionId: string;
+  @IsOptional()
+  @IsCuid()
+  regionId?: string;
 }
