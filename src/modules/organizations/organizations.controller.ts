@@ -9,6 +9,8 @@ import {
 } from '@nestjs/common';
 
 import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { ToggleMembershipDto } from './dto/toggle-membership.dto';
+import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { OrganizationsService } from './organizations.service';
 
 @Controller('organizations')
@@ -31,8 +33,27 @@ export class OrganizationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.organizationsService.update(id);
+  update(
+    @Param('id') id: string,
+    updateOrganizationDto: UpdateOrganizationDto,
+  ) {
+    return this.organizationsService.update(id, updateOrganizationDto);
+  }
+
+  @Patch(':id/add-member')
+  addMember(
+    @Param('id') id: string,
+    @Body() toggleMembershipDto: ToggleMembershipDto,
+  ) {
+    return this.organizationsService.addMember(id, toggleMembershipDto);
+  }
+
+  @Patch(':id/remove-member')
+  removeMember(
+    @Param('id') id: string,
+    @Body() toggleMembershipDto: ToggleMembershipDto,
+  ) {
+    return this.organizationsService.removeMember(id, toggleMembershipDto);
   }
 
   @Delete(':id')
