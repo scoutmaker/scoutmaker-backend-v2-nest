@@ -38,6 +38,7 @@ model User {
   confirmationCodeExpiryDate DateTime?
   resetPasswordToken         String?       @unique
   resetPasswordExpiryDate    DateTime?
+  scoutmakerv1Id             String?       @unique
   createdAt                  DateTime      @default(now())
   updatedAt                  DateTime      @updatedAt
 
@@ -125,7 +126,6 @@ model Club {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-
   // Relation fields
   country   Country @relation(fields: [countryId], references: [id])
   countryId String
@@ -144,6 +144,7 @@ model Team {
   transfermarktUrl String?
   lnpId            String?
   isPublic         Boolean  @default(false)
+  scoutmakerv1Id   String?  @unique
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -312,6 +313,7 @@ model Player {
   transfermarktId  String?
   transfermarktUrl String?
   isPublic         Boolean  @default(false)
+  scoutmakerv1Id   String?  @unique
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -360,14 +362,15 @@ model TeamAffiliation {
 }
 
 model Match {
-  id        String   @id @default(cuid())
-  date      DateTime
-  homeGoals Int?
-  awayGoals Int?
-  videoUrl  String?
-  isPublic  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  date           DateTime
+  homeGoals      Int?
+  awayGoals      Int?
+  videoUrl       String?
+  isPublic       Boolean  @default(false)
+  scoutmakerv1Id String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relation fields
   homeTeam      Team              @relation(fields: [homeTeamId], references: [id], name: "homeTeam")
@@ -395,6 +398,7 @@ model Note {
   maxRatingScore   Int?
   rating           Int?
   percentageRating Float?
+  scoutmakerv1Id   String?  @unique
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -437,12 +441,13 @@ model ReportSkillAssessmentCategory {
 }
 
 model ReportSkillAssessmentTemplate {
-  id        String   @id @default(cuid())
-  name      String
-  shortName String
-  hasScore  Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  shortName      String
+  hasScore       Boolean
+  scoutmakerv1Id String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relation fields
   category        ReportSkillAssessmentCategory               @relation(fields: [categoryId], references: [id])
@@ -458,6 +463,7 @@ model ReportTemplate {
   name           String
   maxRatingScore Int
   isPublic       Boolean  @default(false)
+  scoutmakerv1Id String?  @unique
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -516,6 +522,7 @@ model Report {
   avgRating        Float?
   percentageRating Float?
   status           ReportStatus @default(IN_PROGRESS)
+  scoutmakerv1Id   String?      @unique
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
@@ -542,14 +549,15 @@ enum OrderStatus {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  docNumber   Int         @default(autoincrement())
-  status      OrderStatus @default(OPEN)
-  description String?
-  acceptDate  DateTime?
-  closeDate   DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id             String      @id @default(cuid())
+  docNumber      Int         @default(autoincrement())
+  status         OrderStatus @default(OPEN)
+  description    String?
+  acceptDate     DateTime?
+  closeDate      DateTime?
+  scoutmakerv1Id String?     @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relation fields
   author   User     @relation(fields: [authorId], references: [id], name: "author")
