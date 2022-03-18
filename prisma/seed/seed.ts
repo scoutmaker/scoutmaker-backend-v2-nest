@@ -489,8 +489,14 @@ async function main() {
       percentageRating: 75,
       player: { connect: { id: marchwinski.id } },
       match: { connect: { id: lechLegiaMatch.id } },
-      positionPlayed: { connect: { id: cm.id } },
       author: { connect: { id: admin.id } },
+      meta: {
+        create: {
+          competition: { connect: { id: ekstraklasa.id } },
+          team: { connect: { id: lechFirst.id } },
+          position: { connect: { id: lm.id } },
+        },
+      },
     },
   });
 
@@ -503,8 +509,14 @@ async function main() {
       percentageRating: 50,
       player: { connect: { id: skibicki.id } },
       match: { connect: { id: lechLegiaMatch.id } },
-      positionPlayed: { connect: { id: cm.id } },
       author: { connect: { id: admin.id } },
+      meta: {
+        create: {
+          competition: { connect: { id: ekstraklasa.id } },
+          position: { connect: { id: cm.id } },
+          team: { connect: { id: legiaFirst.id } },
+        },
+      },
     },
   });
 
@@ -517,8 +529,15 @@ async function main() {
       percentageRating: 50,
       player: { connect: { id: winglarek.id } },
       match: { connect: { id: gornikZaglebieResMatch.id } },
-      positionPlayed: { connect: { id: cb.id } },
       author: { connect: { id: admin.id } },
+      meta: {
+        create: {
+          competition: { connect: { id: IIIliga.id } },
+          competitionGroup: { connect: { id: IIIligaGroupIII.id } },
+          position: { connect: { id: cb.id } },
+          team: { connect: { id: gornikSecond.id } },
+        },
+      },
     },
   });
 
