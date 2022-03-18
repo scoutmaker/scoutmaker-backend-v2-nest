@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInsiderNoteDto } from './dto/create-insider-note.dto';
 import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
@@ -15,16 +16,39 @@ const include: Prisma.InsiderNoteInclude = {
 
 @Injectable()
 export class InsiderNotesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly playersService: PlayersService,
+  ) {}
 
-  create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
-    const { playerId, ...rest } = createInsiderNoteDto;
+  async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
+    const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
+      createInsiderNoteDto;
+
+    const player = await this.playersService.findOneWithCurrentTeamDetails(
+      playerId,
+    );
+
+    const metaTeamId = teamId || player.teams[0].teamId;
+    const metaCompetitionId =
+      competitionId || player.teams[0].team.competitions[0].competitionId;
+    const metaCompetitionGroupId =
+      competitionGroupId || player.teams[0].team.competitions[0].groupId;
 
     return this.prisma.insiderNote.create({
       data: {
         ...rest,
         player: { connect: { id: playerId } },
         author: { connect: { id: authorId } },
+        meta: {
+          create: {
+            team: { connect: { id: metaTeamId } },
+            competition: { connect: { id: metaCompetitionId } },
+            competitionGroup: metaCompetitionGroupId
+              ? { connect: { id: metaCompetitionGroupId } }
+              : undefined,
+          },
+        },
       },
       include,
     });
@@ -71,15 +95,56 @@ export class InsiderNotesService {
     return this.prisma.insiderNote.findUnique({ where: { id }, include });
   }
 
-  update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {
+  async update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {
+    const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
+      updateInsiderNoteDto;
+
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string | undefined;
+
+    // If there's playerId in the update, we need to update the meta with calculated values
+    if (playerId) {
+      const player =
+        this.playersService.findOneWithCurrentTeamDetails(playerId);
+
+      metaTeamId = teamId || player.teams[0].teamId;
+      metaCompetitionId =
+        competitionId || player.teams[0].team.competitions[0].competitionId;
+      metaCompetitionGroupId =
+        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+
+      await this.prisma.insiderNoteMeta.update({
+        where: { insiderNoteId: id },
+        data: {
+          teamId: metaTeamId,
+          competitionId: metaCompetitionId,
+          competitionGroupId: metaCompetitionGroupId,
+        },
+      });
+    }
+
+    // If there's no playerId in the update and there's meta data provided, we need to update the meta with provided values
+    if (!playerId && (teamId || competitionId || competitionGroupId)) {
+      await this.prisma.insiderNoteMeta.update({
+        where: { insiderNoteId: id },
+        data: {
+          teamId,
+          competitionId,
+          competitionGroupId,
+        },
+      });
+    }
+
     return this.prisma.insiderNote.update({
       where: { id },
-      data: updateInsiderNoteDto,
+      data: { ...rest, playerId },
       include,
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } });
     return this.prisma.insiderNote.delete({
       where: { id },
       include,

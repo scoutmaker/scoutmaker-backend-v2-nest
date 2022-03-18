@@ -50,7 +50,7 @@ export class NotesService {
     let metaPositionId: string;
     let metaTeamId: string;
     let metaCompetitionId: string;
-    let metaCompetitionGroupId: string;
+    let metaCompetitionGroupId: string | undefined;
 
     // If there's playerId supplied, we need to create note meta
     if (playerId) {
