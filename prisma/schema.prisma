@@ -151,16 +151,17 @@ model Team {
   updatedAt        DateTime @updatedAt
 
   // Relation fields
-  club         Club                       @relation(fields: [clubId], references: [id])
-  clubId       String
-  author       User                       @relation(fields: [authorId], references: [id])
-  authorId     String
-  competitions CompetitionParticipation[]
-  players      TeamAffiliation[]
-  homeMatches  Match[]                    @relation("homeTeam")
-  awayMatches  Match[]                    @relation("awayTeam")
-  followedBy   FollowTeam[]
-  notesMeta    NoteMeta[]
+  club             Club                       @relation(fields: [clubId], references: [id])
+  clubId           String
+  author           User                       @relation(fields: [authorId], references: [id])
+  authorId         String
+  competitions     CompetitionParticipation[]
+  players          TeamAffiliation[]
+  homeMatches      Match[]                    @relation("homeTeam")
+  awayMatches      Match[]                    @relation("awayTeam")
+  followedBy       FollowTeam[]
+  notesMeta        NoteMeta[]
+  insiderNotesMeta InsiderNoteMeta[]
 }
 
 model Season {
@@ -191,18 +192,19 @@ model Competition {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  country       Country                    @relation(fields: [countryId], references: [id])
-  countryId     String
-  ageCategory   CompetitionAgeCategory     @relation(fields: [ageCategoryId], references: [id])
-  ageCategoryId String
-  type          CompetitionType            @relation(fields: [typeId], references: [id])
-  typeId        String
-  juniorLevel   CompetitionJuniorLevel?    @relation(fields: [juniorLevelId], references: [id])
-  juniorLevelId String?
-  clubs         CompetitionParticipation[]
-  groups        CompetitionGroup[]
-  matches       Match[]
-  notesMeta     NoteMeta[]
+  country          Country                    @relation(fields: [countryId], references: [id])
+  countryId        String
+  ageCategory      CompetitionAgeCategory     @relation(fields: [ageCategoryId], references: [id])
+  ageCategoryId    String
+  type             CompetitionType            @relation(fields: [typeId], references: [id])
+  typeId           String
+  juniorLevel      CompetitionJuniorLevel?    @relation(fields: [juniorLevelId], references: [id])
+  juniorLevelId    String?
+  clubs            CompetitionParticipation[]
+  groups           CompetitionGroup[]
+  matches          Match[]
+  notesMeta        NoteMeta[]
+  insiderNotesMeta InsiderNoteMeta[]
 
   @@unique([level, countryId])
 }
@@ -214,12 +216,13 @@ model CompetitionGroup {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  competition   Competition                  @relation(fields: [competitionId], references: [id])
-  competitionId String
-  regions       RegionsOnCompetitionGroups[]
-  teams         CompetitionParticipation[]
-  matches       Match[]
-  notesMeta     NoteMeta[]
+  competition      Competition                  @relation(fields: [competitionId], references: [id])
+  competitionId    String
+  regions          RegionsOnCompetitionGroups[]
+  teams            CompetitionParticipation[]
+  matches          Match[]
+  notesMeta        NoteMeta[]
+  insiderNotesMeta InsiderNoteMeta[]
 
   @@unique([name, competitionId])
 }
@@ -443,10 +446,27 @@ model InsiderNote {
   updatedAt   DateTime @updatedAt
 
   // Relation fields
-  player   Player @relation(fields: [playerId], references: [id])
+  player   Player           @relation(fields: [playerId], references: [id])
   playerId String
-  author   User   @relation(fields: [authorId], references: [id])
+  author   User             @relation(fields: [authorId], references: [id])
   authorId String
+  meta     InsiderNoteMeta?
+}
+
+model InsiderNoteMeta {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  insiderNote        InsiderNote       @relation(fields: [insiderNoteId], references: [id])
+  insiderNoteId      String            @unique
+  team               Team              @relation(fields: [teamId], references: [id])
+  teamId             String
+  competition        Competition       @relation(fields: [competitionId], references: [id])
+  competitionId      String
+  competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
+  competitionGroupId String?
 }
 
 model ReportSkillAssessmentCategory {
