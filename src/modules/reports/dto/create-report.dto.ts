@@ -96,6 +96,18 @@ export class CreateReportDto {
 
   @IsOptional()
   @IsCuid()
+  teamId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  competitionId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  competitionGroupId?: string;
+
+  @IsOptional()
+  @IsCuid()
   matchId?: string;
 
   @IsArray()
