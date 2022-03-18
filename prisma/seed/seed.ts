@@ -11,7 +11,7 @@ import { generatePositions } from './positions';
 import { generateRegions } from './regions';
 import { generateReportSkillAssessmentCategories } from './report-skill-assessment-categories';
 import { generateSeasons } from './season';
-import { generateUser } from './user';
+import { generateUsers } from './users';
 
 const prisma = new PrismaClient();
 
@@ -44,6 +44,7 @@ async function main() {
   await prisma.competitionJuniorLevel.deleteMany();
   await prisma.secondaryPositionsOnPlayers.deleteMany();
   await prisma.player.deleteMany();
+  await prisma.organization.deleteMany();
   await prisma.user.deleteMany();
   await prisma.userFootballRole.deleteMany();
   await prisma.region.deleteMany();
@@ -71,7 +72,26 @@ async function main() {
     zachodnioPomorskie,
   } = await generateRegions(poland.id);
 
-  const admin = await generateUser(wielkopolskie.id);
+  const {
+    admin,
+    scout1,
+    scout2,
+    scout3,
+    scout4,
+    playmakerScout1,
+    playmakerScout2,
+    playmakerScout3,
+    playmakerScout4,
+  } = await generateUsers(wielkopolskie.id);
+
+  const organization = await prisma.organization.create({
+    data: {
+      name: 'Test Organization',
+      members: {
+        connect: [{ id: playmakerScout1.id }, { id: playmakerScout2.id }],
+      },
+    },
+  });
 
   const { lech, legia, gornik, lubin } = await generateClubs({
     adminId: admin.id,
