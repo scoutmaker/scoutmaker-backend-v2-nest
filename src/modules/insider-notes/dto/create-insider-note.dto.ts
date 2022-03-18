@@ -17,4 +17,16 @@ export class CreateInsiderNoteDto {
 
   @IsCuid()
   playerId: string;
+
+  @IsOptional()
+  @IsCuid()
+  teamId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  competitionId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  competitionGroupId?: string;
 }

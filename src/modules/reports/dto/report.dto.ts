@@ -69,14 +69,6 @@ export class ReportDto {
   player: PlayerBasicDataDto;
 
   @Transform(({ value }) =>
-    plainToInstance(PlayerPositionDto, value, {
-      excludeExtraneousValues: true,
-    }),
-  )
-  @Expose()
-  positionPlayed?: PlayerPositionDto;
-
-  @Transform(({ value }) =>
     plainToInstance(MatchBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),

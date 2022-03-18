@@ -7,6 +7,7 @@ import { PlayersService } from './players.service';
 @Module({
   controllers: [PlayersController],
   providers: [PlayersService],
+  exports: [PlayersService],
 })
 export class PlayersModule {
   configure(consumer: MiddlewareConsumer) {

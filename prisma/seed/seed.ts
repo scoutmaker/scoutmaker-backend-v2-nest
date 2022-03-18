@@ -19,6 +19,9 @@ const description =
   "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 
 async function main() {
+  await prisma.noteMeta.deleteMany();
+  await prisma.reportMeta.deleteMany();
+  await prisma.insiderNoteMeta.deleteMany();
   await prisma.agencyAffiliation.deleteMany();
   await prisma.agency.deleteMany();
   await prisma.competitionParticipation.deleteMany();
@@ -489,8 +492,14 @@ async function main() {
       percentageRating: 75,
       player: { connect: { id: marchwinski.id } },
       match: { connect: { id: lechLegiaMatch.id } },
-      positionPlayed: { connect: { id: cm.id } },
       author: { connect: { id: admin.id } },
+      meta: {
+        create: {
+          competition: { connect: { id: ekstraklasa.id } },
+          team: { connect: { id: lechFirst.id } },
+          position: { connect: { id: lm.id } },
+        },
+      },
     },
   });
 
@@ -503,8 +512,14 @@ async function main() {
       percentageRating: 50,
       player: { connect: { id: skibicki.id } },
       match: { connect: { id: lechLegiaMatch.id } },
-      positionPlayed: { connect: { id: cm.id } },
       author: { connect: { id: admin.id } },
+      meta: {
+        create: {
+          competition: { connect: { id: ekstraklasa.id } },
+          position: { connect: { id: cm.id } },
+          team: { connect: { id: legiaFirst.id } },
+        },
+      },
     },
   });
 
@@ -517,8 +532,15 @@ async function main() {
       percentageRating: 50,
       player: { connect: { id: winglarek.id } },
       match: { connect: { id: gornikZaglebieResMatch.id } },
-      positionPlayed: { connect: { id: cb.id } },
       author: { connect: { id: admin.id } },
+      meta: {
+        create: {
+          competition: { connect: { id: IIIliga.id } },
+          competitionGroup: { connect: { id: IIIligaGroupIII.id } },
+          position: { connect: { id: cb.id } },
+          team: { connect: { id: gornikSecond.id } },
+        },
+      },
     },
   });
 
@@ -672,6 +694,13 @@ async function main() {
           })),
         },
       },
+      meta: {
+        create: {
+          position: { connect: { id: cm.id } },
+          competition: { connect: { id: ekstraklasa.id } },
+          team: { connect: { id: lechFirst.id } },
+        },
+      },
     },
   });
 
@@ -687,6 +716,13 @@ async function main() {
             rating: 3,
             description,
           })),
+        },
+      },
+      meta: {
+        create: {
+          position: { connect: { id: cm.id } },
+          competition: { connect: { id: ekstraklasa.id } },
+          team: { connect: { id: legiaFirst.id } },
         },
       },
     },

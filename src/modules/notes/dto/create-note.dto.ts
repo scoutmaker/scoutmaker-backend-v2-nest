@@ -38,4 +38,16 @@ export class CreateNoteDto {
   @IsOptional()
   @IsCuid()
   positionPlayedId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  teamId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  competitionId?: string;
+
+  @IsOptional()
+  @IsCuid()
+  competitionGroupId?: string;
 }
