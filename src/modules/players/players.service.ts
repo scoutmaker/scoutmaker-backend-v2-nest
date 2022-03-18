@@ -139,6 +139,27 @@ export class PlayersService {
     return this.prisma.player.findUnique({ where: { id }, include });
   }
 
+  findOneWithCurrentTeamDetails(id: string) {
+    return this.prisma.player.findUnique({
+      where: { id },
+      include: {
+        teams: {
+          where: { endDate: null },
+          include: {
+            team: {
+              include: {
+                competitions: {
+                  where: { season: { isActive: true } },
+                  include: { competition: true, group: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async update(id: string, updatePlayerDto: UpdatePlayerDto) {
     const { secondaryPositionIds, ...rest } = updatePlayerDto;
 

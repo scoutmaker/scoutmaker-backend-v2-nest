@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Note, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import {
   calculatePercentageRating,
   calculateSkip,
   formatPaginatedResponse,
 } from '../../utils/helpers';
+import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
@@ -15,21 +16,26 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 const include: Prisma.NoteInclude = {
   player: { include: { country: true, primaryPosition: true } },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
-  positionPlayed: true,
   author: true,
 };
 
-const { match, positionPlayed, author, ...listInclude } = include;
+const { match, author, ...listInclude } = include;
 
 @Injectable()
 export class NotesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly playersService: PlayersService,
+  ) {}
 
-  create(createNoteDto: CreateNoteDto, authorId: string) {
+  async create(createNoteDto: CreateNoteDto, authorId: string) {
     const {
       playerId,
       matchId,
       positionPlayedId,
+      teamId,
+      competitionId,
+      competitionGroupId,
       rating,
       maxRatingScore,
       ...rest
@@ -41,6 +47,25 @@ export class NotesService {
       percentageRating = calculatePercentageRating(rating, maxRatingScore);
     }
 
+    let metaPositionId: string;
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string;
+
+    // If there's playerId supplied, we need to create note meta
+    if (playerId) {
+      const player = await this.playersService.findOneWithCurrentTeamDetails(
+        playerId,
+      );
+
+      metaPositionId = positionPlayedId || player.primaryPositionId;
+      metaTeamId = teamId || player.teams[0].teamId;
+      metaCompetitionId =
+        competitionId || player.teams[0].team.competitions[0].competitionId;
+      metaCompetitionGroupId =
+        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+    }
+
     return this.prisma.note.create({
       data: {
         ...rest,
@@ -49,10 +74,19 @@ export class NotesService {
         percentageRating: percentageRating || null,
         player: playerId ? { connect: { id: playerId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
-        positionPlayed: positionPlayedId
-          ? { connect: { id: positionPlayedId } }
-          : undefined,
         author: { connect: { id: authorId } },
+        meta: playerId
+          ? {
+              create: {
+                position: { connect: { id: metaPositionId } },
+                team: { connect: { id: metaTeamId } },
+                competition: { connect: { id: metaCompetitionId } },
+                competitionGroup: metaCompetitionGroupId
+                  ? { connect: { id: metaCompetitionGroupId } }
+                  : undefined,
+              },
+            }
+          : undefined,
       },
       include,
     });
@@ -84,7 +118,7 @@ export class NotesService {
         sort = { [sortBy]: { lastName: sortingOrder } };
         break;
       case 'positionPlayed':
-        sort = { positionPlayed: { name: sortingOrder } };
+        sort = { meta: { position: { name: sortingOrder } } };
         break;
       default:
         sort = undefined;
@@ -101,7 +135,7 @@ export class NotesService {
       AND: [
         {
           OR: [
-            { positionPlayed: { id: positionId } },
+            { meta: { position: { id: positionId } } },
             { player: { primaryPosition: { id: positionId } } },
           ],
         },
@@ -109,6 +143,7 @@ export class NotesService {
           OR: [
             { match: { homeTeam: { id: teamId } } },
             { match: { awayTeam: { id: teamId } } },
+            { meta: { team: { id: teamId } } },
           ],
         },
       ],
@@ -144,17 +179,28 @@ export class NotesService {
   }
 
   async update(id: string, updateNoteDto: UpdateNoteDto) {
-    const { rating, maxRatingScore } = updateNoteDto;
+    const {
+      rating,
+      maxRatingScore,
+      playerId,
+      positionPlayedId,
+      teamId,
+      competitionId,
+      competitionGroupId,
+      ...rest
+    } = updateNoteDto;
 
     let percentageRating: number;
-    let note: Note;
+    const note = await this.prisma.note.findUnique({
+      where: { id },
+      include: { meta: true },
+    });
 
     if (rating && maxRatingScore) {
       percentageRating = calculatePercentageRating(rating, maxRatingScore);
     }
 
     if ((!rating && maxRatingScore) || (rating && !maxRatingScore)) {
-      note = await this.prisma.note.findUnique({ where: { id } });
       const newRating = rating || note.rating;
       const newMaxRatingScore = maxRatingScore || note.maxRatingScore;
       if (newRating && newMaxRatingScore) {
@@ -165,17 +211,63 @@ export class NotesService {
       }
     }
 
+    // If the user wants to update playerId and there's no note metadata, we need to create it
+    if (playerId && !note.meta) {
+      const player = await this.playersService.findOneWithCurrentTeamDetails(
+        playerId,
+      );
+
+      const metaCompetitionGroupId =
+        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+
+      await this.prisma.noteMeta.create({
+        data: {
+          note: { connect: { id } },
+          position: {
+            connect: { id: positionPlayedId || player.primaryPositionId },
+          },
+          team: { connect: { id: teamId || player.teams[0].teamId } },
+          competition: {
+            connect: {
+              id:
+                competitionId ||
+                player.teams[0].team.competitions[0].competitionId,
+            },
+          },
+          competitionGroup: metaCompetitionGroupId
+            ? { connect: { id: metaCompetitionGroupId } }
+            : undefined,
+        },
+      });
+    }
+
+    // If the user wants to update note metadata, we need to update note meta record
+    if (positionPlayedId || teamId || competitionId || competitionGroupId) {
+      await this.prisma.noteMeta.update({
+        where: { noteId: id },
+        data: {
+          positionId: positionPlayedId,
+          teamId,
+          competitionId,
+          competitionGroupId,
+        },
+      });
+    }
+
     return this.prisma.note.update({
       where: { id },
       data: {
-        ...updateNoteDto,
+        ...rest,
+        playerId,
+        rating,
         percentageRating: percentageRating || undefined,
       },
       include,
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.prisma.noteMeta.delete({ where: { noteId: id } });
     return this.prisma.note.delete({ where: { id }, include });
   }
 }

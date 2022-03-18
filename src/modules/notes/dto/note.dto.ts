@@ -2,7 +2,6 @@ import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
-import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
@@ -47,14 +46,6 @@ export class NoteDto {
   )
   @Expose()
   match?: MatchBasicDataDto;
-
-  @Transform(({ value }) =>
-    plainToInstance(PlayerPositionDto, value, {
-      excludeExtraneousValues: true,
-    }),
-  )
-  @Expose()
-  positionPlayed?: PlayerPositionDto;
 
   @Transform(({ value }) =>
     plainToInstance(UserBasicDataDto, value, {
