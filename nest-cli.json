@@ -9,6 +9,7 @@
           "classValidatorShim": true
         }
       }
-    ]
+    ],
+    "assets": ["i18n/**/*"]
   }
 }

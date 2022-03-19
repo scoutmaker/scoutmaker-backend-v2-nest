@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully created new country - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all countries data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched country data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated country data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted country data - {name}"
+}
