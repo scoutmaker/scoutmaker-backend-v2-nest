@@ -1,8 +1,6 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
 
 export class CreateCompetitionTypeDto {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(30)
+  @IsRequiredStringWithMaxLength(30)
   name: string;
 }
