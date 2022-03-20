@@ -1,29 +1,26 @@
 import {
   IsBoolean,
-  IsNotEmpty,
   IsOptional,
   IsPostalCode,
   IsString,
   IsUrl,
-  MaxLength,
 } from 'class-validator';
 
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
+
 export class CreateClubDto {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(30)
+  @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsCuid()
   regionId: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsCuid()
   countryId: string;
 
   @IsOptional()
-  @IsString()
+  @IsCuid()
   lnpId?: string;
 
   @IsOptional()
