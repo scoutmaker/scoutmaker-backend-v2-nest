@@ -1,14 +1,16 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
@@ -24,41 +26,51 @@ import { UpdateCompetitionGroupDto } from './dto/update-competition-group.dto';
 @ApiCookieAuth()
 @Serialize(CompetitionGroupDto)
 export class CompetitionGroupsController {
-  constructor(private readonly groupsService: CompetitionGroupsService) {}
+  constructor(
+    private readonly groupsService: CompetitionGroupsService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(CompetitionGroupDto, { type: 'create' })
-  async create(@Body() createCompetitionGroupDto: CreateCompetitionGroupDto) {
+  async create(
+    @I18nLang() lang: string,
+    @Body() createCompetitionGroupDto: CreateCompetitionGroupDto,
+  ) {
     const group = await this.groupsService.create(createCompetitionGroupDto);
-    return formatSuccessResponse(
-      'Successfully created new competition group',
-      group,
+    const message = await this.i18n.translate(
+      'competition-groups.CREATE_MESSAGE',
+      { lang, args: { name: group.name } },
     );
+    return formatSuccessResponse(message, group);
   }
 
   @Get()
   @ApiResponse(CompetitionGroupDto, { type: 'read', isArray: true })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const groups = await this.groupsService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all competition groups',
-      groups,
+    const message = await this.i18n.translate(
+      'competition-groups.GET_ALL_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, groups);
   }
 
   @Get(':id')
   @ApiResponse(CompetitionGroupDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const group = await this.groupsService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched competition group with the id of ${id}`,
-      group,
+    const message = await this.i18n.translate(
+      'competition-groups.GET_ONE_MESSAGE',
+      { lang, args: { name: group.name } },
     );
+    return formatSuccessResponse(message, group);
   }
 
   @Patch(':id')
   @ApiResponse(CompetitionGroupDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateCompetitionGroupDto: UpdateCompetitionGroupDto,
   ) {
@@ -66,19 +78,21 @@ export class CompetitionGroupsController {
       id,
       updateCompetitionGroupDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated competition group with the id of ${id}`,
-      group,
+    const message = await this.i18n.translate(
+      'competition-groups.UPDATE_MESSAGE',
+      { lang, args: { name: group.name } },
     );
+    return formatSuccessResponse(message, group);
   }
 
   @Delete(':id')
   @ApiResponse(CompetitionGroupDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const group = await this.groupsService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted competition group with the id of ${id}`,
-      group,
+    const message = await this.i18n.translate(
+      'competition-groups.DELETE_MESSAGE',
+      { lang, args: { name: group.name } },
     );
+    return formatSuccessResponse(message, group);
   }
 }
