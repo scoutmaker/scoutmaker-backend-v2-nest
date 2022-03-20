@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Successfully created new match - {homeTeamName} vs. {awayTeamName}",
+  "GET_ALL_MESSAGE": "Successfully fetched all matches data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all matches list",
+  "GET_ONE_MESSAGE": "Successfully fetched match data - {homeTeamName} vs. {awayTeamName}",
+  "UPDATE_MESSAGE": "Successfully updated match data - {homeTeamName} vs. {awayTeamName}",
+  "DELETE_MESSAGE": "Successfully deleted match data - {homeTeamName} vs. {awayTeamName}"
+}
