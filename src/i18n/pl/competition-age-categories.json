@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nową kategorię wiekową rozgrywek - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano listę wszystkich kategorii wiekowych rozgrywek",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane kategorii wiekowej rozgrywek - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane kategorii wiekowej rozgrywek - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane kategorii wiekowej rozgrywek - {name}"
+}

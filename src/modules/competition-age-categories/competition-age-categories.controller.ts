@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -28,45 +29,51 @@ import { UpdateCompetitionAgeCategoryDto } from './dto/update-competition-age-ca
 export class CompetitionAgeCategoriesController {
   constructor(
     private readonly ageCategoriesService: CompetitionAgeCategoriesService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post()
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'create' })
   async create(
+    @I18nLang() lang: string,
     @Body() createCompetitionAgeCategoryDto: CreateCompetitionAgeCategoryDto,
   ) {
     const ageCategory = await this.ageCategoriesService.create(
       createCompetitionAgeCategoryDto,
     );
-    return formatSuccessResponse(
-      'Successfully created new age category',
-      ageCategory,
+    const message = await this.i18n.translate(
+      'competition-age-categories.CREATE_MESSAGE',
+      { lang, args: { name: ageCategory.name } },
     );
+    return formatSuccessResponse(message, ageCategory);
   }
 
   @Get()
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'read', isArray: true })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const ageCategories = await this.ageCategoriesService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all age categories',
-      ageCategories,
+    const message = await this.i18n.translate(
+      'competition-age-categories.GET_ALL_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, ageCategories);
   }
 
   @Get(':id')
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const ageCategory = await this.ageCategoriesService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched age category with the id of ${id}`,
-      ageCategory,
+    const message = await this.i18n.translate(
+      'competition-age-categories.GET_ONE_MESSAGE',
+      { lang, args: { name: ageCategory.name } },
     );
+    return formatSuccessResponse(message, ageCategory);
   }
 
   @Patch(':id')
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateCompetitionAgeCategoryDto: UpdateCompetitionAgeCategoryDto,
   ) {
@@ -74,19 +81,21 @@ export class CompetitionAgeCategoriesController {
       id,
       updateCompetitionAgeCategoryDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated age category with the id of ${id}`,
-      ageCategory,
+    const message = await this.i18n.translate(
+      'competition-age-categories.UPDATE_MESSAGE',
+      { lang, args: { name: ageCategory.name } },
     );
+    return formatSuccessResponse(message, ageCategory);
   }
 
   @Delete(':id')
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const ageCategory = await this.ageCategoriesService.remove(id);
-    return formatSuccessResponse(
-      `Successfully removed age category with the id of ${id}`,
-      ageCategory,
+    const message = await this.i18n.translate(
+      'competition-age-categories.DELETE_MESSAGE',
+      { lang, args: { name: ageCategory.name } },
     );
+    return formatSuccessResponse(message, ageCategory);
   }
 }
