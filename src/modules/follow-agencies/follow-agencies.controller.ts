@@ -1,5 +1,6 @@
 import { Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -17,31 +18,38 @@ import { FollowAgenciesService } from './follow-agencies.service';
 @ApiCookieAuth()
 @Serialize(FollowAgencyDto)
 export class FollowAgenciesController {
-  constructor(private readonly followAgenciesService: FollowAgenciesService) {}
+  constructor(
+    private readonly followAgenciesService: FollowAgenciesService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post(':agencyId')
   @ApiResponse(FollowAgencyDto, { type: 'create' })
   async create(
+    @I18nLang() lang: string,
     @Param() { agencyId }: CreateFollowAgencyDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followAgenciesService.create(agencyId, user.id);
-    return formatSuccessResponse(
-      `Successfully started following agency with the id of ${agencyId}`,
-      follow,
+    const message = await this.i18n.translate(
+      'follow-agencies.FOLLOW_MESSAGE',
+      { lang, args: { name: follow.agency.name } },
     );
+    return formatSuccessResponse(message, follow);
   }
 
   @Delete(':agencyId')
   @ApiResponse(FollowAgencyDto, { type: 'delete' })
   async remove(
+    @I18nLang() lang: string,
     @Param() { agencyId }: CreateFollowAgencyDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followAgenciesService.remove(agencyId, user.id);
-    return formatSuccessResponse(
-      `Successfully stopped following agency with the id of ${agencyId}`,
-      follow,
+    const message = await this.i18n.translate(
+      'follow-agencies.FOLLOW_MESSAGE',
+      { lang, args: { name: follow.agency.name } },
     );
+    return formatSuccessResponse(message, follow);
   }
 }
