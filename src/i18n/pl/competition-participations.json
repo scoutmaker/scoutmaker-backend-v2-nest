@@ -1,0 +1,9 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono dodano nowy udział w rozgrywkach",
+  "COPY_MESSAGE": "Pomyślnie skopiowano udziały w rogrywkach z sezonu na sezon",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano listę wszystkich udziałów w rozgrywkach",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane udziału w rozgrywkach",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane udziału w rozgrywkach",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane udziału w rozgrywkach",
+  "COPY_SAME_SEASON_ERROR": "Nie można skopiować udziałów w rozgrywkach na ten sam sezon"
+}

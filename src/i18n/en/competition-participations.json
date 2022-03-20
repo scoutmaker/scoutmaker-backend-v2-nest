@@ -1,0 +1,9 @@
+{
+  "CREATE_MESSAGE": "Successfully created new competition participation",
+  "COPY_MESSAGE": "Successfully copied participations from season to season",
+  "GET_ALL_MESSAGE": "Successfully fetched all competition participations",
+  "GET_ONE_MESSAGE": "Successfully fetched competition participation",
+  "UPDATE_MESSAGE": "Successfully updated competition participation",
+  "DELETE_MESSAGE": "Successfully deleted competition participation",
+  "COPY_SAME_SEASON_ERROR": "Cannot copy competition participations to the same season"
+}
