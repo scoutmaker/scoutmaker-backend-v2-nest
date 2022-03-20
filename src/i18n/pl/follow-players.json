@@ -1,0 +1,4 @@
+{
+  "FOLLOW_MESSAGE": "Pomyślnie rozpoczęto obserwowanie zawodnika - {name}",
+  "UNFOLLOW_MESSAGE": "Pomyślnie zaprzestano obserwowania zawodnika - {name}"
+}
