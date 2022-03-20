@@ -443,6 +443,7 @@ model NoteMeta {
 
 model InsiderNote {
   id          String   @id @default(cuid())
+  docNumber   Int      @default(autoincrement())
   informant   String?
   description String?
   createdAt   DateTime @default(now())
