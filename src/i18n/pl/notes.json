@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nową notatkę nr {docNumber}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich notatek, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich notatek",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano notatkę nr {docNumber}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano notatkę nr {docNumber}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto notatkę nr {docNumber}"
+}

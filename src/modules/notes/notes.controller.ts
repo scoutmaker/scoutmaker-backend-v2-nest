@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
@@ -31,17 +32,25 @@ import { NotesService } from './notes.service';
 @UseGuards(AuthGuard)
 @ApiCookieAuth()
 export class NotesController {
-  constructor(private readonly notesService: NotesService) {}
+  constructor(
+    private readonly notesService: NotesService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(NoteDto, { type: 'create' })
   @Serialize(NoteDto)
   async create(
+    @I18nLang() lang: string,
     @Body() createNoteDto: CreateNoteDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const note = await this.notesService.create(createNoteDto, user.id);
-    return formatSuccessResponse('Successfully created new note', note);
+    const message = await this.i18n.translate('notes.CREATE_MESSAGE', {
+      lang,
+      args: { docNumber: note.docNumber },
+    });
+    return formatSuccessResponse(message, note);
   }
 
   @Get()
@@ -49,51 +58,69 @@ export class NotesController {
   @ApiQuery({ type: NotesPaginationOptionsDto })
   @Serialize(NoteDto, 'docs')
   async findAll(
+    @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: NotesPaginationOptionsDto,
     @Query() query: FindAllNotesDto,
   ) {
     const data = await this.notesService.findAll(paginationOptions, query);
-    return formatSuccessResponse('Successfully fetched all notes', data);
+    const message = await this.i18n.translate('notes.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      },
+    });
+    return formatSuccessResponse(message, data);
   }
 
   @Get('list')
   @ApiResponse(NoteBasicDataDto, { type: 'read' })
   @Serialize(NoteBasicDataDto)
-  async getList(@Query() query: GetNotesListDto) {
+  async getList(@I18nLang() lang: string, @Query() query: GetNotesListDto) {
     const notes = await this.notesService.getList(query);
-    return formatSuccessResponse('Successully fetched all notes list', notes);
+    const message = await this.i18n.translate('notes.GET_LIST_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, notes);
   }
 
   @Get(':id')
   @ApiResponse(NoteDto, { type: 'read' })
   @Serialize(NoteDto)
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const note = await this.notesService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched note with id ${id}`,
-      note,
-    );
+    const message = await this.i18n.translate('notes.GET_ONE_MESSAGE', {
+      lang,
+      args: { docNumber: note.docNumber },
+    });
+    return formatSuccessResponse(message, note);
   }
 
   @Patch(':id')
   @ApiResponse(NoteDto, { type: 'update' })
   @Serialize(NoteDto)
-  async update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
+  async update(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @Body() updateNoteDto: UpdateNoteDto,
+  ) {
     const note = await this.notesService.update(id, updateNoteDto);
-    return formatSuccessResponse(
-      `Successfully updated note with id ${id}`,
-      note,
-    );
+    const message = await this.i18n.translate('notes.UPDATE_MESSAGE', {
+      lang,
+      args: { docNumber: note.docNumber },
+    });
+    return formatSuccessResponse(message, note);
   }
 
   @Delete(':id')
   @ApiResponse(NoteDto, { type: 'delete' })
   @Serialize(NoteDto)
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const note = await this.notesService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted note with id ${id}`,
-      note,
-    );
+    const message = await this.i18n.translate('notes.DELETE_MESSAGE', {
+      lang,
+      args: { docNumber: note.docNumber },
+    });
+    return formatSuccessResponse(message, note);
   }
 }
