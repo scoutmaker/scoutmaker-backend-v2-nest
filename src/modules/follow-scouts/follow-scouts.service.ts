@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
+
+const include = Prisma.validator<Prisma.FollowScoutInclude>()({
+  scout: true,
+  follower: true,
+});
 
 @Injectable()
 export class FollowScoutsService {
@@ -12,6 +18,7 @@ export class FollowScoutsService {
         scout: { connect: { id: scoutId } },
         follower: { connect: { id: userId } },
       },
+      include,
     });
   }
 
@@ -20,6 +27,7 @@ export class FollowScoutsService {
       where: {
         scoutId_followerId: { scoutId, followerId: userId },
       },
+      include,
     });
   }
 }

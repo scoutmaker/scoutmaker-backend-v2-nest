@@ -1,0 +1,4 @@
+{
+  "FOLLOW_MESSAGE": "Pomyślnie rozpoczęto obserwowanie scouta - {name}",
+  "UNFOLLOW_MESSAGE": "Pomyślnie zaprzestano obserwowania scouta - {name}"
+}

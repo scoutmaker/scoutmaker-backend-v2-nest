@@ -1,0 +1,4 @@
+{
+  "FOLLOW_MESSAGE": "Successfully started following scout - {name}",
+  "UNFOLLOW_MESSAGE": "Successfully stopped following scout - {name}"
+}
