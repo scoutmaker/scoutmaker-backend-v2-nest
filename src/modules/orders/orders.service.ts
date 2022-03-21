@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { I18nService } from 'nestjs-i18n';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
@@ -25,7 +26,10 @@ listInclude.player = true;
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly i18n: I18nService,
+  ) {}
 
   create(createOrderDto: CreateOrderDto, authorId: string) {
     const { matchId, playerId, ...rest } = createOrderDto;
@@ -110,11 +114,15 @@ export class OrdersService {
     return this.prisma.order.findUnique({ where: { id }, include });
   }
 
-  async accept(id: string, userId: string) {
+  async accept(id: string, userId: string, lang: string) {
     const order = await this.findOne(id);
 
     if (order.status !== 'OPEN') {
-      throw new BadRequestException('Order is already accepted or closed');
+      const message = await this.i18n.translate('orders.ACCEPT_STATUS_ERROR', {
+        lang,
+        args: { docNumber: order.docNumber },
+      });
+      throw new BadRequestException(message);
     }
 
     return this.prisma.order.update({
@@ -128,28 +136,37 @@ export class OrdersService {
     });
   }
 
-  async reject(id: string, userId: string) {
+  async reject(id: string, userId: string, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },
     });
 
     if (order.status !== 'ACCEPTED') {
-      throw new BadRequestException(
-        'You cannot reject an order with the status other than ACCEPTED',
-      );
+      const message = await this.i18n.translate('orders.REJECT_STATUS_ERROR', {
+        lang,
+        args: { docNumber: order.docNumber },
+      });
+      throw new BadRequestException(message);
     }
 
     if (order.scoutId !== userId) {
-      throw new BadRequestException(
-        'You cannot reject an order that you did not accept',
+      const message = await this.i18n.translate(
+        'orders.REJECT_ASSIGNEE_ERROR',
+        { lang, args: { docNumber: order.docNumber } },
       );
+      throw new BadRequestException(message);
     }
 
     if (order.reports.length > 0) {
-      throw new BadRequestException(
-        'You cannot reject an order with reports already assigned to it',
-      );
+      const message = await this.i18n.translate('orders.REJECT_REPORTS_ERROR', {
+        lang,
+        args: {
+          docNumber: order.docNumber,
+          reportsCount: order.reports.length,
+        },
+      });
+      throw new BadRequestException(message);
     }
 
     return this.prisma.order.update({
@@ -163,16 +180,18 @@ export class OrdersService {
     });
   }
 
-  async close(id: string, user: CurrentUserDto) {
+  async close(id: string, user: CurrentUserDto, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },
     });
 
     if (order.authorId !== user.id || user.role !== 'ADMIN') {
-      throw new UnauthorizedException(
-        'You are not authorized to close this order',
-      );
+      const message = await this.i18n.translate('orders.CLOSE_ROLE_ERROR', {
+        lang,
+        args: { docNumber: order.docNumber },
+      });
+      throw new UnauthorizedException(message);
     }
 
     return this.prisma.order.update({

@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
@@ -31,17 +32,25 @@ import { OrdersService } from './orders.service';
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN', 'PLAYMAKER_SCOUT']))
 @ApiCookieAuth()
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(OrderDto, { type: 'create' })
   @Serialize(OrderDto)
   async create(
+    @I18nLang() lang: string,
     @Body() createOrderDto: CreateOrderDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.create(createOrderDto, user.id);
-    return formatSuccessResponse('Successfully created new order', order);
+    const message = await this.i18n.translate('orders.CREATE_MESSAGE', {
+      lang,
+      args: { docNumber: order.docNumber },
+    });
+    return formatSuccessResponse(message, order);
   }
 
   @Get()
@@ -49,70 +58,103 @@ export class OrdersController {
   @ApiQuery({ type: OrdersPaginationOptionsDto })
   @Serialize(OrderDto, 'docs')
   async findAll(
+    @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: OrdersPaginationOptionsDto,
     @Query() query: FindAllOrdersDto,
   ) {
     const data = await this.ordersService.findAll(paginationOptions, query);
-    return formatSuccessResponse('Successfully fetched all orders', data);
+    const message = await this.i18n.translate('orders.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      },
+    });
+    return formatSuccessResponse(message, data);
   }
 
   @Get('list')
   @ApiResponse(OrderBasicDataDto, { type: 'read' })
   @Serialize(OrderBasicDataDto)
-  async getList(@Query() query: FindAllOrdersDto) {
+  async getList(@I18nLang() lang: string, @Query() query: FindAllOrdersDto) {
     const orders = await this.ordersService.getList(query);
-    return formatSuccessResponse(
-      'Successfully fetched all orders list',
-      orders,
-    );
+    const message = await this.i18n.translate('orders.GET_LIST_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, orders);
   }
 
   @Get(':id')
   @ApiResponse(OrderDto, { type: 'read' })
   @Serialize(OrderDto)
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const order = await this.ordersService.findOne(id);
-    return formatSuccessResponse(`Successfully fetched order #${id}`, order);
+    const message = await this.i18n.translate('orders.GET_ONE_MESSAGE', {
+      lang,
+      args: { docNumber: order.docNumber },
+    });
+    return formatSuccessResponse(message, order);
   }
 
   @Patch(':id/accept')
   @ApiResponse(OrderDto, { type: 'update' })
   @Serialize(OrderDto)
-  async accept(@Param('id') id: string, @CurrentUser() user: CurrentUserDto) {
-    const order = await this.ordersService.accept(id, user.id);
-    return formatSuccessResponse(
-      `Successfully accepted order with the id of ${id}`,
-      order,
-    );
+  async accept(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const order = await this.ordersService.accept(id, user.id, lang);
+    const message = await this.i18n.translate('orders.ACCEPT_MESSAGE', {
+      lang,
+      args: { docNumber: order.docNumber },
+    });
+    return formatSuccessResponse(message, order);
   }
 
   @Patch(':id/reject')
   @ApiResponse(OrderDto, { type: 'update' })
   @Serialize(OrderDto)
-  async reject(@Param('id') id: string, @CurrentUser() user: CurrentUserDto) {
-    const order = await this.ordersService.reject(id, user.id);
-    return formatSuccessResponse(
-      `Successfully rejected order with the id of ${id}`,
-      order,
-    );
+  async reject(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const order = await this.ordersService.reject(id, user.id, lang);
+    const message = await this.i18n.translate('orders.REJECT_MESSAGE', {
+      lang,
+      args: { docNumber: order.docNumber },
+    });
+    return formatSuccessResponse(message, order);
   }
 
   @Patch(':id/close')
   @ApiResponse(OrderDto, { type: 'update' })
   @Serialize(OrderDto)
-  async close(@Param('id') id: string, @CurrentUser() user: CurrentUserDto) {
-    const order = await this.ordersService.close(id, user);
-    return formatSuccessResponse(
-      `Successfully closed order with the id of ${id}`,
-      order,
-    );
+  async close(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const order = await this.ordersService.close(id, user, lang);
+    const message = await this.i18n.translate('orders.CLOSE_MESSAGE', {
+      lang,
+      args: { docNumber: order.docNumber },
+    });
+    return formatSuccessResponse(message, order);
   }
 
   @Delete(':id')
   @ApiResponse(OrderDto, { type: 'delete' })
   @Serialize(OrderDto)
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const order = await this.ordersService.remove(id);
-    return formatSuccessResponse(`Successfully removed order #${id}`, order);
+    const message = await this.i18n.translate('orders.DELETE_MESSAGE', {
+      lang,
+      args: {
+        docNumber: order.docNumber,
+      },
+    });
+    return formatSuccessResponse(message, order);
   }
 }
