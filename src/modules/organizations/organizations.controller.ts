@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -27,43 +28,54 @@ import { OrganizationsService } from './organizations.service';
 @ApiCookieAuth()
 @Serialize(OrganizationDto)
 export class OrganizationsController {
-  constructor(private readonly organizationsService: OrganizationsService) {}
+  constructor(
+    private readonly organizationsService: OrganizationsService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(OrganizationDto, { type: 'create' })
-  async create(@Body() createOrganizationDto: CreateOrganizationDto) {
+  async create(
+    @I18nLang() lang: string,
+    @Body() createOrganizationDto: CreateOrganizationDto,
+  ) {
     const organization = await this.organizationsService.create(
       createOrganizationDto,
+      lang,
     );
-    return formatSuccessResponse(
-      'Successfully created new organization',
-      organization,
-    );
+    const message = await this.i18n.translate('organizations.CREATE_MESSAGE', {
+      lang,
+      args: { name: organization.name },
+    });
+    return formatSuccessResponse(message, organization);
   }
 
   @Get()
   @ApiResponse(OrganizationDto, { type: 'read' })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const organizations = await this.organizationsService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all organizations',
-      organizations,
+    const message = await this.i18n.translate(
+      'organizations.GET_LIST_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, organizations);
   }
 
   @Get(':id')
   @ApiResponse(OrganizationDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched organization ${id}`,
-      organization,
-    );
+    const message = await this.i18n.translate('organizations.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: organization.name },
+    });
+    return formatSuccessResponse(message, organization);
   }
 
   @Patch(':id')
   @ApiResponse(OrganizationDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
   ) {
@@ -71,31 +83,39 @@ export class OrganizationsController {
       id,
       updateOrganizationDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated organization ${id}`,
-      organization,
-    );
+    const message = await this.i18n.translate('organizations.UPDATE_MESSAGE', {
+      lang,
+      args: { name: organization.name },
+    });
+    return formatSuccessResponse(message, organization);
   }
 
   @Patch(':id/add-member')
   @ApiResponse(OrganizationDto, { type: 'update' })
   async addMember(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() toggleMembershipDto: ToggleMembershipDto,
   ) {
     const organization = await this.organizationsService.addMember(
       id,
       toggleMembershipDto,
+      lang,
     );
-    return formatSuccessResponse(
-      `Successfully added member ${toggleMembershipDto.memberId} to organization ${id}`,
-      organization,
+    const message = await this.i18n.translate(
+      'organizations.ADD_MEMBER_MESSAGE',
+      {
+        lang,
+        args: { name: organization.name },
+      },
     );
+    return formatSuccessResponse(message, organization);
   }
 
   @Patch(':id/remove-member')
   @ApiResponse(OrganizationDto, { type: 'update' })
   async removeMember(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() toggleMembershipDto: ToggleMembershipDto,
   ) {
@@ -103,19 +123,21 @@ export class OrganizationsController {
       id,
       toggleMembershipDto,
     );
-    return formatSuccessResponse(
-      `Successfully removed member ${toggleMembershipDto.memberId} from organization ${id}`,
-      organization,
+    const message = await this.i18n.translate(
+      'organizations.REMOVE_MEMBER_MESSAGE',
+      { lang, args: { name: organization.name } },
     );
+    return formatSuccessResponse(message, organization);
   }
 
   @Delete(':id')
   @ApiResponse(OrganizationDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.remove(id);
-    return formatSuccessResponse(
-      `Successfully removed organization ${id}`,
-      organization,
-    );
+    const message = await this.i18n.translate('organizations.REMOVE_MESSAGE', {
+      lang,
+      args: { name: organization.name },
+    });
+    return formatSuccessResponse(message, organization);
   }
 }

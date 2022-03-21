@@ -1,0 +1,13 @@
+{
+  "CREATE_MESSAGE": "Successfully created new organization - {name}",
+  "GET_LIST_MESSAGE": "Successfully fetched all organizations list",
+  "GET_ONE_MESSAGE": "Successfully fetched organization data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated organization data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted organization data - {name}",
+  "ADD_MEMBER_MESSAGE": "Successfully added user to organization {name}",
+  "REMOVE_MEMBER_MESSAGE": "Successfully removed user from organization {name}",
+  "CREATE_MEMBERS_ROLE_ERROR": "Only users with the role of SCOUT can be organization members. {userNames} have a role different than SCOUT",
+  "CREATE_MEMBER_ALREADY_IN_ORG_ERROR": "Users can be members of only one organization. {userNames} are already members of other organizations",
+  "ADD_MEMBER_ROLE_ERROR": "{userName} has the role of {role}. Only users with role of SCOUT can be members of an organization",
+  "ADD_MEMBER_ALREADY_IN_ORG_ERROR": "{userName} is already member of another organization"
+}
