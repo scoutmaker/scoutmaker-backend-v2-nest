@@ -1,10 +1,10 @@
-import { IsNotEmpty, MaxLength } from 'class-validator';
+import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
 
 export class CreateRegionDto {
-  @IsNotEmpty()
-  @MaxLength(30)
+  @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsNotEmpty()
+  @IsCuid()
   countryId: string;
 }
