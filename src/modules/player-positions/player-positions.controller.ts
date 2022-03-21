@@ -1,22 +1,24 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { PlayerPositionsService } from './player-positions.service';
-import { PlayerPositionDto } from './dto/player-position.dto';
-import { CreatePlayerPositionDto } from './dto/create-player-position.dto';
-import { UpdatePlayerPositionDto } from './dto/update-player-position.dto';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+
+import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
-import { ApiResponse } from '../../api-response/api-response.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { CreatePlayerPositionDto } from './dto/create-player-position.dto';
+import { PlayerPositionDto } from './dto/player-position.dto';
+import { UpdatePlayerPositionDto } from './dto/update-player-position.dto';
+import { PlayerPositionsService } from './player-positions.service';
 
 @Controller('player-positions')
 @ApiTags('player positions')
@@ -24,43 +26,53 @@ import { formatSuccessResponse } from '../../utils/helpers';
 @ApiCookieAuth()
 @Serialize(PlayerPositionDto)
 export class PlayerPositionsController {
-  constructor(private readonly positionsService: PlayerPositionsService) {}
+  constructor(
+    private readonly positionsService: PlayerPositionsService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(PlayerPositionDto, { type: 'create' })
-  async create(@Body() createPlayerPositionDto: CreatePlayerPositionDto) {
+  async create(
+    @I18nLang() lang: string,
+    @Body() createPlayerPositionDto: CreatePlayerPositionDto,
+  ) {
     const position = await this.positionsService.create(
       createPlayerPositionDto,
     );
-    return formatSuccessResponse(
-      'Successfully created new player position',
-      position,
+    const message = await this.i18n.translate(
+      'player-positions.CREATE_MESSAGE',
+      { lang, args: { name: position.name } },
     );
+    return formatSuccessResponse(message, position);
   }
 
   @Get()
   @ApiResponse(PlayerPositionDto, { type: 'read', isArray: true })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const positions = await this.positionsService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all player positions',
-      positions,
+    const message = await this.i18n.translate(
+      'player-positions.GET_LIST_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, positions);
   }
 
   @Get(':id')
   @ApiResponse(PlayerPositionDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const position = await this.positionsService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched player position with the id of ${id}`,
-      position,
+    const message = await this.i18n.translate(
+      'player-positions.GET_ONE_MESSAGE',
+      { lang, args: { name: position.name } },
     );
+    return formatSuccessResponse(message, position);
   }
 
   @Patch(':id')
   @ApiResponse(PlayerPositionDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updatePlayerPositionDto: UpdatePlayerPositionDto,
   ) {
@@ -68,19 +80,21 @@ export class PlayerPositionsController {
       id,
       updatePlayerPositionDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated player position with the id of ${id}`,
-      position,
+    const message = await this.i18n.translate(
+      'player-positions.UPDATE_MESSAGE',
+      { lang, args: { name: position.name } },
     );
+    return formatSuccessResponse(message, position);
   }
 
   @Delete(':id')
   @ApiResponse(PlayerPositionDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const position = await this.positionsService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted player position with the id of ${id}`,
-      position,
+    const message = await this.i18n.translate(
+      'player-positions.DELETE_MESSAGE',
+      { lang, args: { name: position.name } },
     );
+    return formatSuccessResponse(message, position);
   }
 }
