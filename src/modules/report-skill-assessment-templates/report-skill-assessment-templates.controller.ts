@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -29,11 +30,13 @@ import { ReportSkillAssessmentTemplatesService } from './report-skill-assessment
 export class ReportSkillAssessmentTemplatesController {
   constructor(
     private readonly templatesService: ReportSkillAssessmentTemplatesService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post()
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'create' })
   async create(
+    @I18nLang() lang: string,
     @Body()
     createReportSkillAssessmentTemplateDto: CreateReportSkillAssessmentTemplateDto,
     @CurrentUser() user: CurrentUserDto,
@@ -42,32 +45,39 @@ export class ReportSkillAssessmentTemplatesController {
       createReportSkillAssessmentTemplateDto,
       user.id,
     );
-    return formatSuccessResponse('Successfully created new template', template);
+    const message = await this.i18n.translate(
+      'report-skill-assessment-templates.CREATE_MESSAGE',
+      { lang, args: { name: template.name } },
+    );
+    return formatSuccessResponse(message, template);
   }
 
   @Get()
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const templates = await this.templatesService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all templates',
-      templates,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-templates.GET_LIST_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, templates);
   }
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched template #${id}`,
-      template,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-templates.GET_ONE_MESSAGE',
+      { lang, args: { name: template.name } },
     );
+    return formatSuccessResponse(message, template);
   }
 
   @Patch(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body()
     updateReportSkillAssessmentTemplateDto: UpdateReportSkillAssessmentTemplateDto,
@@ -76,19 +86,21 @@ export class ReportSkillAssessmentTemplatesController {
       id,
       updateReportSkillAssessmentTemplateDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated template #${id}`,
-      template,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-templates.UPDATE_MESSAGE',
+      { lang, args: { name: template.name } },
     );
+    return formatSuccessResponse(message, template);
   }
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted template #${id}`,
-      template,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-templates.DELETE_MESSAGE',
+      { lang, args: { name: template.name } },
     );
+    return formatSuccessResponse(message, template);
   }
 }
