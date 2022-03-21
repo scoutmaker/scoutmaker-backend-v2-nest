@@ -1,5 +1,6 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -18,6 +19,7 @@ import { ReportSkillAssessmentsService } from './report-skill-assessments.servic
 export class ReportSkillAssessmentsController {
   constructor(
     private readonly assessmentsService: ReportSkillAssessmentsService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Get()
@@ -25,6 +27,7 @@ export class ReportSkillAssessmentsController {
   @ApiQuery({ type: ReportSkillAssessmentsPaginationOptionsDto })
   @Serialize(ReportSkillAssessmentDto, 'docs')
   async findAll(
+    @I18nLang() lang: string,
     @PaginationOptions()
     paginationOptions: ReportSkillAssessmentsPaginationOptionsDto,
     @Query() query: FindAllReportSkillAssessmentsDto,
@@ -33,9 +36,10 @@ export class ReportSkillAssessmentsController {
       paginationOptions,
       query,
     );
-    return formatSuccessResponse(
-      'Successfully fetched all report skill assessments',
-      data,
+    const message = await this.i18n.translate(
+      'report-skill-assessments.GET_ALL_MESSAGE',
+      { lang, args: { currentPage: data.page, totalPages: data.totalPages } },
     );
+    return formatSuccessResponse(message, data);
   }
 }
