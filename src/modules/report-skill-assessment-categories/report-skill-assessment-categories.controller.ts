@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -29,11 +30,13 @@ import { ReportSkillAssessmentCategoriesService } from './report-skill-assessmen
 export class ReportSkillAssessmentCategoriesController {
   constructor(
     private readonly categoriesService: ReportSkillAssessmentCategoriesService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post()
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'create' })
   async create(
+    @I18nLang() lang: string,
     @Body()
     createReportSkillAssessmentCategoryDto: CreateReportSkillAssessmentCategoryDto,
     @CurrentUser() user: CurrentUserDto,
@@ -42,32 +45,39 @@ export class ReportSkillAssessmentCategoriesController {
       createReportSkillAssessmentCategoryDto,
       user.id,
     );
-    return formatSuccessResponse('Successfully created new category', category);
+    const message = await this.i18n.translate(
+      'report-skill-assessment-categories.CREATE_MESSAGE',
+      { lang, args: { name: category.name } },
+    );
+    return formatSuccessResponse(message, category);
   }
 
   @Get()
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const categories = await this.categoriesService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all categories',
-      categories,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-categories.GET_LIST_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, categories);
   }
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const category = await this.categoriesService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched category #${id}`,
-      category,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-categories.GET_ONE_MESSAGE',
+      { lang, args: { name: category.name } },
     );
+    return formatSuccessResponse(message, category);
   }
 
   @Patch(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body()
     updateReportSkillAssessmentCategoryDto: UpdateReportSkillAssessmentCategoryDto,
@@ -76,19 +86,21 @@ export class ReportSkillAssessmentCategoriesController {
       id,
       updateReportSkillAssessmentCategoryDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated category #${id}`,
-      category,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-categories.UPDATE_MESSAGE',
+      { lang, args: { name: category.name } },
     );
+    return formatSuccessResponse(message, category);
   }
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const category = await this.categoriesService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted category #${id}`,
-      category,
+    const message = await this.i18n.translate(
+      'report-skill-assessment-categories.DELETE_MESSAGE',
+      { lang, args: { name: category.name } },
     );
+    return formatSuccessResponse(message, category);
   }
 }
