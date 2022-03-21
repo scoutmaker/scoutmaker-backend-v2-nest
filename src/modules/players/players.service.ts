@@ -189,7 +189,11 @@ export class PlayersService {
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } });
+    await this.prisma.secondaryPositionsOnPlayers.deleteMany({
+      where: { playerId: id },
+    });
     return this.prisma.player.delete({ where: { id } });
   }
 }

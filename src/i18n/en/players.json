@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Successfully created new player - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all players data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all players list",
+  "GET_ONE_MESSAGE": "Successfully fetched player data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated player data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted player data - {name}"
+}

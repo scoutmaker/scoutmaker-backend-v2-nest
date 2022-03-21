@@ -62,11 +62,13 @@ export class PlayerDto {
   primaryPosition: PlayerPositionDto;
 
   @Transform(({ value }) =>
-    value.map((item) =>
-      plainToInstance(PlayerPositionDto, item.position, {
-        excludeExtraneousValues: true,
-      }),
-    ),
+    value
+      ? value.map((item) =>
+          plainToInstance(PlayerPositionDto, item.position, {
+            excludeExtraneousValues: true,
+          }),
+        )
+      : [],
   )
   @Expose()
   secondaryPositions: PlayerPositionDto[];
