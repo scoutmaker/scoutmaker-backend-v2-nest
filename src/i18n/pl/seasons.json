@@ -1,0 +1,9 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowy sezon - {name}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich sezonów",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane sezonu - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane sezonu - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane sezonu - {name}",
+  "DEACTIVATE_MESSAGE": "Pomyślnie dezaktywowano sezon - {name}",
+  "ACTIVATE_MESSAGE": "Pomyślnie aktywowano sezon - {name}. Wszystkie pozostałe sezony zostały dezaktywowane"
+}
