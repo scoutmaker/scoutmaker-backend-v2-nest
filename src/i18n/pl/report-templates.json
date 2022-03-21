@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowy szablon raportu - {name}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich szablonów raportów",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane szablonu raportu - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane szablonu raportu - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane szablonu raportu - {name}"
+}
