@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -7,38 +8,58 @@ import { RoleGuard } from '../../guards/role.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { ChangeRoleDto } from './dto/change-user-role.dto';
-import { UserDto } from './dto/user.dto';
+import { UserBasicDataDto, UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('users')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
 @ApiCookieAuth()
-@Serialize(UserDto)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly i18n: I18nService,
+  ) {}
 
-  @Get()
-  @ApiResponse(UserDto, { type: 'read', isArray: true })
-  async findAll() {
-    const users = await this.usersService.findAll();
-    return formatSuccessResponse('Successfully fetched all users', users);
+  @Get('list')
+  @ApiResponse(UserBasicDataDto, { type: 'read', isArray: true })
+  @Serialize(UserBasicDataDto)
+  async getList(@I18nLang() lang: string) {
+    const users = await this.usersService.getList();
+    const message = await this.i18n.translate('users.GET_LIST_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, users);
   }
 
   @Get(':id')
   @ApiResponse(UserDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  @Serialize(UserDto)
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const user = await this.usersService.findOne(id);
-    return formatSuccessResponse('Successfully fetched user', user);
+    const message = await this.i18n.translate('users.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: `${user.firstName} ${user.lastName}` },
+    });
+    return formatSuccessResponse(message, user);
   }
 
   @Patch(':id/change-role')
   @ApiResponse(UserDto, { type: 'update' })
-  async changeRole(@Param('id') id: string, @Body() { role }: ChangeRoleDto) {
+  @Serialize(UserDto)
+  async changeRole(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @Body() { role }: ChangeRoleDto,
+  ) {
     const user = await this.usersService.changeRole(id, role);
-    return formatSuccessResponse(
-      `Successfully changed user with the id of ${id} role to ${role}`,
-      user,
-    );
+    const message = await this.i18n.translate('users.CHANGE_ROLE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${user.firstName} ${user.lastName}`,
+        roleName: user.role,
+      },
+    });
+    return formatSuccessResponse(message, user);
   }
 }

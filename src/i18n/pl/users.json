@@ -1,0 +1,5 @@
+{
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich użytkowników",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane użytkownika - {name}",
+  "CHANGE_ROLE_MESSAGE": "Pomyślnie zmieniono rolę użytkownika {userName} na {roleName}"
+}

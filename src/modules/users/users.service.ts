@@ -19,6 +19,10 @@ export class UsersService {
     return this.prisma.user.findMany({ include });
   }
 
+  getList() {
+    return this.prisma.user.findMany();
+  }
+
   findOne(id: string) {
     return this.prisma.user.findUnique({ where: { id }, include });
   }
