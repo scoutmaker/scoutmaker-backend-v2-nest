@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully created new user football role - {name}",
+  "GET_LIST_MESSAGE": "Successfully fetched all user football roles list",
+  "GET_ONE_MESSAGE": "Successfully fetched user football role data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated user football role data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted user football role data - {name}"
+}
