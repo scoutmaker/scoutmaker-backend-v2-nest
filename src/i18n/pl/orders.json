@@ -1,0 +1,15 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowe zlecenie nr {docNumber}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich zleceń, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich zleceń",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano zlecenie nr {docNumber}",
+  "ACCEPT_MESSAGE": "Pomyślnie zaakceptowano zlecenie nr {docNumber}",
+  "REJECT_MESSAGE": "Pomyślnie odrzucono zlecenie nr {docNumber}",
+  "CLOSE_MESSAGE": "Pomyślnie zamknięto zlecenie nr {docNumber}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto zlecenie nr {docNumber}",
+  "ACCEPT_STATUS_ERROR": "Zlecenie nr {docNumber} zostało już zaakceptowane lub zamknięte",
+  "REJECT_STATUS_ERROR": "Zlecenie nr {docNumber} nie może zostać przez Ciebie odrzucone",
+  "REJECT_ASSIGNEE_ERROR": "Nie możesz odrzucić zlecenia nr {docNumber}, ponieważ nie jesteś jego do niego przypisany",
+  "REJECT_REPORTS_ERROR": "Nie możesz odrzucić zlecenia nr {docNumber}, ponieważ ma ono {reportsCount} przypisanych raportów",
+  "CLOSE_ROLE_ERROR": "Nie masz uprawnień by zamknąć zlecenie nr {docNumber}"
+}

@@ -1,0 +1,3 @@
+{
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich ocen umiejętności, strona {currentPage} z {totalPages}"
+}

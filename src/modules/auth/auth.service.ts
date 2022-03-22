@@ -4,6 +4,7 @@ import { Prisma, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { add } from 'date-fns';
 import * as jwt from 'jsonwebtoken';
+import { I18nService } from 'nestjs-i18n';
 
 import { convertJwtExpiresInToNumber } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
@@ -24,6 +25,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly i18n: I18nService,
   ) {}
 
   private getAndVerifyJwt(id: string, role: UserRole) {
@@ -71,24 +73,30 @@ export class AuthService {
     });
   }
 
-  async login({ email, password }: LoginDto) {
+  async login({ email, password }: LoginDto, lang: string) {
+    const invalidCredentialsMessage = await this.i18n.translate(
+      'auth.INVALID_CREDENTIALS_ERROR',
+      { lang },
+    );
     // Check if the user with the given email exists
     const user = await this.usersService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(invalidCredentialsMessage);
     }
 
     // Check if the user is verified and not blocked
     if (user.status !== 'ACTIVE') {
-      throw new UnauthorizedException(
-        'Your account is not active, please verify your email',
+      const accountNotActiveMessage = await this.i18n.translate(
+        'auth.ACCOUNT_NOT_ACTIVE_ERROR',
+        { lang },
       );
+      throw new UnauthorizedException(accountNotActiveMessage);
     }
 
     // Password comparison
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(invalidCredentialsMessage);
     }
 
     // Generate token

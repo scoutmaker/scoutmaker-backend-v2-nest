@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowy zespół - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich zespołów, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich zespołów",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane zespołu - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane zespołu - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane zespołu - {name}"
+}

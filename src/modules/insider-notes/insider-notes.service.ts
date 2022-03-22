@@ -91,6 +91,10 @@ export class InsiderNotesService {
     });
   }
 
+  getList() {
+    return this.prisma.insiderNote.findMany({ include });
+  }
+
   findOne(id: string) {
     return this.prisma.insiderNote.findUnique({ where: { id }, include });
   }

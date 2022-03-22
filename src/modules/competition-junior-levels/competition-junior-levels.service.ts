@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompetitionJuniorLevelDto } from './dto/create-competition-junior-level.dto';
 import { UpdateCompetitionJuniorLevelDto } from './dto/update-competition-junior-level.dto';

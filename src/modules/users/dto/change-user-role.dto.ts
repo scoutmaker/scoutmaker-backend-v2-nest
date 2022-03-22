@@ -1,9 +1,12 @@
-import { UserRole } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum } from 'class-validator';
+
+import { UserRoleEnum } from '../types';
 
 export class ChangeRoleDto {
-  @IsNotEmpty()
-  @IsString()
-  @IsEnum(UserRole)
-  role: UserRole;
+  @IsEnum(UserRoleEnum, {
+    message: `Role must be a valid enum value. Available values: ${Object.keys(
+      UserRoleEnum,
+    ).join(', ')}`,
+  })
+  role: UserRoleEnum;
 }

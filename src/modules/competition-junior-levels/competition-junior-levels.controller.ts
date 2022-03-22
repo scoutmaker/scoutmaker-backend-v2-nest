@@ -1,23 +1,25 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { RoleGuard } from '../../guards/role.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { CompetitionJuniorLevelsService } from './competition-junior-levels.service';
 import { CompetitionJuniorLevelDto } from './dto/competition-junior-level.dto';
 import { CreateCompetitionJuniorLevelDto } from './dto/create-competition-junior-level.dto';
 import { UpdateCompetitionJuniorLevelDto } from './dto/update-competition-junior-level.dto';
-import { AuthGuard } from '../../guards/auth.guard';
-import { RoleGuard } from '../../guards/role.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { formatSuccessResponse } from '../../utils/helpers';
 
 @Controller('competition-junior-levels')
 @ApiTags('competition junior levels')
@@ -27,45 +29,51 @@ import { formatSuccessResponse } from '../../utils/helpers';
 export class CompetitionJuniorLevelsController {
   constructor(
     private readonly juniorLevelsService: CompetitionJuniorLevelsService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post()
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'create' })
   async create(
+    @I18nLang() lang: string,
     @Body() createCompetitionJuniorLevelDto: CreateCompetitionJuniorLevelDto,
   ) {
     const juniorLevel = await this.juniorLevelsService.create(
       createCompetitionJuniorLevelDto,
     );
-    return formatSuccessResponse(
-      `Successfully created new junior level`,
-      juniorLevel,
+    const message = await this.i18n.translate(
+      'competition-junior-levels.CREATE_MESSAGE',
+      { lang, args: { name: juniorLevel.name } },
     );
+    return formatSuccessResponse(message, juniorLevel);
   }
 
   @Get()
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'read', isArray: true })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const juniorLevels = await this.juniorLevelsService.findAll();
-    return formatSuccessResponse(
-      `Successfully fetched all junior levels`,
-      juniorLevels,
+    const message = await this.i18n.translate(
+      'competition-junior-levels.GET_ALL_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, juniorLevels);
   }
 
   @Get(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const juniorLevel = await this.juniorLevelsService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched junior level with the id of ${id}`,
-      juniorLevel,
+    const message = await this.i18n.translate(
+      'competition-junior-levels.GET_ONE_MESSAGE',
+      { lang, args: { name: juniorLevel.name } },
     );
+    return formatSuccessResponse(message, juniorLevel);
   }
 
   @Patch(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateCompetitionJuniorLevelDto: UpdateCompetitionJuniorLevelDto,
   ) {
@@ -73,19 +81,21 @@ export class CompetitionJuniorLevelsController {
       id,
       updateCompetitionJuniorLevelDto,
     );
-    return formatSuccessResponse(
-      `Successfully updated junior level with the id of ${id}`,
-      juniorLevel,
+    const message = await this.i18n.translate(
+      'competition-junior-levels.UPDATE_MESSAGE',
+      { lang, args: { name: juniorLevel.name } },
     );
+    return formatSuccessResponse(message, juniorLevel);
   }
 
   @Delete(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const juniorLevel = await this.juniorLevelsService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted junior level with the id of ${id}`,
-      juniorLevel,
+    const message = await this.i18n.translate(
+      'competition-junior-levels.DELETE_MESSAGE',
+      { lang, args: { name: juniorLevel.name } },
     );
+    return formatSuccessResponse(message, juniorLevel);
   }
 }

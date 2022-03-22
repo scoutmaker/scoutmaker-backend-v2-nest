@@ -1,0 +1,3 @@
+{
+  "GET_ALL_MESSAGE": "Successfully fetched all report skill assessments data, page {currentPage} of {totalPages}"
+}

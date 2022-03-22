@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nową przynależność klubową - {playerName} w {teamName}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich przynależności klubowych",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane przynależności klubowej - {playerName} w {teamName}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane przynależności klubowej - {playerName} w {teamName}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane przynależności klubowej - {playerName} w {teamName}"
+}

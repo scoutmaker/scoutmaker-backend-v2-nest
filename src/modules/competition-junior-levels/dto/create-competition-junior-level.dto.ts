@@ -1,16 +1,9 @@
-import {
-  IsInt,
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  Min,
-  Max,
-} from 'class-validator';
+import { IsInt, Max, Min } from 'class-validator';
+
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
 
 export class CreateCompetitionJuniorLevelDto {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(30)
+  @IsRequiredStringWithMaxLength(30)
   name: string;
 
   @IsInt()

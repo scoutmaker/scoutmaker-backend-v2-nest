@@ -11,13 +11,13 @@ import {
 } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 
-const include: Prisma.MatchInclude = {
+const include = Prisma.validator<Prisma.MatchInclude>()({
   homeTeam: true,
   awayTeam: true,
   competition: true,
   group: true,
   season: true,
-};
+});
 
 const { group, season, ...listInclude } = include;
 

@@ -15,6 +15,7 @@ export class CreateCompetitionDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
+  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(15)

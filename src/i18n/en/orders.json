@@ -1,0 +1,15 @@
+{
+  "CREATE_MESSAGE": "Successfully created new order no. ${docNumber}",
+  "GET_ALL_MESSAGE": "Successfully fetched all orders data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all orders list",
+  "GET_ONE_MESSAGE": "Successfully fetched order no. {docNumber}",
+  "ACCEPT_MESSAGE": "Successfully accepted order no. {docNumber}",
+  "REJECT_MESSAGE": "Successfully rejected order no. {docNumber}",
+  "CLOSE_MESSAGE": "Successfully closed order no. {docNumber}",
+  "DELETE_MESSAGE": "Successfully deleted order no. {docNumber}",
+  "ACCEPT_STATUS_ERROR": "Order no {docNumber} is already accepted or closed",
+  "REJECT_STATUS_ERROR": "Order no {docNumber} cannot be rejected",
+  "REJECT_ASSIGNEE_ERROR": "You cannot reject order no {docNumber} as it's not assigned to you",
+  "REJECT_REPORTS_ERROR": "You cannot reject order no {docNumber} as it already has {reportsCount} reports related",
+  "CLOSE_ROLE_ERROR": "You are not authorized to close order no {docNumber}"
+}

@@ -90,6 +90,10 @@ export class TeamsService {
     });
   }
 
+  getList() {
+    return this.prisma.team.findMany();
+  }
+
   findOne(id: string) {
     return this.prisma.team.findUnique({ where: { id }, include });
   }
@@ -102,7 +106,10 @@ export class TeamsService {
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.prisma.competitionParticipation.deleteMany({
+      where: { teamId: id },
+    });
     return this.prisma.team.delete({ where: { id }, include });
   }
 }

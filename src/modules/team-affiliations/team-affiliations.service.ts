@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
 import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';
 
-const include: Prisma.TeamAffiliationInclude = {
+const include = Prisma.validator<Prisma.TeamAffiliationInclude>()({
   player: {
     include: {
       country: true,
@@ -22,7 +22,7 @@ const include: Prisma.TeamAffiliationInclude = {
       },
     },
   },
-};
+});
 
 @Injectable()
 export class TeamAffiliationsService {

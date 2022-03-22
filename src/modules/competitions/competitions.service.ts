@@ -18,6 +18,8 @@ const include: Prisma.CompetitionInclude = {
   juniorLevel: true,
 };
 
+const { ageCategory, type, juniorLevel, ...listInclude } = include;
+
 @Injectable()
 export class CompetitionsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -89,11 +91,15 @@ export class CompetitionsService {
     });
   }
 
+  getList() {
+    return this.prisma.competition.findMany({ include: listInclude });
+  }
+
   findOne(id: string) {
     return this.prisma.competition.findUnique({ where: { id }, include });
   }
 
-  async update(id: string, updateCompetitionDto: UpdateCompetitionDto) {
+  update(id: string, updateCompetitionDto: UpdateCompetitionDto) {
     return this.prisma.competition.update({
       where: { id },
       data: updateCompetitionDto,
@@ -101,7 +107,7 @@ export class CompetitionsService {
     });
   }
 
-  async remove(id: string) {
+  remove(id: string) {
     return this.prisma.competition.delete({ where: { id }, include });
   }
 }

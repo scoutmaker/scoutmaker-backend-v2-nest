@@ -187,7 +187,7 @@ enum Gender {
 model Competition {
   id        String   @id @default(cuid())
   name      String
-  level     Int
+  level     Int?
   gender    Gender   @default(MALE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -443,6 +443,7 @@ model NoteMeta {
 
 model InsiderNote {
   id          String   @id @default(cuid())
+  docNumber   Int      @default(autoincrement())
   informant   String?
   description String?
   createdAt   DateTime @default(now())

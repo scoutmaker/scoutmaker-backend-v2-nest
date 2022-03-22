@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { I18nService } from 'nestjs-i18n';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
@@ -7,13 +8,18 @@ import { ToggleMembershipDto } from './dto/toggle-membership.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { getUserNamesString } from './helpers';
 
-const include: Prisma.OrganizationInclude = { members: true };
+const include = Prisma.validator<Prisma.OrganizationInclude>()({
+  members: true,
+});
 
 @Injectable()
 export class OrganizationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly i18n: I18nService,
+  ) {}
 
-  async create({ name, memberIds }: CreateOrganizationDto) {
+  async create({ name, memberIds }: CreateOrganizationDto, lang: string) {
     const members = await this.prisma.user.findMany({
       where: { id: { in: memberIds } },
     });
@@ -22,11 +28,11 @@ export class OrganizationsService {
     const notScoutUsers = members.filter((user) => user.role !== 'SCOUT');
 
     if (notScoutUsers.length !== 0) {
-      throw new BadRequestException(
-        `Only users with the role of SCOUT can be organization members. ${getUserNamesString(
-          notScoutUsers,
-        )} have a role different than SCOUT.`,
+      const message = await this.i18n.translate(
+        'organizations.CREATE_MEMBERS_ROLE_ERROR',
+        { lang, args: { userNames: getUserNamesString(notScoutUsers) } },
       );
+      throw new BadRequestException(message);
     }
 
     // 2. Check if members are not already in an organization
@@ -35,11 +41,14 @@ export class OrganizationsService {
     );
 
     if (alreadyInOrganizationUsers.length !== 0) {
-      throw new BadRequestException(
-        `Users can be members of only one organization. ${getUserNamesString(
-          alreadyInOrganizationUsers,
-        )} are already members of other organizations.`,
+      const message = await this.i18n.translate(
+        'organizations.CREATE_MEMBER_ALREADY_IN_ORG_ERROR',
+        {
+          lang,
+          args: { userNames: getUserNamesString(alreadyInOrganizationUsers) },
+        },
       );
+      throw new BadRequestException(message);
     }
 
     return this.prisma.organization.create({
@@ -67,7 +76,7 @@ export class OrganizationsService {
     });
   }
 
-  async addMember(id: string, { memberId }: ToggleMembershipDto) {
+  async addMember(id: string, { memberId }: ToggleMembershipDto, lang: string) {
     const member = await this.prisma.user.findUnique({
       where: { id: memberId },
     });
@@ -76,15 +85,19 @@ export class OrganizationsService {
 
     // 1. Check if member is valid (only regular scouts can be members of an organization)
     if (member.role !== 'SCOUT') {
-      throw new BadRequestException(
-        `${name} has the role of ${member.role}. Only users with role of SCOUT can be members of an organization`,
+      const message = await this.i18n.translate(
+        'organizations.ADD_MEMBER_ROLE_ERROR',
+        { lang, args: { userName: name, role: member.role } },
       );
+      throw new BadRequestException(message);
     }
     // 2. Check if member is not already in an organization
     if (member.organizationId) {
-      throw new BadRequestException(
-        `${name} is already member of another organization. Users can only be members of one organzation at once.`,
+      const message = await this.i18n.translate(
+        'organizations.ADD_MEMBER_ALREADY_IN_ORG_ERROR',
+        { lang, args: { userName: name } },
       );
+      throw new BadRequestException(message);
     }
 
     return this.prisma.organization.update({

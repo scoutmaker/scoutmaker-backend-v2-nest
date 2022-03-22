@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { I18nService } from 'nestjs-i18n';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompetitionParticipationDto } from './dto/create-competition-participation.dto';
 import { FindUniqueCompetitionParticipationDto } from './dto/find-unique-competition-participation.dto';
@@ -13,7 +15,10 @@ const include: Prisma.CompetitionParticipationInclude = {
 };
 @Injectable()
 export class CompetitionParticipationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly i18n: I18nService,
+  ) {}
 
   create(createCompetitionParticipationDto: CreateCompetitionParticipationDto) {
     return this.prisma.competitionParticipation.create({
@@ -51,11 +56,17 @@ export class CompetitionParticipationsService {
     });
   }
 
-  async copyFromSeasonToSeason(fromSeasonId: string, toSeasonId: string) {
+  async copyFromSeasonToSeason(
+    fromSeasonId: string,
+    toSeasonId: string,
+    lang: string,
+  ) {
     if (fromSeasonId === toSeasonId) {
-      throw new BadRequestException(
-        'Cannot copy participations to the same season',
+      const message = await this.i18n.translate(
+        'competition-participations.COPY_SAME_SEASON_ERROR',
+        { lang },
       );
+      throw new BadRequestException(message);
     }
 
     const participations = await this.prisma.competitionParticipation.findMany({

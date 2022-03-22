@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../api-response/api-response.decorator';
@@ -31,17 +32,28 @@ import { MatchesService } from './matches.service';
 @UseGuards(AuthGuard)
 @ApiCookieAuth()
 export class MatchesController {
-  constructor(private readonly matchesService: MatchesService) {}
+  constructor(
+    private readonly matchesService: MatchesService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(MatchDto, { type: 'create' })
   @Serialize(MatchDto)
   async create(
+    @I18nLang() lang: string,
     @Body() createMatchDto: CreateMatchDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const match = await this.matchesService.create(createMatchDto, user.id);
-    return formatSuccessResponse('Successfully created new match', match);
+    const message = await this.i18n.translate('matches.CREATE_MESSAGE', {
+      lang,
+      args: {
+        homeTeamName: match.homeTeam.name,
+        awayTeamName: match.awayTeam.name,
+      },
+    });
+    return formatSuccessResponse(message, match);
   }
 
   @Get()
@@ -49,57 +61,82 @@ export class MatchesController {
   @ApiQuery({ type: MatchesPaginationOptionsDto })
   @Serialize(MatchDto, 'docs')
   async findAll(
+    @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: MatchesPaginationOptionsDto,
     @Query() query: FindAllMatchesDto,
   ) {
-    const matches = await this.matchesService.findAll(paginationOptions, query);
-    return formatSuccessResponse('Successfully fetched all matches', matches);
+    const data = await this.matchesService.findAll(paginationOptions, query);
+    const message = await this.i18n.translate('matches.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      },
+    });
+    return formatSuccessResponse(message, data);
   }
 
   @Get('list')
   @ApiResponse(MatchBasicDataDto, { type: 'read' })
   @Serialize(MatchBasicDataDto)
-  async getList() {
+  async getList(@I18nLang() lang: string) {
     const matches = await this.matchesService.getList();
-    return formatSuccessResponse(
-      'Successfully fetched all matches list',
-      matches,
-    );
+    const message = await this.i18n.translate('matches.GET_LIST_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, matches);
   }
 
   @Get(':id')
   @ApiResponse(MatchDto, { type: 'read' })
   @Serialize(MatchDto)
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const match = await this.matchesService.findOne(id);
-    return formatSuccessResponse(
-      `Successfuly fetched match with the id of ${id}`,
-      match,
-    );
+    const message = await this.i18n.translate('matches.GET_ONE_MESSAGE', {
+      lang,
+      args: {
+        homeTeamName: match.homeTeam.name,
+        awayTeamName: match.awayTeam.name,
+      },
+    });
+    return formatSuccessResponse(message, match);
   }
 
   @Patch(':id')
   @ApiResponse(MatchDto, { type: 'update' })
   @Serialize(MatchDto)
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateMatchDto: UpdateMatchDto,
   ) {
     const match = await this.matchesService.update(id, updateMatchDto);
-    return formatSuccessResponse(
-      `Successfuly updated match with the id of ${id}`,
-      match,
-    );
+    const message = await this.i18n.translate('matches.UPDATE_MESSAGE', {
+      lang,
+      args: {
+        homeTeamName: match.homeTeam.name,
+        awayTeamName: match.awayTeam.name,
+      },
+    });
+    return formatSuccessResponse(message, match);
   }
 
   @Delete(':id')
   @ApiResponse(MatchDto, { type: 'delete' })
   @Serialize(MatchDto)
-  async remove(@Param('id') id: string) {
+  async remove(
+    @I18nLang() lang: string,
+
+    @Param('id') id: string,
+  ) {
     const match = await this.matchesService.remove(id);
-    return formatSuccessResponse(
-      `Successfuly removed match with the id of ${id}`,
-      match,
-    );
+    const message = await this.i18n.translate('matches.DELETE_MESSAGE', {
+      lang,
+      args: {
+        homeTeamName: match.homeTeam.name,
+        awayTeamName: match.awayTeam.name,
+      },
+    });
+    return formatSuccessResponse(message, match);
   }
 }

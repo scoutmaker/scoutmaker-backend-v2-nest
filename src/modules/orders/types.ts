@@ -1,5 +1,5 @@
 export enum OrderStatusEnum {
   OPEN = 'OPEN',
-  ACCEPTEd = 'ACCEPTED',
+  ACCEPTED = 'ACCEPTED',
   CLOSED = 'CLOSED',
 }

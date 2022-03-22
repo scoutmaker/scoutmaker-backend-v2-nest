@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Successfully created new agency - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all agencies data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all agencies list",
+  "GET_ONE_MESSAGE": "Successfully fetched agency data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated agency data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted agency data - {name}"
+}

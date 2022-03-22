@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 
 import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
 import { MatchesProperty } from '../../../decorators/matches-property.decorator';
 import { PASSWORD_REGEXP } from '../../../utils/constants';
 
@@ -19,12 +20,10 @@ export class RegisterUserDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsRequiredStringWithMaxLength(30)
   firstName: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsRequiredStringWithMaxLength(30)
   lastName: string;
 
   @IsOptional()
@@ -39,6 +38,7 @@ export class RegisterUserDto {
   @IsPhoneNumber()
   phone?: string;
 
+  @IsOptional()
   @IsString()
   city?: string;
 
@@ -57,11 +57,11 @@ export class RegisterUserDto {
   })
   passwordConfirm: string;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
   activeRadius?: number;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsCuid()
   regionId: string;
 }

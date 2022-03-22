@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -29,62 +30,74 @@ import { UpdateCompetitionParticipationDto } from './dto/update-competition-part
 export class CompetitionParticipationsController {
   constructor(
     private readonly participationsService: CompetitionParticipationsService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post()
   @ApiResponse(CompetitionParticipationDto, { type: 'create' })
   async create(
+    @I18nLang() lang: string,
     @Body()
     createCompetitionParticipationDto: CreateCompetitionParticipationDto,
   ) {
     const participation = await this.participationsService.create(
       createCompetitionParticipationDto,
     );
-    return formatSuccessResponse(
-      'Successfully created new competition participation',
-      participation,
+    const message = await this.i18n.translate(
+      'competition-participations.CREATE_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, participation);
   }
 
   @Post('/copy/:fromSeasonId/:toSeasonId')
   @ApiResponse(CompetitionParticipationDto, { type: 'create' })
   async copyFromSeasonToSeason(
+    @I18nLang() lang: string,
     @Param() { fromSeasonId, toSeasonId }: CopySeasonToSeasonDto,
   ) {
     const participations =
       await this.participationsService.copyFromSeasonToSeason(
         fromSeasonId,
         toSeasonId,
+        lang,
       );
-    return formatSuccessResponse(
-      `Successfully copied participations from season ${fromSeasonId} to season ${toSeasonId}`,
-      participations,
+    const message = await this.i18n.translate(
+      'competition-participations.COPY_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, participations);
   }
 
   @Get()
   @ApiResponse(CompetitionParticipationDto, { type: 'read' })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const participations = await this.participationsService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all competition participations',
-      participations,
+    const message = await this.i18n.translate(
+      'competition-participations.GET_ALL_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, participations);
   }
 
   @Get(':teamId/:competitionId/:seasonId')
   @ApiResponse(CompetitionParticipationDto, { type: 'read' })
-  async findOne(@Param() params: FindUniqueCompetitionParticipationDto) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param() params: FindUniqueCompetitionParticipationDto,
+  ) {
     const participation = await this.participationsService.findOne(params);
-    return formatSuccessResponse(
-      'Successfully fetched competition participation',
-      participation,
+    const message = await this.i18n.translate(
+      'competition-participations.GET_ONE_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, participation);
   }
 
   @Patch(':teamId/:competitionId/:seasonId')
   @ApiResponse(CompetitionParticipationDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param() params: FindUniqueCompetitionParticipationDto,
     @Body()
     updateCompetitionParticipationDto: UpdateCompetitionParticipationDto,
@@ -93,19 +106,24 @@ export class CompetitionParticipationsController {
       params,
       updateCompetitionParticipationDto,
     );
-    return formatSuccessResponse(
-      'Successfully updated competition participation',
-      participation,
+    const message = await this.i18n.translate(
+      'competition-participations.UPDATE_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, participation);
   }
 
   @Delete(':teamId/:competitionId/:seasonId')
   @ApiResponse(CompetitionParticipationDto, { type: 'delete' })
-  async remove(@Param() params: FindUniqueCompetitionParticipationDto) {
+  async remove(
+    @I18nLang() lang: string,
+    @Param() params: FindUniqueCompetitionParticipationDto,
+  ) {
     const participation = await this.participationsService.remove(params);
-    return formatSuccessResponse(
-      'Successfully deleted competition participation',
-      participation,
+    const message = await this.i18n.translate(
+      'competition-participations.DELETE_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, participation);
   }
 }

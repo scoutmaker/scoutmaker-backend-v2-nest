@@ -1,0 +1,9 @@
+{
+  "CREATE_MESSAGE": "Successfully created new season - {name}",
+  "GET_LIST_MESSAGE": "Successfully fetched all seasons list",
+  "GET_ONE_MESSAGE": "Successfully fetched season data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated season data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted season data - {name}",
+  "DEACTIVATE_MESSAGE": "Successfully deactivated season - {name}",
+  "ACTIVATE_MESSAGE": "Successfully activated season - {name}. All other seasons have been deactivated"
+}

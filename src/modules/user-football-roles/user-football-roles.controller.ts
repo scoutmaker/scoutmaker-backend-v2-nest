@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -25,43 +26,75 @@ import { UserFootballRolesService } from './user-football-roles.service';
 @ApiCookieAuth()
 @Serialize(UserFootballRoleDto)
 export class UserFootballRolesController {
-  constructor(private readonly rolesService: UserFootballRolesService) {}
+  constructor(
+    private readonly rolesService: UserFootballRolesService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
-  async create(@Body() createUserFootballRoleDto: CreateUserFootballRoleDto) {
+  async create(
+    @I18nLang() lang: string,
+    @Body() createUserFootballRoleDto: CreateUserFootballRoleDto,
+  ) {
     const role = await this.rolesService.create(createUserFootballRoleDto);
-    return formatSuccessResponse('Successfully created new role', role);
+    const message = await this.i18n.translate(
+      'user-football-roles.CREATE_MESSAGE',
+      { lang, args: { name: role.name } },
+    );
+    return formatSuccessResponse(message, role);
   }
 
   @Get()
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const roles = await this.rolesService.findAll();
-    return formatSuccessResponse('Successfully fetched all roles', roles);
+    const message = await this.i18n.translate(
+      'user-football-roles.GET_LIST_MESSAGE',
+      { lang },
+    );
+    return formatSuccessResponse(message, roles);
   }
 
   @Get(':id')
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const role = await this.rolesService.findOne(id);
-    return formatSuccessResponse(`Successfully fetched role ${id}`, role);
+    const message = await this.i18n.translate(
+      'user-football-roles.GET_ONE_MESSAGE',
+      { lang, args: { name: role.name } },
+    );
+    return formatSuccessResponse(message, role);
   }
 
   @Patch(':id')
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateUserFootballRoleDto: UpdateUserFootballRoleDto,
   ) {
     const role = await this.rolesService.update(id, updateUserFootballRoleDto);
-    return formatSuccessResponse(`Successfully updated role ${id}`, role);
+    const message = await this.i18n.translate(
+      'user-football-roles.UPDATE_MESSAGE',
+      {
+        lang,
+        args: {
+          name: role.name,
+        },
+      },
+    );
+    return formatSuccessResponse(message, role);
   }
 
   @Delete(':id')
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const role = await this.rolesService.remove(id);
-    return formatSuccessResponse(`Successfully removed role ${id}`, role);
+    const message = await this.i18n.translate(
+      'user-football-roles.DELETE_MESSAGE',
+      { lang, args: { name: role.name } },
+    );
+    return formatSuccessResponse(message, role);
   }
 }

@@ -3,10 +3,10 @@ import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
-const include: Prisma.FollowPlayerInclude = {
+const include = Prisma.validator<Prisma.FollowPlayerInclude>()({
   player: { include: { primaryPosition: true, country: true } },
   follower: true,
-};
+});
 
 @Injectable()
 export class FollowPlayersService {

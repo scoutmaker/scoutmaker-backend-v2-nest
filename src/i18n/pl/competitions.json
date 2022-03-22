@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowe rozgrywki - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich rozgrywek, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich rozgrywek",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane rozgrywek - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane rozgrywek - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane rozgrywek - {name}"
+}

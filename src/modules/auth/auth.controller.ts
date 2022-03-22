@@ -5,18 +5,20 @@ import {
   Param,
   Patch,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { add } from 'date-fns';
-import { CookieOptions, Request, Response } from 'express';
+import { CookieOptions, Response } from 'express';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UserDto } from '../users/dto/user.dto';
@@ -36,40 +38,50 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post('register')
   @ApiResponse(UserDto, { type: 'create' })
   @Serialize(UserDto)
-  async register(@Body() registerUserDto: RegisterUserDto) {
+  async register(
+    @I18nLang() lang: string,
+    @Body() registerUserDto: RegisterUserDto,
+  ) {
     const user = await this.authService.register(registerUserDto);
-    return formatSuccessResponse(
-      'Account created successfully! Please check your email to verify your account.',
-      user,
-    );
+    const message = await this.i18n.translate('auth.REGISTER_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, user);
   }
 
   @Post('login')
   @ApiResponse(UserDto, { type: 'read' })
   @Serialize(UserDto, 'user')
   async login(
+    @I18nLang() lang: string,
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { user, token, expiresIn } = await this.authService.login(loginDto);
+    const { user, token, expiresIn } = await this.authService.login(
+      loginDto,
+      lang,
+    );
+    const message = await this.i18n.translate('auth.LOGIN_MESSAGE', { lang });
     response.cookie('token', token, cookieOptions);
-    return formatSuccessResponse('Successfully logged in', { user, expiresIn });
+    return formatSuccessResponse(message, { user, expiresIn });
   }
 
   @Get('verify/:confirmationCode')
   @ApiResponse(UserDto, { type: 'read' })
   @Serialize(UserDto)
-  async verify(@Param('confirmationCode') confirmationCode: string) {
+  async verify(
+    @I18nLang() lang: string,
+    @Param('confirmationCode') confirmationCode: string,
+  ) {
     const user = await this.usersService.verify(confirmationCode);
-    return formatSuccessResponse(
-      'Account activated successfully, you can now log in to the app!',
-      user,
-    );
+    const message = await this.i18n.translate('auth.VERIFY_MESSAGE', { lang });
+    return formatSuccessResponse(message, user);
   }
 
   @Get('account')
@@ -77,9 +89,15 @@ export class AuthController {
   @Serialize(UserDto)
   @UseGuards(AuthGuard)
   @ApiCookieAuth()
-  async getAccount(@Req() request: Request) {
-    const user = await this.usersService.findOne(request.user.id);
-    return formatSuccessResponse('Successfully fetched account', user);
+  async getAccount(
+    @I18nLang() lang: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const accountData = await this.usersService.findOne(user.id);
+    const message = await this.i18n.translate('auth.GET_ACCOUNT_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, accountData);
   }
 
   @Patch('update-account')
@@ -88,11 +106,15 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @ApiCookieAuth()
   async updateAccount(
-    @Req() request: Request,
+    @I18nLang() lang: string,
+    @CurrentUser() user: CurrentUserDto,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const user = await this.usersService.update(request.user.id, updateUserDto);
-    return formatSuccessResponse('Account details updated successfully', user);
+    const accountData = await this.usersService.update(user.id, updateUserDto);
+    const message = await this.i18n.translate('auth.UPDATE_ACCOUNT_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, accountData);
   }
 
   @Patch('update-password')
@@ -101,17 +123,22 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @ApiCookieAuth()
   async updatePassword(
-    @Req() request: Request,
+    @I18nLang() lang: string,
+    @CurrentUser() user: CurrentUserDto,
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { user, token, expiresIn } = await this.authService.updatePassword(
-      request.user.id,
-      updatePasswordDto,
-    );
+    const {
+      user: accountData,
+      token,
+      expiresIn,
+    } = await this.authService.updatePassword(user.id, updatePasswordDto);
+    const message = await this.i18n.translate('auth.UPDATE_PASSWORD_MESSAGE', {
+      lang,
+    });
     response.cookie('token', token, cookieOptions);
-    return formatSuccessResponse('Password updated successfully!', {
-      user,
+    return formatSuccessResponse(message, {
+      accountData,
       expiresIn,
     });
   }

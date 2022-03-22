@@ -1,14 +1,16 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RoleGuard } from '../../guards/role.guard';
@@ -25,58 +27,70 @@ import { UpdateCompetitionTypeDto } from './dto/update-competition-type.dto';
 @ApiCookieAuth()
 @Serialize(CompetitionTypeDto)
 export class CompetitionTypesController {
-  constructor(private readonly typesService: CompetitionTypesService) {}
+  constructor(
+    private readonly typesService: CompetitionTypesService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
   @ApiResponse(CompetitionTypeDto, { type: 'create' })
-  async create(@Body() createCompetitionTypeDto: CreateCompetitionTypeDto) {
+  async create(
+    @I18nLang() lang: string,
+    @Body() createCompetitionTypeDto: CreateCompetitionTypeDto,
+  ) {
     const type = await this.typesService.create(createCompetitionTypeDto);
-    return formatSuccessResponse(
-      'Successfully created new competition type',
-      type,
+    const message = await this.i18n.translate(
+      'competition-types.CREATE_MESSAGE',
+      { lang, args: { name: type.name } },
     );
+    return formatSuccessResponse(message, type);
   }
 
   @Get()
   @ApiResponse(CompetitionTypeDto, { type: 'read', isArray: true })
-  async findAll() {
+  async findAll(@I18nLang() lang: string) {
     const types = await this.typesService.findAll();
-    return formatSuccessResponse(
-      'Successfully fetched all competition types',
-      types,
+    const message = await this.i18n.translate(
+      'competition-types.GET_ALL_MESSAGE',
+      { lang },
     );
+    return formatSuccessResponse(message, types);
   }
 
   @Get(':id')
   @ApiResponse(CompetitionTypeDto, { type: 'read' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const type = await this.typesService.findOne(id);
-    return formatSuccessResponse(
-      `Successfully fetched competition type with the id of ${id}`,
-      type,
+    const message = await this.i18n.translate(
+      'competition-types.GET_ONE_MESSAGE',
+      { lang, args: { name: type.name } },
     );
+    return formatSuccessResponse(message, type);
   }
 
   @Patch(':id')
   @ApiResponse(CompetitionTypeDto, { type: 'update' })
   async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updateCompetitionTypeDto: UpdateCompetitionTypeDto,
   ) {
     const type = await this.typesService.update(id, updateCompetitionTypeDto);
-    return formatSuccessResponse(
-      `Successfully updated competition type with the id of ${id}`,
-      type,
+    const message = await this.i18n.translate(
+      'competition-types.UPDATE_MESSAGE',
+      { lang, args: { name: type.name } },
     );
+    return formatSuccessResponse(message, type);
   }
 
   @Delete(':id')
   @ApiResponse(CompetitionTypeDto, { type: 'delete' })
-  async remove(@Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const type = await this.typesService.remove(id);
-    return formatSuccessResponse(
-      `Successfully deleted competition type with the id of ${id}`,
-      type,
+    const message = await this.i18n.translate(
+      'competition-types.DELETE_MESSAGE',
+      { lang, args: { name: type.name } },
     );
+    return formatSuccessResponse(message, type);
   }
 }

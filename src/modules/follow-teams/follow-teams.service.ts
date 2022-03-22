@@ -3,10 +3,10 @@ import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
-const include: Prisma.FollowTeamInclude = {
+const include = Prisma.validator<Prisma.FollowTeamInclude>()({
   follower: true,
   team: true,
-};
+});
 @Injectable()
 export class FollowTeamsService {
   constructor(private readonly prisma: PrismaService) {}

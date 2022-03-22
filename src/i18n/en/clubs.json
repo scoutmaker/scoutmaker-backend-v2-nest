@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Successfully created new club - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all clubs data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all clubs list",
+  "GET_ONE_MESSAGE": "Successfully fetched club data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated club data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted club data - {name}"
+}

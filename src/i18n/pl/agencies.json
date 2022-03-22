@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nową agencję - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich agencji, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich agencji",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane agencji - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane agencji - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane agencji - {name}"
+}
