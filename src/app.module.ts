@@ -36,6 +36,7 @@ import { PlayerStatsModule } from './modules/player-stats/player-stats.module';
 import { PlayersModule } from './modules/players/players.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { RegionsModule } from './modules/regions/regions.module';
+import { ReportBackgroundImagesModule } from './modules/report-background-images/report-background-images.module';
 import { ReportSkillAssessmentCategoriesModule } from './modules/report-skill-assessment-categories/report-skill-assessment-categories.module';
 import { ReportSkillAssessmentTemplatesModule } from './modules/report-skill-assessment-templates/report-skill-assessment-templates.module';
 import { ReportSkillAssessmentsModule } from './modules/report-skill-assessments/report-skill-assessments.module';
@@ -101,6 +102,7 @@ import { UsersModule } from './modules/users/users.module';
     UserFootballRolesModule,
     OrganizationsModule,
     PlayerStatsModule,
+    ReportBackgroundImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
