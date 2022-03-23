@@ -739,11 +739,11 @@ model Organization {
 
 model PlayerStats {
   id            String   @id @default(cuid())
-  minutesPlayed Int
-  goals         Int
-  assists       Int
-  yellowCards   Int
-  redCards      Int
+  minutesPlayed Int      @default(0)
+  goals         Int      @default(0)
+  assists       Int      @default(0)
+  yellowCards   Int      @default(0)
+  redCards      Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
