@@ -69,6 +69,7 @@ model User {
   followedBy                             FollowScout[]                   @relation("followee")
   organization                           Organization?                   @relation(fields: [organizationId], references: [id])
   organizationId                         String?
+  createdPlayerStats                     PlayerStats[]
 }
 
 model UserFootballRole {
@@ -163,6 +164,7 @@ model Team {
   notesMeta        NoteMeta[]
   insiderNotesMeta InsiderNoteMeta[]
   reportsMeta      ReportMeta[]
+  PlayerStatsMeta  PlayerStatsMeta[]
 }
 
 model Season {
@@ -343,6 +345,7 @@ model Player {
   orders             Order[]
   agencies           AgencyAffiliation[]
   followedBy         FollowPlayer[]
+  stats              PlayerStats[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -399,6 +402,7 @@ model Match {
   notes         Note[]
   reports       Report[]
   order         Order[]
+  stats         PlayerStats[]
 }
 
 model Note {
@@ -732,4 +736,38 @@ model Organization {
 
   // Relation fields
   members User[]
+}
+
+model PlayerStats {
+  id            String   @id @default(cuid())
+  minutesPlayed Int      @default(0)
+  goals         Int      @default(0)
+  assists       Int      @default(0)
+  yellowCards   Int      @default(0)
+  redCards      Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relation fields
+  author   User             @relation(fields: [authorId], references: [id])
+  authorId String
+  player   Player           @relation(fields: [playerId], references: [id])
+  playerId String
+  match    Match            @relation(fields: [matchId], references: [id])
+  matchId  String
+  meta     PlayerStatsMeta?
+
+  @@unique([playerId, matchId])
+}
+
+model PlayerStatsMeta {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  stats   PlayerStats @relation(fields: [statsId], references: [id])
+  statsId String      @unique
+  team    Team        @relation(fields: [teamId], references: [id])
+  teamId  String
 }

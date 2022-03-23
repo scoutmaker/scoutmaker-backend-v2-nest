@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully added player stats - {playerName} in {matchName} match",
+  "GET_ALL_MESSAGE": "Successfully fetched all player stats data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched player stats data - {playerName} in {matchName} match",
+  "UPDATE_MESSAGE": "Successfully updated player stats data - {playerName} in {matchName} match",
+  "DELETE_MESSAGE": "Successfully deleted player stats data - {playerName} in {matchName} match"
+}

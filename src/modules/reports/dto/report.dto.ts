@@ -3,7 +3,6 @@ import { ReportStatus } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
-import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { PlayerBasicDataDto } from '../../players/dto/player.dto';
 import { ReportSkillAssessmentBasicDataDto } from '../../report-skill-assessments/dto/report-skill-assessment.dto';
 import { ReportTemplateBasicDataDto } from '../../report-templates/dto/report-template.dto';
