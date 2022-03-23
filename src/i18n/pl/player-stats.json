@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie dodano nowe statystki zawodnika - {playerName} w meczu {matchName}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano wszystkie statystyk zawodników, strona {currentPage} z {totalPages}",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano statystki zawodnika - {playerName} w meczu {matchName}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano statystki zawodnika - {playerName} w meczu {matchName}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto statystki zawodnika - {playerName} w meczu {matchName}"
+}

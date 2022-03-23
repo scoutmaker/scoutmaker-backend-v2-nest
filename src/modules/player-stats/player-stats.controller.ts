@@ -6,41 +6,117 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { formatSuccessResponse } from '../../utils/helpers';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreatePlayerStatsDto } from './dto/create-player-stats.dto';
+import { PlayerStatsDto } from './dto/player-stats.dto';
 import { UpdatePlayerStatsDto } from './dto/update-player-stats.dto';
 import { PlayerStatsService } from './player-stats.service';
 
 @Controller('player-stats')
+@ApiTags('player stats')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
 export class PlayerStatsController {
-  constructor(private readonly playerStatsService: PlayerStatsService) {}
+  constructor(
+    private readonly playerStatsService: PlayerStatsService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
-  create(@Body() createPlayerStatDto: CreatePlayerStatsDto) {
-    return this.playerStatsService.create(createPlayerStatDto);
+  @ApiResponse(PlayerStatsDto, { type: 'create' })
+  @Serialize(PlayerStatsDto)
+  async create(
+    @I18nLang() lang: string,
+    @Body() createPlayerStatsDto: CreatePlayerStatsDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const stats = await this.playerStatsService.create(
+      createPlayerStatsDto,
+      user.id,
+    );
+    const message = await this.i18n.translate('player-stats.CREATE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${stats.player.firstName} ${stats.player.lastName}`,
+        matchName: `${stats.match.homeTeam.name} vs. ${stats.match.awayTeam.name}`,
+      },
+    });
+    return formatSuccessResponse(message, stats);
   }
 
   @Get()
-  findAll() {
-    return this.playerStatsService.findAll();
+  @ApiPaginatedResponse(PlayerStatsDto)
+  // @ApiQuery({ type: PlayerStatsPaginationOptionsDto })
+  @Serialize(PlayerStatsDto, 'docs')
+  async findAll(@I18nLang() lang: string) {
+    const data = await this.playerStatsService.findAll();
+    const message = await this.i18n.translate('player-stats.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: 10,
+        totalPages: 10,
+      },
+    });
+    return formatSuccessResponse(message, data);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.playerStatsService.findOne(+id);
+  @ApiResponse(PlayerStatsDto, { type: 'read' })
+  @Serialize(PlayerStatsDto)
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+    const stats = await this.playerStatsService.findOne(id);
+    const message = await this.i18n.translate('player-stats.GET_ONE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${stats.player.firstName} ${stats.player.lastName}`,
+        matchName: `${stats.match.homeTeam.name} vs. ${stats.match.awayTeam.name}`,
+      },
+    });
+    return formatSuccessResponse(message, stats);
   }
 
   @Patch(':id')
-  update(
+  @ApiResponse(PlayerStatsDto, { type: 'update' })
+  @Serialize(PlayerStatsDto)
+  async update(
+    @I18nLang() lang: string,
     @Param('id') id: string,
     @Body() updatePlayerStatDto: UpdatePlayerStatsDto,
   ) {
-    return this.playerStatsService.update(+id, updatePlayerStatDto);
+    const stats = await this.playerStatsService.update(id, updatePlayerStatDto);
+    const message = await this.i18n.translate('player-stats.UPDATE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${stats.player.firstName} ${stats.player.lastName}`,
+        matchName: `${stats.match.homeTeam.name} vs. ${stats.match.awayTeam.name}`,
+      },
+    });
+    return formatSuccessResponse(message, stats);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.playerStatsService.remove(+id);
+  @ApiResponse(PlayerStatsDto, { type: 'delete' })
+  @Serialize(PlayerStatsDto)
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+    const stats = await this.playerStatsService.remove(id);
+    const message = await this.i18n.translate('player-stats.DELETE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${stats.player.firstName} ${stats.player.lastName}`,
+        matchName: `${stats.match.homeTeam.name} vs. ${stats.match.awayTeam.name}`,
+      },
+    });
+    return formatSuccessResponse(message, stats);
   }
 }
