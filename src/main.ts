@@ -1,7 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+
 import { AppModule } from './app.module';
 import { JwtExceptionFilter } from './filters/jwt-exception.filter';
 import { PrismaClientExceptionFilter } from './filters/prisma-client-exception.filter';
