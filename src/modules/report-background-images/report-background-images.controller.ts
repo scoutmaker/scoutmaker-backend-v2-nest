@@ -1,34 +1,100 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ReportBackgroundImagesService } from './report-background-images.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+
+import { ApiResponse } from '../../api-response/api-response.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
+import { Serialize } from '../../interceptors/serialize.interceptor';
+import { formatSuccessResponse } from '../../utils/helpers';
 import { CreateReportBackgroundImageDto } from './dto/create-report-background-image.dto';
+import { ReportBackgroundImageDto } from './dto/report-background-image.dto';
 import { UpdateReportBackgroundImageDto } from './dto/update-report-background-image.dto';
+import { ReportBackgroundImagesService } from './report-background-images.service';
 
 @Controller('report-background-images')
+@ApiTags('report background images')
+@UseGuards(AuthGuard)
+@ApiCookieAuth()
+@Serialize(ReportBackgroundImageDto)
 export class ReportBackgroundImagesController {
-  constructor(private readonly reportBackgroundImagesService: ReportBackgroundImagesService) {}
+  constructor(
+    private readonly reportBackgroundImagesService: ReportBackgroundImagesService,
+    private readonly i18n: I18nService,
+  ) {}
 
   @Post()
-  create(@Body() createReportBackgroundImageDto: CreateReportBackgroundImageDto) {
-    return this.reportBackgroundImagesService.create(createReportBackgroundImageDto);
+  @ApiResponse(ReportBackgroundImageDto, { type: 'create' })
+  async create(
+    @I18nLang() lang: string,
+    @Body() createReportBackgroundImageDto: CreateReportBackgroundImageDto,
+  ) {
+    const image = await this.reportBackgroundImagesService.create(
+      createReportBackgroundImageDto,
+    );
+    const message = await this.i18n.translate(
+      'report-background-images.CREATE_MESSAGE',
+      { lang, args: { name: image.name } },
+    );
+    return formatSuccessResponse(message, image);
   }
 
   @Get()
-  findAll() {
-    return this.reportBackgroundImagesService.findAll();
+  @ApiResponse(ReportBackgroundImageDto, { type: 'read' })
+  async findAll(@I18nLang() lang: string) {
+    const images = await this.reportBackgroundImagesService.findAll();
+    const message = await this.i18n.translate(
+      'report-background-images.GET_LIST_MESSAGE',
+      { lang },
+    );
+    return formatSuccessResponse(message, images);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reportBackgroundImagesService.findOne(+id);
+  @ApiResponse(ReportBackgroundImageDto, { type: 'read' })
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+    const image = await this.reportBackgroundImagesService.findOne(id);
+    const message = await this.i18n.translate(
+      'report-background-images.GET_ONE_MESSAGE',
+      { lang, args: { name: image.name } },
+    );
+    return formatSuccessResponse(message, image);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReportBackgroundImageDto: UpdateReportBackgroundImageDto) {
-    return this.reportBackgroundImagesService.update(+id, updateReportBackgroundImageDto);
+  @ApiResponse(ReportBackgroundImageDto, { type: 'update' })
+  async update(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @Body() updateReportBackgroundImageDto: UpdateReportBackgroundImageDto,
+  ) {
+    const image = await this.reportBackgroundImagesService.update(
+      id,
+      updateReportBackgroundImageDto,
+    );
+    const message = await this.i18n.translate(
+      'report-background-images.UPDATE_MESSAGE',
+      { lang, args: { name: image.name } },
+    );
+    return formatSuccessResponse(message, image);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reportBackgroundImagesService.remove(+id);
+  @ApiResponse(ReportBackgroundImageDto, { type: 'delete' })
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+    const image = await this.reportBackgroundImagesService.remove(id);
+    const message = await this.i18n.translate(
+      'report-background-images.DELETE_MESSAGE',
+      { lang, args: { name: image.name } },
+    );
+    return formatSuccessResponse(message, image);
   }
 }
