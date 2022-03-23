@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -15,11 +16,14 @@ import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.
 import { ApiResponse } from '../../api-response/api-response.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreatePlayerStatsDto } from './dto/create-player-stats.dto';
+import { FindAllPlayerStatsDto } from './dto/find-all-player-stats.dto';
 import { PlayerStatsDto } from './dto/player-stats.dto';
+import { PlayerStatsPaginationOptionsDto } from './dto/player-stats-pagination-options.dto';
 import { UpdatePlayerStatsDto } from './dto/update-player-stats.dto';
 import { PlayerStatsService } from './player-stats.service';
 
@@ -57,15 +61,22 @@ export class PlayerStatsController {
 
   @Get()
   @ApiPaginatedResponse(PlayerStatsDto)
-  // @ApiQuery({ type: PlayerStatsPaginationOptionsDto })
+  @ApiQuery({ type: PlayerStatsPaginationOptionsDto })
   @Serialize(PlayerStatsDto, 'docs')
-  async findAll(@I18nLang() lang: string) {
-    const data = await this.playerStatsService.findAll();
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions() paginationOptions: PlayerStatsPaginationOptionsDto,
+    @Query() query: FindAllPlayerStatsDto,
+  ) {
+    const data = await this.playerStatsService.findAll(
+      paginationOptions,
+      query,
+    );
     const message = await this.i18n.translate('player-stats.GET_ALL_MESSAGE', {
       lang,
       args: {
-        currentPage: 10,
-        totalPages: 10,
+        currentPage: data.page,
+        totalPages: data.totalPages,
       },
     });
     return formatSuccessResponse(message, data);

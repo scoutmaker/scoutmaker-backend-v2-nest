@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerStatsDto } from './dto/create-player-stats.dto';
+import { FindAllPlayerStatsDto } from './dto/find-all-player-stats.dto';
+import { PlayerStatsPaginationOptionsDto } from './dto/player-stats-pagination-options.dto';
 import { UpdatePlayerStatsDto } from './dto/update-player-stats.dto';
 
 const include = Prisma.validator<Prisma.PlayerStatsInclude>()({
@@ -42,8 +45,50 @@ export class PlayerStatsService {
     });
   }
 
-  findAll() {
-    return `This action returns all playerStats`;
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: PlayerStatsPaginationOptionsDto,
+    { playerId, matchId, teamId }: FindAllPlayerStatsDto,
+  ) {
+    let sort: Prisma.PlayerStatsOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'player':
+        sort = { player: { lastName: sortingOrder } };
+        break;
+      case 'match':
+        sort = { match: { date: sortingOrder } };
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where: Prisma.PlayerStatsWhereInput = {
+      player: { id: playerId },
+      match: { id: matchId },
+      OR: [
+        { match: { homeTeam: { id: teamId } } },
+        { match: { awayTeam: { id: teamId } } },
+        { meta: { team: { id: teamId } } },
+      ],
+    };
+
+    const [stats, total] = await Promise.all([
+      this.prisma.playerStats.findMany({
+        where,
+        take: limit,
+        skip: calculateSkip(page, limit),
+        orderBy: sort,
+        include,
+      }),
+      this.prisma.playerStats.count({ where }),
+    ]);
+
+    return formatPaginatedResponse({
+      docs: stats,
+      totalDocs: total,
+      limit,
+      page,
+    });
   }
 
   findOne(id: string) {

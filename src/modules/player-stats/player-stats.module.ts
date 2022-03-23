@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
+import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
 import { PlayersModule } from '../players/players.module';
 import { PlayerStatsController } from './player-stats.controller';
 import { PlayerStatsService } from './player-stats.service';
@@ -9,4 +10,10 @@ import { PlayerStatsService } from './player-stats.service';
   providers: [PlayerStatsService],
   imports: [PlayersModule],
 })
-export class PlayerStatsModule {}
+export class PlayerStatsModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PrepareQueryMiddleware)
+      .forRoutes({ path: 'player-stats', method: RequestMethod.GET });
+  }
+}
