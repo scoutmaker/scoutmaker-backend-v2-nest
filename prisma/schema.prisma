@@ -69,6 +69,7 @@ model User {
   followedBy                             FollowScout[]                   @relation("followee")
   organization                           Organization?                   @relation(fields: [organizationId], references: [id])
   organizationId                         String?
+  createdPlayerStats                     PlayerStats[]
 }
 
 model UserFootballRole {
@@ -748,6 +749,8 @@ model PlayerStats {
   updatedAt     DateTime @updatedAt
 
   // Relation fields
+  author   User             @relation(fields: [authorId], references: [id])
+  authorId String
   player   Player           @relation(fields: [playerId], references: [id])
   playerId String
   match    Match            @relation(fields: [matchId], references: [id])

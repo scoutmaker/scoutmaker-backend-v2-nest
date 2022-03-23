@@ -774,6 +774,7 @@ async function main() {
     data: {
       matchId: lechLegiaMatch.id,
       playerId: marchwinski.id,
+      authorId: admin.id,
       minutesPlayed: 70,
       goals: 1,
       assists: 0,
@@ -787,6 +788,7 @@ async function main() {
     data: {
       matchId: lechLegiaMatch.id,
       playerId: skibicki.id,
+      authorId: admin.id,
       minutesPlayed: 90,
       goals: 0,
       assists: 0,
