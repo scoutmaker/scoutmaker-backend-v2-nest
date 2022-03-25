@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
-import { CompetitionDto } from '../../competitions/dto/competition.dto';
+import { CompetitionBasicDataDto } from '../../competitions/dto/competition.dto';
 import { RegionWithoutCountryDto } from '../../regions/dto/region-without-country.dto';
 
 export class CompetitionGroupDto {
@@ -12,12 +12,12 @@ export class CompetitionGroupDto {
   name: string;
 
   @Transform(({ value }) =>
-    plainToInstance(CompetitionDto, value, {
+    plainToInstance(CompetitionBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  competition: CompetitionDto;
+  competition: CompetitionBasicDataDto;
 
   @Transform(({ value }) =>
     value.map((item) =>
@@ -32,5 +32,5 @@ export class CompetitionGroupDto {
 
 export class CompetitionGroupBasicDataDto extends PickType(
   CompetitionGroupDto,
-  ['id', 'name'],
+  ['id', 'name', 'competition'],
 ) {}
