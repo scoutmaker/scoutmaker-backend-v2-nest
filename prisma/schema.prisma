@@ -196,21 +196,22 @@ model Competition {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  country           Country                           @relation(fields: [countryId], references: [id])
-  countryId         String
-  ageCategory       CompetitionAgeCategory            @relation(fields: [ageCategoryId], references: [id])
-  ageCategoryId     String
-  type              CompetitionType                   @relation(fields: [typeId], references: [id])
-  typeId            String
-  juniorLevel       CompetitionJuniorLevel?           @relation(fields: [juniorLevelId], references: [id])
-  juniorLevelId     String?
-  clubs             CompetitionParticipation[]
-  groups            CompetitionGroup[]
-  matches           Match[]
-  notesMeta         NoteMeta[]
-  insiderNotesMeta  InsiderNoteMeta[]
-  reportsMeta       ReportMeta[]
-  userSubscriptions CompetitionsOnUserSubscriptions[]
+  country                   Country                                   @relation(fields: [countryId], references: [id])
+  countryId                 String
+  ageCategory               CompetitionAgeCategory                    @relation(fields: [ageCategoryId], references: [id])
+  ageCategoryId             String
+  type                      CompetitionType                           @relation(fields: [typeId], references: [id])
+  typeId                    String
+  juniorLevel               CompetitionJuniorLevel?                   @relation(fields: [juniorLevelId], references: [id])
+  juniorLevelId             String?
+  clubs                     CompetitionParticipation[]
+  groups                    CompetitionGroup[]
+  matches                   Match[]
+  notesMeta                 NoteMeta[]
+  insiderNotesMeta          InsiderNoteMeta[]
+  reportsMeta               ReportMeta[]
+  userSubscriptions         CompetitionsOnUserSubscriptions[]
+  organizationSubscriptions CompetitionsOnOrganizationSubscriptions[]
 
   @@unique([level, countryId])
 }
@@ -222,15 +223,16 @@ model CompetitionGroup {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  competition       Competition                            @relation(fields: [competitionId], references: [id])
-  competitionId     String
-  regions           RegionsOnCompetitionGroups[]
-  teams             CompetitionParticipation[]
-  matches           Match[]
-  notesMeta         NoteMeta[]
-  insiderNotesMeta  InsiderNoteMeta[]
-  reportsMeta       ReportMeta[]
-  userSubscriptions CompetitionGroupsOnUserSubscriptions[]
+  competition              Competition                                    @relation(fields: [competitionId], references: [id])
+  competitionId            String
+  regions                  RegionsOnCompetitionGroups[]
+  teams                    CompetitionParticipation[]
+  matches                  Match[]
+  notesMeta                NoteMeta[]
+  insiderNotesMeta         InsiderNoteMeta[]
+  reportsMeta              ReportMeta[]
+  userSubscriptions        CompetitionGroupsOnUserSubscriptions[]
+  organizationSubscription CompetitionGroupsOnOrganizationSubscriptions[]
 
   @@unique([name, competitionId])
 }
@@ -738,7 +740,8 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  members User[]
+  members       User[]
+  subscriptions OrganizationSubscription[]
 }
 
 model PlayerStats {
@@ -819,6 +822,46 @@ model CompetitionGroupsOnUserSubscriptions {
   subscription   UserSubscription @relation(fields: [subscriptionId], references: [id])
   subscriptionId String
   group          CompetitionGroup @relation(fields: [groupId], references: [id])
+  groupId        String
+
+  @@id([subscriptionId, groupId])
+}
+
+model OrganizationSubscription {
+  id        String   @id @default(cuid())
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  organization      Organization                                   @relation(fields: [organizationId], references: [id])
+  organizationId    String
+  competitions      CompetitionsOnOrganizationSubscriptions[]
+  competitionGroups CompetitionGroupsOnOrganizationSubscriptions[]
+}
+
+model CompetitionsOnOrganizationSubscriptions {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  subscription   OrganizationSubscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  competition    Competition              @relation(fields: [competitionId], references: [id])
+  competitionId  String
+
+  @@id([subscriptionId, competitionId])
+}
+
+model CompetitionGroupsOnOrganizationSubscriptions {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  subscription   OrganizationSubscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  group          CompetitionGroup         @relation(fields: [groupId], references: [id])
   groupId        String
 
   @@id([subscriptionId, groupId])
