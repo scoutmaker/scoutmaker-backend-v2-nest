@@ -1,9 +1,17 @@
-import { Module } from '@nestjs/common';
-import { UserSubscriptionsService } from './user-subscriptions.service';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+
+import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
 import { UserSubscriptionsController } from './user-subscriptions.controller';
+import { UserSubscriptionsService } from './user-subscriptions.service';
 
 @Module({
   controllers: [UserSubscriptionsController],
-  providers: [UserSubscriptionsService]
+  providers: [UserSubscriptionsService],
 })
-export class UserSubscriptionsModule {}
+export class UserSubscriptionsModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PrepareQueryMiddleware)
+      .forRoutes({ path: 'user-subscriptions', method: RequestMethod.GET });
+  }
+}

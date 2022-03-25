@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
+import { FindAllUserSubscriptionsDto } from './dto/find-all-user-subscriptions.dto';
 import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
+import { UserSubscriptionsPaginationOptionsDto } from './dto/user-subscriptions-pagination-options.dto';
 
 const include = Prisma.validator<Prisma.UserSubscriptionInclude>()({
   user: true,
@@ -44,8 +47,51 @@ export class UserSubscriptionsService {
     });
   }
 
-  findAll() {
-    return this.prisma.userSubscription.findMany({ include });
+  async findAll(
+    {
+      page,
+      limit,
+      sortBy,
+      sortingOrder,
+    }: UserSubscriptionsPaginationOptionsDto,
+    {
+      userId,
+      competitionIds,
+      competitionGroupIds,
+    }: FindAllUserSubscriptionsDto,
+  ) {
+    let sort: Prisma.UserSubscriptionOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'user':
+        sort = { user: { lastName: sortingOrder } };
+        break;
+      default:
+        sort = { [sortBy]: sortingOrder };
+    }
+
+    const where: Prisma.UserSubscriptionWhereInput = {
+      userId,
+      competitions: { some: { competitionId: { in: competitionIds } } },
+      competitionGroups: { some: { groupId: { in: competitionGroupIds } } },
+    };
+
+    const subscriptions = await this.prisma.userSubscription.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: sort,
+      include,
+    });
+
+    const total = await this.prisma.userSubscription.count({ where });
+
+    return formatPaginatedResponse({
+      docs: subscriptions,
+      totalDocs: total,
+      limit,
+      page,
+    });
   }
 
   findOne(id: string) {
