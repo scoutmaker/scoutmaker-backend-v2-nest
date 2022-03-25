@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully created new user subscription for {userName}",
+  "GET_ALL_MESSAGE": "Successfully fetched all user subscriptions data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched user subscription data for {userName}",
+  "UPDATE_MESSAGE": "Successfully updated user subscription data for {userName}",
+  "DELETE_MESSAGE": "Successfully deleted user subscription data fro {userName}"
+}

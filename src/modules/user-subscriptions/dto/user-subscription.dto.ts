@@ -21,17 +21,21 @@ export class UserSubscriptionDto {
   user: UserBasicDataDto;
 
   @Transform(({ value }) =>
-    plainToInstance(CompetitionBasicDataDto, value.competition, {
-      excludeExtraneousValues: true,
-    }),
+    value.map((item) =>
+      plainToInstance(CompetitionBasicDataDto, item.competition, {
+        excludeExtraneousValues: true,
+      }),
+    ),
   )
   @Expose()
   competitions: CompetitionBasicDataDto;
 
   @Transform(({ value }) =>
-    plainToInstance(CompetitionGroupBasicDataDto, value.group, {
-      excludeExtraneousValues: true,
-    }),
+    value.map((item) =>
+      plainToInstance(CompetitionGroupBasicDataDto, item.group, {
+        excludeExtraneousValues: true,
+      }),
+    ),
   )
   @Expose()
   competitionGroups: CompetitionGroupBasicDataDto;

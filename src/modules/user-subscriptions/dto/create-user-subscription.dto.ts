@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsOptional } from 'class-validator';
+import { IsArray, IsDateString, IsOptional } from 'class-validator';
 
 import { IsCuid } from '../../../decorators/is-cuid.decorator';
 
@@ -6,10 +6,10 @@ export class CreateUserSubscriptionDto {
   @IsCuid()
   userId: string;
 
-  @IsDate()
+  @IsDateString()
   startDate: string;
 
-  @IsDate()
+  @IsDateString()
   endDate: string;
 
   @IsArray()

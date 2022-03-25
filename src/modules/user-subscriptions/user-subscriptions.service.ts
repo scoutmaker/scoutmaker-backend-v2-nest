@@ -8,7 +8,7 @@ import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
 const include = Prisma.validator<Prisma.UserSubscriptionInclude>()({
   user: true,
   competitions: { include: { competition: true } },
-  competitionGroups: { include: { group: true } },
+  competitionGroups: { include: { group: { include: { competition: true } } } },
 });
 
 @Injectable()
