@@ -3,7 +3,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { PaginationOptionsDto } from '../../../pagination/pagination-options.dto';
 import { formatSortingEnumErrorMessage } from '../../../utils/helpers';
 
-enum UserSubsptionsSortBy {
+enum UserSubscriptionsSortBy {
   id = 'id',
   user = 'user',
   startDate = 'startDate',
@@ -12,8 +12,8 @@ enum UserSubsptionsSortBy {
 
 export class UserSubscriptionsPaginationOptionsDto extends PaginationOptionsDto {
   @IsOptional()
-  @IsEnum(UserSubsptionsSortBy, {
-    message: formatSortingEnumErrorMessage(UserSubsptionsSortBy),
+  @IsEnum(UserSubscriptionsSortBy, {
+    message: formatSortingEnumErrorMessage(UserSubscriptionsSortBy),
   })
-  sortBy?: UserSubsptionsSortBy;
+  sortBy?: UserSubscriptionsSortBy;
 }

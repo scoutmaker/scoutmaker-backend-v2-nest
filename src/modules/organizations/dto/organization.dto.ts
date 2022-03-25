@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { UserBasicDataDto } from '../../users/dto/user.dto';
@@ -20,3 +21,8 @@ export class OrganizationDto {
   @Expose()
   createdAt: Date;
 }
+
+export class OrganizationBasicDataDto extends PickType(OrganizationDto, [
+  'id',
+  'name',
+]) {}
