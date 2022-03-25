@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully created new organization subscription for {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all organization subscriptions data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched organization subscription data for {name}",
+  "UPDATE_MESSAGE": "Successfully updated organization subscription data for {name}",
+  "DELETE_MESSAGE": "Successfully deleted organization subscription data fro {name}"
+}

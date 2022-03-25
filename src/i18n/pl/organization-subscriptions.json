@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nową subskrypcję dla {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich subskrypcji organizacji, strona {currentPage} z {totalPages}",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane subskrypcji organizacji {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano subskrypcji organizacji {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto subskrypcji organizacji {name}"
+}
