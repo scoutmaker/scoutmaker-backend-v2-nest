@@ -97,3 +97,9 @@ export class PlayerBasicDataWithoutTeamsDto extends OmitType(
   PlayerBasicDataDto,
   ['teams'],
 ) {}
+
+export class PlayerSuperBasicDataDto extends PickType(PlayerDto, [
+  'id',
+  'firstName',
+  'lastName',
+]) {}

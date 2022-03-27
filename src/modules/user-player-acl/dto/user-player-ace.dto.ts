@@ -1,7 +1,7 @@
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
-import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
+import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class UserPlayerAceDto {
@@ -17,12 +17,12 @@ export class UserPlayerAceDto {
   user: UserBasicDataDto;
 
   @Transform(({ value }) =>
-    plainToInstance(PlayerBasicDataWithoutTeamsDto, value, {
+    plainToInstance(PlayerSuperBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  player: PlayerBasicDataWithoutTeamsDto;
+  player: PlayerSuperBasicDataDto;
 
   @Expose()
   permissionLevel: AccessControlEntryPermissionLevelEnum;
