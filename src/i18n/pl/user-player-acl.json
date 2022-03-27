@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie nadano uzytkownikowi {userName} dostęp do danych zawodnika {playerName}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich dostępów uzytkowników do danych zawodników, strona {currentPage} z {totalPages}",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane dostępu uzytkownika {userName} do danych zawodnika {playerName}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane do dostępu uzytkownika {userName} do danych zawodnika {playerName}",
+  "DELETE_MESSAGE": "Pomyślnie odebrano uzytkownikowi {userName} dostęp do danych zawodnika {playerName}"
+}
