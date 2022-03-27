@@ -71,6 +71,7 @@ model User {
   organizationId                         String?
   createdPlayerStats                     PlayerStats[]
   subscriptions                          UserSubscription[]
+  playerAccessControlList                UserPlayerAccessControlEntry[]
 }
 
 model UserFootballRole {
@@ -336,21 +337,23 @@ model Player {
   updatedAt        DateTime @updatedAt
 
   // Relation fields
-  country            Country                       @relation(fields: [countryId], references: [id])
-  countryId          String
-  primaryPosition    PlayerPosition                @relation(fields: [primaryPositionId], references: [id])
-  primaryPositionId  String
-  author             User                          @relation(fields: [authorId], references: [id])
-  authorId           String
-  secondaryPositions SecondaryPositionsOnPlayers[]
-  teams              TeamAffiliation[]
-  notes              Note[]
-  insiderNotes       InsiderNote[]
-  reports            Report[]
-  orders             Order[]
-  agencies           AgencyAffiliation[]
-  followedBy         FollowPlayer[]
-  stats              PlayerStats[]
+  country                       Country                                @relation(fields: [countryId], references: [id])
+  countryId                     String
+  primaryPosition               PlayerPosition                         @relation(fields: [primaryPositionId], references: [id])
+  primaryPositionId             String
+  author                        User                                   @relation(fields: [authorId], references: [id])
+  authorId                      String
+  secondaryPositions            SecondaryPositionsOnPlayers[]
+  teams                         TeamAffiliation[]
+  notes                         Note[]
+  insiderNotes                  InsiderNote[]
+  reports                       Report[]
+  orders                        Order[]
+  agencies                      AgencyAffiliation[]
+  followedBy                    FollowPlayer[]
+  stats                         PlayerStats[]
+  userAccessControlList         UserPlayerAccessControlEntry[]
+  organizationAccessControlList OrganizationPlayerAccessControlEntry[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -740,8 +743,9 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  members       User[]
-  subscriptions OrganizationSubscription[]
+  members                 User[]
+  subscriptions           OrganizationSubscription[]
+  playerAccessControlList OrganizationPlayerAccessControlEntry[]
 }
 
 model PlayerStats {
@@ -865,4 +869,40 @@ model CompetitionGroupsOnOrganizationSubscriptions {
   groupId        String
 
   @@id([subscriptionId, groupId])
+}
+
+enum AccessControlEntryPermissionLevel {
+  READ
+  READ_AND_WRITE
+  ALL
+}
+
+model UserPlayerAccessControlEntry {
+  id              String                            @id @default(cuid())
+  permissionLevel AccessControlEntryPermissionLevel @default(READ)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @updatedAt
+
+  // Relation Fields
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+
+  @@map("user_player_access_control_list")
+}
+
+model OrganizationPlayerAccessControlEntry {
+  id              String                            @id @default(cuid())
+  permissionLevel AccessControlEntryPermissionLevel @default(READ)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @updatedAt
+
+  // Relation Fields
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  player         Player       @relation(fields: [playerId], references: [id])
+  playerId       String
+
+  @@map("organization_player_access_control_list")
 }
