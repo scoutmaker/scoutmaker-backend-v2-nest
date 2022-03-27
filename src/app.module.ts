@@ -31,6 +31,7 @@ import { MatchesModule } from './modules/matches/matches.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { OrganizationPlayerAclModule } from './modules/organization-player-acl/organization-player-acl.module';
+import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
@@ -113,6 +114,7 @@ import { UsersModule } from './modules/users/users.module';
     UserPlayerAclModule,
     OrganizationPlayerAclModule,
     UserReportAclModule,
+    OrganizationReportAclModule,
   ],
   controllers: [AppController],
   providers: [AppService],

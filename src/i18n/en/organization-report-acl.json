@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully granted organization {orgName} with the access to report no. {docNumber}",
+  "GET_ALL_MESSAGE": "Successfully fetched all organization report ACL data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched ACE data - organization {orgName}, report no. {docNumber}",
+  "UPDATE_MESSAGE": "Successfully updated ACE data - organization {orgName}, report no. {docNumber}",
+  "DELETE_MESSAGE": "Successfully deleted ACE data - organization {orgName}, report no. {docNumber}"
+}
