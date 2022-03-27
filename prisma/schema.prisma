@@ -889,6 +889,7 @@ model UserPlayerAccessControlEntry {
   player   Player @relation(fields: [playerId], references: [id])
   playerId String
 
+  @@unique([userId, playerId])
   @@map("user_player_access_control_list")
 }
 
@@ -904,5 +905,6 @@ model OrganizationPlayerAccessControlEntry {
   player         Player       @relation(fields: [playerId], references: [id])
   playerId       String
 
+  @@unique([organizationId, playerId])
   @@map("organization_player_access_control_list")
 }

@@ -47,6 +47,7 @@ import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { UserFootballRolesModule } from './modules/user-football-roles/user-football-roles.module';
+import { UserPlayerAclModule } from './modules/user-player-acl/user-player-acl.module';
 import { UserSubscriptionsModule } from './modules/user-subscriptions/user-subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -107,6 +108,7 @@ import { UsersModule } from './modules/users/users.module';
     ReportBackgroundImagesModule,
     UserSubscriptionsModule,
     OrganizationSubscriptionsModule,
+    UserPlayerAclModule,
   ],
   controllers: [AppController],
   providers: [AppService],
