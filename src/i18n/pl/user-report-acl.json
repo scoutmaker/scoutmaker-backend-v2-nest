@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie nadano uzytkownikowi {userName} dostęp do raportu nr {docNumber}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich dostępów uzytkowników do raportów, strona {currentPage} z {totalPages}",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane dostępu uzytkownika {userName} do raportu nr {docNumber}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane do dostępu uzytkownika {userName} do raportu nr {docNumber}",
+  "DELETE_MESSAGE": "Pomyślnie odebrano uzytkownikowi {userName} dostęp do raportu nr {docNumber}"
+}

@@ -31,6 +31,7 @@ import { MatchesModule } from './modules/matches/matches.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { OrganizationPlayerAclModule } from './modules/organization-player-acl/organization-player-acl.module';
+import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
@@ -49,6 +50,7 @@ import { TeamAffiliationsModule } from './modules/team-affiliations/team-affilia
 import { TeamsModule } from './modules/teams/teams.module';
 import { UserFootballRolesModule } from './modules/user-football-roles/user-football-roles.module';
 import { UserPlayerAclModule } from './modules/user-player-acl/user-player-acl.module';
+import { UserReportAclModule } from './modules/user-report-acl/user-report-acl.module';
 import { UserSubscriptionsModule } from './modules/user-subscriptions/user-subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -111,6 +113,8 @@ import { UsersModule } from './modules/users/users.module';
     OrganizationSubscriptionsModule,
     UserPlayerAclModule,
     OrganizationPlayerAclModule,
+    UserReportAclModule,
+    OrganizationReportAclModule,
   ],
   controllers: [AppController],
   providers: [AppService],

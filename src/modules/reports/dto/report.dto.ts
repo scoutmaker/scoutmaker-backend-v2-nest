@@ -51,6 +51,9 @@ export class ReportDto {
   @Expose()
   status: ReportStatus;
 
+  @Expose()
+  createdAt: Date;
+
   @Transform(({ value }) =>
     plainToInstance(ReportTemplateBasicDataDto, value, {
       excludeExtraneousValues: true,
@@ -98,4 +101,10 @@ export class ReportBasicDataDto extends PickType(ReportDto, [
   'status',
   'player',
   'author',
+]) {}
+
+export class ReportSuperBasicDataDto extends PickType(ReportDto, [
+  'id',
+  'docNumber',
+  'createdAt',
 ]) {}
