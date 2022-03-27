@@ -874,7 +874,7 @@ model CompetitionGroupsOnOrganizationSubscriptions {
 enum AccessControlEntryPermissionLevel {
   READ
   READ_AND_WRITE
-  ALL
+  FULL
 }
 
 model UserPlayerAccessControlEntry {

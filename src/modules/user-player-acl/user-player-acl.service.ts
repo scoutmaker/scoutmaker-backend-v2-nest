@@ -41,6 +41,9 @@ export class UserPlayerAclService {
   }
 
   remove(id: string) {
-    return this.prisma.userPlayerAccessControlEntry.delete({ where: { id } });
+    return this.prisma.userPlayerAccessControlEntry.delete({
+      where: { id },
+      include,
+    });
   }
 }
