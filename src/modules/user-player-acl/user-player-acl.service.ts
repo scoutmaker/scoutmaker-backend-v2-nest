@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserPlayerAceDto } from './dto/create-user-player-ace.dto';
+import { FindAllUserPlayerAceDto } from './dto/find-all-user-player-ace.dto';
 import { UpdateUserPlayerAceDto } from './dto/update-user-player-ace.dto';
+import { UserPlayerAcePaginationOptionsDto } from './dto/user-player-ace-pagination-options.dto';
 
 const include = Prisma.validator<Prisma.UserPlayerAccessControlEntryInclude>()({
   user: true,
@@ -21,8 +24,46 @@ export class UserPlayerAclService {
     });
   }
 
-  findAll() {
-    return `This action returns all userPlayerAcl`;
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: UserPlayerAcePaginationOptionsDto,
+    { playerId, userId }: FindAllUserPlayerAceDto,
+  ) {
+    let sort: Prisma.UserPlayerAccessControlEntryOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'user':
+      case 'player':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where: Prisma.UserPlayerAccessControlEntryWhereInput = {
+      playerId,
+      userId,
+    };
+
+    const accessControlEntries =
+      await this.prisma.userPlayerAccessControlEntry.findMany({
+        where,
+        take: limit,
+        skip: calculateSkip(page, limit),
+        orderBy: sort,
+        include,
+      });
+
+    const total = await this.prisma.userPlayerAccessControlEntry.count({
+      where,
+    });
+
+    return formatPaginatedResponse({
+      docs: accessControlEntries,
+      totalDocs: total,
+      limit,
+      page,
+    });
   }
 
   findOne(id: string) {
