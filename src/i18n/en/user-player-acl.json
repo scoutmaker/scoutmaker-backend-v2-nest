@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully granted user {userName} with the access to players data {playerName}",
+  "GET_ALL_MESSAGE": "Successfully fetched all user player ACL data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched ACE data - user {userName}, player {playerName}",
+  "UPDATE_MESSAGE": "Successfully updated ACE data - user {userName}, player {playerName}",
+  "DELETE_MESSAGE": "Successfully deleted ACE data - user {userName}, player {playerName}"
+}

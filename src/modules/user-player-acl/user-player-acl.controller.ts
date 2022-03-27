@@ -44,8 +44,16 @@ export class UserPlayerAclController {
     @Body() createAceDto: CreateUserPlayerAceDto,
   ) {
     const accessControlEntry = await this.aclService.create(createAceDto);
-    const message = '';
-
+    const message = await this.i18n.translate(
+      'user-player-acl.CREATE_MESSAGE',
+      {
+        lang,
+        args: {
+          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+          playerName: `${accessControlEntry.player.firstName} ${accessControlEntry.player.lastName}`,
+        },
+      },
+    );
     return formatSuccessResponse(message, accessControlEntry);
   }
 
@@ -58,13 +66,36 @@ export class UserPlayerAclController {
     @PaginationOptions() paginationOptions: UserPlayerAcePaginationOptionsDto,
     @Query() query: FindAllUserPlayerAceDto,
   ) {
-    const accessControlEntries = await this.aclService.findAll(
-      paginationOptions,
-      query,
+    const data = await this.aclService.findAll(paginationOptions, query);
+    const message = await this.i18n.translate(
+      'user-player-acl.GET_ALL_MESSAGE',
+      {
+        lang,
+        args: {
+          currentPage: data.page,
+          totalPages: data.totalPages,
+        },
+      },
     );
-    const message = '';
+    return formatSuccessResponse(message, data);
+  }
 
-    return formatSuccessResponse(message, accessControlEntries);
+  @Get(':id')
+  @ApiResponse(UserPlayerAceDto, { type: 'read' })
+  @Serialize(UserPlayerAceDto)
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+    const accessControlEntry = await this.aclService.findOne(id);
+    const message = await this.i18n.translate(
+      'user-player-acl.GET_ONE_MESSAGE',
+      {
+        lang,
+        args: {
+          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+          playerName: `${accessControlEntry.player.firstName} ${accessControlEntry.player.lastName}`,
+        },
+      },
+    );
+    return formatSuccessResponse(message, accessControlEntry);
   }
 
   @Patch(':id')
@@ -76,18 +107,16 @@ export class UserPlayerAclController {
     @Body() updateAceDto: UpdateUserPlayerAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
-    const message = '';
-
-    return formatSuccessResponse(message, accessControlEntry);
-  }
-
-  @Get(':id')
-  @ApiResponse(UserPlayerAceDto, { type: 'read' })
-  @Serialize(UserPlayerAceDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
-    const accessControlEntry = await this.aclService.findOne(id);
-    const message = '';
-
+    const message = await this.i18n.translate(
+      'user-player-acl.UPDATE_MESSAGE',
+      {
+        lang,
+        args: {
+          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+          playerName: `${accessControlEntry.player.firstName} ${accessControlEntry.player.lastName}`,
+        },
+      },
+    );
     return formatSuccessResponse(message, accessControlEntry);
   }
 
@@ -96,9 +125,16 @@ export class UserPlayerAclController {
   @Serialize(UserPlayerAceDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.remove(id);
-
-    const message = '';
-
+    const message = await this.i18n.translate(
+      'user-player-acl.DELETE_MESSAGE',
+      {
+        lang,
+        args: {
+          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+          playerName: `${accessControlEntry.player.firstName} ${accessControlEntry.player.lastName}`,
+        },
+      },
+    );
     return formatSuccessResponse(message, accessControlEntry);
   }
 }
