@@ -43,13 +43,13 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region                                 Region                          @relation(fields: [regionId], references: [id])
+  region                                 Region                              @relation(fields: [regionId], references: [id])
   regionId                               String
-  footballRole                           UserFootballRole?               @relation(fields: [footballRoleId], references: [id])
+  footballRole                           UserFootballRole?                   @relation(fields: [footballRoleId], references: [id])
   footballRoleId                         String?
-  club                                   Club?                           @relation(fields: [clubId], references: [id], name: "club")
+  club                                   Club?                               @relation(fields: [clubId], references: [id], name: "club")
   clubId                                 String?
-  createdClubs                           Club[]                          @relation("created-clubs")
+  createdClubs                           Club[]                              @relation("created-clubs")
   createdTeams                           Team[]
   createdPlayers                         Player[]
   createdMatches                         Match[]
@@ -60,20 +60,21 @@ model User {
   createdReportTemplates                 ReportTemplate[]
   createdAgencies                        Agency[]
   createdReports                         Report[]
-  createdOrders                          Order[]                         @relation("author")
-  acceptedOrders                         Order[]                         @relation("scout")
+  createdOrders                          Order[]                             @relation("author")
+  acceptedOrders                         Order[]                             @relation("scout")
   followedPlayers                        FollowPlayer[]
   followedTeams                          FollowTeam[]
-  followedScouts                         FollowScout[]                   @relation("follower")
+  followedScouts                         FollowScout[]                       @relation("follower")
   followedAgencies                       FollowAgency[]
-  followedBy                             FollowScout[]                   @relation("followee")
-  organization                           Organization?                   @relation(fields: [organizationId], references: [id])
+  followedBy                             FollowScout[]                       @relation("followee")
+  organization                           Organization?                       @relation(fields: [organizationId], references: [id])
   organizationId                         String?
   createdPlayerStats                     PlayerStats[]
   subscriptions                          UserSubscription[]
   playerAccessControlList                UserPlayerAccessControlEntry[]
   reportAccessControlList                UserReportAccessControlEntry[]
   noteAccessControlList                  UserNoteAccessControlEntry[]
+  insiderNoteAccessControlList           UserInsiderNoteAccessControlEntry[]
 }
 
 model UserFootballRole {
@@ -466,11 +467,13 @@ model InsiderNote {
   updatedAt   DateTime @updatedAt
 
   // Relation fields
-  player   Player           @relation(fields: [playerId], references: [id])
-  playerId String
-  author   User             @relation(fields: [authorId], references: [id])
-  authorId String
-  meta     InsiderNoteMeta?
+  player                        Player                                      @relation(fields: [playerId], references: [id])
+  playerId                      String
+  author                        User                                        @relation(fields: [authorId], references: [id])
+  authorId                      String
+  meta                          InsiderNoteMeta?
+  userAccessControlList         UserInsiderNoteAccessControlEntry[]
+  organizationAccessControlList OrganizationInsiderNoteAccessControlEntry[]
 }
 
 model InsiderNoteMeta {
@@ -749,11 +752,12 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  members                 User[]
-  subscriptions           OrganizationSubscription[]
-  playerAccessControlList OrganizationPlayerAccessControlEntry[]
-  reportAccessControlList OrganizationReportAccessControlEntry[]
-  noteAccessControlList   OrganizationNoteAccessControlEntry[]
+  members                      User[]
+  subscriptions                OrganizationSubscription[]
+  playerAccessControlList      OrganizationPlayerAccessControlEntry[]
+  reportAccessControlList      OrganizationReportAccessControlEntry[]
+  noteAccessControlList        OrganizationNoteAccessControlEntry[]
+  insiderNoteAccessControlList OrganizationInsiderNoteAccessControlEntry[]
 }
 
 model PlayerStats {
@@ -979,4 +983,36 @@ model OrganizationNoteAccessControlEntry {
 
   @@unique([organizationId, noteId])
   @@map("organization_note_access_control_list")
+}
+
+model UserInsiderNoteAccessControlEntry {
+  id              String                            @id @default(cuid())
+  permissionLevel AccessControlEntryPermissionLevel @default(READ)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @updatedAt
+
+  // Relation Fields
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  insiderNote   InsiderNote @relation(fields: [insiderNoteId], references: [id])
+  insiderNoteId String
+
+  @@unique([userId, insiderNoteId])
+  @@map("user_insider_note_access_control_list")
+}
+
+model OrganizationInsiderNoteAccessControlEntry {
+  id              String                            @id @default(cuid())
+  permissionLevel AccessControlEntryPermissionLevel @default(READ)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @updatedAt
+
+  // Relation Fields
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  insiderNote    InsiderNote  @relation(fields: [insiderNoteId], references: [id])
+  insiderNoteId  String
+
+  @@unique([organizationId, insiderNoteId])
+  @@map("organization_insider_note_access_control_list")
 }

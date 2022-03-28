@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { OrganizationNoteAclService } from './organization-report-acl.service';
+import { OrganizationNoteAclService } from './organization-note-acl.service';
 
 describe('OrganizationNoteAclService', () => {
   let service: OrganizationNoteAclService;
