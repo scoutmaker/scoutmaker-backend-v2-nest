@@ -73,6 +73,7 @@ model User {
   subscriptions                          UserSubscription[]
   playerAccessControlList                UserPlayerAccessControlEntry[]
   reportAccessControlList                UserReportAccessControlEntry[]
+  noteAccessControlList                  UserNoteAccessControlEntry[]
 }
 
 model UserFootballRole {
@@ -427,13 +428,15 @@ model Note {
   updatedAt        DateTime @updatedAt
 
   // Relation fields
-  player   Player?   @relation(fields: [playerId], references: [id])
-  playerId String?
-  match    Match?    @relation(fields: [matchId], references: [id])
-  matchId  String?
-  author   User      @relation(fields: [authorId], references: [id])
-  authorId String
-  meta     NoteMeta?
+  player                        Player?                              @relation(fields: [playerId], references: [id])
+  playerId                      String?
+  match                         Match?                               @relation(fields: [matchId], references: [id])
+  matchId                       String?
+  author                        User                                 @relation(fields: [authorId], references: [id])
+  authorId                      String
+  meta                          NoteMeta?
+  userAccessControlList         UserNoteAccessControlEntry[]
+  organizationAccessControlList OrganizationNoteAccessControlEntry[]
 }
 
 model NoteMeta {
@@ -750,6 +753,7 @@ model Organization {
   subscriptions           OrganizationSubscription[]
   playerAccessControlList OrganizationPlayerAccessControlEntry[]
   reportAccessControlList OrganizationReportAccessControlEntry[]
+  noteAccessControlList   OrganizationNoteAccessControlEntry[]
 }
 
 model PlayerStats {
@@ -943,4 +947,36 @@ model OrganizationReportAccessControlEntry {
 
   @@unique([organizationId, reportId])
   @@map("organization_report_access_control_list")
+}
+
+model UserNoteAccessControlEntry {
+  id              String                            @id @default(cuid())
+  permissionLevel AccessControlEntryPermissionLevel @default(READ)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @updatedAt
+
+  // Relation Fields
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  note   Note   @relation(fields: [noteId], references: [id])
+  noteId String
+
+  @@unique([userId, noteId])
+  @@map("user_note_access_control_list")
+}
+
+model OrganizationNoteAccessControlEntry {
+  id              String                            @id @default(cuid())
+  permissionLevel AccessControlEntryPermissionLevel @default(READ)
+  createdAt       DateTime                          @default(now())
+  updatedAt       DateTime                          @updatedAt
+
+  // Relation Fields
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  note           Note         @relation(fields: [noteId], references: [id])
+  noteId         String
+
+  @@unique([organizationId, noteId])
+  @@map("organization_note_access_control_list")
 }
