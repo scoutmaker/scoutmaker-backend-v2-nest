@@ -65,3 +65,9 @@ export class NoteBasicDataDto extends PickType(NoteDto, [
   'shirtNo',
   'docNumber',
 ]) {}
+
+export class NoteSuperBasicDataDto extends PickType(NoteDto, [
+  'id',
+  'docNumber',
+  'createdAt',
+]) {}
