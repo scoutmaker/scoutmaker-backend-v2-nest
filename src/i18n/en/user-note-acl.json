@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Successfully granted user {userName} with the access to note no. {docNumber}",
+  "GET_ALL_MESSAGE": "Successfully fetched all user note ACL data, page {currentPage} of {totalPages}",
+  "GET_ONE_MESSAGE": "Successfully fetched ACE data - user {userName}, note no. {docNumber}",
+  "UPDATE_MESSAGE": "Successfully updated ACE data - user {userName}, note no. {docNumber}",
+  "DELETE_MESSAGE": "Successfully deleted ACE data - user {userName}, note no. {docNumber}"
+}
