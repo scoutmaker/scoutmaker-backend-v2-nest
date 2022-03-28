@@ -28,14 +28,14 @@ export class UserNoteAclService {
     { limit, page, sortBy, sortingOrder }: UserNoteAcePaginationOptionsDto,
     { noteId, userId }: FindAllUserNoteAceDto,
   ) {
-    let sort: Prisma.UserReportAccessControlEntryOrderByWithRelationInput;
+    let sort: Prisma.UserNoteAccessControlEntryOrderByWithRelationInput;
 
     switch (sortBy) {
       case 'user':
         sort = { user: { lastName: sortingOrder } };
         break;
       case 'note':
-        sort = { report: { createdAt: sortingOrder } };
+        sort = { note: { createdAt: sortingOrder } };
         break;
       default:
         sort = { [sortBy]: sortingOrder };

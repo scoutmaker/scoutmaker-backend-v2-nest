@@ -43,3 +43,9 @@ export class InsiderNoteBasicDataDto extends PickType(InsiderNoteDto, [
   'player',
   'author',
 ]) {}
+
+export class InsiderNoteSuperBasicDataDto extends PickType(InsiderNoteDto, [
+  'id',
+  'docNumber',
+  'createdAt',
+]) {}
