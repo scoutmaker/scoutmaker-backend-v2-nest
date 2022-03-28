@@ -30,7 +30,8 @@ import { InsiderNotesModule } from './modules/insider-notes/insider-notes.module
 import { MatchesModule } from './modules/matches/matches.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { OrdersModule } from './modules/orders/orders.module';
-import { OrganizationNoteAclModule } from './modules/organization-note-acl/organization-report-acl.module';
+import { OrganizationInsiderNoteAclModule } from './modules/organization-insider-note-acl/organization-insider-note-acl.module';
+import { OrganizationNoteAclModule } from './modules/organization-note-acl/organization-note-acl.module';
 import { OrganizationPlayerAclModule } from './modules/organization-player-acl/organization-player-acl.module';
 import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
@@ -121,6 +122,7 @@ import { UsersModule } from './modules/users/users.module';
     UserNoteAclModule,
     OrganizationNoteAclModule,
     UserInsiderNoteAclModule,
+    OrganizationInsiderNoteAclModule,
   ],
   controllers: [AppController],
   providers: [AppService],

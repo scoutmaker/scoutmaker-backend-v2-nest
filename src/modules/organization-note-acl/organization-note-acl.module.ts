@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
 import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
-import { OrganizationNoteAclController } from './organization-report-acl.controller';
-import { OrganizationNoteAclService } from './organization-report-acl.service';
+import { OrganizationNoteAclController } from './organization-note-acl.controller';
+import { OrganizationNoteAclService } from './organization-note-acl.service';
 
 @Module({
   controllers: [OrganizationNoteAclController],

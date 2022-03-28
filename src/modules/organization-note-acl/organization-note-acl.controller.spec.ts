@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { OrganizationNoteAclController } from './organization-report-acl.controller';
-import { OrganizationNoteAclService } from './organization-report-acl.service';
+import { OrganizationNoteAclController } from './organization-note-acl.controller';
+import { OrganizationNoteAclService } from './organization-note-acl.service';
 
 describe('OrganizationNoteAclController', () => {
   let controller: OrganizationNoteAclController;

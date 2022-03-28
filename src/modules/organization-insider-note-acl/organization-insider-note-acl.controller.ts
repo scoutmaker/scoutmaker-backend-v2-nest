@@ -19,38 +19,38 @@ import { RoleGuard } from '../../guards/role.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
-import { CreateOrganizationNoteAceDto } from './dto/create-organization-note-ace.dto';
-import { FindAllOrganizationNoteAceDto } from './dto/find-all-organization-note-ace.dto';
-import { OrganizationNoteAceDto } from './dto/organization-note-ace.dto';
-import { OrganizationNoteAcePaginationOptionsDto } from './dto/organization-note-ace-pagination-options.dto';
-import { UpdateOrganizationNoteAceDto } from './dto/update-organization-note-ace.dto';
-import { OrganizationNoteAclService } from './organization-report-acl.service';
+import { CreateOrganizationInsiderNoteAceDto } from './dto/create-organization-insider-note-ace.dto';
+import { FindAllOrganizationInsiderNoteAceDto } from './dto/find-all-organization-insider-note-ace.dto';
+import { OrganizationInsiderNoteAceDto } from './dto/organization-insider-note-ace.dto';
+import { OrganizationInsiderNoteAcePaginationOptionsDto } from './dto/organization-insider-note-ace-pagination-options.dto';
+import { UpdateOrganizationInsiderNoteAceDto } from './dto/update-organization-insider-note-ace.dto';
+import { OrganizationInsiderNoteAclService } from './organization-insider-note-acl.service';
 
-@Controller('organization-note-acl')
-@ApiTags('organization note ACL')
+@Controller('organization-insider-note-acl')
+@ApiTags('organization insider note ACL')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
 @ApiCookieAuth()
-export class OrganizationNoteAclController {
+export class OrganizationInsiderNoteAclController {
   constructor(
-    private readonly aclService: OrganizationNoteAclService,
+    private readonly aclService: OrganizationInsiderNoteAclService,
     private readonly i18n: I18nService,
   ) {}
 
   @Post()
-  @ApiResponse(OrganizationNoteAceDto, { type: 'create' })
-  @Serialize(OrganizationNoteAceDto)
+  @ApiResponse(OrganizationInsiderNoteAceDto, { type: 'create' })
+  @Serialize(OrganizationInsiderNoteAceDto)
   async create(
     @I18nLang() lang: string,
-    @Body() createAceDto: CreateOrganizationNoteAceDto,
+    @Body() createAceDto: CreateOrganizationInsiderNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.create(createAceDto);
     const message = await this.i18n.translate(
-      'organization-note-acl.CREATE_MESSAGE',
+      'organization-insider-note-acl.CREATE_MESSAGE',
       {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.docNumber,
+          docNumber: accessControlEntry.insiderNote.docNumber,
         },
       },
     );
@@ -58,18 +58,18 @@ export class OrganizationNoteAclController {
   }
 
   @Get()
-  @ApiPaginatedResponse(OrganizationNoteAceDto)
-  @ApiQuery({ type: OrganizationNoteAcePaginationOptionsDto })
-  @Serialize(OrganizationNoteAceDto, 'docs')
+  @ApiPaginatedResponse(OrganizationInsiderNoteAceDto)
+  @ApiQuery({ type: OrganizationInsiderNoteAcePaginationOptionsDto })
+  @Serialize(OrganizationInsiderNoteAceDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions()
-    paginationOptions: OrganizationNoteAcePaginationOptionsDto,
-    @Query() query: FindAllOrganizationNoteAceDto,
+    paginationOptions: OrganizationInsiderNoteAcePaginationOptionsDto,
+    @Query() query: FindAllOrganizationInsiderNoteAceDto,
   ) {
     const data = await this.aclService.findAll(paginationOptions, query);
     const message = await this.i18n.translate(
-      'organization-note-acl.GET_ALL_MESSAGE',
+      'organization-insider-note-acl.GET_ALL_MESSAGE',
       {
         lang,
         args: {
@@ -82,17 +82,17 @@ export class OrganizationNoteAclController {
   }
 
   @Get(':id')
-  @ApiResponse(OrganizationNoteAceDto, { type: 'read' })
-  @Serialize(OrganizationNoteAceDto)
+  @ApiResponse(OrganizationInsiderNoteAceDto, { type: 'read' })
+  @Serialize(OrganizationInsiderNoteAceDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = await this.i18n.translate(
-      'organization-note-acl.GET_ONE_MESSAGE',
+      'organization-insider-note-acl.GET_ONE_MESSAGE',
       {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.docNumber,
+          docNumber: accessControlEntry.insiderNote.docNumber,
         },
       },
     );
@@ -100,21 +100,21 @@ export class OrganizationNoteAclController {
   }
 
   @Patch(':id')
-  @ApiResponse(OrganizationNoteAceDto, { type: 'update' })
-  @Serialize(OrganizationNoteAceDto)
+  @ApiResponse(OrganizationInsiderNoteAceDto, { type: 'update' })
+  @Serialize(OrganizationInsiderNoteAceDto)
   async update(
     @I18nLang() lang: string,
     @Param('id') id: string,
-    @Body() updateAceDto: UpdateOrganizationNoteAceDto,
+    @Body() updateAceDto: UpdateOrganizationInsiderNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
     const message = await this.i18n.translate(
-      'organization-note-acl.UPDATE_MESSAGE',
+      'organization-insider-note-acl.UPDATE_MESSAGE',
       {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.docNumber,
+          docNumber: accessControlEntry.insiderNote.docNumber,
         },
       },
     );
@@ -122,17 +122,17 @@ export class OrganizationNoteAclController {
   }
 
   @Delete(':id')
-  @ApiResponse(OrganizationNoteAceDto, { type: 'delete' })
-  @Serialize(OrganizationNoteAceDto)
+  @ApiResponse(OrganizationInsiderNoteAceDto, { type: 'delete' })
+  @Serialize(OrganizationInsiderNoteAceDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = await this.i18n.translate(
-      'organization-note-acl.DELETE_MESSAGE',
+      'organization-insider-note-acl.DELETE_MESSAGE',
       {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.docNumber,
+          docNumber: accessControlEntry.insiderNote.docNumber,
         },
       },
     );

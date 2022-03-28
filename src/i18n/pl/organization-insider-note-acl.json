@@ -1,0 +1,7 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie nadano organizacji {orgName} dostęp do notatki insajderskiej nr {docNumber}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich dostępów organizacji do notatek insajderskich, strona {currentPage} z {totalPages}",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane dostępu organizacji {orgName} do notatki insajderskiej nr {docNumber}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane do dostępu organizacji {orgName} do notatki insajderskiej nr {docNumber}",
+  "DELETE_MESSAGE": "Pomyślnie odebrano organizacji {orgName} dostęp do notatki insajderskiej nr {docNumber}"
+}
