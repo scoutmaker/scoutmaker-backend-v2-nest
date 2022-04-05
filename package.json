@@ -25,6 +25,7 @@
     "test:e2e": "dotenv -e .env.test jest jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@liaoliaots/nestjs-redis": "^8.0.0",
     "@nestjs/common": "^8.3.1",
     "@nestjs/config": "^1.2.0",
     "@nestjs/core": "^8.3.1",
@@ -37,6 +38,7 @@
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "date-fns": "^2.28.0",
+    "ioredis": "^5.0.3",
     "jsonwebtoken": "^8.5.1",
     "nestjs-i18n": "^8.2.2",
     "reflect-metadata": "^0.1.13",
