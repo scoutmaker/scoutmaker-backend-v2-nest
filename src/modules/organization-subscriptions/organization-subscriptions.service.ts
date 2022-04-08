@@ -1,6 +1,12 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import Redis from 'ioredis';
 
+import {
+  CachedFormattedSubscription,
+  FormattedSubscription,
+} from '../../types/formatted-subscription';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrganizationSubscriptionDto } from './dto/create-organization-subscription.dto';
@@ -16,7 +22,10 @@ const include = Prisma.validator<Prisma.OrganizationSubscriptionInclude>()({
 
 @Injectable()
 export class OrganizationSubscriptionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
   create(createOrganizationSubscriptionDto: CreateOrganizationSubscriptionDto) {
     const {
@@ -162,6 +171,54 @@ export class OrganizationSubscriptionsService {
       },
       include,
     });
+  }
+
+  async getFormattedForSingleOrganization(
+    organizationId?: string,
+  ): Promise<FormattedSubscription[] | null> {
+    if (!organizationId) {
+      return null;
+    }
+
+    const redisKey = `organization:${organizationId}:subscriptions`;
+
+    const cachedSubscriptions = await this.redis.get(redisKey);
+
+    if (cachedSubscriptions) {
+      const parsed = JSON.parse(
+        cachedSubscriptions,
+      ) as CachedFormattedSubscription[];
+
+      return parsed.map((subscription) => ({
+        ...subscription,
+        startDate: new Date(subscription.startDate),
+        endDate: new Date(subscription.endDate),
+      }));
+    }
+
+    const subscriptions = await this.prisma.organizationSubscription.findMany({
+      where: { organizationId },
+      include: { competitions: true, competitionGroups: true },
+    });
+
+    const formattedSubscriptions = subscriptions.map(
+      ({ id, startDate, endDate, competitions, competitionGroups }) => ({
+        id,
+        startDate,
+        endDate,
+        competitions: competitions.map(({ competitionId }) => competitionId),
+        competitionGroups: competitionGroups.map(({ groupId }) => groupId),
+      }),
+    );
+
+    await this.redis.set(
+      redisKey,
+      JSON.stringify(formattedSubscriptions),
+      'EX',
+      60 * 60 * 24,
+    );
+
+    return formattedSubscriptions;
   }
 
   async remove(id: string) {
