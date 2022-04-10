@@ -5,16 +5,35 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import { hashPasswordMiddleware } from './middlewares/hash-password.middleware';
+
+const {
+  User,
+  UserPlayerAccessControlEntry,
+  OrganizationPlayerAccessControlEntry,
+  UserReportAccessControlEntry,
+  OrganizationReportAccessControlEntry,
+  UserNoteAccessControlEntry,
+  OrganizationNoteAccessControlEntry,
+  UserInsiderNoteAccessControlEntry,
+  OrganizationInsiderNoteAccessControlEntry,
+  ...ModelsToReject
+} = Prisma.ModelName;
+
+const rejectOnNotFound = (err: Error) =>
+  new HttpException(err.message, HttpStatus.NOT_FOUND);
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
-      rejectOnNotFound: (err) =>
-        new HttpException(err.message, HttpStatus.NOT_FOUND),
+      rejectOnNotFound: {
+        findUnique: Object.fromEntries(
+          Object.keys(ModelsToReject).map((key) => [key, rejectOnNotFound]),
+        ),
+      },
     });
   }
 
