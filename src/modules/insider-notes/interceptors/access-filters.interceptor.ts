@@ -80,6 +80,11 @@ export class AccessFiltersInterceptor implements NestInterceptor {
       organizationSubscriptions,
     );
 
+    const playmakerScoutExtraAccess: Prisma.InsiderNoteWhereInput =
+      user.role === 'PLAYMAKER_SCOUT'
+        ? { author: { role: 'PLAYMAKER_SCOUT' } }
+        : {};
+
     const accessFilters: Prisma.InsiderNoteWhereInput = {
       OR: [
         transformedSubscriptions,
@@ -92,14 +97,13 @@ export class AccessFiltersInterceptor implements NestInterceptor {
         {
           organizationAccessControlList: {
             some: {
-              organizationId: user.organizationId,
+              organizationId: user.organizationId || undefined,
             },
           },
         },
+        playmakerScoutExtraAccess,
       ],
     };
-
-    console.log({ accessFilters: JSON.stringify(accessFilters, null, 2) });
 
     request.accessFilters = accessFilters;
 

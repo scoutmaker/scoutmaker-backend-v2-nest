@@ -57,6 +57,7 @@ export class InsiderNotesService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: InsiderNotesPaginationOptionsDto,
     { playerId }: FindAllInsiderNotesDto,
+    accessFilters?: Prisma.InsiderNoteWhereInput,
   ) {
     let sort: Prisma.InsiderNoteOrderByWithRelationInput;
 
@@ -70,7 +71,7 @@ export class InsiderNotesService {
     }
 
     const where: Prisma.InsiderNoteWhereInput = {
-      playerId,
+      AND: [accessFilters, { playerId }],
     };
 
     const insiderNotes = await this.prisma.insiderNote.findMany({
@@ -91,8 +92,8 @@ export class InsiderNotesService {
     });
   }
 
-  getList() {
-    return this.prisma.insiderNote.findMany({ include });
+  getList(accessFilters: Prisma.InsiderNoteWhereInput) {
+    return this.prisma.insiderNote.findMany({ where: accessFilters, include });
   }
 
   findOne(id: string) {

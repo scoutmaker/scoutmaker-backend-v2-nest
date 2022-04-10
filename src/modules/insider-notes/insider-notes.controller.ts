@@ -11,8 +11,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
@@ -69,11 +71,15 @@ export class InsiderNotesController {
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: InsiderNotesPaginationOptionsDto,
+    @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
     @Query() query: FindAllInsiderNotesDto,
   ) {
+    console.log({ accessFilters });
+
     const data = await this.insiderNotesService.findAll(
       paginationOptions,
       query,
+      accessFilters,
     );
     const message = await this.i18n.translate('insider-notes.GET_ALL_MESSAGE', {
       lang,
@@ -86,10 +92,14 @@ export class InsiderNotesController {
   }
 
   @Get('list')
+  @UseInterceptors(AccessFiltersInterceptor)
   @ApiResponse(InsiderNoteBasicDataDto, { type: 'create' })
   @Serialize(InsiderNoteBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const insiderNotes = await this.insiderNotesService.getList();
+  async getList(
+    @I18nLang() lang: string,
+    @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
+  ) {
+    const insiderNotes = await this.insiderNotesService.getList(accessFilters);
     const message = await this.i18n.translate(
       'insider-notes.GET_LIST_MESSAGE',
       { lang },
