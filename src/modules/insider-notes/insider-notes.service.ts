@@ -1,5 +1,15 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import {
+  Competition,
+  CompetitionGroup,
+  InsiderNote,
+  InsiderNoteMeta,
+  Player,
+  Prisma,
+  User,
+} from '@prisma/client';
+import Redis from 'ioredis';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
@@ -9,9 +19,24 @@ import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
 
-const include: Prisma.InsiderNoteInclude = {
+const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: true,
   author: true,
+});
+
+const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
+  player: true,
+  author: true,
+  meta: { include: { competition: true, competitionGroup: true } },
+});
+
+type SingleInsiderNoteWithInclude = InsiderNote & {
+  player: Player;
+  author: User;
+  meta?: InsiderNoteMeta & {
+    competition: Competition;
+    competitionGroup: CompetitionGroup;
+  };
 };
 
 @Injectable()
@@ -19,6 +44,7 @@ export class InsiderNotesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
@@ -96,8 +122,28 @@ export class InsiderNotesService {
     return this.prisma.insiderNote.findMany({ where: accessFilters, include });
   }
 
-  findOne(id: string) {
-    return this.prisma.insiderNote.findUnique({ where: { id }, include });
+  async findOne(id: string): Promise<SingleInsiderNoteWithInclude> {
+    const redisKey = `insider-note:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const insiderNote = await this.prisma.insiderNote.findUnique({
+      where: { id },
+      include: singleInclude,
+    });
+
+    await this.redis.set(
+      redisKey,
+      JSON.stringify(insiderNote),
+      'EX',
+      60 * 60 * 24,
+    );
+
+    return insiderNote;
   }
 
   async update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {

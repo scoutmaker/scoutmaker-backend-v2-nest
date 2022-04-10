@@ -31,6 +31,7 @@ import {
 } from './dto/insider-note.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
+import { ReadGuard } from './guards/read.guard';
 import { InsiderNotesService } from './insider-notes.service';
 import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 
@@ -108,6 +109,7 @@ export class InsiderNotesController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(InsiderNoteDto, { type: 'create' })
   @Serialize(InsiderNoteDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {

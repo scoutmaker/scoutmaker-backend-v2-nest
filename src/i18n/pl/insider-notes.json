@@ -4,5 +4,6 @@
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich notatek insajderskich",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano notatkę insajderską nr {docNumber}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano notatkę insajderską nr {docNumber}",
-  "DELETE_MESSAGE": "Pomyślnie usunięto notatkę insajderską nr {docNumber}"
+  "DELETE_MESSAGE": "Pomyślnie usunięto notatkę insajderską nr {docNumber}",
+  "GET_ONE_ACCESS_ERROR": "Nie masz dostępu do odczytu notatki insajderskiej nr {docNumber}"
 }

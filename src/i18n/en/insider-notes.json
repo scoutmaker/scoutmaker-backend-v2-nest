@@ -4,5 +4,6 @@
   "GET_LIST_MESSAGE": "Successfully fetched all insider notes list",
   "GET_ONE_MESSAGE": "Successfully fetched insider note no. {docNumber}",
   "UPDATE_MESSAGE": "Successfully updated insider note no. {docNumber}",
-  "DELETE_MESSAGE": "Successfully deleted insider note no. {docNumber}"
+  "DELETE_MESSAGE": "Successfully deleted insider note no. {docNumber}",
+  "GET_ONE_ACCESS_ERROR": "You are not authorized to access insider note no. {docNumber}"
 }
