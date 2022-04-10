@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { InsiderNotesController } from './insider-notes.controller';
 import { InsiderNotesService } from './insider-notes.service';
 

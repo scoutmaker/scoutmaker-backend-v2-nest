@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
@@ -29,6 +30,7 @@ import {
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
 import { InsiderNotesService } from './insider-notes.service';
+import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 
 @Controller('insider-notes')
 @ApiTags('insider notes')
@@ -60,6 +62,7 @@ export class InsiderNotesController {
   }
 
   @Get()
+  @UseInterceptors(AccessFiltersInterceptor)
   @ApiPaginatedResponse(InsiderNoteDto)
   @ApiQuery({ type: InsiderNotesPaginationOptionsDto })
   @Serialize(InsiderNoteDto, 'docs')
@@ -74,6 +77,10 @@ export class InsiderNotesController {
     );
     const message = await this.i18n.translate('insider-notes.GET_ALL_MESSAGE', {
       lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      },
     });
     return formatSuccessResponse(message, data);
   }
