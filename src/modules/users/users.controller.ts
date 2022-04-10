@@ -2,10 +2,10 @@ import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { RoleGuard } from '../../guards/role.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
+import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { ChangeRoleDto } from './dto/change-user-role.dto';
 import { UserBasicDataDto, UserDto } from './dto/user.dto';

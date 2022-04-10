@@ -11,9 +11,9 @@ import {
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
+import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CreatePlayerPositionDto } from './dto/create-player-position.dto';
 import { PlayerPositionDto } from './dto/player-position.dto';

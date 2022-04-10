@@ -5,8 +5,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
-import { Observable } from 'rxjs';
 import { Request } from 'express';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class RoleGuard implements CanActivate {

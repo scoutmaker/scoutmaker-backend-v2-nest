@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional } from 'class-validator';
 
-import { PaginationOptionsDto } from '../../../pagination/pagination-options.dto';
+import { PaginationOptionsDto } from '../../../common/pagination/pagination-options.dto';
 import { formatSortingEnumErrorMessage } from '../../../utils/helpers';
 
 enum OrganizationReportAceSortBy {

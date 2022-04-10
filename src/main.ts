@@ -4,8 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
-import { JwtExceptionFilter } from './filters/jwt-exception.filter';
-import { PrismaClientExceptionFilter } from './filters/prisma-client-exception.filter';
+import { JwtExceptionFilter } from './common/filters/jwt-exception.filter';
+import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 
 const port = process.env.PORT || 3000;
 

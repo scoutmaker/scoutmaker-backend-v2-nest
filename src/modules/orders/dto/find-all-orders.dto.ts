@@ -1,6 +1,6 @@
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
 
-import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { OrderStatusEnum } from '../types';
 
 export class FindAllOrdersDto {

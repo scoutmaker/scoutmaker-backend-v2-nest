@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
-import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
+
+import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreatePlayerPositionDto {
   @IsRequiredStringWithMaxLength(30)

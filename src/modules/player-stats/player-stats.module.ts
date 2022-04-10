@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
-import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
+import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { PlayersModule } from '../players/players.module';
 import { PlayerStatsController } from './player-stats.controller';
 import { PlayerStatsService } from './player-stats.service';

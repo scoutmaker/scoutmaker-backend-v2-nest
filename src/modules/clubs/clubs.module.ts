@@ -1,7 +1,8 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ClubsService } from './clubs.service';
+
+import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { ClubsController } from './clubs.controller';
-import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
+import { ClubsService } from './clubs.service';
 
 @Module({
   controllers: [ClubsController],

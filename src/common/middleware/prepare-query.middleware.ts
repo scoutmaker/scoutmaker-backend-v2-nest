@@ -1,11 +1,12 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 import {
-  DEFAULT_PAGE,
   DEFAULT_LIMIT,
-  DEFAULT_SORT,
   DEFAULT_ORDER,
-} from '../utils/constants';
+  DEFAULT_PAGE,
+  DEFAULT_SORT,
+} from '../../utils/constants';
 
 @Injectable()
 export class PrepareQueryMiddleware implements NestMiddleware {

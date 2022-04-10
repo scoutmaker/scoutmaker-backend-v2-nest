@@ -10,9 +10,9 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { IsCuid } from '../../../decorators/is-cuid.decorator';
-import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
-import { MatchesProperty } from '../../../decorators/matches-property.decorator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
+import { MatchesProperty } from '../../../common/decorators/matches-property.decorator';
 import { PASSWORD_REGEXP } from '../../../utils/constants';
 
 export class RegisterUserDto {

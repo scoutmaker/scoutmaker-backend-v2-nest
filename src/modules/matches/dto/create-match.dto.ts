@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsDate, IsInt, IsOptional, IsUrl, Min } from 'class-validator';
 
-import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateMatchDto {
   @IsDate()
