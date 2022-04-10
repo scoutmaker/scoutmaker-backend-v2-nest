@@ -31,7 +31,9 @@ import {
 } from './dto/insider-note.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
+import { DeleteGuard } from './guards/delete.guard';
 import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { InsiderNotesService } from './insider-notes.service';
 import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 
@@ -122,7 +124,8 @@ export class InsiderNotesController {
   }
 
   @Patch(':id')
-  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @UseGuards(UpdateGuard)
+  @ApiResponse(InsiderNoteDto, { type: 'update' })
   @Serialize(InsiderNoteDto)
   async update(
     @I18nLang() lang: string,
@@ -141,7 +144,8 @@ export class InsiderNotesController {
   }
 
   @Delete(':id')
-  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @UseGuards(DeleteGuard)
+  @ApiResponse(InsiderNoteDto, { type: 'delete' })
   @Serialize(InsiderNoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const insiderNote = await this.insiderNotesService.remove(id);

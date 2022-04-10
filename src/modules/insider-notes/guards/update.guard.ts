@@ -5,22 +5,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { OrganizationInsiderNoteAccessControlEntry } from '@prisma/client';
-import { isWithinInterval } from 'date-fns';
 import { Request } from 'express';
 import { I18nService } from 'nestjs-i18n';
 
 import { OrganizationInsiderNoteAclService } from '../../organization-insider-note-acl/organization-insider-note-acl.service';
-import { OrganizationSubscriptionsService } from '../../organization-subscriptions/organization-subscriptions.service';
 import { UserInsiderNoteAclService } from '../../user-insider-note-acl/user-insider-note-acl.service';
-import { UserSubscriptionsService } from '../../user-subscriptions/user-subscriptions.service';
 import { InsiderNotesService } from '../insider-notes.service';
 
 @Injectable()
-export class ReadGuard implements CanActivate {
+export class UpdateGuard implements CanActivate {
   constructor(
     private readonly insiderNotesService: InsiderNotesService,
-    private readonly userSubscriptionsService: UserSubscriptionsService,
-    private readonly organizationSubscriptionsService: OrganizationSubscriptionsService,
     private readonly userAclService: UserInsiderNoteAclService,
     private readonly organizationAclService: OrganizationInsiderNoteAclService,
     private readonly i18n: I18nService,
@@ -31,17 +26,17 @@ export class ReadGuard implements CanActivate {
 
     const { user } = request;
 
-    // If user is an admin, they can read all notes
+    // If user is an admin, they can update all notes
     if (user.role === 'ADMIN') {
       return true;
     }
 
-    // If user is not an admin, we have to fetch the note to determine if they can read it
+    // If user is not an admin, we have to fetch the note to determine if they can update it
     const insiderNote = await this.insiderNotesService.findOne(
       request.params.id,
     );
 
-    // If user is a playmaker-scout, they can read all notes created by other playmaker-scouts
+    // If user is a playmaker-scout, they can update all notes created by other playmaker-scouts
     if (
       user.role === 'PLAYMAKER_SCOUT' &&
       insiderNote.author.role === 'PLAYMAKER_SCOUT'
@@ -49,22 +44,25 @@ export class ReadGuard implements CanActivate {
       return true;
     }
 
-    // Users can read their own notes
+    // Users can update their own notes
     if (user.id === insiderNote.author.id) {
       return true;
     }
 
-    // Users can read notes if they have ACE for this note
+    // Users can update notes if they have ACE for this note with UPDATE permission
     const userAce = await this.userAclService.findOneByUserAndInsiderNoteId(
       user.id,
       insiderNote.id,
     );
 
-    if (userAce) {
+    if (
+      userAce?.permissionLevel === 'READ_AND_WRITE' ||
+      userAce?.permissionLevel === 'FULL'
+    ) {
       return true;
     }
 
-    // User can read notes if their organization has ACE for this note
+    // User can update notes if their organization has ACE for this note
     let organizationAce: OrganizationInsiderNoteAccessControlEntry = null;
 
     if (user.organizationId) {
@@ -75,44 +73,17 @@ export class ReadGuard implements CanActivate {
         );
     }
 
-    if (organizationAce) {
-      return true;
-    }
-
-    // Then have to fetch the user's subscriptions to determine if they can read the note
-    const [individualSubscriptions, organizationSubscriptions] =
-      await Promise.all([
-        this.userSubscriptionsService.getFormattedForSingleUser(user.id),
-        this.organizationSubscriptionsService.getFormattedForSingleOrganization(
-          user.organizationId,
-        ),
-      ]);
-
-    const subscriptions = [
-      ...individualSubscriptions,
-      ...(organizationSubscriptions || []),
-    ];
-
-    const subscriptionAccess = subscriptions.some(
-      (subscription) =>
-        (subscription.competitions.includes(insiderNote?.meta?.competitionId) ||
-          subscription.competitionGroups.includes(
-            insiderNote?.meta?.competitionGroupId,
-          )) &&
-        isWithinInterval(new Date(insiderNote.createdAt), {
-          start: new Date(subscription.startDate),
-          end: new Date(subscription.endDate),
-        }),
-    );
-
-    if (subscriptionAccess) {
+    if (
+      organizationAce?.permissionLevel === 'READ_AND_WRITE' ||
+      organizationAce?.permissionLevel === 'FULL'
+    ) {
       return true;
     }
 
     const lang = request.acceptsLanguages()[0];
 
     const message = await this.i18n.translate(
-      'insider-notes.GET_ONE_ACCESS_ERROR',
+      'insider-notes.UPDATE_ACCESS_ERROR',
       { lang, args: { docNumber: insiderNote.docNumber } },
     );
 
