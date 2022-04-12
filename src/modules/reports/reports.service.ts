@@ -148,15 +148,6 @@ export class ReportsService {
         break;
     }
 
-    console.log({
-      playerIds,
-      positionIds,
-      matchIds,
-      teamIds,
-      percentageRatingRangeStart,
-      percentageRatingRangeEnd,
-    });
-
     const where: Prisma.ReportWhereInput = {
       player: { id: { in: playerIds } },
       match: matchIds ? { id: { in: matchIds } } : undefined,

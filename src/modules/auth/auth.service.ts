@@ -28,7 +28,7 @@ export class AuthService {
     private readonly i18n: I18nService,
   ) {}
 
-  private getAndVerifyJwt(id: string, role: UserRole, organizationId: string) {
+  getAndVerifyJwt(id: string, role: UserRole, organizationId: string) {
     const token = jwt.sign(
       { id, role, organizationId },
       this.configService.get<string>('JWT_SECRET'),

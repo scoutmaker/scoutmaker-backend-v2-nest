@@ -85,6 +85,14 @@ export class AccessFiltersInterceptor implements NestInterceptor {
         ? { author: { role: 'PLAYMAKER_SCOUT' } }
         : {};
 
+    const organizationAccess: Prisma.InsiderNoteWhereInput = user.organizationId
+      ? {
+          organizationAccessControlList: {
+            some: { organizationId: user.organizationId },
+          },
+        }
+      : {};
+
     const accessFilters: Prisma.InsiderNoteWhereInput = {
       OR: [
         transformedSubscriptions,
@@ -92,16 +100,16 @@ export class AccessFiltersInterceptor implements NestInterceptor {
           authorId: request.user.id,
         },
         {
-          userAccessControlList: { some: { userId: request.user.id } },
-        },
-        {
-          organizationAccessControlList: {
-            some: {
-              organizationId: user.organizationId || undefined,
-            },
+          userAccessControlList: {
+            some: { userId: request.user.id },
           },
         },
-        playmakerScoutExtraAccess,
+        {
+          ...organizationAccess,
+        },
+        {
+          ...playmakerScoutExtraAccess,
+        },
       ],
     };
 

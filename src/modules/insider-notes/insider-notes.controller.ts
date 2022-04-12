@@ -77,8 +77,6 @@ export class InsiderNotesController {
     @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
     @Query() query: FindAllInsiderNotesDto,
   ) {
-    console.log({ accessFilters });
-
     const data = await this.insiderNotesService.findAll(
       paginationOptions,
       query,
