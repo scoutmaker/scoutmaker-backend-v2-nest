@@ -156,14 +156,15 @@ export class InsiderNotesService {
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {
-      const player =
-        this.playersService.findOneWithCurrentTeamDetails(playerId);
+      const player = await this.playersService.findOneWithCurrentTeamDetails(
+        playerId,
+      );
 
       metaTeamId = teamId || player.teams[0].teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0].competitionId;
+        competitionId || player.teams[0].team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0].team.competitions[0]?.groupId;
 
       await this.prisma.insiderNoteMeta.update({
         where: { insiderNoteId: id },
@@ -195,7 +196,16 @@ export class InsiderNotesService {
   }
 
   async remove(id: string) {
-    await this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } });
+    await Promise.all([
+      this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } }),
+      this.prisma.userInsiderNoteAccessControlEntry.deleteMany({
+        where: { insiderNoteId: id },
+      }),
+      this.prisma.organizationInsiderNoteAccessControlEntry.deleteMany({
+        where: { insiderNoteId: id },
+      }),
+    ]);
+
     return this.prisma.insiderNote.delete({
       where: { id },
       include,

@@ -26,9 +26,13 @@ export async function generateCommonTestData(prisma: PrismaService) {
   ]);
 
   // Create test competitions
-  const names = ['test competition 1', 'test competition 2'];
+  const names = [
+    'test competition 1',
+    'test competition 2',
+    'test competition 3',
+  ];
 
-  const [competition1, competition2] = await Promise.all(
+  const [competition1, competition2, competition3] = await Promise.all(
     names.map((name) =>
       prisma.competition.create({
         data: {
@@ -56,6 +60,7 @@ export async function generateCommonTestData(prisma: PrismaService) {
     ageCategory,
     competition1,
     competition2,
+    competition3,
     position,
   };
 }

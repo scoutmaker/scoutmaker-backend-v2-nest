@@ -4,6 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   AccessControlEntryPermissionLevel,
   InsiderNote,
+  Organization,
+  Player,
   User,
   UserRole,
 } from '@prisma/client';
@@ -31,6 +33,10 @@ describe('Insider notes (e2e)', () => {
     playmakerScout2: User,
     regularUser1: User,
     regularUser2: User;
+
+  let organization: Organization;
+  let player: Player;
+
   let insiderNote1: InsiderNote,
     insiderNote2: InsiderNote,
     insiderNote3: InsiderNote,
@@ -42,6 +48,8 @@ describe('Insider notes (e2e)', () => {
     insiderNote9: InsiderNote,
     insiderNote10: InsiderNote,
     insiderNote11: InsiderNote;
+
+  let insiderNotesIds: string[];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -55,7 +63,14 @@ describe('Insider notes (e2e)', () => {
 
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     app.use(cookieParser());
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        validateCustomDecorators: true,
+        enableDebugMessages: true,
+      }),
+    );
 
     const redisClient = redis.getClient();
 
@@ -67,6 +82,7 @@ describe('Insider notes (e2e)', () => {
     await prisma.organizationInsiderNoteAccessControlEntry.deleteMany();
     await prisma.insiderNoteMeta.deleteMany();
     await prisma.insiderNote.deleteMany();
+    await prisma.teamAffiliation.deleteMany();
     await prisma.team.deleteMany();
     await prisma.club.deleteMany();
     await prisma.competitionsOnOrganizationSubscriptions.deleteMany();
@@ -83,8 +99,14 @@ describe('Insider notes (e2e)', () => {
     await prisma.region.deleteMany();
     await prisma.country.deleteMany();
 
-    const { country, region, competition1, competition2, position } =
-      await generateCommonTestData(prisma);
+    const {
+      country,
+      region,
+      competition1,
+      competition2,
+      competition3,
+      position,
+    } = await generateCommonTestData(prisma);
 
     // Create test users
     const roles: UserRole[] = [
@@ -122,7 +144,7 @@ describe('Insider notes (e2e)', () => {
     });
 
     // Create test player
-    const player = await prisma.player.create({
+    player = await prisma.player.create({
       data: {
         firstName: chance.first(),
         lastName: chance.last(),
@@ -131,11 +153,14 @@ describe('Insider notes (e2e)', () => {
         country: { connect: { id: country.id } },
         primaryPosition: { connect: { id: position.id } },
         author: { connect: { id: regularUser1.id } },
+        teams: {
+          create: { teamId: team.id, startDate: new Date(), endDate: null },
+        },
       },
     });
 
     // Create test organization
-    const organization = await prisma.organization.create({
+    organization = await prisma.organization.create({
       data: {
         name: 'test organization',
         members: { connect: { id: regularUser2.id } },
@@ -143,7 +168,7 @@ describe('Insider notes (e2e)', () => {
     });
 
     // Create user subscription - regularUser1 for competition1
-    const userSubscription = await prisma.userSubscription.create({
+    await prisma.userSubscription.create({
       data: {
         startDate: new Date('2022-03-01'),
         endDate: new Date('2022-03-31'),
@@ -153,15 +178,14 @@ describe('Insider notes (e2e)', () => {
     });
 
     // Create organization subscription - organization for competition2
-    const organizationSubscription =
-      await prisma.organizationSubscription.create({
-        data: {
-          startDate: new Date('2022-03-01'),
-          endDate: new Date('2022-03-31'),
-          organization: { connect: { id: organization.id } },
-          competitions: { create: [{ competitionId: competition2.id }] },
-        },
-      });
+    await prisma.organizationSubscription.create({
+      data: {
+        startDate: new Date('2022-03-01'),
+        endDate: new Date('2022-03-31'),
+        organization: { connect: { id: organization.id } },
+        competitions: { create: [{ competitionId: competition2.id }] },
+      },
+    });
 
     // Insider note 1 - created by regularUser1
     // Admin - can access
@@ -175,6 +199,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: regularUser1.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -224,8 +254,8 @@ describe('Insider notes (e2e)', () => {
 
     // Insider note 4 - created by PlaymakerScout2 in March 2022, is related to competition2
     // Admin - can access
-    // PlaymakerScout1 - can access (he's an author)
-    // PlaymakerScout2 - can access (Playmaker Scouts can access notes created by other playmaker scouts)
+    // PlaymakerScout1 - can access (Playmaker Scouts can access notes created by other playmaker scouts)
+    // PlaymakerScout2 - can access (he's an author)
     // RegularUser1 - cannot access
     // RegularUser2 - can access (his organization has a subscription to competition2)
     const insiderNote4Promise = prisma.insiderNote.create({
@@ -246,8 +276,8 @@ describe('Insider notes (e2e)', () => {
 
     // Insider note 5 - created by PlaymakerScout1 in April 2022, is related to competition1
     // Admin - can access
-    // PlaymakerScout1 - can access (he's an author)
-    // PlaymakerScout2 - can access (Playmaker Scouts can access notes created by other playmaker scouts)
+    // PlaymakerScout1 - can access (Playmaker Scouts can access notes created by other playmaker scouts)
+    // PlaymakerScout2 - can access (he's an author)
     // RegularUser1 - cannot access
     // RegularUser2 - cannot access
     const insiderNote5Promise = prisma.insiderNote.create({
@@ -278,6 +308,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: admin.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -293,6 +329,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: admin.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -308,6 +350,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: admin.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -323,6 +371,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: admin.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -338,6 +392,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: admin.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -353,6 +413,12 @@ describe('Insider notes (e2e)', () => {
         informant: chance.word(),
         description: chance.sentence({ words: 10 }),
         author: { connect: { id: admin.id } },
+        meta: {
+          create: {
+            competition: { connect: { id: competition3.id } },
+            team: { connect: { id: team.id } },
+          },
+        },
       },
     });
 
@@ -381,6 +447,20 @@ describe('Insider notes (e2e)', () => {
       insiderNote10Promise,
       insiderNote11Promise,
     ]);
+
+    insiderNotesIds = [
+      insiderNote1.id,
+      insiderNote2.id,
+      insiderNote3.id,
+      insiderNote4.id,
+      insiderNote5.id,
+      insiderNote6.id,
+      insiderNote7.id,
+      insiderNote8.id,
+      insiderNote9.id,
+      insiderNote10.id,
+      insiderNote11.id,
+    ];
 
     const permissionLevels: AccessControlEntryPermissionLevel[] = [
       'READ',
@@ -449,50 +529,771 @@ describe('Insider notes (e2e)', () => {
       expect(body.data.docs.length).toBe(11);
       expect(body.data.totalDocs).toBe(11);
 
-      const insiderNoteIds = body.data.docs.map((note) => note.id);
+      const receivedInsiderNotesIds = body.data.docs.map((note) => note.id);
 
-      expect(insiderNoteIds).toContain(insiderNote1.id);
-      expect(insiderNoteIds).toContain(insiderNote2.id);
-      expect(insiderNoteIds).toContain(insiderNote3.id);
-      expect(insiderNoteIds).toContain(insiderNote4.id);
-      expect(insiderNoteIds).toContain(insiderNote5.id);
-      expect(insiderNoteIds).toContain(insiderNote6.id);
-      expect(insiderNoteIds).toContain(insiderNote7.id);
-      expect(insiderNoteIds).toContain(insiderNote8.id);
-      expect(insiderNoteIds).toContain(insiderNote9.id);
-      expect(insiderNoteIds).toContain(insiderNote10.id);
-      expect(insiderNoteIds).toContain(insiderNote11.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote1.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote2.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote3.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote4.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote5.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote6.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote7.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote8.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote9.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote10.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote11.id);
+    });
+
+    it('returns proper set of insider-notes for regularUser1', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser1.id,
+        regularUser1.role,
+        regularUser1.organizationId,
+      );
+
+      const { body, status } = await request(app.getHttpServer())
+        .get('/insider-notes')
+        .set('Cookie', [`token=${token}`]);
+
+      expect(status).toBe(HttpStatus.OK);
+      expect(body.success).toBe(true);
+      expect(body.data.docs.length).toBe(5);
+      expect(body.data.totalDocs).toBe(5);
+
+      const receivedInsiderNotesIds = body.data.docs.map((note) => note.id);
+
+      expect(receivedInsiderNotesIds).toContain(insiderNote1.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote2.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote3.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote4.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote5.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote6.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote7.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote8.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote9.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote10.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote11.id);
+    });
+
+    it('returns proper set of insider-notes for regularUser2', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser2.id,
+        regularUser2.role,
+        organization.id,
+      );
+
+      const { body, status } = await request(app.getHttpServer())
+        .get('/insider-notes')
+        .set('Cookie', [`token=${token}`]);
+
+      expect(status).toBe(HttpStatus.OK);
+      expect(body.success).toBe(true);
+      expect(body.data.docs.length).toBe(4);
+      expect(body.data.totalDocs).toBe(4);
+
+      const receivedInsiderNotesIds = body.data.docs.map((note) => note.id);
+
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote1.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote2.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote3.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote4.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote5.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote6.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote7.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote8.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote9.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote10.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote11.id);
+    });
+
+    it('returns proper set of insider-notes for playakerScout1', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout1.id,
+        playmakerScout1.role,
+        playmakerScout1.organizationId,
+      );
+
+      const { body, status } = await request(app.getHttpServer())
+        .get('/insider-notes')
+        .set('Cookie', [`token=${token}`]);
+
+      expect(status).toBe(HttpStatus.OK);
+      expect(body.success).toBe(true);
+      expect(body.data.docs.length).toBe(4);
+      expect(body.data.totalDocs).toBe(4);
+
+      const receivedInsiderNotesIds = body.data.docs.map((note) => note.id);
+
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote1.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote2.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote3.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote4.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote5.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote6.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote7.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote8.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote9.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote10.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote11.id);
+    });
+
+    it('returns proper set of insider-notes for playakerScout2', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout2.id,
+        playmakerScout2.role,
+        playmakerScout2.organizationId,
+      );
+
+      const { body, status } = await request(app.getHttpServer())
+        .get('/insider-notes')
+        .set('Cookie', [`token=${token}`]);
+
+      expect(status).toBe(HttpStatus.OK);
+      expect(body.success).toBe(true);
+      expect(body.data.docs.length).toBe(4);
+      expect(body.data.totalDocs).toBe(4);
+
+      const receivedInsiderNotesIds = body.data.docs.map((note) => note.id);
+
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote1.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote2.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote3.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote4.id);
+      expect(receivedInsiderNotesIds).toContain(insiderNote5.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote6.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote7.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote8.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote9.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote10.id);
+      expect(receivedInsiderNotesIds).not.toContain(insiderNote11.id);
     });
   });
 
-  it('returns proper set of insider-notes for regularUser1', async () => {
-    const { token } = authService.getAndVerifyJwt(
-      regularUser1.id,
-      regularUser1.role,
-      regularUser1.organizationId,
-    );
+  describe('GET /insider-notes/:id', () => {
+    it('returns proper responses for admin user', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        admin.id,
+        admin.role,
+        admin.organizationId,
+      );
 
-    const { body, status } = await request(app.getHttpServer())
-      .get('/insider-notes')
-      .set('Cookie', [`token=${token}`]);
+      const responses = await Promise.all(
+        insiderNotesIds.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
 
-    expect(status).toBe(HttpStatus.OK);
-    expect(body.success).toBe(true);
-    expect(body.data.docs.length).toBe(5);
-    expect(body.data.totalDocs).toBe(5);
+      responses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIds[idx]);
+      });
+    });
 
-    const insiderNoteIds = body.data.docs.map((note) => note.id);
+    it('returns proper responses for regularUser1', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser1.id,
+        regularUser1.role,
+        regularUser1.organizationId,
+      );
 
-    expect(insiderNoteIds).toContain(insiderNote1.id);
-    expect(insiderNoteIds).toContain(insiderNote2.id);
-    expect(insiderNoteIds).not.toContain(insiderNote3.id);
-    expect(insiderNoteIds).not.toContain(insiderNote4.id);
-    expect(insiderNoteIds).not.toContain(insiderNote5.id);
-    expect(insiderNoteIds).toContain(insiderNote6.id);
-    expect(insiderNoteIds).not.toContain(insiderNote7.id);
-    expect(insiderNoteIds).toContain(insiderNote8.id);
-    expect(insiderNoteIds).not.toContain(insiderNote9.id);
-    expect(insiderNoteIds).toContain(insiderNote10.id);
-    expect(insiderNoteIds).not.toContain(insiderNote11.id);
+      const insiderNotesIdsUserCanRead = [
+        insiderNote1.id,
+        insiderNote2.id,
+        insiderNote6.id,
+        insiderNote8.id,
+        insiderNote10.id,
+      ];
+
+      const insiderNotesIdsUserCannotRead = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanRead.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanRead[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('returns proper responses for regularUser2', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser2.id,
+        regularUser2.role,
+        organization.id,
+      );
+
+      const insiderNotesIdsUserCanRead = [
+        insiderNote4.id,
+        insiderNote7.id,
+        insiderNote9.id,
+        insiderNote11.id,
+      ];
+
+      const insiderNotesIdsUserCannotRead = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanRead.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanRead[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('returns proper responses for playmakerScout1', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout1.id,
+        playmakerScout1.role,
+        playmakerScout1.organizationId,
+      );
+
+      const insiderNotesIdsUserCanRead = [
+        insiderNote2.id,
+        insiderNote3.id,
+        insiderNote4.id,
+        insiderNote5.id,
+      ];
+
+      const insiderNotesIdsUserCannotRead = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanRead.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanRead[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('returns proper responses for playmakerScout2', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout2.id,
+        playmakerScout2.role,
+        playmakerScout2.organizationId,
+      );
+
+      const insiderNotesIdsUserCanRead = [
+        insiderNote2.id,
+        insiderNote3.id,
+        insiderNote4.id,
+        insiderNote5.id,
+      ];
+
+      const insiderNotesIdsUserCannotRead = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanRead.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanRead[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotRead.map((id) =>
+          request(app.getHttpServer())
+            .get(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+  });
+
+  describe('PATCH /insider-notes/:id', () => {
+    it('allows admin user update all notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        admin.id,
+        admin.role,
+        admin.organizationId,
+      );
+
+      const newDescription = chance.sentence({ words: 10 });
+
+      const responses = await Promise.all(
+        insiderNotesIds.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      responses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIds[idx]);
+        expect(response.body.data.description).toBe(newDescription);
+      });
+    });
+
+    it('allows regularUser1 update proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser1.id,
+        regularUser1.role,
+        regularUser1.organizationId,
+      );
+
+      const newDescription = chance.sentence({ words: 10 });
+
+      const insiderNotesIdsUserCanUpdate = [
+        insiderNote1.id,
+        insiderNote8.id,
+        insiderNote10.id,
+      ];
+
+      const insiderNotesIdsUserCannotUpdate = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanUpdate.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanUpdate[idx]);
+        expect(response.body.data.description).toBe(newDescription);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows regularUser2 update proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser2.id,
+        regularUser2.role,
+        organization.id,
+      );
+
+      const newDescription = chance.sentence({ words: 10 });
+
+      const insiderNotesIdsUserCanUpdate = [insiderNote9.id, insiderNote11.id];
+
+      const insiderNotesIdsUserCannotUpdate = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanUpdate.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanUpdate[idx]);
+        expect(response.body.data.description).toBe(newDescription);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows playmakerScout1 update proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout1.id,
+        playmakerScout1.role,
+        playmakerScout1.organizationId,
+      );
+
+      const newDescription = chance.sentence({ words: 10 });
+
+      const insiderNotesIdsUserCanUpdate = [
+        insiderNote2.id,
+        insiderNote3.id,
+        insiderNote4.id,
+        insiderNote5.id,
+      ];
+
+      const insiderNotesIdsUserCannotUpdate = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanUpdate.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanUpdate[idx]);
+        expect(response.body.data.description).toBe(newDescription);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows playmakerScout2 update proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout2.id,
+        playmakerScout2.role,
+        playmakerScout2.organizationId,
+      );
+
+      const newDescription = chance.sentence({ words: 10 });
+
+      const insiderNotesIdsUserCanUpdate = [
+        insiderNote2.id,
+        insiderNote3.id,
+        insiderNote4.id,
+        insiderNote5.id,
+      ];
+
+      const insiderNotesIdsUserCannotUpdate = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanUpdate.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanUpdate[idx]);
+        expect(response.body.data.description).toBe(newDescription);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotUpdate.map((id) =>
+          request(app.getHttpServer())
+            .patch(`/insider-notes/${id}`)
+            .send({ description: newDescription, playerId: player.id })
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+  });
+
+  describe('DELETE /insider-notes/:id', () => {
+    it('allows regularUser1 delete proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser1.id,
+        regularUser1.role,
+        regularUser1.organizationId,
+      );
+
+      const insiderNotesIdsUserCanDelete = [insiderNote1.id, insiderNote10.id];
+
+      const insiderNotesIdsUserCannotDelete = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanDelete.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanDelete[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows regularUser2 delete proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        regularUser2.id,
+        regularUser2.role,
+        organization.id,
+      );
+
+      const insiderNotesIdsUserCanDelete = [insiderNote11.id];
+
+      const insiderNotesIdsUserCannotDelete = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanDelete.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanDelete[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows playmakerScout1 delete proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout1.id,
+        playmakerScout1.role,
+        playmakerScout1.organizationId,
+      );
+
+      const insiderNotesIdsUserCanDelete = [insiderNote2.id, insiderNote3.id];
+
+      const insiderNotesIdsUserCannotDelete = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanDelete.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanDelete[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows playmakerScout2 delete proper set of notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        playmakerScout2.id,
+        playmakerScout2.role,
+        playmakerScout2.organizationId,
+      );
+
+      const insiderNotesIdsUserCanDelete = [insiderNote4.id, insiderNote5.id];
+
+      const insiderNotesIdsUserCannotDelete = insiderNotesIds.filter(
+        (id) => !insiderNotesIdsUserCanDelete.includes(id),
+      );
+
+      const okResponses = await Promise.all(
+        insiderNotesIdsUserCanDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(insiderNotesIdsUserCanDelete[idx]);
+      });
+
+      const errorResponses = await Promise.all(
+        insiderNotesIdsUserCannotDelete.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set({ Cookie: [`token=${token}`], 'Accept-Language': 'en' }),
+        ),
+      );
+
+      errorResponses.forEach((response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      });
+    });
+
+    it('allows admin delete remaining notes', async () => {
+      const { token } = authService.getAndVerifyJwt(
+        admin.id,
+        admin.role,
+        admin.organizationId,
+      );
+
+      const remainingNotesIds = [
+        insiderNote6.id,
+        insiderNote7.id,
+        insiderNote8.id,
+        insiderNote9.id,
+      ];
+
+      const okResponses = await Promise.all(
+        remainingNotesIds.map((id) =>
+          request(app.getHttpServer())
+            .delete(`/insider-notes/${id}`)
+            .set('Cookie', [`token=${token}`]),
+        ),
+      );
+
+      okResponses.forEach((response, idx) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBe(remainingNotesIds[idx]);
+      });
+
+      // Check if there's no notes left in the database
+      const { body, status } = await request(app.getHttpServer())
+        .get('/insider-notes')
+        .set('Cookie', [`token=${token}`]);
+
+      expect(status).toBe(HttpStatus.OK);
+      expect(body.success).toBe(true);
+      expect(body.data.docs.length).toBe(0);
+      expect(body.data.totalDocs).toBe(0);
+    });
   });
 });
