@@ -77,28 +77,6 @@ describe('Insider notes (e2e)', () => {
     // Clear cache
     await redisClient.flushall();
 
-    // Clear database
-    await prisma.userInsiderNoteAccessControlEntry.deleteMany();
-    await prisma.organizationInsiderNoteAccessControlEntry.deleteMany();
-    await prisma.insiderNoteMeta.deleteMany();
-    await prisma.insiderNote.deleteMany();
-    await prisma.teamAffiliation.deleteMany();
-    await prisma.team.deleteMany();
-    await prisma.club.deleteMany();
-    await prisma.competitionsOnOrganizationSubscriptions.deleteMany();
-    await prisma.competitionsOnUserSubscriptions.deleteMany();
-    await prisma.competition.deleteMany();
-    await prisma.competitionAgeCategory.deleteMany();
-    await prisma.competitionType.deleteMany();
-    await prisma.player.deleteMany();
-    await prisma.playerPosition.deleteMany();
-    await prisma.userSubscription.deleteMany();
-    await prisma.organizationSubscription.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.organization.deleteMany();
-    await prisma.region.deleteMany();
-    await prisma.country.deleteMany();
-
     const {
       country,
       region,
