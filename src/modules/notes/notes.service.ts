@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 
-import { REDIS_TTL } from '../../common/constants/redis';
+import { REDIS_TTL } from '../../utils/constants';
 import {
   calculatePercentageRating,
   calculateSkip,
@@ -21,6 +21,15 @@ const include: Prisma.NoteInclude = {
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
 };
+
+const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
+  player: { include: { country: true, primaryPosition: true } },
+  match: { include: { homeTeam: true, awayTeam: true, competition: true } },
+  author: true,
+  meta: {
+    include: { competition: true, competitionGroup: true, position: true },
+  },
+});
 
 const { match, author, ...listInclude } = include;
 
@@ -106,6 +115,7 @@ export class NotesService {
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
     }: FindAllNotesDto,
+    accessFilters?: Prisma.NoteWhereInput,
   ) {
     let sort: Prisma.NoteOrderByWithRelationInput;
 
@@ -130,24 +140,29 @@ export class NotesService {
     }
 
     const where: Prisma.NoteWhereInput = {
-      player: { id: playerId },
-      match: { id: matchId },
-      percentageRating: {
-        gte: percentageRatingRangeStart,
-        lte: percentageRatingRangeEnd,
-      },
       AND: [
+        { ...accessFilters },
         {
-          OR: [
-            { meta: { position: { id: positionId } } },
-            { player: { primaryPosition: { id: positionId } } },
-          ],
-        },
-        {
-          OR: [
-            { match: { homeTeam: { id: teamId } } },
-            { match: { awayTeam: { id: teamId } } },
-            { meta: { team: { id: teamId } } },
+          player: { id: playerId },
+          match: { id: matchId },
+          percentageRating: {
+            gte: percentageRatingRangeStart,
+            lte: percentageRatingRangeEnd,
+          },
+          AND: [
+            {
+              OR: [
+                { meta: { position: { id: positionId } } },
+                { player: { primaryPosition: { id: positionId } } },
+              ],
+            },
+            {
+              OR: [
+                { match: { homeTeam: { id: teamId } } },
+                { match: { awayTeam: { id: teamId } } },
+                { meta: { team: { id: teamId } } },
+              ],
+            },
           ],
         },
       ],
@@ -171,9 +186,9 @@ export class NotesService {
     });
   }
 
-  getList({ matchId }: GetNotesListDto) {
+  getList({ matchId }: GetNotesListDto, accessFilters?: Prisma.NoteWhereInput) {
     return this.prisma.note.findMany({
-      where: { match: { id: matchId } },
+      where: { AND: [{ ...accessFilters }, { match: { id: matchId } }] },
       include: listInclude,
     });
   }
@@ -187,7 +202,10 @@ export class NotesService {
       return JSON.parse(cached);
     }
 
-    const note = await this.prisma.note.findUnique({ where: { id }, include });
+    const note = await this.prisma.note.findUnique({
+      where: { id },
+      include: singleInclude,
+    });
 
     await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);
 
@@ -283,7 +301,15 @@ export class NotesService {
   }
 
   async remove(id: string) {
-    await this.prisma.noteMeta.delete({ where: { noteId: id } });
+    await Promise.all([
+      this.prisma.noteMeta.delete({ where: { noteId: id } }),
+      this.prisma.userNoteAccessControlEntry.deleteMany({
+        where: { noteId: id },
+      }),
+      this.prisma.organizationNoteAccessControlEntry.deleteMany({
+        where: { noteId: id },
+      }),
+    ]);
     return this.prisma.note.delete({ where: { id }, include });
   }
 }

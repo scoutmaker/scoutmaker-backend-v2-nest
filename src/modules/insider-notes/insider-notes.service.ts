@@ -11,7 +11,7 @@ import {
 } from '@prisma/client';
 import Redis from 'ioredis';
 
-import { REDIS_TTL } from '../../common/constants/redis';
+import { REDIS_TTL } from '../../utils/constants';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -119,7 +119,7 @@ export class InsiderNotesService {
     });
   }
 
-  getList(accessFilters: Prisma.InsiderNoteWhereInput) {
+  getList(accessFilters?: Prisma.InsiderNoteWhereInput) {
     return this.prisma.insiderNote.findMany({ where: accessFilters, include });
   }
 
