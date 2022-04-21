@@ -1,6 +1,9 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma, ReportTemplate } from '@prisma/client';
+import Redis from 'ioredis';
 
+import { REDIS_TTL } from '../../utils/constants';
 import {
   calculateAvg,
   calculatePercentageRating,
@@ -29,12 +32,34 @@ const include: Prisma.ReportInclude = {
   skills: { include: { template: { include: { category: true } } } },
 };
 
+const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
+  template: true,
+  player: {
+    include: {
+      country: true,
+      primaryPosition: true,
+      teams: { include: { team: true } },
+    },
+  },
+  match: { include: { homeTeam: true, awayTeam: true } },
+  author: true,
+  skills: { include: { template: { include: { category: true } } } },
+  meta: {
+    include: {
+      competition: true,
+      competitionGroup: true,
+      position: true,
+    },
+  },
+});
+
 @Injectable()
 export class ReportsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly templatesService: ReportTemplatesService,
     private readonly playersService: PlayersService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async create(createReportDto: CreateReportDto, authorId: string) {
@@ -133,6 +158,7 @@ export class ReportsService {
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
     }: FindAllReportsDto,
+    accessFilters?: Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.ReportOrderByWithRelationInput;
 
@@ -149,28 +175,35 @@ export class ReportsService {
     }
 
     const where: Prisma.ReportWhereInput = {
-      player: { id: { in: playerIds } },
-      match: matchIds ? { id: { in: matchIds } } : undefined,
-      percentageRating: {
-        gte: percentageRatingRangeStart,
-        lte: percentageRatingRangeEnd,
-      },
       AND: [
+        { ...accessFilters },
         {
-          OR: [
-            { meta: { position: { id: { in: positionIds } } } },
-            { player: { primaryPosition: { id: { in: positionIds } } } },
-          ],
-        },
-        {
-          OR: [
-            teamIds
-              ? { match: { homeTeam: { id: { in: teamIds } } } }
-              : undefined,
-            teamIds
-              ? { match: { awayTeam: { id: { in: teamIds } } } }
-              : undefined,
-            teamIds ? { meta: { team: { id: { in: teamIds } } } } : undefined,
+          player: { id: { in: playerIds } },
+          match: matchIds ? { id: { in: matchIds } } : undefined,
+          percentageRating: {
+            gte: percentageRatingRangeStart,
+            lte: percentageRatingRangeEnd,
+          },
+          AND: [
+            {
+              OR: [
+                { meta: { position: { id: { in: positionIds } } } },
+                { player: { primaryPosition: { id: { in: positionIds } } } },
+              ],
+            },
+            {
+              OR: [
+                teamIds
+                  ? { match: { homeTeam: { id: { in: teamIds } } } }
+                  : undefined,
+                teamIds
+                  ? { match: { awayTeam: { id: { in: teamIds } } } }
+                  : undefined,
+                teamIds
+                  ? { meta: { team: { id: { in: teamIds } } } }
+                  : undefined,
+              ],
+            },
           ],
         },
       ],
@@ -194,11 +227,26 @@ export class ReportsService {
     });
   }
 
-  findOne(id) {
-    return this.prisma.report.findUnique({ where: { id }, include });
+  async findOne(id: string) {
+    const redisKey = `report:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const report = await this.prisma.report.findUnique({
+      where: { id },
+      include: singleInclude,
+    });
+
+    await this.redis.set(redisKey, JSON.stringify(report), 'EX', REDIS_TTL);
+
+    return report;
   }
 
-  async update(id, updateReportDto: UpdateReportDto) {
+  async update(id: string, updateReportDto: UpdateReportDto) {
     const {
       skillAssessments,
       playerId,
@@ -320,8 +368,16 @@ export class ReportsService {
     return updatedReport;
   }
 
-  async remove(id) {
-    await this.prisma.reportMeta.delete({ where: { reportId: id } });
+  async remove(id: string) {
+    await Promise.all([
+      this.prisma.reportMeta.delete({ where: { reportId: id } }),
+      this.prisma.userReportAccessControlEntry.deleteMany({
+        where: { reportId: id },
+      }),
+      this.prisma.organizationReportAccessControlEntry.deleteMany({
+        where: { reportId: id },
+      }),
+    ]);
     return this.prisma.report.delete({ where: { id }, include });
   }
 }
