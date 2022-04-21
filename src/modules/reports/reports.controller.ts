@@ -29,6 +29,9 @@ import { FindAllReportsDto } from './dto/find-all-reports.dto';
 import { ReportDto } from './dto/report.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { ReportsService } from './reports.service';
 
 @Controller('reports')
@@ -81,6 +84,7 @@ export class ReportsController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(ReportDto, { type: 'read' })
   @Serialize(ReportDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -93,6 +97,7 @@ export class ReportsController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(ReportDto, { type: 'update' })
   @Serialize(ReportDto)
   async update(
@@ -109,6 +114,7 @@ export class ReportsController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(ReportDto, { type: 'delete' })
   @Serialize(ReportDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

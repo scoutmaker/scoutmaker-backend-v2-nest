@@ -3,5 +3,8 @@
   "GET_ALL_MESSAGE": "Successfully fetched all reports data, page {currentPage} of {totalPages}",
   "GET_ONE_MESSAGE": "Successfully fetched report no. ${docNumber}",
   "UPDATE_MESSAGE": "Successfully updated report no. ${docNumber}",
-  "DELETE_MESSAGE": "Successfully deleted report no. ${docNumber}"
+  "DELETE_MESSAGE": "Successfully deleted report no. ${docNumber}",
+  "GET_ONE_ACCESS_ERROR": "You are not authorized to access report no. {docNumber}",
+  "UPDATE_ACCESS_ERROR": "You are not authorized to update report no. {docNumber}",
+  "DELETE_ACCESS_ERROR": "You are not authorized to delete report no. {docNumber}"
 }
