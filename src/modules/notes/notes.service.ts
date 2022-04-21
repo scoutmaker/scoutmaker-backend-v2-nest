@@ -1,6 +1,9 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import Redis from 'ioredis';
 
+import { REDIS_TTL } from '../../common/constants/redis';
 import {
   calculatePercentageRating,
   calculateSkip,
@@ -26,6 +29,7 @@ export class NotesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async create(createNoteDto: CreateNoteDto, authorId: string) {
@@ -174,8 +178,18 @@ export class NotesService {
     });
   }
 
-  findOne(id: string) {
-    return this.prisma.note.findUnique({ where: { id }, include });
+  async findOne(id: string) {
+    const redisKey = `note:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const note = await this.prisma.note.findUnique({ where: { id }, include });
+
+    await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);
   }
 
   async update(id: string, updateNoteDto: UpdateNoteDto) {

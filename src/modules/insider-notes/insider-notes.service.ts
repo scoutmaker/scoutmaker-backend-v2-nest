@@ -11,6 +11,7 @@ import {
 } from '@prisma/client';
 import Redis from 'ioredis';
 
+import { REDIS_TTL } from '../../common/constants/redis';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -140,7 +141,7 @@ export class InsiderNotesService {
       redisKey,
       JSON.stringify(insiderNote),
       'EX',
-      60 * 60 * 24,
+      REDIS_TTL,
     );
 
     return insiderNote;
