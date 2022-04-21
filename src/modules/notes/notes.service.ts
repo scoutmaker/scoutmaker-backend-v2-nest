@@ -190,6 +190,8 @@ export class NotesService {
     const note = await this.prisma.note.findUnique({ where: { id }, include });
 
     await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);
+
+    return note;
   }
 
   async update(id: string, updateNoteDto: UpdateNoteDto) {

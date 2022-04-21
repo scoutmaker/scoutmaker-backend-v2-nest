@@ -75,6 +75,12 @@ export class UserNoteAclService {
     });
   }
 
+  findOneByUserAndNoteId(userId: string, noteId: string) {
+    return this.prisma.userNoteAccessControlEntry.findUnique({
+      where: { userId_noteId: { userId, noteId } },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateUserNoteAceDto) {
     return this.prisma.userNoteAccessControlEntry.update({
       where: { id },

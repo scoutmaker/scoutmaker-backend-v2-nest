@@ -27,6 +27,9 @@ import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
 import { NoteBasicDataDto, NoteDto } from './dto/note.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { NotesService } from './notes.service';
 
 @Controller('notes')
@@ -89,6 +92,7 @@ export class NotesController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(NoteDto, { type: 'read' })
   @Serialize(NoteDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -101,6 +105,7 @@ export class NotesController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(NoteDto, { type: 'update' })
   @Serialize(NoteDto)
   async update(
@@ -117,6 +122,7 @@ export class NotesController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(NoteDto, { type: 'delete' })
   @Serialize(NoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
