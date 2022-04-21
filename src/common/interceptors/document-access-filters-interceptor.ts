@@ -8,12 +8,17 @@ import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
-import { FormattedSubscription } from '../../../types/formatted-subscription';
-import { OrganizationSubscriptionsService } from '../../organization-subscriptions/organization-subscriptions.service';
-import { UserSubscriptionsService } from '../../user-subscriptions/user-subscriptions.service';
+import { OrganizationSubscriptionsService } from '../../modules/organization-subscriptions/organization-subscriptions.service';
+import { UserSubscriptionsService } from '../../modules/user-subscriptions/user-subscriptions.service';
+import { FormattedSubscription } from '../../types/formatted-subscription';
+
+type Filter =
+  | Prisma.NoteWhereInput
+  | Prisma.InsiderNoteWhereInput
+  | Prisma.ReportWhereInput;
 
 @Injectable()
-export class AccessFiltersInterceptor implements NestInterceptor {
+export class DocumentAccessFiltersInterceptor implements NestInterceptor {
   constructor(
     private readonly userSubscriptionsService: UserSubscriptionsService,
     private readonly organizationSubscriptionsService: OrganizationSubscriptionsService,
@@ -22,7 +27,7 @@ export class AccessFiltersInterceptor implements NestInterceptor {
   private transformSubscriptions(
     individualSubscriptions: FormattedSubscription[],
     organizationSubscriptions?: FormattedSubscription[],
-  ): Prisma.InsiderNoteWhereInput {
+  ): Filter {
     const subscriptions = [
       ...individualSubscriptions,
       ...(organizationSubscriptions || []),
@@ -80,12 +85,12 @@ export class AccessFiltersInterceptor implements NestInterceptor {
       organizationSubscriptions,
     );
 
-    const playmakerScoutExtraAccess: Prisma.InsiderNoteWhereInput =
+    const playmakerScoutExtraAccess: Filter =
       user.role === 'PLAYMAKER_SCOUT'
         ? { author: { role: 'PLAYMAKER_SCOUT' } }
         : {};
 
-    const organizationAccess: Prisma.InsiderNoteWhereInput = user.organizationId
+    const organizationAccess: Filter = user.organizationId
       ? {
           organizationAccessControlList: {
             some: { organizationId: user.organizationId },
@@ -93,7 +98,7 @@ export class AccessFiltersInterceptor implements NestInterceptor {
         }
       : {};
 
-    const accessFilters: Prisma.InsiderNoteWhereInput = {
+    const accessFilters: Filter = {
       OR: [
         transformedSubscriptions,
         {

@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
@@ -15,6 +16,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
@@ -54,6 +56,7 @@ export class NotesController {
   }
 
   @Get()
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiPaginatedResponse(NoteDto)
   @ApiQuery({ type: NotesPaginationOptionsDto })
   @Serialize(NoteDto, 'docs')
@@ -74,6 +77,7 @@ export class NotesController {
   }
 
   @Get('list')
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiResponse(NoteBasicDataDto, { type: 'read' })
   @Serialize(NoteBasicDataDto)
   async getList(@I18nLang() lang: string, @Query() query: GetNotesListDto) {

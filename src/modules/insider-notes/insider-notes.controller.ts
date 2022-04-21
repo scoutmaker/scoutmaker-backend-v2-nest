@@ -18,6 +18,7 @@ import { AccessFilters } from '../../common/access-filters/access-filters.decora
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
@@ -35,7 +36,6 @@ import { DeleteGuard } from './guards/delete.guard';
 import { ReadGuard } from './guards/read.guard';
 import { UpdateGuard } from './guards/update.guard';
 import { InsiderNotesService } from './insider-notes.service';
-import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 
 @Controller('insider-notes')
 @ApiTags('insider notes')
@@ -67,7 +67,7 @@ export class InsiderNotesController {
   }
 
   @Get()
-  @UseInterceptors(AccessFiltersInterceptor)
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiPaginatedResponse(InsiderNoteDto)
   @ApiQuery({ type: InsiderNotesPaginationOptionsDto })
   @Serialize(InsiderNoteDto, 'docs')
@@ -93,7 +93,7 @@ export class InsiderNotesController {
   }
 
   @Get('list')
-  @UseInterceptors(AccessFiltersInterceptor)
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiResponse(InsiderNoteBasicDataDto, { type: 'create' })
   @Serialize(InsiderNoteBasicDataDto)
   async getList(
