@@ -87,6 +87,15 @@ export class UserInsiderNoteAclService {
     });
   }
 
+  findOneByUserAndPlayerId(userId: string, playerId: string) {
+    return this.prisma.userInsiderNoteAccessControlEntry.findFirst({
+      where: {
+        user: { id: userId },
+        insiderNote: { player: { id: playerId } },
+      },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateUserInsiderNoteAceDto) {
     return this.prisma.userInsiderNoteAccessControlEntry.update({
       where: { id },

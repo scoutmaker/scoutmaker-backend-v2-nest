@@ -88,6 +88,15 @@ export class OrganizationReportAclService {
     });
   }
 
+  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+    return this.prisma.organizationReportAccessControlEntry.findFirst({
+      where: {
+        organization: { id: organizationId },
+        report: { player: { id: playerId } },
+      },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateOrganizationReportAceDto) {
     return this.prisma.organizationReportAccessControlEntry.update({
       where: { id },

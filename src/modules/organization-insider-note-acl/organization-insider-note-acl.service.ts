@@ -92,6 +92,15 @@ export class OrganizationInsiderNoteAclService {
     });
   }
 
+  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+    return this.prisma.organizationInsiderNoteAccessControlEntry.findFirst({
+      where: {
+        organization: { id: organizationId },
+        insiderNote: { player: { id: playerId } },
+      },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateOrganizationInsiderNoteAceDto) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.update({
       where: { id },

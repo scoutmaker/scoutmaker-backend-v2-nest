@@ -28,6 +28,9 @@ import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayerBasicDataDto, PlayerDto } from './dto/player.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 import { PlayersService } from './players.service';
 
@@ -96,6 +99,7 @@ export class PlayersController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(PlayerDto, { type: 'read' })
   @Serialize(PlayerDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -108,6 +112,7 @@ export class PlayersController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(PlayerDto, { type: 'update' })
   @Serialize(PlayerDto)
   async update(
@@ -124,6 +129,7 @@ export class PlayersController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(PlayerDto, { type: 'delete' })
   @Serialize(PlayerDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

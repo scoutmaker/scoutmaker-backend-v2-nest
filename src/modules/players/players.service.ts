@@ -31,6 +31,24 @@ const listInclude: Prisma.PlayerInclude = {
   teams: { where: { endDate: null }, include: { team: true } },
 };
 
+const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
+  country: true,
+  primaryPosition: true,
+  secondaryPositions: { include: { position: true } },
+  author: true,
+  teams: {
+    include: {
+      team: {
+        include: {
+          competitions: {
+            include: { competition: true, group: true, season: true },
+          },
+        },
+      },
+    },
+  },
+});
+
 @Injectable()
 export class PlayersService {
   constructor(
@@ -155,13 +173,13 @@ export class PlayersService {
 
     const cached = await this.redis.get(redisKey);
 
-    if (cached) {
-      return JSON.parse(cached);
-    }
+    // if (cached) {
+    //   return JSON.parse(cached);
+    // }
 
     const player = await this.prisma.player.findUnique({
       where: { id },
-      include,
+      include: singleInclude,
     });
 
     await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);

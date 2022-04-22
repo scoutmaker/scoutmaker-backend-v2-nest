@@ -4,5 +4,8 @@
   "GET_LIST_MESSAGE": "Successfully fetched all players list",
   "GET_ONE_MESSAGE": "Successfully fetched player data - {name}",
   "UPDATE_MESSAGE": "Successfully updated player data - {name}",
-  "DELETE_MESSAGE": "Successfully deleted player data - {name}"
+  "DELETE_MESSAGE": "Successfully deleted player data - {name}",
+  "GET_ONE_ACCESS_ERROR": "You are not authorized to access player data - {name}",
+  "UPDATE_ACCESS_ERROR": "You are not authorized to update player data - {name}",
+  "DELETE_ACCESS_ERROR": "You are not authorized to delete player data - {name}"
 }
