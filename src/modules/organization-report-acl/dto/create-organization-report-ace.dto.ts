@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional } from 'class-validator';
 
-import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateOrganizationReportAceDto {

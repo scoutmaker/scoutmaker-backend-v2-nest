@@ -1,12 +1,11 @@
-import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { TPaginationOptions } from './pagination';
-
+import { CurrentUserDto } from '../modules/users/dto/current-user.dto';
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: CurrentUserDto;
-      paginationOptions?: TPaginationOptions;
+      paginationOptions?: any;
+      accessFilters?: any;
     }
   }
 }

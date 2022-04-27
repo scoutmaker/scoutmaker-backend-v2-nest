@@ -9,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../decorators/is-cuid.decorator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { FootEnum } from '../types';
 
 export class FindAllPlayersDto {

@@ -1,5 +1,6 @@
 import { IsString, Matches, MinLength } from 'class-validator';
-import { MatchesProperty } from '../../../decorators/matches-property.decorator';
+
+import { MatchesProperty } from '../../../common/decorators/matches-property.decorator';
 import { PASSWORD_REGEXP } from '../../../utils/constants';
 
 export class UpdatePasswordDto {

@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -13,9 +15,9 @@ import { add } from 'date-fns';
 import { CookieOptions, Response } from 'express';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
+import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
@@ -56,6 +58,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiResponse(UserDto, { type: 'read' })
   @Serialize(UserDto, 'user')
   async login(

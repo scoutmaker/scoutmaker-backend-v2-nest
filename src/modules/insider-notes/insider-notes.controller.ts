@@ -8,15 +8,19 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
-import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
-import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
+import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
@@ -28,6 +32,9 @@ import {
 } from './dto/insider-note.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { InsiderNotesService } from './insider-notes.service';
 
 @Controller('insider-notes')
@@ -60,29 +67,40 @@ export class InsiderNotesController {
   }
 
   @Get()
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiPaginatedResponse(InsiderNoteDto)
   @ApiQuery({ type: InsiderNotesPaginationOptionsDto })
   @Serialize(InsiderNoteDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: InsiderNotesPaginationOptionsDto,
+    @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
     @Query() query: FindAllInsiderNotesDto,
   ) {
     const data = await this.insiderNotesService.findAll(
       paginationOptions,
       query,
+      accessFilters,
     );
     const message = await this.i18n.translate('insider-notes.GET_ALL_MESSAGE', {
       lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      },
     });
     return formatSuccessResponse(message, data);
   }
 
   @Get('list')
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiResponse(InsiderNoteBasicDataDto, { type: 'create' })
   @Serialize(InsiderNoteBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const insiderNotes = await this.insiderNotesService.getList();
+  async getList(
+    @I18nLang() lang: string,
+    @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
+  ) {
+    const insiderNotes = await this.insiderNotesService.getList(accessFilters);
     const message = await this.i18n.translate(
       'insider-notes.GET_LIST_MESSAGE',
       { lang },
@@ -91,6 +109,7 @@ export class InsiderNotesController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(InsiderNoteDto, { type: 'create' })
   @Serialize(InsiderNoteDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -103,7 +122,8 @@ export class InsiderNotesController {
   }
 
   @Patch(':id')
-  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @UseGuards(UpdateGuard)
+  @ApiResponse(InsiderNoteDto, { type: 'update' })
   @Serialize(InsiderNoteDto)
   async update(
     @I18nLang() lang: string,
@@ -122,7 +142,8 @@ export class InsiderNotesController {
   }
 
   @Delete(':id')
-  @ApiResponse(InsiderNoteDto, { type: 'create' })
+  @UseGuards(DeleteGuard)
+  @ApiResponse(InsiderNoteDto, { type: 'delete' })
   @Serialize(InsiderNoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const insiderNote = await this.insiderNotesService.remove(id);

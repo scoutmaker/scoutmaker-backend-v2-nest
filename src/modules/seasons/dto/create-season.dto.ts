@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsDate, IsNotEmpty } from 'class-validator';
 
-import { IsRequiredStringWithMaxLength } from '../../../decorators/is-required-string-with-max-length.decorator';
+import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateSeasonDto {
   @IsRequiredStringWithMaxLength(20)

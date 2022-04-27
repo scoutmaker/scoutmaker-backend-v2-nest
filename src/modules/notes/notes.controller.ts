@@ -8,15 +8,19 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
-import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
-import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
+import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
@@ -25,6 +29,9 @@ import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
 import { NoteBasicDataDto, NoteDto } from './dto/note.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { NotesService } from './notes.service';
 
 @Controller('notes')
@@ -54,15 +61,21 @@ export class NotesController {
   }
 
   @Get()
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiPaginatedResponse(NoteDto)
   @ApiQuery({ type: NotesPaginationOptionsDto })
   @Serialize(NoteDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: NotesPaginationOptionsDto,
+    @AccessFilters() accessFilters: Prisma.NoteWhereInput,
     @Query() query: FindAllNotesDto,
   ) {
-    const data = await this.notesService.findAll(paginationOptions, query);
+    const data = await this.notesService.findAll(
+      paginationOptions,
+      query,
+      accessFilters,
+    );
     const message = await this.i18n.translate('notes.GET_ALL_MESSAGE', {
       lang,
       args: {
@@ -74,10 +87,15 @@ export class NotesController {
   }
 
   @Get('list')
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiResponse(NoteBasicDataDto, { type: 'read' })
   @Serialize(NoteBasicDataDto)
-  async getList(@I18nLang() lang: string, @Query() query: GetNotesListDto) {
-    const notes = await this.notesService.getList(query);
+  async getList(
+    @I18nLang() lang: string,
+    @Query() query: GetNotesListDto,
+    @AccessFilters() accessFilters: Prisma.NoteWhereInput,
+  ) {
+    const notes = await this.notesService.getList(query, accessFilters);
     const message = await this.i18n.translate('notes.GET_LIST_MESSAGE', {
       lang,
     });
@@ -85,6 +103,7 @@ export class NotesController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(NoteDto, { type: 'read' })
   @Serialize(NoteDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -97,6 +116,7 @@ export class NotesController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(NoteDto, { type: 'update' })
   @Serialize(NoteDto)
   async update(
@@ -113,6 +133,7 @@ export class NotesController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(NoteDto, { type: 'delete' })
   @Serialize(NoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

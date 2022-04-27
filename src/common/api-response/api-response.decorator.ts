@@ -1,10 +1,11 @@
+import { applyDecorators, Type } from '@nestjs/common';
 import {
+  ApiCreatedResponse,
   ApiExtraModels,
   ApiOkResponse,
-  ApiCreatedResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { applyDecorators, Type } from '@nestjs/common';
+
 import { ApiResponseDto } from './api-response.dto';
 
 type Options = {

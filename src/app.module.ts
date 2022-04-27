@@ -1,5 +1,6 @@
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -77,6 +78,15 @@ import { UsersModule } from './modules/users/users.module';
         { use: AcceptLanguageResolver, options: { matchType: 'strict-loose' } },
         new CookieResolver(['lang', 'locale', 'l']),
       ],
+    }),
+    RedisModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        config: {
+          url: configService.get('REDIS_URL'),
+          tls: { rejectUnauthorized: false },
+        },
+      }),
+      inject: [ConfigService],
     }),
     PrismaModule,
     CountriesModule,

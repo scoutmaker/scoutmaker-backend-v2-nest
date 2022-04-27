@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
-import { PrepareQueryMiddleware } from '../../middleware/prepare-query.middleware';
+import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { ReportSkillAssessmentsController } from './report-skill-assessments.controller';
 import { ReportSkillAssessmentsService } from './report-skill-assessments.service';
 

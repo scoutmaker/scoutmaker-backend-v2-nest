@@ -3,5 +3,8 @@
   "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich raportów, strona {currentPage} z {totalPages}",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano raport nr {docNumber}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano raport nr {docNumber}",
-  "DELETE_MESSAGE": "Pomyślnie usunięto raport nr {docNumber}"
+  "DELETE_MESSAGE": "Pomyślnie usunięto raport nr {docNumber}",
+  "GET_ONE_ACCESS_ERROR": "Nie masz dostępu do odczytu raportu nr {docNumber}",
+  "UPDATE_ACCESS_ERROR": "Nie masz dostępu pozwalającego na edycję raportu nr {docNumber}",
+  "DELETE_ACCESS_ERROR": "Nie masz dostępu pozwalającego na usunięcie raportu nr {docNumber}"
 }

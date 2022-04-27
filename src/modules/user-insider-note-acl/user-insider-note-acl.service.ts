@@ -81,6 +81,21 @@ export class UserInsiderNoteAclService {
     });
   }
 
+  findOneByUserAndInsiderNoteId(userId: string, insiderNoteId: string) {
+    return this.prisma.userInsiderNoteAccessControlEntry.findUnique({
+      where: { userId_insiderNoteId: { insiderNoteId, userId } },
+    });
+  }
+
+  findOneByUserAndPlayerId(userId: string, playerId: string) {
+    return this.prisma.userInsiderNoteAccessControlEntry.findFirst({
+      where: {
+        user: { id: userId },
+        insiderNote: { player: { id: playerId } },
+      },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateUserInsiderNoteAceDto) {
     return this.prisma.userInsiderNoteAccessControlEntry.update({
       where: { id },

@@ -1,6 +1,17 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import {
+  Competition,
+  CompetitionGroup,
+  InsiderNote,
+  InsiderNoteMeta,
+  Player,
+  Prisma,
+  User,
+} from '@prisma/client';
+import Redis from 'ioredis';
 
+import { REDIS_TTL } from '../../utils/constants';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,9 +20,24 @@ import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
 
-const include: Prisma.InsiderNoteInclude = {
+const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: true,
   author: true,
+});
+
+const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
+  player: true,
+  author: true,
+  meta: { include: { competition: true, competitionGroup: true } },
+});
+
+type SingleInsiderNoteWithInclude = InsiderNote & {
+  player: Player;
+  author: User;
+  meta?: InsiderNoteMeta & {
+    competition: Competition;
+    competitionGroup: CompetitionGroup;
+  };
 };
 
 @Injectable()
@@ -19,6 +45,7 @@ export class InsiderNotesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
@@ -57,6 +84,7 @@ export class InsiderNotesService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: InsiderNotesPaginationOptionsDto,
     { playerId }: FindAllInsiderNotesDto,
+    accessFilters?: Prisma.InsiderNoteWhereInput,
   ) {
     let sort: Prisma.InsiderNoteOrderByWithRelationInput;
 
@@ -70,7 +98,7 @@ export class InsiderNotesService {
     }
 
     const where: Prisma.InsiderNoteWhereInput = {
-      playerId,
+      AND: [accessFilters, { playerId }],
     };
 
     const insiderNotes = await this.prisma.insiderNote.findMany({
@@ -91,12 +119,32 @@ export class InsiderNotesService {
     });
   }
 
-  getList() {
-    return this.prisma.insiderNote.findMany({ include });
+  getList(accessFilters?: Prisma.InsiderNoteWhereInput) {
+    return this.prisma.insiderNote.findMany({ where: accessFilters, include });
   }
 
-  findOne(id: string) {
-    return this.prisma.insiderNote.findUnique({ where: { id }, include });
+  async findOne(id: string): Promise<SingleInsiderNoteWithInclude> {
+    const redisKey = `insider-note:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const insiderNote = await this.prisma.insiderNote.findUnique({
+      where: { id },
+      include: singleInclude,
+    });
+
+    await this.redis.set(
+      redisKey,
+      JSON.stringify(insiderNote),
+      'EX',
+      REDIS_TTL,
+    );
+
+    return insiderNote;
   }
 
   async update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {
@@ -109,14 +157,15 @@ export class InsiderNotesService {
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {
-      const player =
-        this.playersService.findOneWithCurrentTeamDetails(playerId);
+      const player = await this.playersService.findOneWithCurrentTeamDetails(
+        playerId,
+      );
 
       metaTeamId = teamId || player.teams[0].teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0].competitionId;
+        competitionId || player.teams[0].team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0].team.competitions[0]?.groupId;
 
       await this.prisma.insiderNoteMeta.update({
         where: { insiderNoteId: id },
@@ -148,7 +197,16 @@ export class InsiderNotesService {
   }
 
   async remove(id: string) {
-    await this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } });
+    await Promise.all([
+      this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } }),
+      this.prisma.userInsiderNoteAccessControlEntry.deleteMany({
+        where: { insiderNoteId: id },
+      }),
+      this.prisma.organizationInsiderNoteAccessControlEntry.deleteMany({
+        where: { insiderNoteId: id },
+      }),
+    ]);
+
     return this.prisma.insiderNote.delete({
       where: { id },
       include,

@@ -4,5 +4,8 @@
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich notatek",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano notatkę nr {docNumber}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano notatkę nr {docNumber}",
-  "DELETE_MESSAGE": "Pomyślnie usunięto notatkę nr {docNumber}"
+  "DELETE_MESSAGE": "Pomyślnie usunięto notatkę nr {docNumber}",
+  "GET_ONE_ACCESS_ERROR": "Nie masz dostępu do odczytu notatki nr {docNumber}",
+  "UPDATE_ACCESS_ERROR": "Nie masz dostępu pozwalającego na edycję notatki nr {docNumber}",
+  "DELETE_ACCESS_ERROR": "Nie masz dostępu pozwalającego na usunięcie notatki nr {docNumber}"
 }

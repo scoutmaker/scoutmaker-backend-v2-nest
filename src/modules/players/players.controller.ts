@@ -8,15 +8,18 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
-import { ApiPaginatedResponse } from '../../api-response/api-paginated-response.decorator';
-import { ApiResponse } from '../../api-response/api-response.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { Serialize } from '../../interceptors/serialize.interceptor';
-import { PaginationOptions } from '../../pagination/pagination-options.decorator';
+import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
+import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
@@ -25,6 +28,10 @@ import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayerBasicDataDto, PlayerDto } from './dto/player.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
+import { UpdateGuard } from './guards/update.guard';
+import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 import { PlayersService } from './players.service';
 
 @Controller('players')
@@ -54,15 +61,21 @@ export class PlayersController {
   }
 
   @Get()
+  @UseInterceptors(AccessFiltersInterceptor)
   @ApiPaginatedResponse(PlayerDto)
   @ApiQuery({ type: PlayersPaginationOptionsDto })
   @Serialize(PlayerDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: PlayersPaginationOptionsDto,
+    @AccessFilters() accessFilters: Prisma.PlayerWhereInput,
     @Query() query: FindAllPlayersDto,
   ) {
-    const data = await this.playersService.findAll(paginationOptions, query);
+    const data = await this.playersService.findAll(
+      paginationOptions,
+      query,
+      accessFilters,
+    );
     const message = await this.i18n.translate('players.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
@@ -71,10 +84,14 @@ export class PlayersController {
   }
 
   @Get('list')
+  @UseInterceptors(AccessFiltersInterceptor)
   @ApiResponse(PlayerBasicDataDto, { type: 'read' })
   @Serialize(PlayerBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const players = await this.playersService.getList();
+  async getList(
+    @I18nLang() lang: string,
+    @AccessFilters() accessFilters: Prisma.PlayerWhereInput,
+  ) {
+    const players = await this.playersService.getList(accessFilters);
     const message = await this.i18n.translate('players.GET_LIST_MESSAGE', {
       lang,
     });
@@ -82,6 +99,7 @@ export class PlayersController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(PlayerDto, { type: 'read' })
   @Serialize(PlayerDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -94,6 +112,7 @@ export class PlayersController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(PlayerDto, { type: 'update' })
   @Serialize(PlayerDto)
   async update(
@@ -110,6 +129,7 @@ export class PlayersController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(PlayerDto, { type: 'delete' })
   @Serialize(PlayerDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

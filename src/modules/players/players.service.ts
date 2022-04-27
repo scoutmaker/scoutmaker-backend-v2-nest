@@ -1,6 +1,9 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import Redis from 'ioredis';
 
+import { REDIS_TTL } from '../../utils/constants';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
@@ -28,9 +31,30 @@ const listInclude: Prisma.PlayerInclude = {
   teams: { where: { endDate: null }, include: { team: true } },
 };
 
+const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
+  country: true,
+  primaryPosition: true,
+  secondaryPositions: { include: { position: true } },
+  author: true,
+  teams: {
+    include: {
+      team: {
+        include: {
+          competitions: {
+            include: { competition: true, group: true, season: true },
+          },
+        },
+      },
+    },
+  },
+});
+
 @Injectable()
 export class PlayersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
   create(createPlayerDto: CreatePlayerDto, authorId: string) {
     const {
@@ -66,6 +90,7 @@ export class PlayersService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
     query: FindAllPlayersDto,
+    accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
 
@@ -89,24 +114,31 @@ export class PlayersService {
     }
 
     const where: Prisma.PlayerWhereInput = {
-      yearOfBirth: { gte: query.bornAfter, lte: query.bornBefore },
-      footed: query.footed,
-      countryId: query.countryId,
-      teams: { some: { teamId: { in: query.teamIds }, endDate: null } },
       AND: [
+        accessFilters,
         {
-          OR: [
-            { firstName: { contains: query.name, mode: 'insensitive' } },
-            { lastName: { contains: query.name, mode: 'insensitive' } },
-          ],
-        },
-        {
-          OR: [
-            { primaryPosition: { id: { in: query.positionIds } } },
+          yearOfBirth: { gte: query.bornAfter, lte: query.bornBefore },
+          footed: query.footed,
+          countryId: query.countryId,
+          teams: query.teamIds
+            ? { some: { teamId: { in: query.teamIds }, endDate: null } }
+            : undefined,
+          AND: [
             {
-              secondaryPositions: {
-                some: { playerPositionId: { in: query.positionIds } },
-              },
+              OR: [
+                { firstName: { contains: query.name, mode: 'insensitive' } },
+                { lastName: { contains: query.name, mode: 'insensitive' } },
+              ],
+            },
+            {
+              OR: [
+                { primaryPosition: { id: { in: query.positionIds } } },
+                {
+                  secondaryPositions: {
+                    some: { playerPositionId: { in: query.positionIds } },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -131,12 +163,30 @@ export class PlayersService {
     });
   }
 
-  getList() {
-    return this.prisma.player.findMany({ include: listInclude });
+  getList(accessFilters?: Prisma.PlayerWhereInput) {
+    return this.prisma.player.findMany({
+      where: { ...accessFilters },
+      include: listInclude,
+    });
   }
 
-  findOne(id: string) {
-    return this.prisma.player.findUnique({ where: { id }, include });
+  async findOne(id: string) {
+    const redisKey = `player:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const player = await this.prisma.player.findUnique({
+      where: { id },
+      include: singleInclude,
+    });
+
+    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+
+    return player;
   }
 
   findOneWithCurrentTeamDetails(id: string) {
@@ -190,10 +240,18 @@ export class PlayersService {
   }
 
   async remove(id: string) {
-    await this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } });
-    await this.prisma.secondaryPositionsOnPlayers.deleteMany({
-      where: { playerId: id },
-    });
+    await Promise.all([
+      this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } }),
+      this.prisma.secondaryPositionsOnPlayers.deleteMany({
+        where: { playerId: id },
+      }),
+      this.prisma.userPlayerAccessControlEntry.deleteMany({
+        where: { playerId: id },
+      }),
+      this.prisma.organizationPlayerAccessControlEntry.deleteMany({
+        where: { playerId: id },
+      }),
+    ]);
     return this.prisma.player.delete({ where: { id } });
   }
 }

@@ -28,9 +28,9 @@ export class AuthService {
     private readonly i18n: I18nService,
   ) {}
 
-  private getAndVerifyJwt(id: string, role: UserRole) {
+  getAndVerifyJwt(id: string, role: UserRole, organizationId: string) {
     const token = jwt.sign(
-      { id, role },
+      { id, role, organizationId },
       this.configService.get<string>('JWT_SECRET'),
       {
         expiresIn: this.configService.get<string>('JWT_EXPIRE'),
@@ -100,8 +100,8 @@ export class AuthService {
     }
 
     // Generate token
-    const { id, role } = user;
-    const { token, expiresIn } = this.getAndVerifyJwt(id, role);
+    const { id, role, organizationId } = user;
+    const { token, expiresIn } = this.getAndVerifyJwt(id, role, organizationId);
 
     return {
       user,
@@ -113,8 +113,8 @@ export class AuthService {
   async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
     const user = await this.usersService.updatePassword(id, updatePasswordDto);
 
-    const { role } = user;
-    const { token, expiresIn } = this.getAndVerifyJwt(id, role);
+    const { role, organizationId } = user;
+    const { token, expiresIn } = this.getAndVerifyJwt(id, role, organizationId);
 
     return { user, token, expiresIn };
   }

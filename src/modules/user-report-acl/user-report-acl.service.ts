@@ -75,6 +75,21 @@ export class UserReportAclService {
     });
   }
 
+  findOneByUserAndReportId(userId: string, reportId: string) {
+    return this.prisma.userReportAccessControlEntry.findUnique({
+      where: { userId_reportId: { userId, reportId } },
+    });
+  }
+
+  findOneByUserAndPlayerId(userId: string, playerId: string) {
+    return this.prisma.userReportAccessControlEntry.findFirst({
+      where: {
+        user: { id: userId },
+        report: { player: { id: playerId } },
+      },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateUserReportAceDto) {
     return this.prisma.userReportAccessControlEntry.update({
       where: { id },

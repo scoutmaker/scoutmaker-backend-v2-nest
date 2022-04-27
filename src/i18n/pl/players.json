@@ -4,5 +4,8 @@
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich zawodników",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane zawodnika - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane zawodnika - {name}",
-  "DELETE_MESSAGE": "Pomyślnie usunięto dane zawodnika - {name}"
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane zawodnika - {name}",
+  "GET_ONE_ACCESS_ERROR": "Nie masz dostępu do odczytu danych zawodnika - {name}",
+  "UPDATE_ACCESS_ERROR": "Nie masz dostępu pozwalającego na edycję danych zawodnika - {name}",
+  "DELETE_ACCESS_ERROR": "Nie masz dostępu pozwalającego na usunięcie danych zawodnika - {name}"
 }

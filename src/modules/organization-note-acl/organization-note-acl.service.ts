@@ -80,6 +80,23 @@ export class OrganizationNoteAclService {
     });
   }
 
+  findOneByOrganizationAndNoteId(organizationId: string, noteId: string) {
+    return this.prisma.organizationNoteAccessControlEntry.findUnique({
+      where: {
+        organizationId_noteId: { noteId, organizationId },
+      },
+    });
+  }
+
+  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+    return this.prisma.organizationNoteAccessControlEntry.findFirst({
+      where: {
+        organization: { id: organizationId },
+        note: { player: { id: playerId } },
+      },
+    });
+  }
+
   update(id: string, updateAceDto: UpdateOrganizationNoteAceDto) {
     return this.prisma.organizationNoteAccessControlEntry.update({
       where: { id },
