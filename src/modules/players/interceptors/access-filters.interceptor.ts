@@ -35,6 +35,8 @@ export class AccessFiltersInterceptor implements NestInterceptor {
             {
               teams: {
                 some: {
+                  startDate: { lte: endDate },
+                  endDate: { gte: startDate },
                   team: {
                     competitions: {
                       some: {
@@ -52,6 +54,8 @@ export class AccessFiltersInterceptor implements NestInterceptor {
             {
               teams: {
                 some: {
+                  startDate: { lte: endDate },
+                  endDate: { gte: startDate },
                   team: {
                     competitions: {
                       some: {

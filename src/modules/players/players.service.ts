@@ -115,12 +115,14 @@ export class PlayersService {
 
     const where: Prisma.PlayerWhereInput = {
       AND: [
-        { ...accessFilters },
+        accessFilters,
         {
           yearOfBirth: { gte: query.bornAfter, lte: query.bornBefore },
           footed: query.footed,
           countryId: query.countryId,
-          teams: { some: { teamId: { in: query.teamIds }, endDate: null } },
+          teams: query.teamIds
+            ? { some: { teamId: { in: query.teamIds }, endDate: null } }
+            : undefined,
           AND: [
             {
               OR: [
@@ -173,9 +175,9 @@ export class PlayersService {
 
     const cached = await this.redis.get(redisKey);
 
-    // if (cached) {
-    //   return JSON.parse(cached);
-    // }
+    if (cached) {
+      return JSON.parse(cached);
+    }
 
     const player = await this.prisma.player.findUnique({
       where: { id },
@@ -238,10 +240,18 @@ export class PlayersService {
   }
 
   async remove(id: string) {
-    await this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } });
-    await this.prisma.secondaryPositionsOnPlayers.deleteMany({
-      where: { playerId: id },
-    });
+    await Promise.all([
+      this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } }),
+      this.prisma.secondaryPositionsOnPlayers.deleteMany({
+        where: { playerId: id },
+      }),
+      this.prisma.userPlayerAccessControlEntry.deleteMany({
+        where: { playerId: id },
+      }),
+      this.prisma.organizationPlayerAccessControlEntry.deleteMany({
+        where: { playerId: id },
+      }),
+    ]);
     return this.prisma.player.delete({ where: { id } });
   }
 }

@@ -189,35 +189,55 @@ export class ReadGuard implements CanActivate {
 
     const subscriptionAccess = subscriptions.some(
       (subscription) =>
-        player.teams.some((affiliation) =>
-          affiliation.team.competitions.some(
-            (participation) =>
-              subscription.competitions.includes(
-                participation.competition.id,
-              ) &&
-              isBefore(
-                new Date(participation.season.startDate),
-                new Date(subscription.endDate),
-              ) &&
-              isAfter(
-                new Date(participation.season.endDate),
-                new Date(subscription.startDate),
-              ),
-          ),
+        player.teams.some(
+          (affiliation) =>
+            isBefore(
+              new Date(affiliation.startDate),
+              new Date(subscription.endDate),
+            ) &&
+            isAfter(
+              new Date(affiliation.endDate),
+              new Date(subscription.startDate),
+            ) &&
+            affiliation.team.competitions.some(
+              (participation) =>
+                subscription.competitions.includes(
+                  participation.competition.id,
+                ) &&
+                isBefore(
+                  new Date(participation.season.startDate),
+                  new Date(subscription.endDate),
+                ) &&
+                isAfter(
+                  new Date(participation.season.endDate),
+                  new Date(subscription.startDate),
+                ),
+            ),
         ) ||
-        player.teams.some((affiliation) =>
-          affiliation.team.competitions.some(
-            (participation) =>
-              subscription.competitionGroups.includes(participation.group.id) &&
-              isBefore(
-                new Date(participation.season.startDate),
-                new Date(subscription.endDate),
-              ) &&
-              isAfter(
-                new Date(participation.season.endDate),
-                new Date(subscription.startDate),
-              ),
-          ),
+        player.teams.some(
+          (affiliation) =>
+            isBefore(
+              new Date(affiliation.startDate),
+              new Date(subscription.endDate),
+            ) &&
+            isAfter(
+              new Date(affiliation.endDate),
+              new Date(subscription.startDate),
+            ) &&
+            affiliation.team.competitions.some(
+              (participation) =>
+                subscription.competitionGroups.includes(
+                  participation.group?.id,
+                ) &&
+                isBefore(
+                  new Date(participation.season.startDate),
+                  new Date(subscription.endDate),
+                ) &&
+                isAfter(
+                  new Date(participation.season.endDate),
+                  new Date(subscription.startDate),
+                ),
+            ),
         ),
     );
 
