@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Agency, Prisma } from '@prisma/client';
+import slugify from 'slugify';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,12 +14,26 @@ const include: Prisma.AgencyInclude = { country: true };
 export class AgenciesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createAgencyDto: CreateAgencyDto, authorId: string) {
+  async create(createAgencyDto: CreateAgencyDto, authorId: string) {
     const { countryId, ...rest } = createAgencyDto;
+
+    const slug = slugify(rest.name, { lower: true });
+    let i = 0;
+    let agencies: Agency[];
+    let slugToFind = slug;
+
+    do {
+      agencies = await this.findAllBySlug(slugToFind);
+      if (agencies.length !== 0) {
+        i = i + 1;
+        slugToFind = `${slug}-${i}`;
+      }
+    } while (agencies.length !== 0);
 
     return this.prisma.agency.create({
       data: {
         ...rest,
+        slug: slugToFind,
         country: { connect: { id: countryId } },
         author: { connect: { id: authorId } },
       },
@@ -69,6 +84,10 @@ export class AgenciesService {
 
   findOne(id: string) {
     return this.prisma.agency.findUnique({ where: { id }, include });
+  }
+
+  findAllBySlug(slug: string) {
+    return this.prisma.agency.findMany({ where: { slug }, include });
   }
 
   update(id: string, updateAgencyDto: UpdateAgencyDto) {

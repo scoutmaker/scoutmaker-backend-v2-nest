@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import slugify from 'slugify';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
@@ -19,9 +20,13 @@ export class ClubsService {
 
   create(createClubDto: CreateClubDto, authorId: string) {
     const { regionId, countryId, ...rest } = createClubDto;
+
+    const slug = slugify(rest.name, { lower: true });
+
     return this.prisma.club.create({
       data: {
         ...rest,
+        slug,
         country: { connect: { id: countryId } },
         region: { connect: { id: regionId } },
         author: { connect: { id: authorId } },

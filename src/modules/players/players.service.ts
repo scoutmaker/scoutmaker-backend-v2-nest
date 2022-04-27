@@ -2,6 +2,7 @@ import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import Redis from 'ioredis';
+import slugify from 'slugify';
 
 import { REDIS_TTL } from '../../utils/constants';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
@@ -65,9 +66,12 @@ export class PlayersService {
       ...rest
     } = createPlayerDto;
 
+    const slug = slugify(`${rest.lastName} ${rest.firstName}`, { lower: true });
+
     return this.prisma.player.create({
       data: {
         ...rest,
+        slug,
         country: { connect: { id: countryId } },
         primaryPosition: { connect: { id: primaryPositionId } },
         secondaryPositions:
