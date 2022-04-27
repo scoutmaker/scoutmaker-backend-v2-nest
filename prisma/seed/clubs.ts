@@ -20,6 +20,7 @@ export async function generateClubs({
   const lechPromise = prisma.club.create({
     data: {
       name: 'KKS Lech Poznań',
+      slug: 'kks-lech-poznan',
       countryId: polandId,
       regionId: wielkopolskieId,
       authorId: adminId,
@@ -29,6 +30,7 @@ export async function generateClubs({
   const legiaPromise = prisma.club.create({
     data: {
       name: 'CWKS Legia Warszawa',
+      slug: 'cwks-legia-warszawa',
       countryId: polandId,
       regionId: mazowieckieId,
       authorId: adminId,
@@ -38,6 +40,7 @@ export async function generateClubs({
   const lubinPromise = prisma.club.create({
     data: {
       name: 'KGHM Zagłębie Lubin',
+      slug: 'kghm-zagłębie-lubin',
       countryId: polandId,
       regionId: dolnoslaskieId,
       authorId: adminId,
@@ -47,6 +50,7 @@ export async function generateClubs({
   const gornikPromise = prisma.club.create({
     data: {
       name: 'Górnik Zabrze Spółka Akcyjna',
+      slug: 'gornik-zabrze-spolka-akcyjna',
       countryId: polandId,
       regionId: slaskieId,
       authorId: adminId,
