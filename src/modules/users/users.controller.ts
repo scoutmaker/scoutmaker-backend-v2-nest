@@ -26,7 +26,7 @@ export class UsersController {
   @Serialize(UserBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const users = await this.usersService.getList();
-    const message = await this.i18n.translate('users.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('users.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, users);
@@ -37,7 +37,7 @@ export class UsersController {
   @Serialize(UserDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const user = await this.usersService.findOne(id);
-    const message = await this.i18n.translate('users.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('users.GET_ONE_MESSAGE', {
       lang,
       args: { name: `${user.firstName} ${user.lastName}` },
     });
@@ -53,7 +53,7 @@ export class UsersController {
     @Body() { role }: ChangeRoleDto,
   ) {
     const user = await this.usersService.changeRole(id, role);
-    const message = await this.i18n.translate('users.CHANGE_ROLE_MESSAGE', {
+    const message = this.i18n.translate('users.CHANGE_ROLE_MESSAGE', {
       lang,
       args: {
         userName: `${user.firstName} ${user.lastName}`,

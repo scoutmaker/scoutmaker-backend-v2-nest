@@ -5,7 +5,7 @@ import {
   AcceptLanguageResolver,
   CookieResolver,
   HeaderResolver,
-  I18nJsonParser,
+  I18nJsonLoader,
   I18nModule,
   QueryResolver,
 } from 'nestjs-i18n';
@@ -67,8 +67,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
-      parser: I18nJsonParser,
-      parserOptions: {
+      loader: I18nJsonLoader,
+      loaderOptions: {
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },

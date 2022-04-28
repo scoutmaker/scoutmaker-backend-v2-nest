@@ -41,7 +41,7 @@ export class CompetitionAgeCategoriesController {
     const ageCategory = await this.ageCategoriesService.create(
       createCompetitionAgeCategoryDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-age-categories.CREATE_MESSAGE',
       { lang, args: { name: ageCategory.name } },
     );
@@ -52,7 +52,7 @@ export class CompetitionAgeCategoriesController {
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
     const ageCategories = await this.ageCategoriesService.findAll();
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-age-categories.GET_ALL_MESSAGE',
       { lang },
     );
@@ -63,7 +63,7 @@ export class CompetitionAgeCategoriesController {
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const ageCategory = await this.ageCategoriesService.findOne(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-age-categories.GET_ONE_MESSAGE',
       { lang, args: { name: ageCategory.name } },
     );
@@ -81,7 +81,7 @@ export class CompetitionAgeCategoriesController {
       id,
       updateCompetitionAgeCategoryDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-age-categories.UPDATE_MESSAGE',
       { lang, args: { name: ageCategory.name } },
     );
@@ -92,7 +92,7 @@ export class CompetitionAgeCategoriesController {
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const ageCategory = await this.ageCategoriesService.remove(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-age-categories.DELETE_MESSAGE',
       { lang, args: { name: ageCategory.name } },
     );

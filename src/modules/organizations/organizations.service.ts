@@ -28,7 +28,7 @@ export class OrganizationsService {
     const notScoutUsers = members.filter((user) => user.role !== 'SCOUT');
 
     if (notScoutUsers.length !== 0) {
-      const message = await this.i18n.translate(
+      const message = this.i18n.translate(
         'organizations.CREATE_MEMBERS_ROLE_ERROR',
         { lang, args: { userNames: getUserNamesString(notScoutUsers) } },
       );
@@ -41,7 +41,7 @@ export class OrganizationsService {
     );
 
     if (alreadyInOrganizationUsers.length !== 0) {
-      const message = await this.i18n.translate(
+      const message = this.i18n.translate(
         'organizations.CREATE_MEMBER_ALREADY_IN_ORG_ERROR',
         {
           lang,
@@ -85,7 +85,7 @@ export class OrganizationsService {
 
     // 1. Check if member is valid (only regular scouts can be members of an organization)
     if (member.role !== 'SCOUT') {
-      const message = await this.i18n.translate(
+      const message = this.i18n.translate(
         'organizations.ADD_MEMBER_ROLE_ERROR',
         { lang, args: { userName: name, role: member.role } },
       );
@@ -93,7 +93,7 @@ export class OrganizationsService {
     }
     // 2. Check if member is not already in an organization
     if (member.organizationId) {
-      const message = await this.i18n.translate(
+      const message = this.i18n.translate(
         'organizations.ADD_MEMBER_ALREADY_IN_ORG_ERROR',
         { lang, args: { userName: name } },
       );

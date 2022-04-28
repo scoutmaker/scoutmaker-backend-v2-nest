@@ -36,7 +36,7 @@ export class ReportSkillAssessmentsController {
       paginationOptions,
       query,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessments.GET_ALL_MESSAGE',
       { lang, args: { currentPage: data.page, totalPages: data.totalPages } },
     );

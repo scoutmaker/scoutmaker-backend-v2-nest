@@ -51,7 +51,7 @@ export class AuthController {
     @Body() registerUserDto: RegisterUserDto,
   ) {
     const user = await this.authService.register(registerUserDto);
-    const message = await this.i18n.translate('auth.REGISTER_MESSAGE', {
+    const message = this.i18n.translate('auth.REGISTER_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, user);
@@ -70,7 +70,7 @@ export class AuthController {
       loginDto,
       lang,
     );
-    const message = await this.i18n.translate('auth.LOGIN_MESSAGE', { lang });
+    const message = this.i18n.translate('auth.LOGIN_MESSAGE', { lang });
     response.cookie('token', token, cookieOptions);
     return formatSuccessResponse(message, { user, expiresIn });
   }
@@ -83,7 +83,7 @@ export class AuthController {
     @Param('confirmationCode') confirmationCode: string,
   ) {
     const user = await this.usersService.verify(confirmationCode);
-    const message = await this.i18n.translate('auth.VERIFY_MESSAGE', { lang });
+    const message = this.i18n.translate('auth.VERIFY_MESSAGE', { lang });
     return formatSuccessResponse(message, user);
   }
 
@@ -97,7 +97,7 @@ export class AuthController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const accountData = await this.usersService.findOne(user.id);
-    const message = await this.i18n.translate('auth.GET_ACCOUNT_MESSAGE', {
+    const message = this.i18n.translate('auth.GET_ACCOUNT_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, accountData);
@@ -114,7 +114,7 @@ export class AuthController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     const accountData = await this.usersService.update(user.id, updateUserDto);
-    const message = await this.i18n.translate('auth.UPDATE_ACCOUNT_MESSAGE', {
+    const message = this.i18n.translate('auth.UPDATE_ACCOUNT_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, accountData);
@@ -136,7 +136,7 @@ export class AuthController {
       token,
       expiresIn,
     } = await this.authService.updatePassword(user.id, updatePasswordDto);
-    const message = await this.i18n.translate('auth.UPDATE_PASSWORD_MESSAGE', {
+    const message = this.i18n.translate('auth.UPDATE_PASSWORD_MESSAGE', {
       lang,
     });
     response.cookie('token', token, cookieOptions);

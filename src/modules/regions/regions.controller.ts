@@ -38,7 +38,7 @@ export class RegionsController {
     @Body() createRegionDto: CreateRegionDto,
   ) {
     const region = await this.regionsService.create(createRegionDto);
-    const message = await this.i18n.translate('regions.CREATE_MESSAGE', {
+    const message = this.i18n.translate('regions.CREATE_MESSAGE', {
       lang,
       args: { name: region.name },
     });
@@ -49,7 +49,7 @@ export class RegionsController {
   @ApiResponse(RegionDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
     const regions = await this.regionsService.findAll();
-    const message = await this.i18n.translate('regions.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('regions.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, regions);
@@ -59,7 +59,7 @@ export class RegionsController {
   @ApiResponse(RegionDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const region = await this.regionsService.findOne(id);
-    const message = await this.i18n.translate('regions.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('regions.GET_ONE_MESSAGE', {
       lang,
       args: { name: region.name },
     });
@@ -74,7 +74,7 @@ export class RegionsController {
     @Body() updateRegionDto: UpdateRegionDto,
   ) {
     const region = await this.regionsService.update(id, updateRegionDto);
-    const message = await this.i18n.translate('regions.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('regions.UPDATE_MESSAGE', {
       lang,
       args: { name: region.name },
     });
@@ -85,7 +85,7 @@ export class RegionsController {
   @ApiResponse(RegionDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const region = await this.regionsService.remove(id);
-    const message = await this.i18n.translate('regions.DELETE_MESSAGE', {
+    const message = this.i18n.translate('regions.DELETE_MESSAGE', {
       lang,
       args: { name: region.name },
     });

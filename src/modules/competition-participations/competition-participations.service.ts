@@ -62,7 +62,7 @@ export class CompetitionParticipationsService {
     lang: string,
   ) {
     if (fromSeasonId === toSeasonId) {
-      const message = await this.i18n.translate(
+      const message = this.i18n.translate(
         'competition-participations.COPY_SAME_SEASON_ERROR',
         { lang },
       );

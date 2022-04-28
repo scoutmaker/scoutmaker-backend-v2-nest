@@ -40,16 +40,13 @@ export class TeamAffiliationsController {
     const affiliation = await this.teamAffiliationsService.create(
       createTeamAffiliationDto,
     );
-    const message = await this.i18n.translate(
-      'team-affiliations.CREATE_MESSAGE',
-      {
-        lang,
-        args: {
-          playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
-          teamName: `${affiliation.team.name}`,
-        },
+    const message = this.i18n.translate('team-affiliations.CREATE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
+        teamName: `${affiliation.team.name}`,
       },
-    );
+    });
     return formatSuccessResponse(message, affiliation);
   }
 
@@ -57,10 +54,9 @@ export class TeamAffiliationsController {
   @ApiResponse(TeamAffiliationDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const affiliations = await this.teamAffiliationsService.findAll();
-    const message = await this.i18n.translate(
-      'team-affiliations.GET_LIST_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('team-affiliations.GET_LIST_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, affiliations);
   }
 
@@ -68,16 +64,13 @@ export class TeamAffiliationsController {
   @ApiResponse(TeamAffiliationDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const affiliation = await this.teamAffiliationsService.findOne(id);
-    const message = await this.i18n.translate(
-      'team-affiliations.GET_ONE_MESSAGE',
-      {
-        lang,
-        args: {
-          playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
-          teamName: `${affiliation.team.name}`,
-        },
+    const message = this.i18n.translate('team-affiliations.GET_ONE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
+        teamName: `${affiliation.team.name}`,
       },
-    );
+    });
     return formatSuccessResponse(message, affiliation);
   }
 
@@ -92,16 +85,13 @@ export class TeamAffiliationsController {
       id,
       updateTeamAffiliationDto,
     );
-    const message = await this.i18n.translate(
-      'team-affiliations.UPDATE_MESSAGE',
-      {
-        lang,
-        args: {
-          playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
-          teamName: `${affiliation.team.name}`,
-        },
+    const message = this.i18n.translate('team-affiliations.UPDATE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
+        teamName: `${affiliation.team.name}`,
       },
-    );
+    });
     return formatSuccessResponse(message, affiliation);
   }
 
@@ -109,16 +99,13 @@ export class TeamAffiliationsController {
   @ApiResponse(TeamAffiliationDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const affiliation = await this.teamAffiliationsService.remove(id);
-    const message = await this.i18n.translate(
-      'team-affiliations.DELETE_MESSAGE',
-      {
-        lang,
-        args: {
-          playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
-          teamName: `${affiliation.team.name}`,
-        },
+    const message = this.i18n.translate('team-affiliations.DELETE_MESSAGE', {
+      lang,
+      args: {
+        playerName: `${affiliation.player.firstName} ${affiliation.player.lastName}`,
+        teamName: `${affiliation.team.name}`,
       },
-    );
+    });
     return formatSuccessResponse(message, affiliation);
   }
 }

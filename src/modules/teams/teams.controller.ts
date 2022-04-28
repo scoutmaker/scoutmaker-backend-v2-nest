@@ -46,7 +46,7 @@ export class TeamsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const team = await this.teamsService.create(createTeamDto, user.id);
-    const message = await this.i18n.translate('teams.CREATE_MESSAGE', {
+    const message = this.i18n.translate('teams.CREATE_MESSAGE', {
       lang,
       args: { name: team.name },
     });
@@ -63,7 +63,7 @@ export class TeamsController {
     @Query() query: FindAllTeamsDto,
   ) {
     const data = await this.teamsService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('teams.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('teams.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -78,7 +78,7 @@ export class TeamsController {
   @Serialize(TeamBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const teams = await this.teamsService.getList();
-    const message = await this.i18n.translate('teams.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('teams.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, teams);
@@ -89,7 +89,7 @@ export class TeamsController {
   @Serialize(TeamDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const team = await this.teamsService.findOne(id);
-    const message = await this.i18n.translate('teams.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('teams.GET_ONE_MESSAGE', {
       lang,
       args: { name: team.name },
     });
@@ -105,7 +105,7 @@ export class TeamsController {
     @Body() updateTeamDto: UpdateTeamDto,
   ) {
     const team = await this.teamsService.update(id, updateTeamDto);
-    const message = await this.i18n.translate('teams.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('teams.UPDATE_MESSAGE', {
       lang,
       args: { name: team.name },
     });
@@ -117,7 +117,7 @@ export class TeamsController {
   @Serialize(TeamDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const team = await this.teamsService.remove(id);
-    const message = await this.i18n.translate('teams.DELETE_MESSAGE', {
+    const message = this.i18n.translate('teams.DELETE_MESSAGE', {
       lang,
       args: { name: team.name },
     });

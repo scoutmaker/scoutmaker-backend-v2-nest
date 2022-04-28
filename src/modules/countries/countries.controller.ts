@@ -43,7 +43,7 @@ export class CountriesController {
     @Body() createCountryDto: CreateCountryDto,
   ) {
     const country = await this.countriesService.create(createCountryDto);
-    const message = await this.i18n.translate('countries.CREATE_MESSAGE', {
+    const message = this.i18n.translate('countries.CREATE_MESSAGE', {
       lang,
       args: { name: country.name },
     });
@@ -60,7 +60,7 @@ export class CountriesController {
     @Query() query: FindAllCountriesDto,
   ) {
     const data = await this.countriesService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('countries.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('countries.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
@@ -72,7 +72,7 @@ export class CountriesController {
   @Serialize(CountryDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const country = await this.countriesService.findOne(id);
-    const message = await this.i18n.translate('countries.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('countries.GET_ONE_MESSAGE', {
       lang,
       args: { name: country.name },
     });
@@ -88,7 +88,7 @@ export class CountriesController {
     @Body() updateCountryDto: UpdateCountryDto,
   ) {
     const country = await this.countriesService.update(id, updateCountryDto);
-    const message = await this.i18n.translate('countries.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('countries.UPDATE_MESSAGE', {
       lang,
       args: { name: country.name },
     });
@@ -100,7 +100,7 @@ export class CountriesController {
   @Serialize(CountryDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const country = await this.countriesService.remove(id);
-    const message = await this.i18n.translate('countries.DELETE_MESSAGE', {
+    const message = this.i18n.translate('countries.DELETE_MESSAGE', {
       lang,
       args: { name: country.name },
     });

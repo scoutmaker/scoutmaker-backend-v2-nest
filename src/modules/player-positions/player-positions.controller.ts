@@ -40,10 +40,10 @@ export class PlayerPositionsController {
     const position = await this.positionsService.create(
       createPlayerPositionDto,
     );
-    const message = await this.i18n.translate(
-      'player-positions.CREATE_MESSAGE',
-      { lang, args: { name: position.name } },
-    );
+    const message = this.i18n.translate('player-positions.CREATE_MESSAGE', {
+      lang,
+      args: { name: position.name },
+    });
     return formatSuccessResponse(message, position);
   }
 
@@ -51,10 +51,9 @@ export class PlayerPositionsController {
   @ApiResponse(PlayerPositionDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
     const positions = await this.positionsService.findAll();
-    const message = await this.i18n.translate(
-      'player-positions.GET_LIST_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('player-positions.GET_LIST_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, positions);
   }
 
@@ -62,10 +61,10 @@ export class PlayerPositionsController {
   @ApiResponse(PlayerPositionDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const position = await this.positionsService.findOne(id);
-    const message = await this.i18n.translate(
-      'player-positions.GET_ONE_MESSAGE',
-      { lang, args: { name: position.name } },
-    );
+    const message = this.i18n.translate('player-positions.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: position.name },
+    });
     return formatSuccessResponse(message, position);
   }
 
@@ -80,10 +79,10 @@ export class PlayerPositionsController {
       id,
       updatePlayerPositionDto,
     );
-    const message = await this.i18n.translate(
-      'player-positions.UPDATE_MESSAGE',
-      { lang, args: { name: position.name } },
-    );
+    const message = this.i18n.translate('player-positions.UPDATE_MESSAGE', {
+      lang,
+      args: { name: position.name },
+    });
     return formatSuccessResponse(message, position);
   }
 
@@ -91,10 +90,10 @@ export class PlayerPositionsController {
   @ApiResponse(PlayerPositionDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const position = await this.positionsService.remove(id);
-    const message = await this.i18n.translate(
-      'player-positions.DELETE_MESSAGE',
-      { lang, args: { name: position.name } },
-    );
+    const message = this.i18n.translate('player-positions.DELETE_MESSAGE', {
+      lang,
+      args: { name: position.name },
+    });
     return formatSuccessResponse(message, position);
   }
 }

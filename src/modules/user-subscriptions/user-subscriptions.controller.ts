@@ -46,15 +46,12 @@ export class UserSubscriptionsController {
     const subscription = await this.userSubscriptionsService.create(
       createUserSubscriptionDto,
     );
-    const message = await this.i18n.translate(
-      'user-subscriptions.CREATE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
-        },
+    const message = this.i18n.translate('user-subscriptions.CREATE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
       },
-    );
+    });
     return formatSuccessResponse(message, subscription);
   }
 
@@ -72,16 +69,13 @@ export class UserSubscriptionsController {
       paginationOptions,
       query,
     );
-    const message = await this.i18n.translate(
-      'user-subscriptions.GET_ALL_MESSAGE',
-      {
-        lang,
-        args: {
-          currentPage: data.page,
-          totalPages: data.totalPages,
-        },
+    const message = this.i18n.translate('user-subscriptions.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
       },
-    );
+    });
     return formatSuccessResponse(message, data);
   }
 
@@ -90,15 +84,12 @@ export class UserSubscriptionsController {
   @Serialize(UserSubscriptionDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.userSubscriptionsService.findOne(id);
-    const message = await this.i18n.translate(
-      'user-subscriptions.GET_ONE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
-        },
+    const message = this.i18n.translate('user-subscriptions.GET_ONE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
       },
-    );
+    });
     return formatSuccessResponse(message, subscription);
   }
 
@@ -115,15 +106,12 @@ export class UserSubscriptionsController {
       id,
       updateUserSubscriptionDto,
     );
-    const message = await this.i18n.translate(
-      'user-subscriptions.UPDATE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
-        },
+    const message = this.i18n.translate('user-subscriptions.UPDATE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
       },
-    );
+    });
     return formatSuccessResponse(message, subscription);
   }
 
@@ -132,15 +120,12 @@ export class UserSubscriptionsController {
   @Serialize(UserSubscriptionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.userSubscriptionsService.remove(id);
-    const message = await this.i18n.translate(
-      'user-subscriptions.DELETE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
-        },
+    const message = this.i18n.translate('user-subscriptions.DELETE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
       },
-    );
+    });
     return formatSuccessResponse(message, subscription);
   }
 }

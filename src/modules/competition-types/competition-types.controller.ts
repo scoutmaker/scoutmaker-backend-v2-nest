@@ -39,10 +39,10 @@ export class CompetitionTypesController {
     @Body() createCompetitionTypeDto: CreateCompetitionTypeDto,
   ) {
     const type = await this.typesService.create(createCompetitionTypeDto);
-    const message = await this.i18n.translate(
-      'competition-types.CREATE_MESSAGE',
-      { lang, args: { name: type.name } },
-    );
+    const message = this.i18n.translate('competition-types.CREATE_MESSAGE', {
+      lang,
+      args: { name: type.name },
+    });
     return formatSuccessResponse(message, type);
   }
 
@@ -50,10 +50,9 @@ export class CompetitionTypesController {
   @ApiResponse(CompetitionTypeDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
     const types = await this.typesService.findAll();
-    const message = await this.i18n.translate(
-      'competition-types.GET_ALL_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('competition-types.GET_ALL_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, types);
   }
 
@@ -61,10 +60,10 @@ export class CompetitionTypesController {
   @ApiResponse(CompetitionTypeDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const type = await this.typesService.findOne(id);
-    const message = await this.i18n.translate(
-      'competition-types.GET_ONE_MESSAGE',
-      { lang, args: { name: type.name } },
-    );
+    const message = this.i18n.translate('competition-types.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: type.name },
+    });
     return formatSuccessResponse(message, type);
   }
 
@@ -76,10 +75,10 @@ export class CompetitionTypesController {
     @Body() updateCompetitionTypeDto: UpdateCompetitionTypeDto,
   ) {
     const type = await this.typesService.update(id, updateCompetitionTypeDto);
-    const message = await this.i18n.translate(
-      'competition-types.UPDATE_MESSAGE',
-      { lang, args: { name: type.name } },
-    );
+    const message = this.i18n.translate('competition-types.UPDATE_MESSAGE', {
+      lang,
+      args: { name: type.name },
+    });
     return formatSuccessResponse(message, type);
   }
 
@@ -87,10 +86,10 @@ export class CompetitionTypesController {
   @ApiResponse(CompetitionTypeDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const type = await this.typesService.remove(id);
-    const message = await this.i18n.translate(
-      'competition-types.DELETE_MESSAGE',
-      { lang, args: { name: type.name } },
-    );
+    const message = this.i18n.translate('competition-types.DELETE_MESSAGE', {
+      lang,
+      args: { name: type.name },
+    });
     return formatSuccessResponse(message, type);
   }
 }

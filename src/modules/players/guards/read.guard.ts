@@ -247,7 +247,7 @@ export class ReadGuard implements CanActivate {
 
     const lang = request.acceptsLanguages()[0];
 
-    const message = await this.i18n.translate('players.GET_ONE_ACCESS_ERROR', {
+    const message = this.i18n.translate('players.GET_ONE_ACCESS_ERROR', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },
     });

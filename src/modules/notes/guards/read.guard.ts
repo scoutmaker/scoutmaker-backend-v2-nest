@@ -109,7 +109,7 @@ export class ReadGuard implements CanActivate {
 
     const lang = request.acceptsLanguages()[0];
 
-    const message = await this.i18n.translate('notes.GET_ONE_ACCESS_ERROR', {
+    const message = this.i18n.translate('notes.GET_ONE_ACCESS_ERROR', {
       lang,
       args: { docNumber: note.docNumber },
     });

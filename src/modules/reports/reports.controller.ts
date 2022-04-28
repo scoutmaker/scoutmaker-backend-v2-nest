@@ -26,7 +26,7 @@ import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FindAllReportsDto } from './dto/find-all-reports.dto';
-import { ReportDto } from './dto/report.dto';
+import { ReportDto, ReportPaginatedDataDto } from './dto/report.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { DeleteGuard } from './guards/delete.guard';
@@ -53,7 +53,7 @@ export class ReportsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const report = await this.reportsService.create(createReportDto, user.id);
-    const message = await this.i18n.translate('reports.CREATE_MESSAGE', {
+    const message = this.i18n.translate('reports.CREATE_MESSAGE', {
       lang,
       args: { docNumber: report.docNumber },
     });
@@ -62,9 +62,9 @@ export class ReportsController {
 
   @Get()
   @UseInterceptors(DocumentAccessFiltersInterceptor)
-  @ApiPaginatedResponse(ReportDto)
+  @ApiPaginatedResponse(ReportPaginatedDataDto)
   @ApiQuery({ type: ReportsPaginationOptionsDto })
-  @Serialize(ReportDto, 'docs')
+  @Serialize(ReportPaginatedDataDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: ReportsPaginationOptionsDto,
@@ -76,7 +76,7 @@ export class ReportsController {
       query,
       accessFilters,
     );
-    const message = await this.i18n.translate('reports.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('reports.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
@@ -89,7 +89,7 @@ export class ReportsController {
   @Serialize(ReportDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const report = await this.reportsService.findOne(id);
-    const message = await this.i18n.translate('reports.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('reports.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: report.docNumber },
     });
@@ -106,7 +106,7 @@ export class ReportsController {
     @Body() updateReportDto: UpdateReportDto,
   ) {
     const report = await this.reportsService.update(id, updateReportDto);
-    const message = await this.i18n.translate('reports.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('reports.UPDATE_MESSAGE', {
       lang,
       args: { docNumber: report.docNumber },
     });
@@ -119,7 +119,7 @@ export class ReportsController {
   @Serialize(ReportDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const report = await this.reportsService.remove(id);
-    const message = await this.i18n.translate('reports.DELETE_MESSAGE', {
+    const message = this.i18n.translate('reports.DELETE_MESSAGE', {
       lang,
       args: { docNumber: report.docNumber },
     });

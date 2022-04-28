@@ -44,10 +44,10 @@ export class ReportTemplatesController {
       createReportTemplateDto,
       user.id,
     );
-    const message = await this.i18n.translate(
-      'report-templates.CREATE_MESSAGE',
-      { lang, args: { name: template.name } },
-    );
+    const message = this.i18n.translate('report-templates.CREATE_MESSAGE', {
+      lang,
+      args: { name: template.name },
+    });
     return formatSuccessResponse(message, template);
   }
 
@@ -55,10 +55,9 @@ export class ReportTemplatesController {
   @ApiResponse(ReportTemplateDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const templates = await this.reportTemplatesService.findAll();
-    const message = await this.i18n.translate(
-      'report-templates.GET_LIST_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('report-templates.GET_LIST_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, templates);
   }
 
@@ -66,10 +65,10 @@ export class ReportTemplatesController {
   @ApiResponse(ReportTemplateDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.reportTemplatesService.findOne(id);
-    const message = await this.i18n.translate(
-      'report-templates.GET_ONE_MESSAGE',
-      { lang, args: { name: template.name } },
-    );
+    const message = this.i18n.translate('report-templates.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: template.name },
+    });
     return formatSuccessResponse(message, template);
   }
 
@@ -84,10 +83,10 @@ export class ReportTemplatesController {
       id,
       updateReportTemplateDto,
     );
-    const message = await this.i18n.translate(
-      'report-templates.UPDATE_MESSAGE',
-      { lang, args: { name: template.name } },
-    );
+    const message = this.i18n.translate('report-templates.UPDATE_MESSAGE', {
+      lang,
+      args: { name: template.name },
+    });
     return formatSuccessResponse(message, template);
   }
 
@@ -95,10 +94,10 @@ export class ReportTemplatesController {
   @ApiResponse(ReportTemplateDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.reportTemplatesService.remove(id);
-    const message = await this.i18n.translate(
-      'report-templates.DELETE_MESSAGE',
-      { lang, args: { name: template.name } },
-    );
+    const message = this.i18n.translate('report-templates.DELETE_MESSAGE', {
+      lang,
+      args: { name: template.name },
+    });
     return formatSuccessResponse(message, template);
   }
 }

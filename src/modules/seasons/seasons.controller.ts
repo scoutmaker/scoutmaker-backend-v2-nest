@@ -40,7 +40,7 @@ export class SeasonsController {
     @Body() createSeasonDto: CreateSeasonDto,
   ) {
     const season = await this.seasonsService.create(createSeasonDto);
-    const message = await this.i18n.translate('seasons.CREATE_MESSAGE', {
+    const message = this.i18n.translate('seasons.CREATE_MESSAGE', {
       lang,
       args: { name: season.name },
     });
@@ -51,7 +51,7 @@ export class SeasonsController {
   @ApiResponse(SeasonDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const seasons = await this.seasonsService.findAll();
-    const message = await this.i18n.translate('seasons.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('seasons.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, seasons);
@@ -61,7 +61,7 @@ export class SeasonsController {
   @ApiResponse(SeasonDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const season = await this.seasonsService.findOne(id);
-    const message = await this.i18n.translate('seasons.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('seasons.GET_ONE_MESSAGE', {
       lang,
       args: { name: season.name },
     });
@@ -76,7 +76,7 @@ export class SeasonsController {
     @Body() updateSeasonDto: UpdateSeasonDto,
   ) {
     const season = await this.seasonsService.update(id, updateSeasonDto);
-    const message = await this.i18n.translate('seasons.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('seasons.UPDATE_MESSAGE', {
       lang,
       args: { name: season.name },
     });
@@ -96,14 +96,14 @@ export class SeasonsController {
       toggleIsActiveDto,
     );
 
-    const deactivateMessage = await this.i18n.translate(
+    const deactivateMessage = this.i18n.translate(
       'seasons.DEACTIVATE_MESSAGE',
       { lang, args: { name: season.name } },
     );
-    const activateMessage = await this.i18n.translate(
-      'seasons.ACTIVATE_MESSAGE',
-      { lang, args: { name: season.name } },
-    );
+    const activateMessage = this.i18n.translate('seasons.ACTIVATE_MESSAGE', {
+      lang,
+      args: { name: season.name },
+    });
 
     const message = isActive ? activateMessage : deactivateMessage;
 
@@ -114,7 +114,7 @@ export class SeasonsController {
   @ApiResponse(SeasonDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const season = await this.seasonsService.remove(id);
-    const message = await this.i18n.translate('seasons.DELETE_MESSAGE', {
+    const message = this.i18n.translate('seasons.DELETE_MESSAGE', {
       lang,
       args: { name: season.name },
     });

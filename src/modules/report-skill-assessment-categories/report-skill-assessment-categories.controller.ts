@@ -45,7 +45,7 @@ export class ReportSkillAssessmentCategoriesController {
       createReportSkillAssessmentCategoryDto,
       user.id,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-categories.CREATE_MESSAGE',
       { lang, args: { name: category.name } },
     );
@@ -56,7 +56,7 @@ export class ReportSkillAssessmentCategoriesController {
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const categories = await this.categoriesService.findAll();
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-categories.GET_LIST_MESSAGE',
       { lang },
     );
@@ -67,7 +67,7 @@ export class ReportSkillAssessmentCategoriesController {
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const category = await this.categoriesService.findOne(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-categories.GET_ONE_MESSAGE',
       { lang, args: { name: category.name } },
     );
@@ -86,7 +86,7 @@ export class ReportSkillAssessmentCategoriesController {
       id,
       updateReportSkillAssessmentCategoryDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-categories.UPDATE_MESSAGE',
       { lang, args: { name: category.name } },
     );
@@ -97,7 +97,7 @@ export class ReportSkillAssessmentCategoriesController {
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const category = await this.categoriesService.remove(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-categories.DELETE_MESSAGE',
       { lang, args: { name: category.name } },
     );

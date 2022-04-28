@@ -32,6 +32,11 @@ const include: Prisma.ReportInclude = {
   skills: { include: { template: { include: { category: true } } } },
 };
 
+const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
+  player: true,
+  author: true,
+});
+
 const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
   template: true,
   player: {
@@ -214,7 +219,7 @@ export class ReportsService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: paginatedDataInclude,
     });
 
     const total = await this.prisma.report.count({ where });

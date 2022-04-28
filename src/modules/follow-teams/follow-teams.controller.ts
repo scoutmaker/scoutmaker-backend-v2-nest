@@ -31,7 +31,7 @@ export class FollowTeamsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followTeamsService.create(teamId, user.id);
-    const message = await this.i18n.translate('follow-teams.FOLLOW_MESSAGE', {
+    const message = this.i18n.translate('follow-teams.FOLLOW_MESSAGE', {
       lang,
       args: { name: follow.team.name },
     });
@@ -46,7 +46,7 @@ export class FollowTeamsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followTeamsService.remove(teamId, user.id);
-    const message = await this.i18n.translate('follow-teams.UNFOLLOW_MESSAGE', {
+    const message = this.i18n.translate('follow-teams.UNFOLLOW_MESSAGE', {
       lang,
       args: { name: follow.team.name },
     });

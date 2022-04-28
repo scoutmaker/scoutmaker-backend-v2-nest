@@ -43,7 +43,7 @@ export class OrganizationsController {
       createOrganizationDto,
       lang,
     );
-    const message = await this.i18n.translate('organizations.CREATE_MESSAGE', {
+    const message = this.i18n.translate('organizations.CREATE_MESSAGE', {
       lang,
       args: { name: organization.name },
     });
@@ -54,10 +54,9 @@ export class OrganizationsController {
   @ApiResponse(OrganizationDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const organizations = await this.organizationsService.findAll();
-    const message = await this.i18n.translate(
-      'organizations.GET_LIST_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('organizations.GET_LIST_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, organizations);
   }
 
@@ -65,7 +64,7 @@ export class OrganizationsController {
   @ApiResponse(OrganizationDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.findOne(id);
-    const message = await this.i18n.translate('organizations.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('organizations.GET_ONE_MESSAGE', {
       lang,
       args: { name: organization.name },
     });
@@ -83,7 +82,7 @@ export class OrganizationsController {
       id,
       updateOrganizationDto,
     );
-    const message = await this.i18n.translate('organizations.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('organizations.UPDATE_MESSAGE', {
       lang,
       args: { name: organization.name },
     });
@@ -102,13 +101,10 @@ export class OrganizationsController {
       toggleMembershipDto,
       lang,
     );
-    const message = await this.i18n.translate(
-      'organizations.ADD_MEMBER_MESSAGE',
-      {
-        lang,
-        args: { name: organization.name },
-      },
-    );
+    const message = this.i18n.translate('organizations.ADD_MEMBER_MESSAGE', {
+      lang,
+      args: { name: organization.name },
+    });
     return formatSuccessResponse(message, organization);
   }
 
@@ -123,10 +119,10 @@ export class OrganizationsController {
       id,
       toggleMembershipDto,
     );
-    const message = await this.i18n.translate(
-      'organizations.REMOVE_MEMBER_MESSAGE',
-      { lang, args: { name: organization.name } },
-    );
+    const message = this.i18n.translate('organizations.REMOVE_MEMBER_MESSAGE', {
+      lang,
+      args: { name: organization.name },
+    });
     return formatSuccessResponse(message, organization);
   }
 
@@ -134,7 +130,7 @@ export class OrganizationsController {
   @ApiResponse(OrganizationDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.remove(id);
-    const message = await this.i18n.translate('organizations.REMOVE_MESSAGE', {
+    const message = this.i18n.translate('organizations.REMOVE_MESSAGE', {
       lang,
       args: { name: organization.name },
     });

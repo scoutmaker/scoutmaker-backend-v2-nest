@@ -44,7 +44,7 @@ export class UserNoteAclController {
     @Body() createAceDto: CreateUserNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.create(createAceDto);
-    const message = await this.i18n.translate('user-note-acl.CREATE_MESSAGE', {
+    const message = this.i18n.translate('user-note-acl.CREATE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
@@ -64,7 +64,7 @@ export class UserNoteAclController {
     @Query() query: FindAllUserNoteAceDto,
   ) {
     const data = await this.aclService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('user-note-acl.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('user-note-acl.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -79,7 +79,7 @@ export class UserNoteAclController {
   @Serialize(UserNoteAceDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.findOne(id);
-    const message = await this.i18n.translate('user-note-acl.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('user-note-acl.GET_ONE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
@@ -98,7 +98,7 @@ export class UserNoteAclController {
     @Body() updateAceDto: UpdateUserNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
-    const message = await this.i18n.translate('user-note-acl.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('user-note-acl.UPDATE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
@@ -113,7 +113,7 @@ export class UserNoteAclController {
   @Serialize(UserNoteAceDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.remove(id);
-    const message = await this.i18n.translate('user-note-acl.DELETE_MESSAGE', {
+    const message = this.i18n.translate('user-note-acl.DELETE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,

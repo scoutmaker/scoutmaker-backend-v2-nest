@@ -68,10 +68,10 @@ export class DeleteGuard implements CanActivate {
 
     const lang = request.acceptsLanguages()[0];
 
-    const message = await this.i18n.translate(
-      'insider-notes.DELETE_ACCESS_ERROR',
-      { lang, args: { docNumber: insiderNote.docNumber } },
-    );
+    const message = this.i18n.translate('insider-notes.DELETE_ACCESS_ERROR', {
+      lang,
+      args: { docNumber: insiderNote.docNumber },
+    });
 
     throw new UnauthorizedException(message);
   }

@@ -43,7 +43,7 @@ export class CompetitionParticipationsController {
     const participation = await this.participationsService.create(
       createCompetitionParticipationDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-participations.CREATE_MESSAGE',
       { lang },
     );
@@ -62,7 +62,7 @@ export class CompetitionParticipationsController {
         toSeasonId,
         lang,
       );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-participations.COPY_MESSAGE',
       { lang },
     );
@@ -73,7 +73,7 @@ export class CompetitionParticipationsController {
   @ApiResponse(CompetitionParticipationDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const participations = await this.participationsService.findAll();
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-participations.GET_ALL_MESSAGE',
       { lang },
     );
@@ -87,7 +87,7 @@ export class CompetitionParticipationsController {
     @Param() params: FindUniqueCompetitionParticipationDto,
   ) {
     const participation = await this.participationsService.findOne(params);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-participations.GET_ONE_MESSAGE',
       { lang },
     );
@@ -106,7 +106,7 @@ export class CompetitionParticipationsController {
       params,
       updateCompetitionParticipationDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-participations.UPDATE_MESSAGE',
       { lang },
     );
@@ -120,7 +120,7 @@ export class CompetitionParticipationsController {
     @Param() params: FindUniqueCompetitionParticipationDto,
   ) {
     const participation = await this.participationsService.remove(params);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-participations.DELETE_MESSAGE',
       { lang },
     );

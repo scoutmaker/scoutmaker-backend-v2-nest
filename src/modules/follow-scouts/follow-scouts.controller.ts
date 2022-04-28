@@ -31,7 +31,7 @@ export class FollowScoutsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followScoutsService.create(scoutId, user.id);
-    const message = await this.i18n.translate('follow-scouts.FOLLOW_MESSAGE', {
+    const message = this.i18n.translate('follow-scouts.FOLLOW_MESSAGE', {
       lang,
       args: {
         name: `${follow.scout.firstName} ${follow.scout.lastName}`,
@@ -48,15 +48,12 @@ export class FollowScoutsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followScoutsService.remove(scoutId, user.id);
-    const message = await this.i18n.translate(
-      'follow-scouts.UNFOLLOW_MESSAGE',
-      {
-        lang,
-        args: {
-          name: `${follow.scout.firstName} ${follow.scout.lastName}`,
-        },
+    const message = this.i18n.translate('follow-scouts.UNFOLLOW_MESSAGE', {
+      lang,
+      args: {
+        name: `${follow.scout.firstName} ${follow.scout.lastName}`,
       },
-    );
+    });
     return formatSuccessResponse(message, follow);
   }
 }
