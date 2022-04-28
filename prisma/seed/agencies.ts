@@ -4,6 +4,7 @@ export async function generateAgencies(authorId: string, polandId: string) {
   const fabrykaFutboluPromise = prisma.agency.create({
     data: {
       name: 'Fabryka Futbolu',
+      slug: 'fabryka-futbolu',
       authorId,
       countryId: polandId,
       transfermarktUrl:
@@ -14,6 +15,7 @@ export async function generateAgencies(authorId: string, polandId: string) {
   const football11playersPromise = prisma.agency.create({
     data: {
       name: '11 Football Players',
+      slug: '11-football-players',
       authorId,
       countryId: polandId,
       transfermarktUrl:

@@ -12,6 +12,9 @@ export class ClubDto {
   name: string;
 
   @Expose()
+  slug: string;
+
+  @Expose()
   lnpId?: string;
 
   @Expose()
@@ -52,4 +55,8 @@ export class ClubDto {
   region: RegionWithoutCountryDto;
 }
 
-export class ClubBasicDataDto extends PickType(ClubDto, ['id', 'name']) {}
+export class ClubBasicDataDto extends PickType(ClubDto, [
+  'id',
+  'name',
+  'slug',
+]) {}

@@ -122,6 +122,7 @@ model Region {
 model Club {
   id         String   @id @default(cuid())
   name       String
+  slug       String   @unique
   lnpId      String?
   city       String?
   postalCode String?
@@ -148,6 +149,7 @@ model Club {
 model Team {
   id               String   @id @default(cuid())
   name             String
+  slug             String   @unique
   minut90url       String?
   transfermarktUrl String?
   lnpId            String?
@@ -324,6 +326,7 @@ model Player {
   id               String   @id @default(cuid())
   firstName        String
   lastName         String
+  slug             String   @unique
   yearOfBirth      Int
   height           Int?
   weight           Int?
@@ -658,6 +661,7 @@ model Order {
 model Agency {
   id               String   @id @default(cuid())
   name             String
+  slug             String   @unique
   city             String?
   postalCode       String?
   street           String?

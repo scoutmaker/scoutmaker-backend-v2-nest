@@ -204,6 +204,7 @@ async function main() {
   const lechFirstPromise = prisma.team.create({
     data: {
       name: 'Lech Poznań',
+      slug: 'lech-poznan',
       club: { connect: { id: lech.id } },
       competitions: {
         create: { competitionId: ekstraklasa.id, seasonId: currentSeason.id },
@@ -215,6 +216,7 @@ async function main() {
   const lechSecondPromise = prisma.team.create({
     data: {
       name: 'Lech II Poznań',
+      slug: 'lech-ii-poznan',
       club: { connect: { id: lech.id } },
       competitions: {
         create: { competitionId: IIliga.id, seasonId: currentSeason.id },
@@ -226,6 +228,7 @@ async function main() {
   const legiaFirstPromise = prisma.team.create({
     data: {
       name: 'Legia Warszawa',
+      slug: 'legia-warszawa',
       club: { connect: { id: legia.id } },
       competitions: {
         create: { competitionId: ekstraklasa.id, seasonId: currentSeason.id },
@@ -237,6 +240,7 @@ async function main() {
   const legiaSecondPromise = prisma.team.create({
     data: {
       name: 'Legia II Warszawa',
+      slug: 'legia-ii-warszawa',
       club: { connect: { id: legia.id } },
       competitions: {
         create: {
@@ -252,6 +256,7 @@ async function main() {
   const zaglebieFirstPromise = prisma.team.create({
     data: {
       name: 'Zagłębie Lubin',
+      slug: 'zaglebie-lubin',
       club: { connect: { id: lubin.id } },
       competitions: {
         create: { competitionId: ekstraklasa.id, seasonId: currentSeason.id },
@@ -263,6 +268,7 @@ async function main() {
   const zaglebieSecondPromise = prisma.team.create({
     data: {
       name: 'Zagłębie II Lubin',
+      slug: 'zaglebie-ii-lubin',
       club: { connect: { id: lubin.id } },
       competitions: {
         create: {
@@ -278,6 +284,7 @@ async function main() {
   const gornikFirstPromise = prisma.team.create({
     data: {
       name: 'Górnik Zabrze',
+      slug: 'gornik-zabrze',
       club: { connect: { id: gornik.id } },
       competitions: {
         create: { competitionId: ekstraklasa.id, seasonId: currentSeason.id },
@@ -289,6 +296,7 @@ async function main() {
   const gornikSecondPromise = prisma.team.create({
     data: {
       name: 'Górnik II Zabrze',
+      slug: 'gornik-ii-zabrze',
       club: { connect: { id: gornik.id } },
       competitions: {
         create: {
@@ -327,6 +335,7 @@ async function main() {
     data: {
       firstName: 'Filip',
       lastName: 'Marchwiński',
+      slug: 'filip-marchwinski',
       yearOfBirth: 2002,
       footed: 'RIGHT',
       country: { connect: { id: poland.id } },
@@ -343,6 +352,7 @@ async function main() {
     data: {
       firstName: 'Kacper',
       lastName: 'Skibicki',
+      slug: 'kacper-skibicki',
       yearOfBirth: 2001,
       footed: 'RIGHT',
       country: { connect: { id: poland.id } },
@@ -359,6 +369,7 @@ async function main() {
     data: {
       firstName: 'Alexander',
       lastName: 'Steffen',
+      slug: 'alexander-steffen',
       yearOfBirth: 2004,
       footed: 'RIGHT',
       country: { connect: { id: poland.id } },
@@ -378,6 +389,7 @@ async function main() {
     data: {
       firstName: 'Bartosz',
       lastName: 'Żyła',
+      slug: 'bartosz-zyla',
       yearOfBirth: 2003,
       footed: 'RIGHT',
       country: { connect: { id: poland.id } },
@@ -397,6 +409,7 @@ async function main() {
     data: {
       firstName: 'Erwin',
       lastName: 'Kołodziejczyk',
+      slug: 'erwin-kolodziejczyk',
       yearOfBirth: 2002,
       footed: 'RIGHT',
       country: { connect: { id: poland.id } },
@@ -416,6 +429,7 @@ async function main() {
     data: {
       firstName: 'Krzysztof',
       lastName: 'Winglarek',
+      slug: 'krzysztof-winglarek',
       yearOfBirth: 2002,
       footed: 'RIGHT',
       country: { connect: { id: poland.id } },

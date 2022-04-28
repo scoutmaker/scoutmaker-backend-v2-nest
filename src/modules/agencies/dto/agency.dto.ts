@@ -11,6 +11,9 @@ export class AgencyDto {
   name: string;
 
   @Expose()
+  slug: string;
+
+  @Expose()
   city?: string;
 
   @Expose()
@@ -44,4 +47,8 @@ export class AgencyDto {
   country: CountryDto;
 }
 
-export class AgencyBasicInfoDto extends PickType(AgencyDto, ['id', 'name']) {}
+export class AgencyBasicInfoDto extends PickType(AgencyDto, [
+  'id',
+  'name',
+  'slug',
+]) {}

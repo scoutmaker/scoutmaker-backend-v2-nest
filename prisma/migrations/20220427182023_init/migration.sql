@@ -83,6 +83,7 @@ CREATE TABLE "Region" (
 CREATE TABLE "Club" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "lnpId" TEXT,
     "city" TEXT,
     "postalCode" TEXT,
@@ -105,6 +106,7 @@ CREATE TABLE "Club" (
 CREATE TABLE "Team" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "minut90url" TEXT,
     "transfermarktUrl" TEXT,
     "lnpId" TEXT,
@@ -227,6 +229,7 @@ CREATE TABLE "Player" (
     "id" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "yearOfBirth" INTEGER NOT NULL,
     "height" INTEGER,
     "weight" INTEGER,
@@ -482,6 +485,7 @@ CREATE TABLE "Order" (
 CREATE TABLE "Agency" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "city" TEXT,
     "postalCode" TEXT,
     "street" TEXT,
@@ -784,6 +788,12 @@ CREATE UNIQUE INDEX "Country_code_key" ON "Country"("code");
 CREATE UNIQUE INDEX "Region_name_countryId_key" ON "Region"("name", "countryId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Club_slug_key" ON "Club"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Team_slug_key" ON "Team"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Team_scoutmakerv1Id_key" ON "Team"("scoutmakerv1Id");
 
 -- CreateIndex
@@ -800,6 +810,9 @@ CREATE UNIQUE INDEX "CompetitionGroup_name_competitionId_key" ON "CompetitionGro
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PlayerPosition_code_key" ON "PlayerPosition"("code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Player_slug_key" ON "Player"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Player_scoutmakerv1Id_key" ON "Player"("scoutmakerv1Id");
@@ -830,6 +843,9 @@ CREATE UNIQUE INDEX "ReportMeta_reportId_key" ON "ReportMeta"("reportId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Order_scoutmakerv1Id_key" ON "Order"("scoutmakerv1Id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Agency_slug_key" ON "Agency"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PlayerStats_playerId_matchId_key" ON "PlayerStats"("playerId", "matchId");
