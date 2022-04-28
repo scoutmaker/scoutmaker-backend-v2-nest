@@ -94,6 +94,7 @@ export class PlayersService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
     query: FindAllPlayersDto,
+    userId?: string,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
@@ -154,7 +155,12 @@ export class PlayersService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: {
+        ...include,
+        likes: {
+          where: { userId },
+        },
+      },
     });
 
     const total = await this.prisma.player.count({ where });
@@ -174,7 +180,7 @@ export class PlayersService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId?: string) {
     const redisKey = `player:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -185,7 +191,12 @@ export class PlayersService {
 
     const player = await this.prisma.player.findUnique({
       where: { id },
-      include: singleInclude,
+      include: {
+        ...singleInclude,
+        likes: {
+          where: { userId },
+        },
+      },
     });
 
     await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);

@@ -20,3 +20,11 @@ export class LikePlayerDto {
   @Expose()
   user: UserBasicDataDto;
 }
+
+export class LikePlayerBasicDataDto {
+  @Expose()
+  userId: string;
+
+  @Expose()
+  playerId: string;
+}
