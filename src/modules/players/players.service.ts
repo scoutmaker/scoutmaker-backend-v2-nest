@@ -128,6 +128,7 @@ export class PlayersService {
           teams: query.teamIds
             ? { some: { teamId: { in: query.teamIds }, endDate: null } }
             : undefined,
+          likes: query.isLiked ? { some: { userId } } : undefined,
           AND: [
             {
               OR: [
@@ -155,12 +156,14 @@ export class PlayersService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include: {
-        ...include,
-        likes: {
-          where: { userId },
-        },
-      },
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
     });
 
     const total = await this.prisma.player.count({ where });
@@ -191,12 +194,14 @@ export class PlayersService {
 
     const player = await this.prisma.player.findUnique({
       where: { id },
-      include: {
-        ...singleInclude,
-        likes: {
-          where: { userId },
-        },
-      },
+      include: userId
+        ? {
+            ...singleInclude,
+            likes: {
+              where: { userId },
+            },
+          }
+        : singleInclude,
     });
 
     await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
