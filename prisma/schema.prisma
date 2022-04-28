@@ -75,6 +75,7 @@ model User {
   reportAccessControlList                UserReportAccessControlEntry[]
   noteAccessControlList                  UserNoteAccessControlEntry[]
   insiderNoteAccessControlList           UserInsiderNoteAccessControlEntry[]
+  likedPlayers                           LikePlayer[]
 }
 
 model UserFootballRole {
@@ -360,6 +361,7 @@ model Player {
   stats                         PlayerStats[]
   userAccessControlList         UserPlayerAccessControlEntry[]
   organizationAccessControlList OrganizationPlayerAccessControlEntry[]
+  likes                         LikePlayer[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -1019,4 +1021,17 @@ model OrganizationInsiderNoteAccessControlEntry {
 
   @@unique([organizationId, insiderNoteId])
   @@map("organization_insider_note_access_control_list")
+}
+
+model LikePlayer {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@id([playerId, userId])
 }
