@@ -26,7 +26,7 @@ import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FindAllReportsDto } from './dto/find-all-reports.dto';
-import { ReportDto } from './dto/report.dto';
+import { ReportDto, ReportPaginatedDataDto } from './dto/report.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { DeleteGuard } from './guards/delete.guard';
@@ -62,9 +62,9 @@ export class ReportsController {
 
   @Get()
   @UseInterceptors(DocumentAccessFiltersInterceptor)
-  @ApiPaginatedResponse(ReportDto)
+  @ApiPaginatedResponse(ReportPaginatedDataDto)
   @ApiQuery({ type: ReportsPaginationOptionsDto })
-  @Serialize(ReportDto, 'docs')
+  @Serialize(ReportPaginatedDataDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: ReportsPaginationOptionsDto,

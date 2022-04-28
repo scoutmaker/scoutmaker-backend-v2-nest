@@ -3,7 +3,7 @@ import { ReportStatus } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
-import { PlayerBasicDataDto } from '../../players/dto/player.dto';
+import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { ReportSkillAssessmentBasicDataDto } from '../../report-skill-assessments/dto/report-skill-assessment.dto';
 import { ReportTemplateBasicDataDto } from '../../report-templates/dto/report-template.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
@@ -63,12 +63,12 @@ export class ReportDto {
   template: ReportTemplateBasicDataDto;
 
   @Transform(({ value }) =>
-    plainToInstance(PlayerBasicDataDto, value, {
+    plainToInstance(PlayerSuperBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  player: PlayerBasicDataDto;
+  player: PlayerSuperBasicDataDto;
 
   @Transform(({ value }) =>
     plainToInstance(MatchBasicDataDto, value, {
@@ -94,6 +94,18 @@ export class ReportDto {
   @Expose()
   skills: ReportSkillAssessmentBasicDataDto[];
 }
+
+export class ReportPaginatedDataDto extends PickType(ReportDto, [
+  'id',
+  'docNumber',
+  'player',
+  'finalRating',
+  'percentageRating',
+  'videoUrl',
+  'author',
+  'createdAt',
+  'status',
+]) {}
 
 export class ReportBasicDataDto extends PickType(ReportDto, [
   'id',
