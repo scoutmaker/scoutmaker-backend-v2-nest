@@ -29,6 +29,7 @@ import { FollowScoutsModule } from './modules/follow-scouts/follow-scouts.module
 import { FollowTeamsModule } from './modules/follow-teams/follow-teams.module';
 import { InsiderNotesModule } from './modules/insider-notes/insider-notes.module';
 import { LikePlayersModule } from './modules/like-players/like-players.module';
+import { LikeReportsModule } from './modules/like-reports/like-reports.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -135,6 +136,7 @@ import { UsersModule } from './modules/users/users.module';
     UserInsiderNoteAclModule,
     OrganizationInsiderNoteAclModule,
     LikePlayersModule,
+    LikeReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,4 @@
+{
+  "LIKE_MESSAGE": "Successfully liked report no. {docNumber}",
+  "UNLIKE_MESSAGE": "Successfully unliked report no. {docNumber}"
+}

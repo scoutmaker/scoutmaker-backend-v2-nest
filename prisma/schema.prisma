@@ -76,6 +76,7 @@ model User {
   noteAccessControlList                  UserNoteAccessControlEntry[]
   insiderNoteAccessControlList           UserInsiderNoteAccessControlEntry[]
   likedPlayers                           LikePlayer[]
+  likedReports                           LikeReport[]
 }
 
 model UserFootballRole {
@@ -611,6 +612,7 @@ model Report {
   skills                        ReportSkillAssessment[]
   userAccessControlList         UserReportAccessControlEntry[]
   organizationAccessControlList OrganizationReportAccessControlEntry[]
+  likes                         LikeReport[]
 }
 
 model ReportMeta {
@@ -1034,4 +1036,17 @@ model LikePlayer {
   userId   String
 
   @@id([playerId, userId])
+}
+
+model LikeReport {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  report   Report @relation(fields: [reportId], references: [id])
+  reportId String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@id([reportId, userId])
 }
