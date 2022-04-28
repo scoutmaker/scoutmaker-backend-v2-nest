@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Team } from '@prisma/client';
 import slugify from 'slugify';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
@@ -20,10 +20,10 @@ const include: Prisma.TeamInclude = {
 export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createTeamDto: CreateTeamDto, authorId: string) {
+  async create(createTeamDto: CreateTeamDto, authorId: string) {
     const { clubId, competitionId, groupId, ...rest } = createTeamDto;
 
-    const slug = slugify(rest.name, { lower: true });
+    const slug = await this.generateSlug(rest.name);
 
     return this.prisma.team.create({
       data: {
@@ -100,6 +100,27 @@ export class TeamsService {
 
   findOne(id: string) {
     return this.prisma.team.findUnique({ where: { id }, include });
+  }
+
+  findAllBySlug(slug: string) {
+    return this.prisma.team.findMany({ where: { slug } });
+  }
+
+  async generateSlug(stringToSlugify: string) {
+    const baseSlug = slugify(stringToSlugify, { lower: true });
+    let i = 0;
+    let teams: Team[];
+    let slug = baseSlug;
+
+    do {
+      teams = await this.findAllBySlug(slug);
+      if (teams.length !== 0) {
+        i = i + 1;
+        slug = `${baseSlug}-${i}`;
+      }
+    } while (teams.length !== 0);
+
+    return slug;
   }
 
   update(id: string, updateTeamDto: UpdateTeamDto) {

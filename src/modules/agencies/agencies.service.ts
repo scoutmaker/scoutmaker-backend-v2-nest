@@ -17,23 +17,12 @@ export class AgenciesService {
   async create(createAgencyDto: CreateAgencyDto, authorId: string) {
     const { countryId, ...rest } = createAgencyDto;
 
-    const slug = slugify(rest.name, { lower: true });
-    let i = 0;
-    let agencies: Agency[];
-    let slugToFind = slug;
-
-    do {
-      agencies = await this.findAllBySlug(slugToFind);
-      if (agencies.length !== 0) {
-        i = i + 1;
-        slugToFind = `${slug}-${i}`;
-      }
-    } while (agencies.length !== 0);
+    const slug = await this.generateSlug(rest.name);
 
     return this.prisma.agency.create({
       data: {
         ...rest,
-        slug: slugToFind,
+        slug: slug,
         country: { connect: { id: countryId } },
         author: { connect: { id: authorId } },
       },
@@ -87,7 +76,24 @@ export class AgenciesService {
   }
 
   findAllBySlug(slug: string) {
-    return this.prisma.agency.findMany({ where: { slug }, include });
+    return this.prisma.agency.findMany({ where: { slug } });
+  }
+
+  async generateSlug(stringToSlugify: string) {
+    const baseSlug = slugify(stringToSlugify, { lower: true });
+    let i = 0;
+    let agencies: Agency[];
+    let slug = baseSlug;
+
+    do {
+      agencies = await this.findAllBySlug(slug);
+      if (agencies.length !== 0) {
+        i = i + 1;
+        slug = `${baseSlug}-${i}`;
+      }
+    } while (agencies.length !== 0);
+
+    return slug;
   }
 
   update(id: string, updateAgencyDto: UpdateAgencyDto) {

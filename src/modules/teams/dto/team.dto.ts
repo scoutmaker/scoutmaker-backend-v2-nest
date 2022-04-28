@@ -11,6 +11,9 @@ export class TeamDto {
   @Expose()
   name: string;
 
+  @Expose()
+  slug: string;
+
   @Transform(({ value }) =>
     plainToInstance(CompetitionParticipationWithoutTeamDto, value, {
       excludeExtraneousValues: true,
@@ -42,4 +45,8 @@ export class TeamWithoutCompetitionsAndClubDto extends OmitType(TeamDto, [
   'club',
 ]) {}
 
-export class TeamBasicDataDto extends PickType(TeamDto, ['id', 'name']) {}
+export class TeamBasicDataDto extends PickType(TeamDto, [
+  'id',
+  'name',
+  'slug',
+]) {}

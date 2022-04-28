@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Player, Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 import slugify from 'slugify';
 
@@ -57,7 +57,7 @@ export class PlayersService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  create(createPlayerDto: CreatePlayerDto, authorId: string) {
+  async create(createPlayerDto: CreatePlayerDto, authorId: string) {
     const {
       countryId,
       primaryPositionId,
@@ -66,7 +66,7 @@ export class PlayersService {
       ...rest
     } = createPlayerDto;
 
-    const slug = slugify(`${rest.lastName} ${rest.firstName}`, { lower: true });
+    const slug = await this.generateSlug(`${rest.lastName} ${rest.firstName}`);
 
     return this.prisma.player.create({
       data: {
@@ -191,6 +191,27 @@ export class PlayersService {
     await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
 
     return player;
+  }
+
+  findAllBySlug(slug: string) {
+    return this.prisma.player.findMany({ where: { slug } });
+  }
+
+  async generateSlug(stringToSlugify: string) {
+    const baseSlug = slugify(stringToSlugify, { lower: true });
+    let i = 0;
+    let players: Player[];
+    let slug = baseSlug;
+
+    do {
+      players = await this.findAllBySlug(slug);
+      if (players.length !== 0) {
+        i = i + 1;
+        slug = `${baseSlug}-${i}`;
+      }
+    } while (players.length !== 0);
+
+    return slug;
   }
 
   findOneWithCurrentTeamDetails(id: string) {

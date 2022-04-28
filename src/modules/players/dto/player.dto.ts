@@ -17,6 +17,9 @@ export class PlayerDto {
   lastName: string;
 
   @Expose()
+  slug: string;
+
+  @Expose()
   yearOfBirth: number;
 
   @Expose()
@@ -86,6 +89,7 @@ export class PlayerBasicDataDto extends PickType(PlayerDto, [
   'id',
   'firstName',
   'lastName',
+  'slug',
   'country',
   'yearOfBirth',
   'primaryPosition',
@@ -102,4 +106,5 @@ export class PlayerSuperBasicDataDto extends PickType(PlayerDto, [
   'id',
   'firstName',
   'lastName',
+  'slug',
 ]) {}
