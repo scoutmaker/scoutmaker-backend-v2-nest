@@ -41,7 +41,7 @@ export class CompetitionJuniorLevelsController {
     const juniorLevel = await this.juniorLevelsService.create(
       createCompetitionJuniorLevelDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-junior-levels.CREATE_MESSAGE',
       { lang, args: { name: juniorLevel.name } },
     );
@@ -52,7 +52,7 @@ export class CompetitionJuniorLevelsController {
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
     const juniorLevels = await this.juniorLevelsService.findAll();
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-junior-levels.GET_ALL_MESSAGE',
       { lang },
     );
@@ -63,7 +63,7 @@ export class CompetitionJuniorLevelsController {
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const juniorLevel = await this.juniorLevelsService.findOne(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-junior-levels.GET_ONE_MESSAGE',
       { lang, args: { name: juniorLevel.name } },
     );
@@ -81,7 +81,7 @@ export class CompetitionJuniorLevelsController {
       id,
       updateCompetitionJuniorLevelDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-junior-levels.UPDATE_MESSAGE',
       { lang, args: { name: juniorLevel.name } },
     );
@@ -92,7 +92,7 @@ export class CompetitionJuniorLevelsController {
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const juniorLevel = await this.juniorLevelsService.remove(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'competition-junior-levels.DELETE_MESSAGE',
       { lang, args: { name: juniorLevel.name } },
     );

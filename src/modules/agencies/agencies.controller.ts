@@ -45,7 +45,7 @@ export class AgenciesController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const agency = await this.agenciesService.create(createAgencyDto, user.id);
-    const message = await this.i18n.translate('agencies.CREATE_MESSAGE', {
+    const message = this.i18n.translate('agencies.CREATE_MESSAGE', {
       lang,
       args: { name: agency.name },
     });
@@ -62,7 +62,7 @@ export class AgenciesController {
     @Query() query: FindAllAgenciesDto,
   ) {
     const data = await this.agenciesService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('agencies.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('agencies.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
@@ -74,7 +74,7 @@ export class AgenciesController {
   @Serialize(AgencyBasicInfoDto)
   async getList(@I18nLang() lang: string) {
     const agencies = await this.agenciesService.getList();
-    const message = await this.i18n.translate('agencies.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('agencies.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, agencies);
@@ -85,7 +85,7 @@ export class AgenciesController {
   @Serialize(AgencyDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const agency = await this.agenciesService.findOne(id);
-    const message = await this.i18n.translate('agencies.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('agencies.GET_ONE_MESSAGE', {
       lang,
       args: { name: agency.name },
     });
@@ -101,7 +101,7 @@ export class AgenciesController {
     @Body() updateAgencyDto: UpdateAgencyDto,
   ) {
     const agency = await this.agenciesService.update(id, updateAgencyDto);
-    const message = await this.i18n.translate('agencies.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('agencies.UPDATE_MESSAGE', {
       lang,
       args: { name: agency.name },
     });
@@ -113,7 +113,7 @@ export class AgenciesController {
   @Serialize(AgencyDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const agency = await this.agenciesService.remove(id);
-    const message = await this.i18n.translate('agencies.DELETE_MESSAGE', {
+    const message = this.i18n.translate('agencies.DELETE_MESSAGE', {
       lang,
       args: { name: agency.name },
     });

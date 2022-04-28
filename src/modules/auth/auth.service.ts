@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginDto, lang: string) {
-    const invalidCredentialsMessage = await this.i18n.translate(
+    const invalidCredentialsMessage = this.i18n.translate(
       'auth.INVALID_CREDENTIALS_ERROR',
       { lang },
     );
@@ -86,7 +86,7 @@ export class AuthService {
 
     // Check if the user is verified and not blocked
     if (user.status !== 'ACTIVE') {
-      const accountNotActiveMessage = await this.i18n.translate(
+      const accountNotActiveMessage = this.i18n.translate(
         'auth.ACCOUNT_NOT_ACTIVE_ERROR',
         { lang },
       );

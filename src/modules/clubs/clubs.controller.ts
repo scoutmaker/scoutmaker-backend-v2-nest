@@ -46,7 +46,7 @@ export class ClubsController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const club = await this.clubsService.create(createClubDto, user.id);
-    const message = await this.i18n.translate('clubs.CREATE_MESSAGE', {
+    const message = this.i18n.translate('clubs.CREATE_MESSAGE', {
       lang,
       args: { name: club.name },
     });
@@ -63,7 +63,7 @@ export class ClubsController {
     @Query() query: FindAllClubsDto,
   ) {
     const data = await this.clubsService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('clubs.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('clubs.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
@@ -75,7 +75,7 @@ export class ClubsController {
   @Serialize(ClubBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const clubs = await this.clubsService.getList();
-    const message = await this.i18n.translate('clubs.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('clubs.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, clubs);
@@ -86,7 +86,7 @@ export class ClubsController {
   @Serialize(ClubDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const club = await this.clubsService.findOne(id);
-    const message = await this.i18n.translate('clubs.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('clubs.GET_ONE_MESSAGE', {
       lang,
       args: { name: club.name },
     });
@@ -102,7 +102,7 @@ export class ClubsController {
     @Body() updateClubDto: UpdateClubDto,
   ) {
     const club = await this.clubsService.update(id, updateClubDto);
-    const message = await this.i18n.translate('clubs.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('clubs.UPDATE_MESSAGE', {
       lang,
       args: { name: club.name },
     });
@@ -114,7 +114,7 @@ export class ClubsController {
   @Serialize(ClubDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const club = await this.clubsService.remove(id);
-    const message = await this.i18n.translate('clubs.DELETE_MESSAGE', {
+    const message = this.i18n.translate('clubs.DELETE_MESSAGE', {
       lang,
       args: { name: club.name },
     });

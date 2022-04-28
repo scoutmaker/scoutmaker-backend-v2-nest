@@ -47,7 +47,7 @@ export class OrganizationSubscriptionsController {
     const subscription = await this.organizationSubscriptionsService.create(
       createOrganizationSubscriptionDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'organization-subscriptions.CREATE_MESSAGE',
       {
         lang,
@@ -73,7 +73,7 @@ export class OrganizationSubscriptionsController {
       paginationOptions,
       query,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'organization-subscriptions.GET_ALL_MESSAGE',
       {
         lang,
@@ -93,7 +93,7 @@ export class OrganizationSubscriptionsController {
     const subscription = await this.organizationSubscriptionsService.findOne(
       id,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'organization-subscriptions.GET_ONE_MESSAGE',
       {
         lang,
@@ -118,7 +118,7 @@ export class OrganizationSubscriptionsController {
       id,
       updateOrganizationSubscriptionDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'organization-subscriptions.UPDATE_MESSAGE',
       {
         lang,
@@ -135,7 +135,7 @@ export class OrganizationSubscriptionsController {
   @Serialize(OrganizationSubscriptionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.organizationSubscriptionsService.remove(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'organization-subscriptions.DELETE_MESSAGE',
       {
         lang,

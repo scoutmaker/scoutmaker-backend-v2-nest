@@ -45,7 +45,7 @@ export class ReportSkillAssessmentTemplatesController {
       createReportSkillAssessmentTemplateDto,
       user.id,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-templates.CREATE_MESSAGE',
       { lang, args: { name: template.name } },
     );
@@ -56,7 +56,7 @@ export class ReportSkillAssessmentTemplatesController {
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const templates = await this.templatesService.findAll();
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-templates.GET_LIST_MESSAGE',
       { lang },
     );
@@ -67,7 +67,7 @@ export class ReportSkillAssessmentTemplatesController {
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.findOne(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-templates.GET_ONE_MESSAGE',
       { lang, args: { name: template.name } },
     );
@@ -86,7 +86,7 @@ export class ReportSkillAssessmentTemplatesController {
       id,
       updateReportSkillAssessmentTemplateDto,
     );
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-templates.UPDATE_MESSAGE',
       { lang, args: { name: template.name } },
     );
@@ -97,7 +97,7 @@ export class ReportSkillAssessmentTemplatesController {
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.remove(id);
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'report-skill-assessment-templates.DELETE_MESSAGE',
       { lang, args: { name: template.name } },
     );

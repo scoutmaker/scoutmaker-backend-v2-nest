@@ -53,7 +53,7 @@ export class PlayersController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const player = await this.playersService.create(createPlayerDto, user.id);
-    const message = await this.i18n.translate('players.CREATE_MESSAGE', {
+    const message = this.i18n.translate('players.CREATE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },
     });
@@ -76,7 +76,7 @@ export class PlayersController {
       query,
       accessFilters,
     );
-    const message = await this.i18n.translate('players.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('players.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
@@ -92,7 +92,7 @@ export class PlayersController {
     @AccessFilters() accessFilters: Prisma.PlayerWhereInput,
   ) {
     const players = await this.playersService.getList(accessFilters);
-    const message = await this.i18n.translate('players.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('players.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, players);
@@ -104,7 +104,7 @@ export class PlayersController {
   @Serialize(PlayerDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const player = await this.playersService.findOne(id);
-    const message = await this.i18n.translate('players.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('players.GET_ONE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },
     });
@@ -121,7 +121,7 @@ export class PlayersController {
     @Body() updatePlayerDto: UpdatePlayerDto,
   ) {
     const player = await this.playersService.update(id, updatePlayerDto);
-    const message = await this.i18n.translate('players.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('players.UPDATE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },
     });
@@ -134,7 +134,7 @@ export class PlayersController {
   @Serialize(PlayerDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const player = await this.playersService.remove(id);
-    const message = await this.i18n.translate('players.DELETE_MESSAGE', {
+    const message = this.i18n.translate('players.DELETE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },
     });

@@ -59,7 +59,7 @@ export class InsiderNotesController {
       createInsiderNoteDto,
       user.id,
     );
-    const message = await this.i18n.translate('insider-notes.CREATE_MESSAGE', {
+    const message = this.i18n.translate('insider-notes.CREATE_MESSAGE', {
       lang,
       args: { docNumber: insiderNote.docNumber },
     });
@@ -82,7 +82,7 @@ export class InsiderNotesController {
       query,
       accessFilters,
     );
-    const message = await this.i18n.translate('insider-notes.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('insider-notes.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -101,10 +101,9 @@ export class InsiderNotesController {
     @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
   ) {
     const insiderNotes = await this.insiderNotesService.getList(accessFilters);
-    const message = await this.i18n.translate(
-      'insider-notes.GET_LIST_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('insider-notes.GET_LIST_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, insiderNotes);
   }
 
@@ -114,7 +113,7 @@ export class InsiderNotesController {
   @Serialize(InsiderNoteDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const insiderNote = await this.insiderNotesService.findOne(id);
-    const message = await this.i18n.translate('insider-notes.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('insider-notes.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: insiderNote.docNumber },
     });
@@ -134,7 +133,7 @@ export class InsiderNotesController {
       id,
       updateInsiderNoteDto,
     );
-    const message = await this.i18n.translate('insider-notes.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('insider-notes.UPDATE_MESSAGE', {
       lang,
       args: { docNumber: insiderNote.docNumber },
     });
@@ -147,7 +146,7 @@ export class InsiderNotesController {
   @Serialize(InsiderNoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const insiderNote = await this.insiderNotesService.remove(id);
-    const message = await this.i18n.translate('insider-notes.DELETE_MESSAGE', {
+    const message = this.i18n.translate('insider-notes.DELETE_MESSAGE', {
       lang,
       args: { docNumber: insiderNote.docNumber },
     });

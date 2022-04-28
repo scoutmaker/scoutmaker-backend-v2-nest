@@ -38,10 +38,10 @@ export class CompetitionGroupsController {
     @Body() createCompetitionGroupDto: CreateCompetitionGroupDto,
   ) {
     const group = await this.groupsService.create(createCompetitionGroupDto);
-    const message = await this.i18n.translate(
-      'competition-groups.CREATE_MESSAGE',
-      { lang, args: { name: group.name } },
-    );
+    const message = this.i18n.translate('competition-groups.CREATE_MESSAGE', {
+      lang,
+      args: { name: group.name },
+    });
     return formatSuccessResponse(message, group);
   }
 
@@ -49,10 +49,9 @@ export class CompetitionGroupsController {
   @ApiResponse(CompetitionGroupDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
     const groups = await this.groupsService.findAll();
-    const message = await this.i18n.translate(
-      'competition-groups.GET_ALL_MESSAGE',
-      { lang },
-    );
+    const message = this.i18n.translate('competition-groups.GET_ALL_MESSAGE', {
+      lang,
+    });
     return formatSuccessResponse(message, groups);
   }
 
@@ -60,10 +59,10 @@ export class CompetitionGroupsController {
   @ApiResponse(CompetitionGroupDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const group = await this.groupsService.findOne(id);
-    const message = await this.i18n.translate(
-      'competition-groups.GET_ONE_MESSAGE',
-      { lang, args: { name: group.name } },
-    );
+    const message = this.i18n.translate('competition-groups.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: group.name },
+    });
     return formatSuccessResponse(message, group);
   }
 
@@ -78,10 +77,10 @@ export class CompetitionGroupsController {
       id,
       updateCompetitionGroupDto,
     );
-    const message = await this.i18n.translate(
-      'competition-groups.UPDATE_MESSAGE',
-      { lang, args: { name: group.name } },
-    );
+    const message = this.i18n.translate('competition-groups.UPDATE_MESSAGE', {
+      lang,
+      args: { name: group.name },
+    });
     return formatSuccessResponse(message, group);
   }
 
@@ -89,10 +88,10 @@ export class CompetitionGroupsController {
   @ApiResponse(CompetitionGroupDto, { type: 'delete' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const group = await this.groupsService.remove(id);
-    const message = await this.i18n.translate(
-      'competition-groups.DELETE_MESSAGE',
-      { lang, args: { name: group.name } },
-    );
+    const message = this.i18n.translate('competition-groups.DELETE_MESSAGE', {
+      lang,
+      args: { name: group.name },
+    });
     return formatSuccessResponse(message, group);
   }
 }

@@ -46,7 +46,7 @@ export class MatchesController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const match = await this.matchesService.create(createMatchDto, user.id);
-    const message = await this.i18n.translate('matches.CREATE_MESSAGE', {
+    const message = this.i18n.translate('matches.CREATE_MESSAGE', {
       lang,
       args: {
         homeTeamName: match.homeTeam.name,
@@ -66,7 +66,7 @@ export class MatchesController {
     @Query() query: FindAllMatchesDto,
   ) {
     const data = await this.matchesService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('matches.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('matches.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -81,7 +81,7 @@ export class MatchesController {
   @Serialize(MatchBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const matches = await this.matchesService.getList();
-    const message = await this.i18n.translate('matches.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('matches.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, matches);
@@ -92,7 +92,7 @@ export class MatchesController {
   @Serialize(MatchDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const match = await this.matchesService.findOne(id);
-    const message = await this.i18n.translate('matches.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('matches.GET_ONE_MESSAGE', {
       lang,
       args: {
         homeTeamName: match.homeTeam.name,
@@ -111,7 +111,7 @@ export class MatchesController {
     @Body() updateMatchDto: UpdateMatchDto,
   ) {
     const match = await this.matchesService.update(id, updateMatchDto);
-    const message = await this.i18n.translate('matches.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('matches.UPDATE_MESSAGE', {
       lang,
       args: {
         homeTeamName: match.homeTeam.name,
@@ -130,7 +130,7 @@ export class MatchesController {
     @Param('id') id: string,
   ) {
     const match = await this.matchesService.remove(id);
-    const message = await this.i18n.translate('matches.DELETE_MESSAGE', {
+    const message = this.i18n.translate('matches.DELETE_MESSAGE', {
       lang,
       args: {
         homeTeamName: match.homeTeam.name,

@@ -46,7 +46,7 @@ export class CompetitionsController {
     const competition = await this.competitionsService.create(
       createCompetitionDto,
     );
-    const message = await this.i18n.translate('competitions.CREATE_MESSAGE', {
+    const message = this.i18n.translate('competitions.CREATE_MESSAGE', {
       lang,
       args: { name: competition.name },
     });
@@ -66,7 +66,7 @@ export class CompetitionsController {
       paginationOptions,
       query,
     );
-    const message = await this.i18n.translate('competitions.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('competitions.GET_ALL_MESSAGE', {
       lang,
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
@@ -78,7 +78,7 @@ export class CompetitionsController {
   @Serialize(CompetitionBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const competition = await this.competitionsService.getList();
-    const message = await this.i18n.translate('competitions.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('competitions.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, competition);
@@ -89,7 +89,7 @@ export class CompetitionsController {
   @Serialize(CompetitionDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const competition = await this.competitionsService.findOne(id);
-    const message = await this.i18n.translate('competitions.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('competitions.GET_ONE_MESSAGE', {
       lang,
       args: { name: competition.name },
     });
@@ -108,7 +108,7 @@ export class CompetitionsController {
       id,
       updateCompetitionDto,
     );
-    const message = await this.i18n.translate('competitions.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('competitions.UPDATE_MESSAGE', {
       lang,
       args: { name: competition.name },
     });
@@ -120,7 +120,7 @@ export class CompetitionsController {
   @Serialize(CompetitionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const competition = await this.competitionsService.remove(id);
-    const message = await this.i18n.translate('competitions.DELETE_MESSAGE', {
+    const message = this.i18n.translate('competitions.DELETE_MESSAGE', {
       lang,
       args: { name: competition.name },
     });

@@ -38,10 +38,10 @@ export class UserFootballRolesController {
     @Body() createUserFootballRoleDto: CreateUserFootballRoleDto,
   ) {
     const role = await this.rolesService.create(createUserFootballRoleDto);
-    const message = await this.i18n.translate(
-      'user-football-roles.CREATE_MESSAGE',
-      { lang, args: { name: role.name } },
-    );
+    const message = this.i18n.translate('user-football-roles.CREATE_MESSAGE', {
+      lang,
+      args: { name: role.name },
+    });
     return formatSuccessResponse(message, role);
   }
 
@@ -49,7 +49,7 @@ export class UserFootballRolesController {
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
     const roles = await this.rolesService.findAll();
-    const message = await this.i18n.translate(
+    const message = this.i18n.translate(
       'user-football-roles.GET_LIST_MESSAGE',
       { lang },
     );
@@ -60,10 +60,10 @@ export class UserFootballRolesController {
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const role = await this.rolesService.findOne(id);
-    const message = await this.i18n.translate(
-      'user-football-roles.GET_ONE_MESSAGE',
-      { lang, args: { name: role.name } },
-    );
+    const message = this.i18n.translate('user-football-roles.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: role.name },
+    });
     return formatSuccessResponse(message, role);
   }
 
@@ -75,15 +75,12 @@ export class UserFootballRolesController {
     @Body() updateUserFootballRoleDto: UpdateUserFootballRoleDto,
   ) {
     const role = await this.rolesService.update(id, updateUserFootballRoleDto);
-    const message = await this.i18n.translate(
-      'user-football-roles.UPDATE_MESSAGE',
-      {
-        lang,
-        args: {
-          name: role.name,
-        },
+    const message = this.i18n.translate('user-football-roles.UPDATE_MESSAGE', {
+      lang,
+      args: {
+        name: role.name,
       },
-    );
+    });
     return formatSuccessResponse(message, role);
   }
 
@@ -91,10 +88,10 @@ export class UserFootballRolesController {
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const role = await this.rolesService.remove(id);
-    const message = await this.i18n.translate(
-      'user-football-roles.DELETE_MESSAGE',
-      { lang, args: { name: role.name } },
-    );
+    const message = this.i18n.translate('user-football-roles.DELETE_MESSAGE', {
+      lang,
+      args: { name: role.name },
+    });
     return formatSuccessResponse(message, role);
   }
 }

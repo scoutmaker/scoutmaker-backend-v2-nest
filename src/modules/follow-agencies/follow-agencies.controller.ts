@@ -31,10 +31,10 @@ export class FollowAgenciesController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followAgenciesService.create(agencyId, user.id);
-    const message = await this.i18n.translate(
-      'follow-agencies.FOLLOW_MESSAGE',
-      { lang, args: { name: follow.agency.name } },
-    );
+    const message = this.i18n.translate('follow-agencies.FOLLOW_MESSAGE', {
+      lang,
+      args: { name: follow.agency.name },
+    });
     return formatSuccessResponse(message, follow);
   }
 
@@ -46,10 +46,10 @@ export class FollowAgenciesController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const follow = await this.followAgenciesService.remove(agencyId, user.id);
-    const message = await this.i18n.translate(
-      'follow-agencies.FOLLOW_MESSAGE',
-      { lang, args: { name: follow.agency.name } },
-    );
+    const message = this.i18n.translate('follow-agencies.FOLLOW_MESSAGE', {
+      lang,
+      args: { name: follow.agency.name },
+    });
     return formatSuccessResponse(message, follow);
   }
 }

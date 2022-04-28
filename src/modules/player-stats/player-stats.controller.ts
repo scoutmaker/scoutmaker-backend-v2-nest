@@ -49,7 +49,7 @@ export class PlayerStatsController {
       createPlayerStatsDto,
       user.id,
     );
-    const message = await this.i18n.translate('player-stats.CREATE_MESSAGE', {
+    const message = this.i18n.translate('player-stats.CREATE_MESSAGE', {
       lang,
       args: {
         playerName: `${stats.player.firstName} ${stats.player.lastName}`,
@@ -72,7 +72,7 @@ export class PlayerStatsController {
       paginationOptions,
       query,
     );
-    const message = await this.i18n.translate('player-stats.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('player-stats.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -87,7 +87,7 @@ export class PlayerStatsController {
   @Serialize(PlayerStatsDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const stats = await this.playerStatsService.findOne(id);
-    const message = await this.i18n.translate('player-stats.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('player-stats.GET_ONE_MESSAGE', {
       lang,
       args: {
         playerName: `${stats.player.firstName} ${stats.player.lastName}`,
@@ -106,7 +106,7 @@ export class PlayerStatsController {
     @Body() updatePlayerStatDto: UpdatePlayerStatsDto,
   ) {
     const stats = await this.playerStatsService.update(id, updatePlayerStatDto);
-    const message = await this.i18n.translate('player-stats.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('player-stats.UPDATE_MESSAGE', {
       lang,
       args: {
         playerName: `${stats.player.firstName} ${stats.player.lastName}`,
@@ -121,7 +121,7 @@ export class PlayerStatsController {
   @Serialize(PlayerStatsDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const stats = await this.playerStatsService.remove(id);
-    const message = await this.i18n.translate('player-stats.DELETE_MESSAGE', {
+    const message = this.i18n.translate('player-stats.DELETE_MESSAGE', {
       lang,
       args: {
         playerName: `${stats.player.firstName} ${stats.player.lastName}`,

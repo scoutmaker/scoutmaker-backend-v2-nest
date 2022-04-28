@@ -44,16 +44,13 @@ export class UserReportAclController {
     @Body() createAceDto: CreateUserReportAceDto,
   ) {
     const accessControlEntry = await this.aclService.create(createAceDto);
-    const message = await this.i18n.translate(
-      'user-report-acl.CREATE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.report.docNumber,
-        },
+    const message = this.i18n.translate('user-report-acl.CREATE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+        docNumber: accessControlEntry.report.docNumber,
       },
-    );
+    });
     return formatSuccessResponse(message, accessControlEntry);
   }
 
@@ -67,16 +64,13 @@ export class UserReportAclController {
     @Query() query: FindAllUserReportAceDto,
   ) {
     const data = await this.aclService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate(
-      'user-report-acl.GET_ALL_MESSAGE',
-      {
-        lang,
-        args: {
-          currentPage: data.page,
-          totalPages: data.totalPages,
-        },
+    const message = this.i18n.translate('user-report-acl.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
       },
-    );
+    });
     return formatSuccessResponse(message, data);
   }
 
@@ -85,16 +79,13 @@ export class UserReportAclController {
   @Serialize(UserReportAceDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.findOne(id);
-    const message = await this.i18n.translate(
-      'user-report-acl.GET_ONE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.report.docNumber,
-        },
+    const message = this.i18n.translate('user-report-acl.GET_ONE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+        docNumber: accessControlEntry.report.docNumber,
       },
-    );
+    });
     return formatSuccessResponse(message, accessControlEntry);
   }
 
@@ -107,16 +98,13 @@ export class UserReportAclController {
     @Body() updateAceDto: UpdateUserReportAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
-    const message = await this.i18n.translate(
-      'user-report-acl.UPDATE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.report.docNumber,
-        },
+    const message = this.i18n.translate('user-report-acl.UPDATE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+        docNumber: accessControlEntry.report.docNumber,
       },
-    );
+    });
     return formatSuccessResponse(message, accessControlEntry);
   }
 
@@ -125,16 +113,13 @@ export class UserReportAclController {
   @Serialize(UserReportAceDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.remove(id);
-    const message = await this.i18n.translate(
-      'user-report-acl.DELETE_MESSAGE',
-      {
-        lang,
-        args: {
-          userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.report.docNumber,
-        },
+    const message = this.i18n.translate('user-report-acl.DELETE_MESSAGE', {
+      lang,
+      args: {
+        userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
+        docNumber: accessControlEntry.report.docNumber,
       },
-    );
+    });
     return formatSuccessResponse(message, accessControlEntry);
   }
 }

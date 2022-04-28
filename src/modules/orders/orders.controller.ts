@@ -46,7 +46,7 @@ export class OrdersController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.create(createOrderDto, user.id);
-    const message = await this.i18n.translate('orders.CREATE_MESSAGE', {
+    const message = this.i18n.translate('orders.CREATE_MESSAGE', {
       lang,
       args: { docNumber: order.docNumber },
     });
@@ -63,7 +63,7 @@ export class OrdersController {
     @Query() query: FindAllOrdersDto,
   ) {
     const data = await this.ordersService.findAll(paginationOptions, query);
-    const message = await this.i18n.translate('orders.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('orders.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -78,7 +78,7 @@ export class OrdersController {
   @Serialize(OrderBasicDataDto)
   async getList(@I18nLang() lang: string, @Query() query: FindAllOrdersDto) {
     const orders = await this.ordersService.getList(query);
-    const message = await this.i18n.translate('orders.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('orders.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, orders);
@@ -89,7 +89,7 @@ export class OrdersController {
   @Serialize(OrderDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const order = await this.ordersService.findOne(id);
-    const message = await this.i18n.translate('orders.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('orders.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: order.docNumber },
     });
@@ -105,7 +105,7 @@ export class OrdersController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.accept(id, user.id, lang);
-    const message = await this.i18n.translate('orders.ACCEPT_MESSAGE', {
+    const message = this.i18n.translate('orders.ACCEPT_MESSAGE', {
       lang,
       args: { docNumber: order.docNumber },
     });
@@ -121,7 +121,7 @@ export class OrdersController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.reject(id, user.id, lang);
-    const message = await this.i18n.translate('orders.REJECT_MESSAGE', {
+    const message = this.i18n.translate('orders.REJECT_MESSAGE', {
       lang,
       args: { docNumber: order.docNumber },
     });
@@ -137,7 +137,7 @@ export class OrdersController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.close(id, user, lang);
-    const message = await this.i18n.translate('orders.CLOSE_MESSAGE', {
+    const message = this.i18n.translate('orders.CLOSE_MESSAGE', {
       lang,
       args: { docNumber: order.docNumber },
     });
@@ -149,7 +149,7 @@ export class OrdersController {
   @Serialize(OrderDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const order = await this.ordersService.remove(id);
-    const message = await this.i18n.translate('orders.DELETE_MESSAGE', {
+    const message = this.i18n.translate('orders.DELETE_MESSAGE', {
       lang,
       args: {
         docNumber: order.docNumber,

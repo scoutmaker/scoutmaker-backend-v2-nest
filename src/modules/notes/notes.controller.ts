@@ -53,7 +53,7 @@ export class NotesController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const note = await this.notesService.create(createNoteDto, user.id);
-    const message = await this.i18n.translate('notes.CREATE_MESSAGE', {
+    const message = this.i18n.translate('notes.CREATE_MESSAGE', {
       lang,
       args: { docNumber: note.docNumber },
     });
@@ -76,7 +76,7 @@ export class NotesController {
       query,
       accessFilters,
     );
-    const message = await this.i18n.translate('notes.GET_ALL_MESSAGE', {
+    const message = this.i18n.translate('notes.GET_ALL_MESSAGE', {
       lang,
       args: {
         currentPage: data.page,
@@ -96,7 +96,7 @@ export class NotesController {
     @AccessFilters() accessFilters: Prisma.NoteWhereInput,
   ) {
     const notes = await this.notesService.getList(query, accessFilters);
-    const message = await this.i18n.translate('notes.GET_LIST_MESSAGE', {
+    const message = this.i18n.translate('notes.GET_LIST_MESSAGE', {
       lang,
     });
     return formatSuccessResponse(message, notes);
@@ -108,7 +108,7 @@ export class NotesController {
   @Serialize(NoteDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const note = await this.notesService.findOne(id);
-    const message = await this.i18n.translate('notes.GET_ONE_MESSAGE', {
+    const message = this.i18n.translate('notes.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: note.docNumber },
     });
@@ -125,7 +125,7 @@ export class NotesController {
     @Body() updateNoteDto: UpdateNoteDto,
   ) {
     const note = await this.notesService.update(id, updateNoteDto);
-    const message = await this.i18n.translate('notes.UPDATE_MESSAGE', {
+    const message = this.i18n.translate('notes.UPDATE_MESSAGE', {
       lang,
       args: { docNumber: note.docNumber },
     });
@@ -138,7 +138,7 @@ export class NotesController {
   @Serialize(NoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const note = await this.notesService.remove(id);
-    const message = await this.i18n.translate('notes.DELETE_MESSAGE', {
+    const message = this.i18n.translate('notes.DELETE_MESSAGE', {
       lang,
       args: { docNumber: note.docNumber },
     });
