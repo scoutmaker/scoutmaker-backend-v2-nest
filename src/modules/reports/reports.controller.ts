@@ -67,6 +67,7 @@ export class ReportsController {
   @Serialize(ReportPaginatedDataDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
+    @CurrentUser() user: CurrentUserDto,
     @PaginationOptions() paginationOptions: ReportsPaginationOptionsDto,
     @AccessFilters() accessFilters: Prisma.ReportWhereInput,
     @Query() query: FindAllReportsDto,
@@ -74,6 +75,7 @@ export class ReportsController {
     const data = await this.reportsService.findAll(
       paginationOptions,
       query,
+      user.id,
       accessFilters,
     );
     const message = this.i18n.translate('reports.GET_ALL_MESSAGE', {
@@ -87,8 +89,12 @@ export class ReportsController {
   @UseGuards(ReadGuard)
   @ApiResponse(ReportDto, { type: 'read' })
   @Serialize(ReportDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
-    const report = await this.reportsService.findOne(id);
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const report = await this.reportsService.findOne(id, user.id);
     const message = this.i18n.translate('reports.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: report.docNumber },

@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  Max,
+  Min,
+} from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
@@ -41,4 +48,9 @@ export class FindAllReportsDto {
   @Min(0)
   @Max(100)
   percentageRatingRangeEnd?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  isLiked?: boolean;
 }

@@ -2,6 +2,7 @@ import { PickType } from '@nestjs/swagger';
 import { ReportStatus } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
+import { LikeReportBasicDataDto } from '../../like-reports/dto/like-report.dto';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
 import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { ReportSkillAssessmentBasicDataDto } from '../../report-skill-assessments/dto/report-skill-assessment.dto';
@@ -93,6 +94,14 @@ export class ReportDto {
   )
   @Expose()
   skills: ReportSkillAssessmentBasicDataDto[];
+
+  @Transform(({ value }) =>
+    plainToInstance(LikeReportBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  likes: LikeReportBasicDataDto[];
 }
 
 export class ReportPaginatedDataDto extends PickType(ReportDto, [
@@ -105,6 +114,7 @@ export class ReportPaginatedDataDto extends PickType(ReportDto, [
   'author',
   'createdAt',
   'status',
+  'likes',
 ]) {}
 
 export class ReportBasicDataDto extends PickType(ReportDto, [
