@@ -15,7 +15,7 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 class CreateReportSkillAssessmentDto {
   @IsOptional()
   @IsInt()
-  @Min(1)
+  @Min(0)
   @Max(20)
   rating?: number;
 
