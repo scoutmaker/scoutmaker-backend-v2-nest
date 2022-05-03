@@ -36,6 +36,20 @@ export class FindAllNotesDto {
   percentageRatingRangeEnd?: number;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsInt()
+  @Min(1950)
+  @Max(2050)
+  playerBornAfter?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsInt()
+  @Min(1950)
+  @Max(2050)
+  playerBornBefore?: number;
+
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;

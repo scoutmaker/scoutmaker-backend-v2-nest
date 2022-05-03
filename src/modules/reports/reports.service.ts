@@ -162,6 +162,8 @@ export class ReportsService {
       teamIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
+      playerBornAfter,
+      playerBornBefore,
       isLiked,
     }: FindAllReportsDto,
     userId?: string,
@@ -198,6 +200,11 @@ export class ReportsService {
                 { meta: { position: { id: { in: positionIds } } } },
                 { player: { primaryPosition: { id: { in: positionIds } } } },
               ],
+            },
+            {
+              player: {
+                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
+              },
             },
             {
               OR: [

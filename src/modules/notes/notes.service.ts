@@ -114,6 +114,8 @@ export class NotesService {
       matchId,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
+      playerBornAfter,
+      playerBornBefore,
       isLiked,
     }: FindAllNotesDto,
     userId?: string,
@@ -165,6 +167,11 @@ export class NotesService {
                 { match: { awayTeam: { id: teamId } } },
                 { meta: { team: { id: teamId } } },
               ],
+            },
+            {
+              player: {
+                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
+              },
             },
           ],
         },
