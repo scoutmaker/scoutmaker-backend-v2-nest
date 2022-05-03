@@ -61,8 +61,13 @@ export class TeamsController {
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: TeamsPaginationOptionsDto,
     @Query() query: FindAllTeamsDto,
+    @CurrentUser() user: CurrentUserDto,
   ) {
-    const data = await this.teamsService.findAll(paginationOptions, query);
+    const data = await this.teamsService.findAll(
+      paginationOptions,
+      query,
+      user.id,
+    );
     const message = this.i18n.translate('teams.GET_ALL_MESSAGE', {
       lang,
       args: {
@@ -87,8 +92,12 @@ export class TeamsController {
   @Get(':id')
   @ApiResponse(TeamDto, { type: 'read' })
   @Serialize(TeamDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
-    const team = await this.teamsService.findOne(id);
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const team = await this.teamsService.findOne(id, user.id);
     const message = this.i18n.translate('teams.GET_ONE_MESSAGE', {
       lang,
       args: { name: team.name },

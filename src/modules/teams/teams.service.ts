@@ -45,7 +45,8 @@ export class TeamsService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
-    { name, clubId, regionId, countryId }: FindAllTeamsDto,
+    { name, clubId, regionId, countryId, isLiked }: FindAllTeamsDto,
+    userId?: string,
   ) {
     let sort: Prisma.TeamOrderByWithRelationInput;
 
@@ -74,6 +75,7 @@ export class TeamsService {
         regionId || countryId
           ? { region: { id: regionId }, country: { id: countryId } }
           : undefined,
+      likes: isLiked ? { some: { userId } } : undefined,
     };
 
     const teams = await this.prisma.team.findMany({
@@ -81,7 +83,14 @@ export class TeamsService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
     });
 
     const total = await this.prisma.team.count({ where });
@@ -98,8 +107,18 @@ export class TeamsService {
     return this.prisma.team.findMany();
   }
 
-  findOne(id: string) {
-    return this.prisma.team.findUnique({ where: { id }, include });
+  findOne(id: string, userId?: string) {
+    return this.prisma.team.findUnique({
+      where: { id },
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
+    });
   }
 
   findAllBySlug(slug: string) {

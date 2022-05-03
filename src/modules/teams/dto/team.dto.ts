@@ -1,8 +1,9 @@
 import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
-import { ClubDto } from '../../clubs/dto/club.dto';
+import { ClubBasicDataDto, ClubDto } from '../../clubs/dto/club.dto';
 import { CompetitionParticipationWithoutTeamDto } from '../../competition-participations/dto/competition-participation.dto';
+import { LikeTeamBasicDataDto } from '../../like-teams/dto/like-team.dto';
 
 export class TeamDto {
   @Expose()
@@ -32,12 +33,20 @@ export class TeamDto {
   lnpId?: string;
 
   @Transform(({ value }) =>
-    plainToInstance(ClubDto, value, {
+    plainToInstance(ClubBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  club: ClubDto;
+  club: ClubBasicDataDto;
+
+  @Transform(({ value }) =>
+    plainToInstance(LikeTeamBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  likes: LikeTeamBasicDataDto[];
 }
 
 export class TeamWithoutCompetitionsAndClubDto extends OmitType(TeamDto, [
