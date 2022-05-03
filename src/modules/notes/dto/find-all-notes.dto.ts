@@ -1,6 +1,13 @@
 import { PickType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  Max,
+  Min,
+} from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
@@ -20,6 +27,12 @@ export class FindAllNotesDto {
   @IsOptional()
   @IsCuid()
   matchId?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

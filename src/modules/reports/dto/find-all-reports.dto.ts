@@ -36,6 +36,12 @@ export class FindAllReportsDto {
   teamIds?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionIds?: string[];
+
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsInt()
   @Min(0)

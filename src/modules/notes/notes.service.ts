@@ -112,6 +112,7 @@ export class NotesService {
       positionId,
       teamId,
       matchId,
+      competitionIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
       playerBornAfter,
@@ -154,6 +155,12 @@ export class NotesService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          meta:
+            competitionIds && competitionIds.length > 0
+              ? {
+                  competition: { id: { in: competitionIds } },
+                }
+              : undefined,
           AND: [
             {
               OR: [

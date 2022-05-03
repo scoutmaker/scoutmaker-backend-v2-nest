@@ -160,6 +160,7 @@ export class ReportsService {
       positionIds,
       matchIds,
       teamIds,
+      competitionIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
       playerBornAfter,
@@ -194,6 +195,12 @@ export class ReportsService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          meta:
+            competitionIds && competitionIds.length > 0
+              ? {
+                  competition: { id: { in: competitionIds } },
+                }
+              : undefined,
           AND: [
             {
               OR: [
