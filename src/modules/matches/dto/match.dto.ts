@@ -6,6 +6,11 @@ import { CompetitionBasicDataDto } from '../../competitions/dto/competition.dto'
 import { SeasonBasicDataDto } from '../../seasons/dto/season.dto';
 import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 
+class Count {
+  notes: number;
+  reports: number;
+}
+
 export class MatchDto {
   @Expose()
   id: string;
@@ -57,6 +62,9 @@ export class MatchDto {
     }),
   )
   season: SeasonBasicDataDto;
+
+  @Expose()
+  _count: Count;
 }
 
 export class MatchBasicDataDto extends PickType(MatchDto, [

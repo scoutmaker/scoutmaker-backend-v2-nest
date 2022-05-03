@@ -21,6 +21,7 @@ const include: Prisma.PlayerInclude = {
       team: true,
     },
   },
+  _count: { select: { notes: true, reports: true } },
 };
 
 const listInclude: Prisma.PlayerInclude = {
@@ -45,6 +46,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
       },
     },
   },
+  _count: { select: { notes: true, reports: true } },
 });
 
 @Injectable()
@@ -110,6 +112,14 @@ export class PlayersService {
       case 'country':
       case 'primaryPosition':
         sort = { [sortBy]: { name: sortingOrder } };
+        break;
+
+      case 'reportsCount':
+        sort = { reports: { _count: sortingOrder } };
+        break;
+
+      case 'notesCount':
+        sort = { notes: { _count: sortingOrder } };
         break;
 
       default:

@@ -11,6 +11,8 @@ enum MatchesSortBy {
   competition = 'competition',
   group = 'group',
   season = 'season',
+  reportsCount = 'reportsCount',
+  notesCount = 'notesCount',
 }
 
 export type MatchesSortByUnion = keyof typeof MatchesSortBy;
