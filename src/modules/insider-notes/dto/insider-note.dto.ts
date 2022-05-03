@@ -1,7 +1,11 @@
-import { PickType } from '@nestjs/swagger';
+import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
-import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
+import { LikeInsiderNoteBasicDataDto } from '../../like-insider-notes/dto/like-insider-note.dto';
+import {
+  PlayerBasicDataWithoutTeamsDto,
+  PlayerSuperBasicDataDto,
+} from '../../players/dto/player.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class InsiderNoteDto {
@@ -35,6 +39,26 @@ export class InsiderNoteDto {
 
   @Expose()
   createdAt: Date;
+
+  @Transform(({ value }) =>
+    plainToInstance(LikeInsiderNoteBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  likes: LikeInsiderNoteBasicDataDto[];
+}
+
+export class InsiderNotePaginatedDataDto extends OmitType(InsiderNoteDto, [
+  'player',
+]) {
+  @Transform(({ value }) =>
+    plainToInstance(PlayerSuperBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  player?: PlayerSuperBasicDataDto;
 }
 
 export class InsiderNoteBasicDataDto extends PickType(InsiderNoteDto, [

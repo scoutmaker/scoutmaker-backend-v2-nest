@@ -26,7 +26,7 @@ const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
 });
 
 const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
-  player: true,
+  player: { include: { country: true, primaryPosition: true } },
   author: true,
   meta: { include: { competition: true, competitionGroup: true } },
 });
@@ -83,7 +83,8 @@ export class InsiderNotesService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: InsiderNotesPaginationOptionsDto,
-    { playerId }: FindAllInsiderNotesDto,
+    { playerId, isLiked }: FindAllInsiderNotesDto,
+    userId?: string,
     accessFilters?: Prisma.InsiderNoteWhereInput,
   ) {
     let sort: Prisma.InsiderNoteOrderByWithRelationInput;
@@ -98,7 +99,10 @@ export class InsiderNotesService {
     }
 
     const where: Prisma.InsiderNoteWhereInput = {
-      AND: [accessFilters, { playerId }],
+      AND: [
+        accessFilters,
+        { playerId, likes: isLiked ? { some: { userId } } : undefined },
+      ],
     };
 
     const insiderNotes = await this.prisma.insiderNote.findMany({
@@ -106,7 +110,14 @@ export class InsiderNotesService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
     });
 
     const total = await this.prisma.insiderNote.count({ where });
@@ -123,7 +134,10 @@ export class InsiderNotesService {
     return this.prisma.insiderNote.findMany({ where: accessFilters, include });
   }
 
-  async findOne(id: string): Promise<SingleInsiderNoteWithInclude> {
+  async findOne(
+    id: string,
+    userId?: string,
+  ): Promise<SingleInsiderNoteWithInclude> {
     const redisKey = `insider-note:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -134,7 +148,14 @@ export class InsiderNotesService {
 
     const insiderNote = await this.prisma.insiderNote.findUnique({
       where: { id },
-      include: singleInclude,
+      include: userId
+        ? {
+            ...singleInclude,
+            likes: {
+              where: { userId },
+            },
+          }
+        : singleInclude,
     });
 
     await this.redis.set(
