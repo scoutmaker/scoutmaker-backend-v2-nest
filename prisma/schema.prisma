@@ -79,6 +79,7 @@ model User {
   likedReports                           LikeReport[]
   likedNotes                             LikeNote[]
   likedInsiderNotes                      LikeInsiderNote[]
+  likedTeams                             LikeTeam[]
 }
 
 model UserFootballRole {
@@ -175,7 +176,8 @@ model Team {
   notesMeta        NoteMeta[]
   insiderNotesMeta InsiderNoteMeta[]
   reportsMeta      ReportMeta[]
-  PlayerStatsMeta  PlayerStatsMeta[]
+  playerStatsMeta  PlayerStatsMeta[]
+  likes            LikeTeam[]
 }
 
 model Season {
@@ -1079,4 +1081,17 @@ model LikeInsiderNote {
   userId        String
 
   @@id([insiderNoteId, userId])
+}
+
+model LikeTeam {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@id([teamId, userId])
 }
