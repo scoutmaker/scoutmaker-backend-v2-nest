@@ -1,7 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { query } from 'express';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
@@ -217,12 +216,12 @@ export class NotesService {
       where: { id },
       include: userId
         ? {
-            ...include,
+            ...singleInclude,
             likes: {
               where: { userId },
             },
           }
-        : include,
+        : singleInclude,
     });
 
     await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);
