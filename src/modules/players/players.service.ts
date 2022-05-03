@@ -9,10 +9,7 @@ import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { FindAllPlayersDto } from './dto/find-all-players.dto';
-import {
-  PlayersPaginationOptionsDto,
-  PlayersSortByUnion,
-} from './dto/players-pagination-options.dto';
+import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 
 const include: Prisma.PlayerInclude = {
@@ -93,58 +90,86 @@ export class PlayersService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
-    query: FindAllPlayersDto,
+    {
+      bornAfter,
+      bornBefore,
+      competitionIds,
+      countryId,
+      footed,
+      isLiked,
+      name,
+      positionIds,
+      teamIds,
+    }: FindAllPlayersDto,
     userId?: string,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
 
-    const regularSortBy: PlayersSortByUnion[] = [
-      'firstName',
-      'lastName',
-      'footed',
-      'height',
-      'weight',
-      'yearOfBirth',
-    ];
+    switch (sortBy) {
+      case 'country':
+      case 'primaryPosition':
+        sort = { [sortBy]: { name: sortingOrder } };
+        break;
 
-    const relationSortBy: PlayersSortByUnion[] = ['country', 'primaryPosition'];
-
-    if (regularSortBy.includes(sortBy)) {
-      sort = { [sortBy]: sortingOrder };
-    }
-
-    if (relationSortBy.includes(sortBy)) {
-      sort = { [sortBy]: { name: sortingOrder } };
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
     }
 
     const where: Prisma.PlayerWhereInput = {
       AND: [
         accessFilters,
         {
-          yearOfBirth: { gte: query.bornAfter, lte: query.bornBefore },
-          footed: query.footed,
-          countryId: query.countryId,
-          teams: query.teamIds
-            ? { some: { teamId: { in: query.teamIds }, endDate: null } }
+          yearOfBirth: { gte: bornAfter, lte: bornBefore },
+          footed: footed,
+          countryId: countryId,
+          teams: teamIds
+            ? { some: { teamId: { in: teamIds }, endDate: null } }
             : undefined,
-          likes: query.isLiked ? { some: { userId } } : undefined,
+          likes: isLiked ? { some: { userId } } : undefined,
           AND: [
             {
               OR: [
-                { firstName: { contains: query.name, mode: 'insensitive' } },
-                { lastName: { contains: query.name, mode: 'insensitive' } },
+                { firstName: { contains: name, mode: 'insensitive' } },
+                { lastName: { contains: name, mode: 'insensitive' } },
               ],
             },
             {
               OR: [
-                { primaryPosition: { id: { in: query.positionIds } } },
+                { primaryPosition: { id: { in: positionIds } } },
                 {
                   secondaryPositions: {
-                    some: { playerPositionId: { in: query.positionIds } },
+                    some: { playerPositionId: { in: positionIds } },
                   },
                 },
               ],
+            },
+            {
+              teams: teamIds
+                ? { some: { teamId: { in: teamIds }, endDate: null } }
+                : undefined,
+            },
+            {
+              teams:
+                competitionIds && competitionIds.length > 0
+                  ? {
+                      some: {
+                        endDate: null,
+                        team: {
+                          competitions: {
+                            some: {
+                              competition: { id: { in: competitionIds } },
+                              season: {
+                                startDate: { lte: new Date() },
+                                endDate: { gte: new Date() },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    }
+                  : undefined,
             },
           ],
         },
