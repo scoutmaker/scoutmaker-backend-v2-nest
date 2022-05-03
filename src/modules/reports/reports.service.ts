@@ -162,7 +162,9 @@ export class ReportsService {
       teamIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
+      isLiked,
     }: FindAllReportsDto,
+    userId?: string,
     accessFilters?: Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.ReportOrderByWithRelationInput;
@@ -189,6 +191,7 @@ export class ReportsService {
             gte: percentageRatingRangeStart,
             lte: percentageRatingRangeEnd,
           },
+          likes: isLiked ? { some: { userId } } : undefined,
           AND: [
             {
               OR: [
@@ -219,7 +222,9 @@ export class ReportsService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include: paginatedDataInclude,
+      include: userId
+        ? { ...paginatedDataInclude, likes: { where: { userId } } }
+        : paginatedDataInclude,
     });
 
     const total = await this.prisma.report.count({ where });
@@ -232,7 +237,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId?: string) {
     const redisKey = `report:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -243,7 +248,9 @@ export class ReportsService {
 
     const report = await this.prisma.report.findUnique({
       where: { id },
-      include: singleInclude,
+      include: userId
+        ? { ...singleInclude, likes: { where: { userId } } }
+        : singleInclude,
     });
 
     await this.redis.set(redisKey, JSON.stringify(report), 'EX', REDIS_TTL);

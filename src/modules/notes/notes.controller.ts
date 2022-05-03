@@ -26,7 +26,11 @@ import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
-import { NoteBasicDataDto, NoteDto } from './dto/note.dto';
+import {
+  NoteBasicDataDto,
+  NoteDto,
+  NotePaginatedDataDto,
+} from './dto/note.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { DeleteGuard } from './guards/delete.guard';
@@ -62,18 +66,20 @@ export class NotesController {
 
   @Get()
   @UseInterceptors(DocumentAccessFiltersInterceptor)
-  @ApiPaginatedResponse(NoteDto)
+  @ApiPaginatedResponse(NotePaginatedDataDto)
   @ApiQuery({ type: NotesPaginationOptionsDto })
-  @Serialize(NoteDto, 'docs')
+  @Serialize(NotePaginatedDataDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: NotesPaginationOptionsDto,
+    @CurrentUser() user: CurrentUserDto,
     @AccessFilters() accessFilters: Prisma.NoteWhereInput,
     @Query() query: FindAllNotesDto,
   ) {
     const data = await this.notesService.findAll(
       paginationOptions,
       query,
+      user.id,
       accessFilters,
     );
     const message = this.i18n.translate('notes.GET_ALL_MESSAGE', {
@@ -106,8 +112,12 @@ export class NotesController {
   @UseGuards(ReadGuard)
   @ApiResponse(NoteDto, { type: 'read' })
   @Serialize(NoteDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
-    const note = await this.notesService.findOne(id);
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const note = await this.notesService.findOne(id, user.id);
     const message = this.i18n.translate('notes.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: note.docNumber },

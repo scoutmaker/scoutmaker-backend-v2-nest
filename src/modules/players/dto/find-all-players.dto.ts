@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
@@ -54,4 +55,9 @@ export class FindAllPlayersDto {
   @IsArray()
   @IsCuid({ each: true })
   teamIds?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  isLiked?: boolean;
 }

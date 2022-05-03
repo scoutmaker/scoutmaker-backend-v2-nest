@@ -75,6 +75,11 @@ model User {
   reportAccessControlList                UserReportAccessControlEntry[]
   noteAccessControlList                  UserNoteAccessControlEntry[]
   insiderNoteAccessControlList           UserInsiderNoteAccessControlEntry[]
+  likedPlayers                           LikePlayer[]
+  likedReports                           LikeReport[]
+  likedNotes                             LikeNote[]
+  likedInsiderNotes                      LikeInsiderNote[]
+  likedTeams                             LikeTeam[]
 }
 
 model UserFootballRole {
@@ -171,7 +176,8 @@ model Team {
   notesMeta        NoteMeta[]
   insiderNotesMeta InsiderNoteMeta[]
   reportsMeta      ReportMeta[]
-  PlayerStatsMeta  PlayerStatsMeta[]
+  playerStatsMeta  PlayerStatsMeta[]
+  likes            LikeTeam[]
 }
 
 model Season {
@@ -360,6 +366,7 @@ model Player {
   stats                         PlayerStats[]
   userAccessControlList         UserPlayerAccessControlEntry[]
   organizationAccessControlList OrganizationPlayerAccessControlEntry[]
+  likes                         LikePlayer[]
 }
 
 model SecondaryPositionsOnPlayers {
@@ -441,6 +448,7 @@ model Note {
   meta                          NoteMeta?
   userAccessControlList         UserNoteAccessControlEntry[]
   organizationAccessControlList OrganizationNoteAccessControlEntry[]
+  likes                         LikeNote[]
 }
 
 model NoteMeta {
@@ -477,6 +485,7 @@ model InsiderNote {
   meta                          InsiderNoteMeta?
   userAccessControlList         UserInsiderNoteAccessControlEntry[]
   organizationAccessControlList OrganizationInsiderNoteAccessControlEntry[]
+  likes                         LikeInsiderNote[]
 }
 
 model InsiderNoteMeta {
@@ -609,6 +618,7 @@ model Report {
   skills                        ReportSkillAssessment[]
   userAccessControlList         UserReportAccessControlEntry[]
   organizationAccessControlList OrganizationReportAccessControlEntry[]
+  likes                         LikeReport[]
 }
 
 model ReportMeta {
@@ -1019,4 +1029,69 @@ model OrganizationInsiderNoteAccessControlEntry {
 
   @@unique([organizationId, insiderNoteId])
   @@map("organization_insider_note_access_control_list")
+}
+
+model LikePlayer {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@id([playerId, userId])
+}
+
+model LikeReport {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  report   Report @relation(fields: [reportId], references: [id])
+  reportId String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@id([reportId, userId])
+}
+
+model LikeNote {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  note   Note   @relation(fields: [noteId], references: [id])
+  noteId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@id([noteId, userId])
+}
+
+model LikeInsiderNote {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  insiderNote   InsiderNote @relation(fields: [insiderNoteId], references: [id])
+  insiderNoteId String
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+
+  @@id([insiderNoteId, userId])
+}
+
+model LikeTeam {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@id([teamId, userId])
 }

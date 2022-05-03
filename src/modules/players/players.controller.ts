@@ -67,6 +67,7 @@ export class PlayersController {
   @Serialize(PlayerDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
+    @CurrentUser() user: CurrentUserDto,
     @PaginationOptions() paginationOptions: PlayersPaginationOptionsDto,
     @AccessFilters() accessFilters: Prisma.PlayerWhereInput,
     @Query() query: FindAllPlayersDto,
@@ -74,6 +75,7 @@ export class PlayersController {
     const data = await this.playersService.findAll(
       paginationOptions,
       query,
+      user.id,
       accessFilters,
     );
     const message = this.i18n.translate('players.GET_ALL_MESSAGE', {
@@ -102,8 +104,12 @@ export class PlayersController {
   @UseGuards(ReadGuard)
   @ApiResponse(PlayerDto, { type: 'read' })
   @Serialize(PlayerDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
-    const player = await this.playersService.findOne(id);
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const player = await this.playersService.findOne(id, user.id);
     const message = this.i18n.translate('players.GET_ONE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },

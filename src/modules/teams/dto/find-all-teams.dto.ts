@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class FindAllTeamsDto {
   @IsOptional()
@@ -16,4 +17,9 @@ export class FindAllTeamsDto {
   @IsOptional()
   @IsString()
   countryId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  isLiked?: boolean;
 }

@@ -114,7 +114,9 @@ export class NotesService {
       matchId,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
+      isLiked,
     }: FindAllNotesDto,
+    userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
   ) {
     let sort: Prisma.NoteOrderByWithRelationInput;
@@ -149,6 +151,7 @@ export class NotesService {
             gte: percentageRatingRangeStart,
             lte: percentageRatingRangeEnd,
           },
+          likes: isLiked ? { some: { userId } } : undefined,
           AND: [
             {
               OR: [
@@ -173,7 +176,14 @@ export class NotesService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
     });
 
     const total = await this.prisma.note.count({ where });
@@ -193,7 +203,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId?: string) {
     const redisKey = `note:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -204,7 +214,14 @@ export class NotesService {
 
     const note = await this.prisma.note.findUnique({
       where: { id },
-      include: singleInclude,
+      include: userId
+        ? {
+            ...singleInclude,
+            likes: {
+              where: { userId },
+            },
+          }
+        : singleInclude,
     });
 
     await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);

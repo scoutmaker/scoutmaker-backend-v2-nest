@@ -3,6 +3,7 @@ import { Foot } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CountryDto } from '../../countries/dto/country.dto';
+import { LikePlayerBasicDataDto } from '../../like-players/dto/like-player.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
 
@@ -83,6 +84,14 @@ export class PlayerDto {
   )
   @Expose()
   teams: TeamAffiliationWithoutPlayerDto[];
+
+  @Transform(({ value }) =>
+    plainToInstance(LikePlayerBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  likes: LikePlayerBasicDataDto[];
 }
 
 export class PlayerBasicDataDto extends PickType(PlayerDto, [

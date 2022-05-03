@@ -29,6 +29,7 @@ import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import {
   InsiderNoteBasicDataDto,
   InsiderNoteDto,
+  InsiderNotePaginatedDataDto,
 } from './dto/insider-note.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
@@ -68,18 +69,20 @@ export class InsiderNotesController {
 
   @Get()
   @UseInterceptors(DocumentAccessFiltersInterceptor)
-  @ApiPaginatedResponse(InsiderNoteDto)
+  @ApiPaginatedResponse(InsiderNotePaginatedDataDto)
   @ApiQuery({ type: InsiderNotesPaginationOptionsDto })
-  @Serialize(InsiderNoteDto, 'docs')
+  @Serialize(InsiderNotePaginatedDataDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: InsiderNotesPaginationOptionsDto,
+    @CurrentUser() user: CurrentUserDto,
     @AccessFilters() accessFilters: Prisma.InsiderNoteWhereInput,
     @Query() query: FindAllInsiderNotesDto,
   ) {
     const data = await this.insiderNotesService.findAll(
       paginationOptions,
       query,
+      user.id,
       accessFilters,
     );
     const message = this.i18n.translate('insider-notes.GET_ALL_MESSAGE', {
@@ -111,8 +114,12 @@ export class InsiderNotesController {
   @UseGuards(ReadGuard)
   @ApiResponse(InsiderNoteDto, { type: 'create' })
   @Serialize(InsiderNoteDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
-    const insiderNote = await this.insiderNotesService.findOne(id);
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const insiderNote = await this.insiderNotesService.findOne(id, user.id);
     const message = this.i18n.translate('insider-notes.GET_ONE_MESSAGE', {
       lang,
       args: { docNumber: insiderNote.docNumber },

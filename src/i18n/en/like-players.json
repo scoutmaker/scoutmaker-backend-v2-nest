@@ -1,0 +1,4 @@
+{
+  "LIKE_MESSAGE": "Successfully liked player - {name}",
+  "UNLIKE_MESSAGE": "Successfully unliked player - {name}"
+}

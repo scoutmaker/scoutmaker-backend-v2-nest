@@ -1,0 +1,4 @@
+{
+  "LIKE_MESSAGE": "Pomyślnie dodano zawodnika do ulubionych - {name}",
+  "UNLIKE_MESSAGE": "Pomyślnie usunięto zawodnika z ulubionych - {name}"
+}

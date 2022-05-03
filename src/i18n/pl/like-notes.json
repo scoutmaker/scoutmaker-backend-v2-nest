@@ -1,0 +1,4 @@
+{
+  "LIKE_MESSAGE": "Pomyślnie dodano notatkę nr {docNumber} do ulubionych",
+  "UNLIKE_MESSAGE": "Pomyślnie usunięto notatkę nr {docNumber} z ulubionych"
+}

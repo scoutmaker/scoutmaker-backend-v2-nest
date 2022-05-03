@@ -1,8 +1,12 @@
-import { PickType } from '@nestjs/swagger';
+import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
+import { LikeNoteBasicDataDto } from '../../like-notes/dto/like-note.dto';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
-import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
+import {
+  PlayerBasicDataWithoutTeamsDto,
+  PlayerSuperBasicDataDto,
+} from '../../players/dto/player.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class NoteDto {
@@ -54,6 +58,25 @@ export class NoteDto {
   )
   @Expose()
   author: UserBasicDataDto;
+
+  @Transform(({ value }) =>
+    plainToInstance(LikeNoteBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  likes: LikeNoteBasicDataDto[];
+}
+
+export class NotePaginatedDataDto extends OmitType(NoteDto, ['player']) {
+  @Transform(({ value }) =>
+    plainToInstance(PlayerSuperBasicDataDto, value, {
+      excludeExtraneousValues: true,
+      enableCircularCheck: true,
+    }),
+  )
+  @Expose()
+  player?: PlayerSuperBasicDataDto;
 }
 
 export class NoteBasicDataDto extends PickType(NoteDto, [
