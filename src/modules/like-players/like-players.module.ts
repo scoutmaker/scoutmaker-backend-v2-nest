@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { LikePlayersService } from './like-players.service';
+
 import { LikePlayersController } from './like-players.controller';
+import { LikePlayersService } from './like-players.service';
 
 @Module({
   controllers: [LikePlayersController],
-  providers: [LikePlayersService]
+  providers: [LikePlayersService],
 })
 export class LikePlayersModule {}
