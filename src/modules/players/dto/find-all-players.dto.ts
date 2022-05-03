@@ -57,6 +57,12 @@ export class FindAllPlayersDto {
   teamIds?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionIds?: string[];
+
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;

@@ -112,8 +112,11 @@ export class NotesService {
       positionId,
       teamId,
       matchId,
+      competitionIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
+      playerBornAfter,
+      playerBornBefore,
       isLiked,
     }: FindAllNotesDto,
     userId?: string,
@@ -152,6 +155,12 @@ export class NotesService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          meta:
+            competitionIds && competitionIds.length > 0
+              ? {
+                  competition: { id: { in: competitionIds } },
+                }
+              : undefined,
           AND: [
             {
               OR: [
@@ -165,6 +174,11 @@ export class NotesService {
                 { match: { awayTeam: { id: teamId } } },
                 { meta: { team: { id: teamId } } },
               ],
+            },
+            {
+              player: {
+                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
+              },
             },
           ],
         },

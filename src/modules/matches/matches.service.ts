@@ -5,10 +5,7 @@ import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { FindAllMatchesDto } from './dto/find-all-matches.dto';
-import {
-  MatchesPaginationOptionsDto,
-  MatchesSortByUnion,
-} from './dto/matches-pagination-options.dto';
+import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 
 const include = Prisma.validator<Prisma.MatchInclude>()({
@@ -17,6 +14,7 @@ const include = Prisma.validator<Prisma.MatchInclude>()({
   competition: true,
   group: true,
   season: true,
+  _count: { select: { notes: true, reports: true } },
 });
 
 const { group, season, ...listInclude } = include;
@@ -55,32 +53,39 @@ export class MatchesService {
   ) {
     let sort: Prisma.MatchOrderByWithRelationInput;
 
-    const regularSortBy: MatchesSortByUnion[] = ['date'];
+    switch (sortBy) {
+      case 'date':
+        sort = { [sortBy]: sortingOrder };
+        break;
 
-    const relationSortBy: MatchesSortByUnion[] = [
-      'homeTeam',
-      'awayTeam',
-      'competition',
-      'group',
-      'season',
-    ];
+      case 'homeTeam':
+      case 'awayTeam':
+      case 'group':
+      case 'season':
+        sort = { [sortBy]: { name: sortingOrder } };
+        break;
 
-    if (regularSortBy.includes(sortBy)) {
-      sort = { [sortBy]: sortingOrder };
-    }
+      case 'competition':
+        sort = {
+          competition: { level: sortingOrder },
+        };
+        break;
 
-    if (relationSortBy.includes(sortBy)) {
-      sort = { [sortBy]: { name: sortingOrder } };
-    }
+      case 'season':
+        sort = { season: { endDate: sortingOrder } };
+        break;
 
-    if (sortBy === 'competition') {
-      sort = {
-        competition: { level: sortingOrder },
-      };
-    }
+      case 'reportsCount':
+        sort = { reports: { _count: sortingOrder } };
+        break;
 
-    if (sortBy === 'season') {
-      sort = { season: { endDate: sortingOrder } };
+      case 'notesCount':
+        sort = { notes: { _count: sortingOrder } };
+        break;
+
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
     }
 
     const where: Prisma.MatchWhereInput = {

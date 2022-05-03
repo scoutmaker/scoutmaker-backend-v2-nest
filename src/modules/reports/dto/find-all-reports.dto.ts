@@ -36,6 +36,12 @@ export class FindAllReportsDto {
   teamIds?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionIds?: string[];
+
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsInt()
   @Min(0)
@@ -48,6 +54,20 @@ export class FindAllReportsDto {
   @Min(0)
   @Max(100)
   percentageRatingRangeEnd?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsInt()
+  @Min(1950)
+  @Max(2050)
+  playerBornAfter?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsInt()
+  @Min(1950)
+  @Max(2050)
+  playerBornBefore?: number;
 
   @IsOptional()
   @IsBoolean()

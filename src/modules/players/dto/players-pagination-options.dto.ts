@@ -13,6 +13,8 @@ enum PlayersSortBy {
   footed = 'footed',
   country = 'country',
   primaryPosition = 'primaryPosition',
+  reportsCount = 'reportsCount',
+  notesCount = 'notesCount',
 }
 
 export type PlayersSortByUnion = keyof typeof PlayersSortBy;

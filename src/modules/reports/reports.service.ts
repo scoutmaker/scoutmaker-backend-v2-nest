@@ -160,8 +160,11 @@ export class ReportsService {
       positionIds,
       matchIds,
       teamIds,
+      competitionIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
+      playerBornAfter,
+      playerBornBefore,
       isLiked,
     }: FindAllReportsDto,
     userId?: string,
@@ -192,12 +195,23 @@ export class ReportsService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          meta:
+            competitionIds && competitionIds.length > 0
+              ? {
+                  competition: { id: { in: competitionIds } },
+                }
+              : undefined,
           AND: [
             {
               OR: [
                 { meta: { position: { id: { in: positionIds } } } },
                 { player: { primaryPosition: { id: { in: positionIds } } } },
               ],
+            },
+            {
+              player: {
+                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
+              },
             },
             {
               OR: [

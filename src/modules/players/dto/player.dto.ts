@@ -7,6 +7,11 @@ import { LikePlayerBasicDataDto } from '../../like-players/dto/like-player.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
 
+class Count {
+  notes: number;
+  reports: number;
+}
+
 export class PlayerDto {
   @Expose()
   id: string;
@@ -92,6 +97,9 @@ export class PlayerDto {
   )
   @Expose()
   likes: LikePlayerBasicDataDto[];
+
+  @Expose()
+  _count: Count;
 }
 
 export class PlayerBasicDataDto extends PickType(PlayerDto, [
