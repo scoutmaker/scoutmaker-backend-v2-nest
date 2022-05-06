@@ -13,26 +13,40 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class FindAllNotesDto {
   @IsOptional()
-  @IsCuid()
-  playerId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  playerIds?: string[];
 
   @IsOptional()
-  @IsCuid()
-  positionId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  positionIds?: string[];
 
   @IsOptional()
-  @IsCuid()
-  teamId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  teamIds?: string[];
 
   @IsOptional()
-  @IsCuid()
-  matchId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  matchIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsCuid({ each: true })
   competitionIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionGroupIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
@@ -68,4 +82,4 @@ export class FindAllNotesDto {
   isLiked?: boolean;
 }
 
-export class GetNotesListDto extends PickType(FindAllNotesDto, ['matchId']) {}
+export class GetNotesListDto extends PickType(FindAllNotesDto, ['matchIds']) {}
