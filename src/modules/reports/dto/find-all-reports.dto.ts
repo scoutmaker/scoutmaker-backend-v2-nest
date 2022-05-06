@@ -42,6 +42,12 @@ export class FindAllReportsDto {
   competitionIds?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionGroupIds?: string[];
+
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsInt()
   @Min(0)

@@ -8,6 +8,7 @@ import {
   calculatePercentageRating,
   calculateSkip,
   formatPaginatedResponse,
+  isIdsArrayFilterDefined,
 } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -108,11 +109,12 @@ export class NotesService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: NotesPaginationOptionsDto,
     {
-      playerId,
-      positionId,
-      teamId,
-      matchId,
+      playerIds,
+      positionIds,
+      teamIds,
+      matchIds,
       competitionIds,
+      competitionGroupIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
       playerBornAfter,
@@ -148,32 +150,50 @@ export class NotesService {
       AND: [
         { ...accessFilters },
         {
-          player: { id: playerId },
-          match: { id: matchId },
+          player: isIdsArrayFilterDefined(playerIds)
+            ? { id: { in: playerIds } }
+            : undefined,
+          match: isIdsArrayFilterDefined(matchIds)
+            ? { id: { in: matchIds } }
+            : undefined,
           percentageRating: {
             gte: percentageRatingRangeStart,
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
-          meta:
-            competitionIds && competitionIds.length > 0
-              ? {
-                  competition: { id: { in: competitionIds } },
-                }
-              : undefined,
           AND: [
             {
-              OR: [
-                { meta: { position: { id: positionId } } },
-                { player: { primaryPosition: { id: positionId } } },
-              ],
+              meta: isIdsArrayFilterDefined(competitionIds)
+                ? {
+                    competition: { id: { in: competitionIds } },
+                  }
+                : undefined,
             },
             {
-              OR: [
-                { match: { homeTeam: { id: teamId } } },
-                { match: { awayTeam: { id: teamId } } },
-                { meta: { team: { id: teamId } } },
-              ],
+              meta: isIdsArrayFilterDefined(competitionGroupIds)
+                ? {
+                    competitionGroup: { id: { in: competitionGroupIds } },
+                  }
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionIds)
+                ? [
+                    { meta: { position: { id: { in: positionIds } } } },
+                    {
+                      player: { primaryPosition: { id: { in: positionIds } } },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(teamIds)
+                ? [
+                    { match: { homeTeam: { id: { in: teamIds } } } },
+                    { match: { awayTeam: { id: { in: teamIds } } } },
+                    { meta: { team: { id: { in: teamIds } } } },
+                  ]
+                : undefined,
             },
             {
               player: {
@@ -210,9 +230,14 @@ export class NotesService {
     });
   }
 
-  getList({ matchId }: GetNotesListDto, accessFilters?: Prisma.NoteWhereInput) {
+  getList(
+    { matchIds }: GetNotesListDto,
+    accessFilters?: Prisma.NoteWhereInput,
+  ) {
     return this.prisma.note.findMany({
-      where: { AND: [{ ...accessFilters }, { match: { id: matchId } }] },
+      where: {
+        AND: [{ ...accessFilters }, { match: { id: { in: matchIds } } }],
+      },
       include: listInclude,
     });
   }

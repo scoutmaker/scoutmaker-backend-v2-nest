@@ -9,6 +9,7 @@ import {
   calculatePercentageRating,
   calculateSkip,
   formatPaginatedResponse,
+  isIdsArrayFilterDefined,
 } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -161,6 +162,7 @@ export class ReportsService {
       matchIds,
       teamIds,
       competitionIds,
+      competitionGroupIds,
       percentageRatingRangeStart,
       percentageRatingRangeEnd,
       playerBornAfter,
@@ -188,43 +190,55 @@ export class ReportsService {
       AND: [
         { ...accessFilters },
         {
-          player: { id: { in: playerIds } },
-          match: matchIds ? { id: { in: matchIds } } : undefined,
+          player: isIdsArrayFilterDefined(playerIds)
+            ? { id: { in: playerIds } }
+            : undefined,
+          match: isIdsArrayFilterDefined(matchIds)
+            ? { id: { in: matchIds } }
+            : undefined,
           percentageRating: {
             gte: percentageRatingRangeStart,
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
-          meta:
-            competitionIds && competitionIds.length > 0
-              ? {
-                  competition: { id: { in: competitionIds } },
-                }
-              : undefined,
           AND: [
             {
-              OR: [
-                { meta: { position: { id: { in: positionIds } } } },
-                { player: { primaryPosition: { id: { in: positionIds } } } },
-              ],
+              meta: isIdsArrayFilterDefined(competitionIds)
+                ? {
+                    competition: { id: { in: competitionIds } },
+                  }
+                : undefined,
+            },
+            {
+              meta: isIdsArrayFilterDefined(competitionGroupIds)
+                ? {
+                    competitionGroup: { id: { in: competitionGroupIds } },
+                  }
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionIds)
+                ? [
+                    { meta: { position: { id: { in: positionIds } } } },
+                    {
+                      player: { primaryPosition: { id: { in: positionIds } } },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(teamIds)
+                ? [
+                    { match: { homeTeam: { id: { in: teamIds } } } },
+                    { match: { awayTeam: { id: { in: teamIds } } } },
+                    { meta: { team: { id: { in: teamIds } } } },
+                  ]
+                : undefined,
             },
             {
               player: {
                 yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
               },
-            },
-            {
-              OR: [
-                teamIds
-                  ? { match: { homeTeam: { id: { in: teamIds } } } }
-                  : undefined,
-                teamIds
-                  ? { match: { awayTeam: { id: { in: teamIds } } } }
-                  : undefined,
-                teamIds
-                  ? { meta: { team: { id: { in: teamIds } } } }
-                  : undefined,
-              ],
             },
           ],
         },

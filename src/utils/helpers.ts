@@ -76,3 +76,7 @@ export function formatSortingEnumErrorMessage(
     ', ',
   )}`;
 }
+
+export function isIdsArrayFilterDefined(ids: string[] | undefined) {
+  return ids && ids.length > 0;
+}

@@ -5,7 +5,11 @@ import Redis from 'ioredis';
 import slugify from 'slugify';
 
 import { REDIS_TTL } from '../../utils/constants';
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { FindAllPlayersDto } from './dto/find-all-players.dto';
@@ -96,7 +100,8 @@ export class PlayersService {
       bornAfter,
       bornBefore,
       competitionIds,
-      countryId,
+      competitionGroupIds,
+      countryIds,
       footed,
       isLiked,
       name,
@@ -132,10 +137,11 @@ export class PlayersService {
         accessFilters,
         {
           yearOfBirth: { gte: bornAfter, lte: bornBefore },
-          footed: footed,
-          countryId: countryId,
-          teams: teamIds
-            ? { some: { teamId: { in: teamIds }, endDate: null } }
+          footed,
+          country: isIdsArrayFilterDefined(countryIds)
+            ? {
+                id: { in: countryIds },
+              }
             : undefined,
           likes: isLiked ? { some: { userId } } : undefined,
           AND: [
@@ -146,40 +152,55 @@ export class PlayersService {
               ],
             },
             {
-              OR: [
-                { primaryPosition: { id: { in: positionIds } } },
-                {
-                  secondaryPositions: {
-                    some: { playerPositionId: { in: positionIds } },
-                  },
-                },
-              ],
+              OR: isIdsArrayFilterDefined(positionIds)
+                ? [
+                    { primaryPosition: { id: { in: positionIds } } },
+                    {
+                      secondaryPositions: {
+                        some: { playerPositionId: { in: positionIds } },
+                      },
+                    },
+                  ]
+                : undefined,
             },
             {
-              teams: teamIds
+              teams: isIdsArrayFilterDefined(teamIds)
                 ? { some: { teamId: { in: teamIds }, endDate: null } }
                 : undefined,
             },
             {
-              teams:
-                competitionIds && competitionIds.length > 0
-                  ? {
-                      some: {
-                        endDate: null,
-                        team: {
-                          competitions: {
-                            some: {
-                              competition: { id: { in: competitionIds } },
-                              season: {
-                                startDate: { lte: new Date() },
-                                endDate: { gte: new Date() },
-                              },
-                            },
+              teams: isIdsArrayFilterDefined(competitionIds)
+                ? {
+                    some: {
+                      endDate: null,
+                      team: {
+                        competitions: {
+                          some: {
+                            competition: { id: { in: competitionIds } },
+                            season: { isActive: true },
                           },
                         },
                       },
-                    }
-                  : undefined,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              teams: isIdsArrayFilterDefined(competitionGroupIds)
+                ? {
+                    some: {
+                      endDate: null,
+                      team: {
+                        competitions: {
+                          some: {
+                            group: { id: { in: competitionGroupIds } },
+                            season: { isActive: true },
+                          },
+                        },
+                      },
+                    },
+                  }
+                : undefined,
             },
           ],
         },
