@@ -6,7 +6,11 @@ import {
 import { Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -47,8 +51,9 @@ export class OrdersService {
 
   private generateWhereClause({
     userId,
-    playerId,
-    matchId,
+    playerIds,
+    matchIds,
+    teamIds,
     status,
     createdAfter,
     createdBefore,
@@ -59,9 +64,24 @@ export class OrdersService {
         lte: createdBefore ? new Date(createdBefore) : undefined,
       },
       status,
-      matchId,
-      playerId,
       scout: { id: userId },
+      player: isIdsArrayFilterDefined(playerIds)
+        ? { id: { in: playerIds } }
+        : undefined,
+      match: isIdsArrayFilterDefined(matchIds)
+        ? { id: { in: matchIds } }
+        : undefined,
+      OR: isIdsArrayFilterDefined(teamIds)
+        ? [
+            { match: { homeTeam: { id: { in: teamIds } } } },
+            { match: { awayTeam: { id: { in: teamIds } } } },
+            {
+              player: {
+                teams: { some: { endDate: null, id: { in: teamIds } } },
+              },
+            },
+          ]
+        : undefined,
     };
   }
 

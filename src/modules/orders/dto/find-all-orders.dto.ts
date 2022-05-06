@@ -1,4 +1,5 @@
-import { IsDateString, IsEnum, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsDateString, IsEnum, IsOptional } from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { OrderStatusEnum } from '../types';
@@ -9,12 +10,22 @@ export class FindAllOrdersDto {
   userId?: string;
 
   @IsOptional()
-  @IsCuid()
-  playerId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  playerIds?: string[];
 
   @IsOptional()
-  @IsCuid()
-  matchId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  teamIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  matchIds?: string[];
 
   @IsOptional()
   @IsEnum(OrderStatusEnum, {
