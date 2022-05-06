@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Team } from '@prisma/client';
 import slugify from 'slugify';
 
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { FindAllTeamsDto } from './dto/find-all-teams.dto';
@@ -45,7 +49,15 @@ export class TeamsService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
-    { name, clubId, regionId, countryId, isLiked }: FindAllTeamsDto,
+    {
+      name,
+      clubId,
+      regionIds,
+      countryIds,
+      isLiked,
+      competitionIds,
+      competitionGroupIds,
+    }: FindAllTeamsDto,
     userId?: string,
   ) {
     let sort: Prisma.TeamOrderByWithRelationInput;
@@ -69,13 +81,41 @@ export class TeamsService {
     }
 
     const where: Prisma.TeamWhereInput = {
-      name,
+      name: { contains: name, mode: 'insensitive' },
       clubId,
-      club:
-        regionId || countryId
-          ? { region: { id: regionId }, country: { id: countryId } }
-          : undefined,
       likes: isLiked ? { some: { userId } } : undefined,
+      AND: [
+        {
+          club: isIdsArrayFilterDefined(regionIds)
+            ? { region: { id: { in: regionIds } } }
+            : undefined,
+        },
+        {
+          club: isIdsArrayFilterDefined(countryIds)
+            ? { country: { id: { in: countryIds } } }
+            : undefined,
+        },
+        {
+          competitions: isIdsArrayFilterDefined(competitionIds)
+            ? {
+                some: {
+                  season: { isActive: true },
+                  competition: { id: { in: competitionIds } },
+                },
+              }
+            : undefined,
+        },
+        {
+          competitions: isIdsArrayFilterDefined(competitionGroupIds)
+            ? {
+                some: {
+                  season: { isActive: true },
+                  group: { id: { in: competitionGroupIds } },
+                },
+              }
+            : undefined,
+        },
+      ],
     };
 
     const teams = await this.prisma.team.findMany({
