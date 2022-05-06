@@ -41,8 +41,10 @@ export class FindAllPlayersDto {
   footed?: FootEnum;
 
   @IsOptional()
-  @IsCuid()
-  countryId?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  countryIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
@@ -61,6 +63,12 @@ export class FindAllPlayersDto {
   @IsArray()
   @IsCuid({ each: true })
   competitionIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsCuid({ each: true })
+  competitionGroupIds?: string[];
 
   @IsOptional()
   @IsBoolean()
