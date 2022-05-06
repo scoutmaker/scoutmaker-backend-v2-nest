@@ -12,7 +12,11 @@ import {
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInsiderNoteDto } from './dto/create-insider-note.dto';
@@ -83,7 +87,14 @@ export class InsiderNotesService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: InsiderNotesPaginationOptionsDto,
-    { playerId, isLiked }: FindAllInsiderNotesDto,
+    {
+      competitionGroupIds,
+      competitionIds,
+      playerIds,
+      positionIds,
+      teamIds,
+      isLiked,
+    }: FindAllInsiderNotesDto,
     userId?: string,
     accessFilters?: Prisma.InsiderNoteWhereInput,
   ) {
@@ -100,8 +111,64 @@ export class InsiderNotesService {
 
     const where: Prisma.InsiderNoteWhereInput = {
       AND: [
-        accessFilters,
-        { playerId, likes: isLiked ? { some: { userId } } : undefined },
+        { ...accessFilters },
+        {
+          player: isIdsArrayFilterDefined(playerIds)
+            ? { id: { in: playerIds } }
+            : undefined,
+          likes: isLiked ? { some: { userId } } : undefined,
+          AND: [
+            {
+              meta: isIdsArrayFilterDefined(competitionIds)
+                ? {
+                    competition: { id: { in: competitionIds } },
+                  }
+                : undefined,
+            },
+            {
+              meta: isIdsArrayFilterDefined(competitionGroupIds)
+                ? {
+                    competitionGroup: { id: { in: competitionGroupIds } },
+                  }
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(teamIds)
+                ? [
+                    {
+                      meta: { team: { id: { in: teamIds } } },
+                    },
+                    {
+                      player: {
+                        teams: {
+                          some: {
+                            endDate: null,
+                            team: { id: { in: teamIds } },
+                          },
+                        },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionIds)
+                ? [
+                    {
+                      player: { primaryPosition: { id: { in: positionIds } } },
+                    },
+                    {
+                      player: {
+                        secondaryPositions: {
+                          some: { position: { id: { in: positionIds } } },
+                        },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
+          ],
+        },
       ],
     };
 
