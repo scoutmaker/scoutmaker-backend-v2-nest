@@ -9,6 +9,13 @@ const include: Prisma.UserInclude = {
   region: { include: { country: true } },
   footballRole: true,
   club: true,
+  _count: {
+    select: {
+      createdReports: true,
+      createdNotes: true,
+      createdInsiderNotes: true,
+    },
+  },
 };
 
 @Injectable()
