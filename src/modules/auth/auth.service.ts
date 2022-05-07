@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { add } from 'date-fns';
@@ -12,6 +13,7 @@ import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { AccountCreatedEvent } from './events/account-created.event';
 
 const include: Prisma.UserInclude = {
   region: { include: { country: true } },
@@ -26,6 +28,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly i18n: I18nService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   getAndVerifyJwt(id: string, role: UserRole, organizationId: string) {
@@ -48,7 +51,7 @@ export class AuthService {
     };
   }
 
-  register(registerUserDto: RegisterUserDto) {
+  async register(registerUserDto: RegisterUserDto, lang: string) {
     // Filter out passwordConfirm from registerUserDto
     const { passwordConfirm, ...rest } = registerUserDto;
 
@@ -67,10 +70,29 @@ export class AuthService {
       days: convertJwtExpiresInToNumber(expiresIn),
     });
 
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: { ...rest, confirmationCode, confirmationCodeExpiryDate },
       include,
     });
+
+    const confirmationUrl = `${this.configService.get<string>(
+      'CLIENT_URL',
+    )}/confirm/${confirmationCode}`;
+
+    // Dispatch account created event
+    this.eventEmitter.emit(
+      'account.created',
+      new AccountCreatedEvent(
+        {
+          email: rest.email,
+          userName: rest.firstName,
+          confirmationUrl,
+        },
+        lang,
+      ),
+    );
+
+    return user;
   }
 
   async login({ email, password }: LoginDto, lang: string) {

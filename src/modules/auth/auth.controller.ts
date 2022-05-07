@@ -50,7 +50,7 @@ export class AuthController {
     @I18nLang() lang: string,
     @Body() registerUserDto: RegisterUserDto,
   ) {
-    const user = await this.authService.register(registerUserDto);
+    const user = await this.authService.register(registerUserDto, lang);
     const message = this.i18n.translate('auth.REGISTER_MESSAGE', {
       lang,
     });

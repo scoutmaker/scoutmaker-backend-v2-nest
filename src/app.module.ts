@@ -1,6 +1,7 @@
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -94,6 +95,7 @@ import { UsersModule } from './modules/users/users.module';
       }),
       inject: [ConfigService],
     }),
+    EventEmitterModule.forRoot(),
     PrismaModule,
     CountriesModule,
     RegionsModule,
