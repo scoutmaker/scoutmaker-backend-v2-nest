@@ -78,5 +78,10 @@ export class FindAllReportsDto {
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
+  hasVideo?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   isLiked?: boolean;
 }

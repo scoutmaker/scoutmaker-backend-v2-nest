@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsOptional } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional } from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
@@ -23,4 +23,9 @@ export class FindAllMatchesDto {
   @IsOptional()
   @IsCuid()
   seasonId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasVideo?: boolean;
 }
