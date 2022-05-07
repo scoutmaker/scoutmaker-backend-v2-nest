@@ -6,6 +6,12 @@ import { ClubBasicDataDto } from '../../clubs/dto/club.dto';
 import { RegionDto } from '../../regions/dto/region.dto';
 import { UserFootballRoleDto } from '../../user-football-roles/dto/user-football-role.dto';
 
+class Count {
+  createdReports: number;
+  createdNotes: number;
+  createdInsiderNotes: number;
+}
+
 export class UserDto {
   @Expose()
   id: string;
@@ -53,6 +59,9 @@ export class UserDto {
   )
   @Expose()
   footballRole?: UserFootballRoleDto;
+
+  @Expose()
+  _count: Count;
 }
 
 export class UserBasicDataDto extends PickType(UserDto, [
