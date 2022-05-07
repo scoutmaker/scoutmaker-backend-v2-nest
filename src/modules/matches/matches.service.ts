@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { FindAllMatchesDto } from './dto/find-all-matches.dto';
@@ -49,12 +53,13 @@ export class MatchesService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: MatchesPaginationOptionsDto,
-    { teamId, competitionIds, groupIds, seasonId }: FindAllMatchesDto,
+    { teamId, competitionIds, groupIds, seasonId, hasVideo }: FindAllMatchesDto,
   ) {
     let sort: Prisma.MatchOrderByWithRelationInput;
 
     switch (sortBy) {
       case 'date':
+      case 'videoUrl':
         sort = { [sortBy]: sortingOrder };
         break;
 
@@ -89,9 +94,14 @@ export class MatchesService {
     }
 
     const where: Prisma.MatchWhereInput = {
-      competition: competitionIds ? { id: { in: competitionIds } } : undefined,
-      group: groupIds ? { id: { in: groupIds } } : undefined,
-      seasonId: seasonId,
+      competition: isIdsArrayFilterDefined(competitionIds)
+        ? { id: { in: competitionIds } }
+        : undefined,
+      group: isIdsArrayFilterDefined(groupIds)
+        ? { id: { in: groupIds } }
+        : undefined,
+      seasonId,
+      videoUrl: hasVideo ? { not: null } : undefined,
       AND: teamId
         ? [
             {

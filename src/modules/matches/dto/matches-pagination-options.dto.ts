@@ -13,6 +13,7 @@ enum MatchesSortBy {
   season = 'season',
   reportsCount = 'reportsCount',
   notesCount = 'notesCount',
+  videoUrl = 'videoUrl',
 }
 
 export type MatchesSortByUnion = keyof typeof MatchesSortBy;
