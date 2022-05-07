@@ -167,6 +167,7 @@ export class ReportsService {
       percentageRatingRangeEnd,
       playerBornAfter,
       playerBornBefore,
+      hasVideo,
       isLiked,
     }: FindAllReportsDto,
     userId?: string,
@@ -201,6 +202,7 @@ export class ReportsService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          videoUrl: hasVideo ? { not: null } : undefined,
           AND: [
             {
               meta: isIdsArrayFilterDefined(competitionIds)
