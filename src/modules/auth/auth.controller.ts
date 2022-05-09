@@ -26,7 +26,9 @@ import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 
 const cookieOptions: CookieOptions = {
@@ -50,7 +52,7 @@ export class AuthController {
     @I18nLang() lang: string,
     @Body() registerUserDto: RegisterUserDto,
   ) {
-    const user = await this.authService.register(registerUserDto);
+    const user = await this.authService.register(registerUserDto, lang);
     const message = this.i18n.translate('auth.REGISTER_MESSAGE', {
       lang,
     });
@@ -144,5 +146,47 @@ export class AuthController {
       accountData,
       expiresIn,
     });
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse(UserDto, { type: 'read' })
+  @Serialize(UserDto)
+  async forgotPassword(
+    @I18nLang() lang: string,
+    @Body() { email }: ForgotPasswordDto,
+  ) {
+    const user = await this.authService.forgotPassword(email, lang);
+    const message = this.i18n.translate(
+      'auth.PASSWORD_RESET_EMAIL_SENT_MESSAGE',
+      {
+        lang,
+        args: { email: user.email },
+      },
+    );
+    return formatSuccessResponse(message, user);
+  }
+
+  @Patch('password-reset/:resetPasswordToken')
+  @ApiResponse(UserDto, { type: 'read' })
+  @Serialize(UserDto, 'user')
+  async resetPassword(
+    @I18nLang() lang: string,
+    @Body() passwordResetDto: PasswordResetDto,
+    @Param('resetPasswordToken') resetPasswordToken: string,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { user, token, expiresIn } = await this.authService.passwordReset(
+      resetPasswordToken,
+      passwordResetDto,
+      lang,
+    );
+
+    const message = this.i18n.translate('auth.UPDATE_PASSWORD_MESSAGE', {
+      lang,
+    });
+
+    response.cookie('token', token, cookieOptions);
+    return formatSuccessResponse(message, { user, expiresIn });
   }
 }

@@ -40,6 +40,12 @@ export class UsersService {
     });
   }
 
+  findByResetPasswordToken(token: string) {
+    return this.prisma.user.findUnique({
+      where: { resetPasswordToken: token },
+    });
+  }
+
   update(id: string, updateUserDto: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },

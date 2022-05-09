@@ -1,5 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { add } from 'date-fns';
@@ -11,7 +17,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { AccountCreatedEvent } from './events/account-created.event';
+import { PasswordResetRequestedEvent } from './events/password-reset-requested.event';
 
 const include: Prisma.UserInclude = {
   region: { include: { country: true } },
@@ -26,6 +35,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly i18n: I18nService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   getAndVerifyJwt(id: string, role: UserRole, organizationId: string) {
@@ -48,7 +58,7 @@ export class AuthService {
     };
   }
 
-  register(registerUserDto: RegisterUserDto) {
+  async register(registerUserDto: RegisterUserDto, lang: string) {
     // Filter out passwordConfirm from registerUserDto
     const { passwordConfirm, ...rest } = registerUserDto;
 
@@ -67,10 +77,29 @@ export class AuthService {
       days: convertJwtExpiresInToNumber(expiresIn),
     });
 
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: { ...rest, confirmationCode, confirmationCodeExpiryDate },
       include,
     });
+
+    const confirmationUrl = `${this.configService.get<string>(
+      'CLIENT_URL',
+    )}/account-confirm/${confirmationCode}`;
+
+    // Dispatch account created event
+    this.eventEmitter.emit(
+      'account.created',
+      new AccountCreatedEvent(
+        {
+          email: rest.email,
+          userName: rest.firstName,
+          confirmationUrl,
+        },
+        lang,
+      ),
+    );
+
+    return user;
   }
 
   async login({ email, password }: LoginDto, lang: string) {
@@ -117,5 +146,100 @@ export class AuthService {
     const { token, expiresIn } = this.getAndVerifyJwt(id, role, organizationId);
 
     return { user, token, expiresIn };
+  }
+
+  async forgotPassword(email: string, lang: string) {
+    // Check if account with the given email exists
+    let user = await this.usersService.findByEmail(email);
+
+    const accountNotFoundMessage = this.i18n.translate(
+      'auth.EMAIL_ACCOUNT_NOT_FOUND_ERROR',
+      { lang },
+    );
+
+    if (!user) {
+      throw new BadRequestException(accountNotFoundMessage);
+    }
+
+    // Get expiresIn value from env variable
+    const expiresIn = this.configService.get<string>(
+      'RESET_PASSWORD_JWT_EXPIRE',
+    );
+
+    // Generate confirmation code
+    const resetPasswordToken = jwt.sign(
+      { id: user.id },
+      this.configService.get<string>('RESET_PASSWORD_JWT_SECRET'),
+      { expiresIn },
+    );
+
+    // Calculate confirmation code expiry date
+    const resetPasswordExpiryDate = add(new Date(), {
+      days: convertJwtExpiresInToNumber(expiresIn),
+    });
+
+    // Save these values to a database
+    user = await this.prisma.user.update({
+      where: { id: user.id },
+      data: { resetPasswordToken, resetPasswordExpiryDate },
+    });
+
+    // Generate password reset URL
+    const resetPasswordUrl = `${this.configService.get<string>(
+      'CLIENT_URL',
+    )}/password-reset/${resetPasswordToken}`;
+
+    // Dispatch password reset requested event
+    this.eventEmitter.emit(
+      'password-reset.requested',
+      new PasswordResetRequestedEvent(
+        {
+          email,
+          userName: user.firstName,
+          resetPasswordUrl,
+        },
+        lang,
+      ),
+    );
+
+    return user;
+  }
+
+  async passwordReset(
+    resetPasswordToken: string,
+    { password }: PasswordResetDto,
+    lang: string,
+  ) {
+    let user = await this.usersService.findByResetPasswordToken(
+      resetPasswordToken,
+    );
+
+    const accountNotFoundMessage = this.i18n.translate(
+      'auth.RESET_PASSWORD_TOKEN_ACCOUNT_NOT_FOUND_ERROR',
+      { lang },
+    );
+
+    if (!user) {
+      throw new ForbiddenException(accountNotFoundMessage);
+    }
+
+    user = await this.prisma.user.update({
+      where: { resetPasswordToken },
+      data: {
+        password,
+        resetPasswordToken: null,
+        resetPasswordExpiryDate: null,
+      },
+    });
+
+    // Generate token
+    const { id, role, organizationId } = user;
+    const { token, expiresIn } = this.getAndVerifyJwt(id, role, organizationId);
+
+    return {
+      user,
+      token,
+      expiresIn,
+    };
   }
 }
