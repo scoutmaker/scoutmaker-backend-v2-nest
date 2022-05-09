@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AccountCreatedEvent } from './events/account-created.event';
 import { PasswordResetRequestedEvent } from './events/password-reset-requested.event';
@@ -201,5 +203,43 @@ export class AuthService {
     );
 
     return user;
+  }
+
+  async passwordReset(
+    resetPasswordToken: string,
+    { password }: PasswordResetDto,
+    lang: string,
+  ) {
+    let user = await this.usersService.findByResetPasswordToken(
+      resetPasswordToken,
+    );
+
+    const accountNotFoundMessage = this.i18n.translate(
+      'auth.RESET_PASSWORD_TOKEN_ACCOUNT_NOT_FOUND_ERROR',
+      { lang },
+    );
+
+    if (!user) {
+      throw new ForbiddenException(accountNotFoundMessage);
+    }
+
+    user = await this.prisma.user.update({
+      where: { resetPasswordToken },
+      data: {
+        password,
+        resetPasswordToken: null,
+        resetPasswordExpiryDate: null,
+      },
+    });
+
+    // Generate token
+    const { id, role, organizationId } = user;
+    const { token, expiresIn } = this.getAndVerifyJwt(id, role, organizationId);
+
+    return {
+      user,
+      token,
+      expiresIn,
+    };
   }
 }

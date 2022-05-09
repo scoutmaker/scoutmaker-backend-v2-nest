@@ -28,6 +28,7 @@ import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 
 const cookieOptions: CookieOptions = {
@@ -164,5 +165,28 @@ export class AuthController {
       },
     );
     return formatSuccessResponse(message, user);
+  }
+
+  @Patch('password-reset/:resetPasswordToken')
+  @ApiResponse(UserDto, { type: 'read' })
+  @Serialize(UserDto, 'user')
+  async resetPassword(
+    @I18nLang() lang: string,
+    @Body() passwordResetDto: PasswordResetDto,
+    @Param('resetPasswordToken') resetPasswordToken: string,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { user, token, expiresIn } = await this.authService.passwordReset(
+      resetPasswordToken,
+      passwordResetDto,
+      lang,
+    );
+
+    const message = this.i18n.translate('auth.UPDATE_PASSWORD_MESSAGE', {
+      lang,
+    });
+
+    response.cookie('token', token, cookieOptions);
+    return formatSuccessResponse(message, { user, expiresIn });
   }
 }
