@@ -1,0 +1,6 @@
+{
+  "GO_TO_MATCH_MESSAGE": "Successfully went to the match - {homeTeamName} vs. {awayTeamName}",
+  "GET_ACTIVE_ATTENDANCE_MESSAGE": "Successfully fetched active match attendance - {homeTeamName} vs. {awayTeamName}",
+  "GET_ACTIVE_ATTENDANCE_NULL_MESSAGE": "You're not attending any match right now",
+  "LEAVE_THE_MATCH_MESSAGE": "Successfully left the match - {homeTeamName} vs. {awayTeamName}"
+}

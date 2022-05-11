@@ -19,6 +19,7 @@ const {
   OrganizationNoteAccessControlEntry,
   UserInsiderNoteAccessControlEntry,
   OrganizationInsiderNoteAccessControlEntry,
+  MatchAttendance,
   ...ModelsToReject
 } = Prisma.ModelName;
 

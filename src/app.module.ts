@@ -35,6 +35,7 @@ import { LikePlayersModule } from './modules/like-players/like-players.module';
 import { LikeReportsModule } from './modules/like-reports/like-reports.module';
 import { LikeTeamsModule } from './modules/like-teams/like-teams.module';
 import { SendgridModule } from './modules/mail/sendgrid.module';
+import { MatchAttendancesModule } from './modules/match-attendances/match-attendances.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -147,6 +148,7 @@ import { UsersModule } from './modules/users/users.module';
     InsiderNotesLikesModule,
     LikeTeamsModule,
     SendgridModule,
+    MatchAttendancesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
