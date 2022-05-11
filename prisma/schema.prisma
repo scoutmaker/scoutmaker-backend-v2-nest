@@ -1099,7 +1099,7 @@ model LikeTeam {
 }
 
 model MatchAttendance {
-  isActive  Boolean? @unique
+  isActive  Boolean?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1110,4 +1110,5 @@ model MatchAttendance {
   userId  String
 
   @@id([matchId, userId])
+  @@unique([userId, isActive])
 }

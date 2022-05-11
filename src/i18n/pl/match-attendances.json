@@ -1,0 +1,6 @@
+{
+  "GO_TO_MATCH_MESSAGE": "Pojechałeś na mecz - {homeTeamName} vs. {awayTeamName}",
+  "GET_ACTIVE_ATTENDANCE_MESSAGE": "Pomyślnie pobrano dane aktywnego meczu - {homeTeamName} vs. {awayTeamName}",
+  "GET_ACTIVE_ATTENDANCE_NULL_MESSAGE": "Nie jesteś aktualnie na meczu",
+  "LEAVE_THE_MATCH_MESSAGE": "Opuściłeś mecz - {homeTeamName} vs. {awayTeamName}"
+}
