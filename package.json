@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "prisma generate && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/main",
     "start:dev": "dotenv -e .env.development -- nest start --watch",
@@ -22,7 +22,8 @@
     "test:watch": "dotenv -e .env.test jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "dotenv -e .env.test -- npx prisma migrate reset --force && npx prisma generate --schema prisma/schema.prisma && jest --config ./test/jest-e2e.json --maxWorkers=1"
+    "test:e2e": "dotenv -e .env.test -- npx prisma migrate reset --force && npx prisma generate --schema prisma/schema.prisma && jest --config ./test/jest-e2e.json --maxWorkers=1",
+    "deploy:staging": "git push heroku develop:main"
   },
   "dependencies": {
     "@liaoliaots/nestjs-redis": "^8.1.0",
