@@ -74,7 +74,7 @@ export class AuthController {
     );
     const message = this.i18n.translate('auth.LOGIN_MESSAGE', { lang });
     response.cookie('token', token, cookieOptions);
-    return formatSuccessResponse(message, { user, expiresIn });
+    return formatSuccessResponse(message, { user, token, expiresIn });
   }
 
   @Get('verify/:confirmationCode')
@@ -144,6 +144,7 @@ export class AuthController {
     response.cookie('token', token, cookieOptions);
     return formatSuccessResponse(message, {
       accountData,
+      token,
       expiresIn,
     });
   }
@@ -187,6 +188,6 @@ export class AuthController {
     });
 
     response.cookie('token', token, cookieOptions);
-    return formatSuccessResponse(message, { user, expiresIn });
+    return formatSuccessResponse(message, { user, token, expiresIn });
   }
 }
