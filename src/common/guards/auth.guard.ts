@@ -12,13 +12,14 @@ export class AuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const { token } = request.cookies || {};
+    const token = request.headers['x-auth-token'];
 
     if (!token) {
       return false;
     }
 
     const decoded = jwt.verify(token, this.configService.get('JWT_SECRET'));
+
     request.user = decoded;
     return true;
   }
