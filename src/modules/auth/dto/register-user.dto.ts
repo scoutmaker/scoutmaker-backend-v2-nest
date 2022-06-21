@@ -62,6 +62,7 @@ export class RegisterUserDto {
   @Min(0)
   activeRadius?: number;
 
+  @IsOptional()
   @IsCuid()
-  regionId: string;
+  regionId?: string;
 }
