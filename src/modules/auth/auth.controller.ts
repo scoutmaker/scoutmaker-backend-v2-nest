@@ -137,7 +137,7 @@ export class AuthController {
       user: accountData,
       token,
       expiresIn,
-    } = await this.authService.updatePassword(user.id, updatePasswordDto);
+    } = await this.authService.updatePassword(user.id, updatePasswordDto, lang);
     const message = this.i18n.translate('auth.UPDATE_PASSWORD_MESSAGE', {
       lang,
     });
