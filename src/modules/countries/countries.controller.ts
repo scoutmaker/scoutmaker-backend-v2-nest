@@ -69,6 +69,7 @@ export class CountriesController {
 
   @Get('list')
   @ApiResponse(CountryDto, { type: 'read' })
+  @Serialize(CountryDto)
   async getList(@I18nLang() lang: string) {
     const countries = await this.countriesService.getList();
     const message = this.i18n.translate('countries.GET_LIST_MESSAGE', {

@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nowy region - {name}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich regionów",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich regionów, strona {currentPage} z {totalPages}",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane regionu - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane regionu - {name}",
   "DELETE_MESSAGE": "Pomyślnie usunięto dane regionu - {name}"
