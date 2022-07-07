@@ -43,8 +43,8 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region                                 Region                              @relation(fields: [regionId], references: [id])
-  regionId                               String
+  region                                 Region?                             @relation(fields: [regionId], references: [id])
+  regionId                               String?
   footballRole                           UserFootballRole?                   @relation(fields: [footballRoleId], references: [id])
   footballRoleId                         String?
   club                                   Club?                               @relation(fields: [clubId], references: [id], name: "club")
