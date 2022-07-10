@@ -39,6 +39,10 @@ export class CountriesService {
     });
   }
 
+  getList() {
+    return this.prisma.country.findMany();
+  }
+
   findOne(id: string) {
     return this.prisma.country.findUnique({
       where: { id },
