@@ -265,6 +265,32 @@ export class PlayersService {
     return player;
   }
 
+  async findOneBySlug(slug: string, userId?: string) {
+    const redisKey = `player:${slug}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const player = await this.prisma.player.findUnique({
+      where: { slug },
+      include: userId
+        ? {
+            ...singleInclude,
+            likes: {
+              where: { userId },
+            },
+          }
+        : singleInclude,
+    });
+
+    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+
+    return player;
+  }
+
   findAllBySlug(slug: string) {
     return this.prisma.player.findMany({ where: { slug } });
   }

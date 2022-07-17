@@ -105,6 +105,22 @@ export class TeamsController {
     return formatSuccessResponse(message, team);
   }
 
+  @Get('by-slug/:slug')
+  @ApiResponse(TeamDto, { type: 'read' })
+  @Serialize(TeamDto)
+  async findOneBySlug(
+    @I18nLang() lang: string,
+    @Param('slug') slug: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const team = await this.teamsService.findOneBySlug(slug, user.id);
+    const message = this.i18n.translate('teams.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: team.name },
+    });
+    return formatSuccessResponse(message, team);
+  }
+
   @Patch(':id')
   @ApiResponse(TeamDto, { type: 'update' })
   @Serialize(TeamDto)
