@@ -117,6 +117,23 @@ export class PlayersController {
     return formatSuccessResponse(message, player);
   }
 
+  @Get('by-slug/:slug')
+  @UseGuards(ReadGuard)
+  @ApiResponse(PlayerDto, { type: 'read' })
+  @Serialize(PlayerDto)
+  async findOneBySlug(
+    @I18nLang() lang: string,
+    @Param('slug') slug: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const player = await this.playersService.findOneBySlug(slug, user.id);
+    const message = this.i18n.translate('players.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: `${player.firstName} ${player.lastName}` },
+    });
+    return formatSuccessResponse(message, player);
+  }
+
   @Patch(':id')
   @UseGuards(UpdateGuard)
   @ApiResponse(PlayerDto, { type: 'update' })

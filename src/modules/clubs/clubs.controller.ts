@@ -93,6 +93,18 @@ export class ClubsController {
     return formatSuccessResponse(message, club);
   }
 
+  @Get('by-slug/:slug')
+  @ApiResponse(ClubDto, { type: 'read' })
+  @Serialize(ClubDto)
+  async findOneBySlug(@I18nLang() lang: string, @Param('slug') slug: string) {
+    const club = await this.clubsService.findOneBySlug(slug);
+    const message = this.i18n.translate('clubs.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: club.name },
+    });
+    return formatSuccessResponse(message, club);
+  }
+
   @Patch(':id')
   @ApiResponse(ClubDto, { type: 'update' })
   @Serialize(ClubDto)

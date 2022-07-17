@@ -6,7 +6,7 @@ import { CreateCompetitionGroupDto } from './dto/create-competition-group.dto';
 import { UpdateCompetitionGroupDto } from './dto/update-competition-group.dto';
 
 const include: Prisma.CompetitionGroupInclude = {
-  competition: true,
+  competition: { include: { country: true } },
   regions: { include: { region: true } },
 };
 

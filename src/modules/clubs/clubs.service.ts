@@ -86,6 +86,10 @@ export class ClubsService {
     return this.prisma.club.findUnique({ where: { id }, include });
   }
 
+  findOneBySlug(slug: string) {
+    return this.prisma.club.findUnique({ where: { slug }, include });
+  }
+
   findAllBySlug(slug: string) {
     return this.prisma.club.findMany({ where: { slug } });
   }

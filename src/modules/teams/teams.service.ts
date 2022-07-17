@@ -161,6 +161,20 @@ export class TeamsService {
     });
   }
 
+  findOneBySlug(slug: string, userId?: string) {
+    return this.prisma.team.findUnique({
+      where: { slug },
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
+    });
+  }
+
   findAllBySlug(slug: string) {
     return this.prisma.team.findMany({ where: { slug } });
   }
