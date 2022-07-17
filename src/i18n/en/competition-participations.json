@@ -1,7 +1,8 @@
 {
   "CREATE_MESSAGE": "Successfully created new competition participation",
+  "GET_ALL_MESSAGE": "Successfully fetched all competitions participations data, page {currentPage} of {totalPages}",
   "COPY_MESSAGE": "Successfully copied participations from season to season",
-  "GET_ALL_MESSAGE": "Successfully fetched all competition participations",
+  "GET_LIST_MESSAGE": "Successfully fetched all competition participations list",
   "GET_ONE_MESSAGE": "Successfully fetched competition participation",
   "UPDATE_MESSAGE": "Successfully updated competition participation",
   "DELETE_MESSAGE": "Successfully deleted competition participation",
