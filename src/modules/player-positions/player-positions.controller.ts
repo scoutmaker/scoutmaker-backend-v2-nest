@@ -47,10 +47,10 @@ export class PlayerPositionsController {
     return formatSuccessResponse(message, position);
   }
 
-  @Get()
+  @Get('list')
   @ApiResponse(PlayerPositionDto, { type: 'read', isArray: true })
   async findAll(@I18nLang() lang: string) {
-    const positions = await this.positionsService.findAll();
+    const positions = await this.positionsService.getList();
     const message = this.i18n.translate('player-positions.GET_LIST_MESSAGE', {
       lang,
     });
