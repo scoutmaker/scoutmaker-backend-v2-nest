@@ -12,7 +12,7 @@ export class PlayerPositionsService {
     return this.prisma.playerPosition.create({ data: createPlayerPositionDto });
   }
 
-  findAll() {
+  getList() {
     return this.prisma.playerPosition.findMany();
   }
 
