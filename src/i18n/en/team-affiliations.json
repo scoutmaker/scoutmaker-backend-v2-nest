@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Successfully created new team affiliation - {playerName} in {teamName}",
+  "GET_ALL_MESSAGE": "Successfully fetched all team affiliations data, page {currentPage} of {totalPages}",
   "GET_LIST_MESSAGE": "Successfully fetched all team affiliations list",
   "GET_ONE_MESSAGE": "Successfully fetched team affiliation data - {playerName} in {teamName}",
   "UPDATE_MESSAGE": "Successfully updated team affiliation data - {playerName} in {teamName}",

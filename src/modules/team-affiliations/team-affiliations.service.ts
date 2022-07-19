@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
+import { FindAllTeamAffiliationsDto } from './dto/find-all-team-affiliations.dto';
+import { TeamAffiliationsPaginationOptionsDto } from './dto/team-affiliations-pagination-options.dto';
 import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';
 
 const include = Prisma.validator<Prisma.TeamAffiliationInclude>()({
@@ -39,7 +42,46 @@ export class TeamAffiliationsService {
     });
   }
 
-  findAll() {
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: TeamAffiliationsPaginationOptionsDto,
+    { playerId, teamId }: FindAllTeamAffiliationsDto,
+  ) {
+    let sort: Prisma.TeamAffiliationOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'teamId':
+        sort = { team: { name: sortingOrder } };
+        break;
+      case 'playerId':
+        sort = { player: { lastName: sortingOrder } };
+      default:
+        sort = { [sortBy]: sortingOrder };
+    }
+
+    const where: Prisma.TeamAffiliationWhereInput = {
+      playerId,
+      teamId,
+    };
+
+    const affiliations = await this.prisma.teamAffiliation.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: sort,
+      include,
+    });
+
+    const total = await this.prisma.teamAffiliation.count({ where });
+
+    return formatPaginatedResponse({
+      docs: affiliations,
+      totalDocs: total,
+      limit,
+      page,
+    });
+  }
+
+  getList() {
     return this.prisma.teamAffiliation.findMany({ include });
   }
 

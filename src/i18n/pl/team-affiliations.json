@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nową przynależność klubową - {playerName} w {teamName}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich przynależności klubowych, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich przynależności klubowych",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane przynależności klubowej - {playerName} w {teamName}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane przynależności klubowej - {playerName} w {teamName}",
