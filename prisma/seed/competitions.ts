@@ -1,9 +1,9 @@
 import { prisma } from './client';
 
 interface GenerateCompetitionsArgs {
-  polandId: string;
-  seniorId: string;
-  leagueId: string;
+  polandId: number;
+  seniorId: number;
+  leagueId: number;
 }
 
 export async function generateCompetitions({

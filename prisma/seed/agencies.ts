@@ -1,6 +1,6 @@
 import { prisma } from './client';
 
-export async function generateAgencies(authorId: string, polandId: string) {
+export async function generateAgencies(authorId: number, polandId: number) {
   const fabrykaFutboluPromise = prisma.agency.create({
     data: {
       name: 'Fabryka Futbolu',
