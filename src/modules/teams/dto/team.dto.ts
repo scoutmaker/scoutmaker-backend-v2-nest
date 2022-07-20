@@ -30,7 +30,7 @@ export class TeamDto {
   transfermarktUrl?: string;
 
   @Expose()
-  lnpId?: string;
+  lnpId?: number;
 
   @Transform(({ value }) =>
     plainToInstance(ClubBasicDataDto, value, {

@@ -4,23 +4,23 @@ import { IsArray, IsBoolean, IsInt, IsOptional } from 'class-validator';
 export class FindAllMatchesDto {
   @IsOptional()
   @IsInt()
-  teamId?: string;
+  teamId?: number;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionIds?: string[];
+  competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  groupIds?: string[];
+  groupIds?: number[];
 
   @IsOptional()
   @IsInt()
-  seasonId?: string;
+  seasonId?: number;
 
   @IsOptional()
   @IsBoolean()

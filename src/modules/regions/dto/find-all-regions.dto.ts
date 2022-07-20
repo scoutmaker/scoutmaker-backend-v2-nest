@@ -7,5 +7,5 @@ export class FindAllRegionsDto {
 
   @IsOptional()
   @IsString()
-  countryId?: string;
+  countryId?: number;
 }

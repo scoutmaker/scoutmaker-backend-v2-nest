@@ -4,17 +4,17 @@ import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
 export class FindAllOrganizationSubscriptionsDto {
   @IsOptional()
   @IsString()
-  organizationId?: string;
+  organizationId?: number;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionIds?: string[];
+  competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionGroupIds?: string[];
+  competitionGroupIds?: number[];
 }

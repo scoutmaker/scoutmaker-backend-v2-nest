@@ -7,5 +7,5 @@ export class FindAllAgenciesDto {
 
   @IsInt()
   @IsOptional()
-  countryId?: string;
+  countryId?: number;
 }

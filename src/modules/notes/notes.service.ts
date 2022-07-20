@@ -121,7 +121,7 @@ export class NotesService {
       playerBornBefore,
       isLiked,
     }: FindAllNotesDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.NoteWhereInput,
   ) {
     let sort: Prisma.NoteOrderByWithRelationInput;
@@ -242,7 +242,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: number, userId?: string) {
+  async findOne(id: number, userId?: number) {
     const redisKey = `note:${id}`;
 
     const cached = await this.redis.get(redisKey);

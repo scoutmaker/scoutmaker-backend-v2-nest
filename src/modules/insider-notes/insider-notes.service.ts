@@ -95,7 +95,7 @@ export class InsiderNotesService {
       teamIds,
       isLiked,
     }: FindAllInsiderNotesDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.InsiderNoteWhereInput,
   ) {
     let sort: Prisma.InsiderNoteOrderByWithRelationInput;
@@ -203,7 +203,7 @@ export class InsiderNotesService {
 
   async findOne(
     id: number,
-    userId?: string,
+    userId?: number,
   ): Promise<SingleInsiderNoteWithInclude> {
     const redisKey = `insider-note:${id}`;
 

@@ -31,7 +31,7 @@ export class CreateMatchDto {
 
   @IsOptional()
   @IsInt()
-  groupId?: string;
+  groupId?: number;
 
   @IsInt()
   seasonId: number;

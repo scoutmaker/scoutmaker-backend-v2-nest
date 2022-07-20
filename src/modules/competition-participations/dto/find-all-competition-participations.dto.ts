@@ -3,17 +3,17 @@ import { IsInt, IsOptional } from 'class-validator';
 export class FindAllCompetitionParticipationsDto {
   @IsOptional()
   @IsInt()
-  seasonId?: string;
+  seasonId?: number;
 
   @IsOptional()
   @IsInt()
-  teamId?: string;
+  teamId?: number;
 
   @IsOptional()
   @IsInt()
-  competitionId?: string;
+  competitionId?: number;
 
   @IsOptional()
   @IsInt()
-  groupId?: string;
+  groupId?: number;
 }

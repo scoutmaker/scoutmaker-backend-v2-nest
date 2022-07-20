@@ -23,17 +23,17 @@ export class FindAllCompetitionsDto {
 
   @IsOptional()
   @IsInt()
-  countryId?: string;
+  countryId?: number;
 
   @IsOptional()
   @IsInt()
-  ageCategoryId?: string;
+  ageCategoryId?: number;
 
   @IsOptional()
   @IsInt()
-  typeId?: string;
+  typeId?: number;
 
   @IsOptional()
   @IsInt()
-  juniorLevelId?: string;
+  juniorLevelId?: number;
 }

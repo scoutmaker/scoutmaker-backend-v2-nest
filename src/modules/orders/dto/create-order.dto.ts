@@ -4,11 +4,11 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 export class CreateOrderDto {
   @IsOptional()
   @IsInt()
-  playerId?: string;
+  playerId?: number;
 
   @IsOptional()
   @IsInt()
-  matchId?: string;
+  matchId?: number;
 
   @IsOptional()
   @IsString()

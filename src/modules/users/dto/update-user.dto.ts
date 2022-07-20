@@ -18,11 +18,11 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsInt()
-  clubId?: string;
+  clubId?: number;
 
   @IsOptional()
   @IsInt()
-  footballRoleId?: string;
+  footballRoleId?: number;
 
   @IsOptional()
   @IsPhoneNumber()
@@ -39,5 +39,5 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsInt()
-  regionId?: string;
+  regionId?: number;
 }

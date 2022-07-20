@@ -170,7 +170,7 @@ export class ReportsService {
       hasVideo,
       isLiked,
     }: FindAllReportsDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.ReportOrderByWithRelationInput;
@@ -267,7 +267,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: number, userId?: string) {
+  async findOne(id: number, userId?: number) {
     const redisKey = `report:${id}`;
 
     const cached = await this.redis.get(redisKey);

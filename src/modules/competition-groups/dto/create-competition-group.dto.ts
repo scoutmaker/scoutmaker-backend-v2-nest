@@ -11,5 +11,5 @@ export class CreateCompetitionGroupDto {
 
   @IsArray()
   @IsInt({ each: true })
-  regionIds: string[];
+  regionIds: number[];
 }

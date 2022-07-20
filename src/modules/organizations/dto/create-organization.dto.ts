@@ -8,5 +8,5 @@ export class CreateOrganizationDto {
 
   @IsArray()
   @IsInt({ each: true })
-  memberIds: string[];
+  memberIds: number[];
 }

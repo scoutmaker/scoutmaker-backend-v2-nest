@@ -108,7 +108,7 @@ export class PlayersService {
       positionIds,
       teamIds,
     }: FindAllPlayersDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
@@ -239,7 +239,7 @@ export class PlayersService {
     });
   }
 
-  async findOne(id: number, userId?: string) {
+  async findOne(id: number, userId?: number) {
     const redisKey = `player:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -265,7 +265,7 @@ export class PlayersService {
     return player;
   }
 
-  async findOneBySlug(slug: string, userId?: string) {
+  async findOneBySlug(slug: string, userId?: number) {
     const redisKey = `player:${slug}`;
 
     const cached = await this.redis.get(redisKey);
