@@ -16,7 +16,7 @@ export class CreateInsiderNoteDto {
   description?: string;
 
   @IsCuid()
-  playerId: string;
+  playerId: number;
 
   @IsOptional()
   @IsCuid()

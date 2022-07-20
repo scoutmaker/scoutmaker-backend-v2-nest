@@ -15,7 +15,7 @@ const include: Prisma.ReportTemplateInclude = {
 export class ReportTemplatesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createReportTemplateDto: CreateReportTemplateDto, authorId: string) {
+  create(createReportTemplateDto: CreateReportTemplateDto, authorId: number) {
     const { skillAssessmentTemplateIds, ...rest } = createReportTemplateDto;
 
     return this.prisma.reportTemplate.create({

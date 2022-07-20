@@ -22,10 +22,10 @@ export class CreatePlayerDto {
   lastName: string;
 
   @IsCuid()
-  countryId: string;
+  countryId: number;
 
   @IsCuid()
-  primaryPositionId: string;
+  primaryPositionId: number;
 
   @IsOptional()
   @IsArray()
@@ -33,7 +33,7 @@ export class CreatePlayerDto {
   secondaryPositionIds?: string[];
 
   @IsCuid()
-  teamId: string;
+  teamId: number;
 
   @IsInt()
   @Min(1950)

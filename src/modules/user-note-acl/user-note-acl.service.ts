@@ -75,13 +75,13 @@ export class UserNoteAclService {
     });
   }
 
-  findOneByUserAndNoteId(userId: string, noteId: string) {
+  findOneByUserAndNoteId(userId: number, noteId: number) {
     return this.prisma.userNoteAccessControlEntry.findUnique({
       where: { userId_noteId: { userId, noteId } },
     });
   }
 
-  findOneByUserAndPlayerId(userId: string, playerId: string) {
+  findOneByUserAndPlayerId(userId: number, playerId: number) {
     return this.prisma.userNoteAccessControlEntry.findFirst({
       where: {
         user: { id: userId },

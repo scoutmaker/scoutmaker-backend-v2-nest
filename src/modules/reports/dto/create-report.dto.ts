@@ -25,7 +25,7 @@ class CreateReportSkillAssessmentDto {
   description?: string;
 
   @IsCuid()
-  templateId: string;
+  templateId: number;
 }
 
 export class CreateReportDto {
@@ -85,10 +85,10 @@ export class CreateReportDto {
   summary?: string;
 
   @IsCuid()
-  templateId: string;
+  templateId: number;
 
   @IsCuid()
-  playerId: string;
+  playerId: number;
 
   @IsOptional()
   @IsCuid()

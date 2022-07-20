@@ -68,7 +68,7 @@ export class ReportsService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createReportDto: CreateReportDto, authorId: string) {
+  async create(createReportDto: CreateReportDto, authorId: number) {
     const {
       templateId,
       playerId,
@@ -300,10 +300,10 @@ export class ReportsService {
       ...rest
     } = updateReportDto;
 
-    let metaPositionId: string;
-    let metaTeamId: string;
-    let metaCompetitionId: string;
-    let metaCompetitionGroupId: string | undefined;
+    let metaPositionId: number;
+    let metaTeamId: number;
+    let metaCompetitionId: number;
+    let metaCompetitionGroupId: number | undefined;
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {

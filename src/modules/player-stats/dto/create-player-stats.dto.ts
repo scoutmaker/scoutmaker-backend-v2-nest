@@ -4,10 +4,10 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreatePlayerStatsDto {
   @IsCuid()
-  playerId: string;
+  playerId: number;
 
   @IsCuid()
-  matchId: string;
+  matchId: number;
 
   @IsOptional()
   @IsInt()

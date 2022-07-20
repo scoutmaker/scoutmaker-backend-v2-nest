@@ -82,8 +82,8 @@ export class OrganizationInsiderNoteAclService {
   }
 
   findOneByOrganizationAndInsiderNoteId(
-    organizationId: string,
-    insiderNoteId: string,
+    organizationId: number,
+    insiderNoteId: number,
   ) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.findUnique({
       where: {
@@ -92,7 +92,7 @@ export class OrganizationInsiderNoteAclService {
     });
   }
 
-  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+  findOneByOrganizationAndPlayerId(organizationId: number, playerId: number) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.findFirst({
       where: {
         organization: { id: organizationId },

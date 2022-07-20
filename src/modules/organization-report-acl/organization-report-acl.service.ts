@@ -80,7 +80,7 @@ export class OrganizationReportAclService {
     });
   }
 
-  findOneByOrganizationAndReportId(organizationId: string, reportId: string) {
+  findOneByOrganizationAndReportId(organizationId: number, reportId: number) {
     return this.prisma.organizationReportAccessControlEntry.findUnique({
       where: {
         organizationId_reportId: { reportId, organizationId },
@@ -88,7 +88,7 @@ export class OrganizationReportAclService {
     });
   }
 
-  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+  findOneByOrganizationAndPlayerId(organizationId: number, playerId: number) {
     return this.prisma.organizationReportAccessControlEntry.findFirst({
       where: {
         organization: { id: organizationId },

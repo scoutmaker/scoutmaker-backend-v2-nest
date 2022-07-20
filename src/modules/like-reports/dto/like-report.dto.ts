@@ -23,8 +23,8 @@ export class LikeReportDto {
 
 export class LikeReportBasicDataDto {
   @Expose()
-  userId: string;
+  userId: number;
 
   @Expose()
-  reportId: string;
+  reportId: number;
 }

@@ -15,7 +15,7 @@ export class ReportSkillAssessmentTemplatesService {
 
   create(
     createReportSkillAssessmentTemplateDto: CreateReportSkillAssessmentTemplateDto,
-    authorId: string,
+    authorId: number,
   ) {
     const { categoryId, ...rest } = createReportSkillAssessmentTemplateDto;
 

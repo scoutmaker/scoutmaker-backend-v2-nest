@@ -73,7 +73,7 @@ export class UserPlayerAclService {
     });
   }
 
-  findOneByUserAndPlayerId(userId: string, playerId: string) {
+  findOneByUserAndPlayerId(userId: number, playerId: number) {
     return this.prisma.userPlayerAccessControlEntry.findUnique({
       where: { userId_playerId: { userId, playerId } },
     });

@@ -12,7 +12,7 @@ const include = Prisma.validator<Prisma.FollowScoutInclude>()({
 export class FollowScoutsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(scoutId: string, userId: string) {
+  create(scoutId: number, userId: number) {
     return this.prisma.followScout.create({
       data: {
         scout: { connect: { id: scoutId } },
@@ -22,7 +22,7 @@ export class FollowScoutsService {
     });
   }
 
-  remove(scoutId: string, userId: string) {
+  remove(scoutId: number, userId: number) {
     return this.prisma.followScout.delete({
       where: {
         scoutId_followerId: { scoutId, followerId: userId },

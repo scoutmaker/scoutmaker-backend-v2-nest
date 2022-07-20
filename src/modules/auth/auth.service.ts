@@ -38,7 +38,7 @@ export class AuthService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  getAndVerifyJwt(id: number, role: UserRole, organizationId: string) {
+  getAndVerifyJwt(id: number, role: UserRole, organizationId: number) {
     const token = jwt.sign(
       { id, role, organizationId },
       this.configService.get<string>('JWT_SECRET'),

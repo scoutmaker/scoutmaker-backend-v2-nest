@@ -23,8 +23,8 @@ export class LikeTeamDto {
 
 export class LikeTeamBasicDataDto {
   @Expose()
-  userId: string;
+  userId: number;
 
   @Expose()
-  teamId: string;
+  teamId: number;
 }

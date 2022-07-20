@@ -8,7 +8,7 @@ export class CreateCompetitionGroupDto {
   name: string;
 
   @IsCuid()
-  competitionId: string;
+  competitionId: number;
 
   @IsArray()
   @IsCuid({ each: true })

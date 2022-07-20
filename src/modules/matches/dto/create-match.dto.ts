@@ -23,18 +23,18 @@ export class CreateMatchDto {
   videoUrl?: string;
 
   @IsCuid()
-  homeTeamId: string;
+  homeTeamId: number;
 
   @IsCuid()
-  awayTeamId: string;
+  awayTeamId: number;
 
   @IsCuid()
-  competitionId: string;
+  competitionId: number;
 
   @IsOptional()
   @IsCuid()
   groupId?: string;
 
   @IsCuid()
-  seasonId: string;
+  seasonId: number;
 }

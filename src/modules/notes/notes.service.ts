@@ -42,7 +42,7 @@ export class NotesService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createNoteDto: CreateNoteDto, authorId: string) {
+  async create(createNoteDto: CreateNoteDto, authorId: number) {
     const {
       playerId,
       matchId,
@@ -61,10 +61,10 @@ export class NotesService {
       percentageRating = calculatePercentageRating(rating, maxRatingScore);
     }
 
-    let metaPositionId: string;
-    let metaTeamId: string;
-    let metaCompetitionId: string;
-    let metaCompetitionGroupId: string | undefined;
+    let metaPositionId: number;
+    let metaTeamId: number;
+    let metaCompetitionId: number;
+    let metaCompetitionGroupId: number | undefined;
 
     // If there's playerId supplied, we need to create note meta
     if (playerId) {

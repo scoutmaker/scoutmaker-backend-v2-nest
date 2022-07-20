@@ -2,5 +2,5 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateFollowTeamDto {
   @IsCuid()
-  teamId: string;
+  teamId: number;
 }

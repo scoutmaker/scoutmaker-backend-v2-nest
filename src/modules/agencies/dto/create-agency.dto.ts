@@ -16,7 +16,7 @@ export class CreateAgencyDto {
   name: string;
 
   @IsCuid()
-  countryId: string;
+  countryId: number;
 
   @IsOptional()
   @IsString()

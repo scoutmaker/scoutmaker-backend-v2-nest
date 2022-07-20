@@ -14,7 +14,7 @@ const include: Prisma.AgencyInclude = { country: true };
 export class AgenciesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createAgencyDto: CreateAgencyDto, authorId: string) {
+  async create(createAgencyDto: CreateAgencyDto, authorId: number) {
     const { countryId, ...rest } = createAgencyDto;
 
     const slug = await this.generateSlug(rest.name);

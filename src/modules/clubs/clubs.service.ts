@@ -18,7 +18,7 @@ const include: Prisma.ClubInclude = {
 export class ClubsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createClubDto: CreateClubDto, authorId: string) {
+  async create(createClubDto: CreateClubDto, authorId: number) {
     const { regionId, countryId, ...rest } = createClubDto;
 
     const slug = await this.generateSlug(rest.name);

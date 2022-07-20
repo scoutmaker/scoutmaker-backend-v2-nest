@@ -80,7 +80,7 @@ export class OrganizationPlayerAclService {
     });
   }
 
-  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+  findOneByOrganizationAndPlayerId(organizationId: number, playerId: number) {
     return this.prisma.organizationPlayerAccessControlEntry.findUnique({
       where: {
         organizationId_playerId: { organizationId, playerId },

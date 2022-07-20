@@ -2,11 +2,11 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class FindUniqueCompetitionParticipationDto {
   @IsCuid()
-  teamId: string;
+  teamId: number;
 
   @IsCuid()
-  competitionId: string;
+  competitionId: number;
 
   @IsCuid()
-  seasonId: string;
+  seasonId: number;
 }

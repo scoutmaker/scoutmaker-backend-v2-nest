@@ -24,7 +24,7 @@ const include: Prisma.TeamInclude = {
 export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTeamDto: CreateTeamDto, authorId: string) {
+  async create(createTeamDto: CreateTeamDto, authorId: number) {
     const { clubId, competitionId, groupId, ...rest } = createTeamDto;
 
     const slug = await this.generateSlug(rest.name);

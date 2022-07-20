@@ -9,10 +9,10 @@ export class CreateTeamDto {
   name: string;
 
   @IsCuid()
-  clubId: string;
+  clubId: number;
 
   @IsCuid()
-  competitionId: string;
+  competitionId: number;
 
   @IsOptional()
   @IsCuid()

@@ -4,7 +4,7 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateOrganizationSubscriptionDto {
   @IsCuid()
-  organizationId: string;
+  organizationId: number;
 
   @IsDateString()
   startDate: string;

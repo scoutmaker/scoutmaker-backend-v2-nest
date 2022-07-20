@@ -5,10 +5,10 @@ import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateUserNoteAceDto {
   @IsCuid()
-  userId: string;
+  userId: number;
 
   @IsCuid()
-  noteId: string;
+  noteId: number;
 
   @IsOptional()
   @IsEnum(AccessControlEntryPermissionLevelEnum, {
