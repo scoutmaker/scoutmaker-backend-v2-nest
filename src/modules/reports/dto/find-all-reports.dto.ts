@@ -8,43 +8,41 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
-
 export class FindAllReportsDto {
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsInt({ each: true })
   playerIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsInt({ each: true })
   positionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsInt({ each: true })
   matchIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsInt({ each: true })
   teamIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsInt({ each: true })
   competitionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsInt({ each: true })
   competitionGroupIds?: string[];
 
   @IsOptional()
