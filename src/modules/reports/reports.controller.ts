@@ -55,7 +55,7 @@ export class ReportsController {
     const report = await this.reportsService.create(createReportDto, user.id);
     const message = this.i18n.translate('reports.CREATE_MESSAGE', {
       lang,
-      args: { docNumber: report.docNumber },
+      args: { docNumber: report.id },
     });
     return formatSuccessResponse(message, report);
   }
@@ -97,7 +97,7 @@ export class ReportsController {
     const report = await this.reportsService.findOne(id, user.id);
     const message = this.i18n.translate('reports.GET_ONE_MESSAGE', {
       lang,
-      args: { docNumber: report.docNumber },
+      args: { docNumber: report.id },
     });
     return formatSuccessResponse(message, report);
   }
@@ -114,7 +114,7 @@ export class ReportsController {
     const report = await this.reportsService.update(id, updateReportDto);
     const message = this.i18n.translate('reports.UPDATE_MESSAGE', {
       lang,
-      args: { docNumber: report.docNumber },
+      args: { docNumber: report.id },
     });
     return formatSuccessResponse(message, report);
   }
@@ -127,7 +127,7 @@ export class ReportsController {
     const report = await this.reportsService.remove(id);
     const message = this.i18n.translate('reports.DELETE_MESSAGE', {
       lang,
-      args: { docNumber: report.docNumber },
+      args: { docNumber: report.id },
     });
     return formatSuccessResponse(message, report);
   }

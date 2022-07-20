@@ -48,7 +48,7 @@ export class OrdersController {
     const order = await this.ordersService.create(createOrderDto, user.id);
     const message = this.i18n.translate('orders.CREATE_MESSAGE', {
       lang,
-      args: { docNumber: order.docNumber },
+      args: { docNumber: order.id },
     });
     return formatSuccessResponse(message, order);
   }
@@ -91,7 +91,7 @@ export class OrdersController {
     const order = await this.ordersService.findOne(id);
     const message = this.i18n.translate('orders.GET_ONE_MESSAGE', {
       lang,
-      args: { docNumber: order.docNumber },
+      args: { docNumber: order.id },
     });
     return formatSuccessResponse(message, order);
   }
@@ -107,7 +107,7 @@ export class OrdersController {
     const order = await this.ordersService.accept(id, user.id, lang);
     const message = this.i18n.translate('orders.ACCEPT_MESSAGE', {
       lang,
-      args: { docNumber: order.docNumber },
+      args: { docNumber: order.id },
     });
     return formatSuccessResponse(message, order);
   }
@@ -123,7 +123,7 @@ export class OrdersController {
     const order = await this.ordersService.reject(id, user.id, lang);
     const message = this.i18n.translate('orders.REJECT_MESSAGE', {
       lang,
-      args: { docNumber: order.docNumber },
+      args: { docNumber: order.id },
     });
     return formatSuccessResponse(message, order);
   }
@@ -139,7 +139,7 @@ export class OrdersController {
     const order = await this.ordersService.close(id, user, lang);
     const message = this.i18n.translate('orders.CLOSE_MESSAGE', {
       lang,
-      args: { docNumber: order.docNumber },
+      args: { docNumber: order.id },
     });
     return formatSuccessResponse(message, order);
   }
@@ -152,7 +152,7 @@ export class OrdersController {
     const message = this.i18n.translate('orders.DELETE_MESSAGE', {
       lang,
       args: {
-        docNumber: order.docNumber,
+        docNumber: order.id,
       },
     });
     return formatSuccessResponse(message, order);

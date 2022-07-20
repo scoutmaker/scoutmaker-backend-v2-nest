@@ -32,7 +32,7 @@ export class DeleteGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the note to determine if they can delete it
-    const note = await this.notesService.findOne(request.params.id);
+    const note = await this.notesService.findOne(parseInt(request.params.id));
 
     // Users can delete their own notes
     if (user.id === note.author.id) {
@@ -68,7 +68,7 @@ export class DeleteGuard implements CanActivate {
 
     const message = this.i18n.translate('notes.DELETE_ACCESS_ERROR', {
       lang,
-      args: { docNumber: note.docNumber },
+      args: { docNumber: note.id },
     });
 
     throw new UnauthorizedException(message);

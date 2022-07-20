@@ -48,7 +48,7 @@ export class UserReportAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.report.docNumber,
+        docNumber: accessControlEntry.report.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -83,7 +83,7 @@ export class UserReportAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.report.docNumber,
+        docNumber: accessControlEntry.report.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -102,7 +102,7 @@ export class UserReportAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.report.docNumber,
+        docNumber: accessControlEntry.report.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -117,7 +117,7 @@ export class UserReportAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.report.docNumber,
+        docNumber: accessControlEntry.report.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);

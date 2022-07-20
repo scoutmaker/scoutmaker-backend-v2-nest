@@ -50,7 +50,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -92,7 +92,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -114,7 +114,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -132,7 +132,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );

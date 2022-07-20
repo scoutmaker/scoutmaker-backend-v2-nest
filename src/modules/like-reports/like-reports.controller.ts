@@ -33,7 +33,7 @@ export class LikeReportsController {
     const like = await this.likeReportsService.like(reportId, user.id);
     const message = this.i18n.translate('like-reports.LIKE_MESSAGE', {
       lang,
-      args: { docNumber: like.report.docNumber },
+      args: { docNumber: like.report.id },
     });
     return formatSuccessResponse(message, like);
   }
@@ -48,7 +48,7 @@ export class LikeReportsController {
     const unlike = await this.likeReportsService.unlike(reportId, user.id);
     const message = this.i18n.translate('like-reports.UNLIKE_MESSAGE', {
       lang,
-      args: { docNumber: unlike.report.docNumber },
+      args: { docNumber: unlike.report.id },
     });
     return formatSuccessResponse(message, unlike);
   }

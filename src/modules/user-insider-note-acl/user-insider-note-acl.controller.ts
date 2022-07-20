@@ -50,7 +50,7 @@ export class UserInsiderNoteAclController {
         lang,
         args: {
           userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -92,7 +92,7 @@ export class UserInsiderNoteAclController {
         lang,
         args: {
           userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -114,7 +114,7 @@ export class UserInsiderNoteAclController {
         lang,
         args: {
           userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -132,7 +132,7 @@ export class UserInsiderNoteAclController {
         lang,
         args: {
           userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );

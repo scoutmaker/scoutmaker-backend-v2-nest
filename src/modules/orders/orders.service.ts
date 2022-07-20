@@ -140,7 +140,7 @@ export class OrdersService {
     if (order.status !== 'OPEN') {
       const message = this.i18n.translate('orders.ACCEPT_STATUS_ERROR', {
         lang,
-        args: { docNumber: order.docNumber },
+        args: { docNumber: order.id },
       });
       throw new BadRequestException(message);
     }
@@ -165,7 +165,7 @@ export class OrdersService {
     if (order.status !== 'ACCEPTED') {
       const message = this.i18n.translate('orders.REJECT_STATUS_ERROR', {
         lang,
-        args: { docNumber: order.docNumber },
+        args: { docNumber: order.id },
       });
       throw new BadRequestException(message);
     }
@@ -173,7 +173,7 @@ export class OrdersService {
     if (order.scoutId !== userId) {
       const message = this.i18n.translate('orders.REJECT_ASSIGNEE_ERROR', {
         lang,
-        args: { docNumber: order.docNumber },
+        args: { docNumber: order.id },
       });
       throw new BadRequestException(message);
     }
@@ -182,7 +182,7 @@ export class OrdersService {
       const message = this.i18n.translate('orders.REJECT_REPORTS_ERROR', {
         lang,
         args: {
-          docNumber: order.docNumber,
+          docNumber: order.id,
           reportsCount: order.reports.length,
         },
       });
@@ -209,7 +209,7 @@ export class OrdersService {
     if (order.authorId !== user.id || user.role !== 'ADMIN') {
       const message = this.i18n.translate('orders.CLOSE_ROLE_ERROR', {
         lang,
-        args: { docNumber: order.docNumber },
+        args: { docNumber: order.id },
       });
       throw new UnauthorizedException(message);
     }
