@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
@@ -35,7 +43,10 @@ export class UsersController {
   @Get(':id')
   @ApiResponse(UserDto, { type: 'read' })
   @Serialize(UserDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const user = await this.usersService.findOne(id);
     const message = this.i18n.translate('users.GET_ONE_MESSAGE', {
       lang,
@@ -49,7 +60,7 @@ export class UsersController {
   @Serialize(UserDto)
   async changeRole(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() { role }: ChangeRoleDto,
   ) {
     const user = await this.usersService.changeRole(id, role);

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -87,7 +88,10 @@ export class OrdersController {
   @Get(':id')
   @ApiResponse(OrderDto, { type: 'read' })
   @Serialize(OrderDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const order = await this.ordersService.findOne(id);
     const message = this.i18n.translate('orders.GET_ONE_MESSAGE', {
       lang,
@@ -101,7 +105,7 @@ export class OrdersController {
   @Serialize(OrderDto)
   async accept(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.accept(id, user.id, lang);
@@ -117,7 +121,7 @@ export class OrdersController {
   @Serialize(OrderDto)
   async reject(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.reject(id, user.id, lang);
@@ -133,7 +137,7 @@ export class OrdersController {
   @Serialize(OrderDto)
   async close(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const order = await this.ordersService.close(id, user, lang);
@@ -147,7 +151,10 @@ export class OrdersController {
   @Delete(':id')
   @ApiResponse(OrderDto, { type: 'delete' })
   @Serialize(OrderDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: number) {
+  async remove(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const order = await this.ordersService.remove(id);
     const message = this.i18n.translate('orders.DELETE_MESSAGE', {
       lang,

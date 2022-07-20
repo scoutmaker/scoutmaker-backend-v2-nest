@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -59,7 +60,10 @@ export class PlayerPositionsController {
 
   @Get(':id')
   @ApiResponse(PlayerPositionDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const position = await this.positionsService.findOne(id);
     const message = this.i18n.translate('player-positions.GET_ONE_MESSAGE', {
       lang,
@@ -72,7 +76,7 @@ export class PlayerPositionsController {
   @ApiResponse(PlayerPositionDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePlayerPositionDto: UpdatePlayerPositionDto,
   ) {
     const position = await this.positionsService.update(
@@ -88,7 +92,10 @@ export class PlayerPositionsController {
 
   @Delete(':id')
   @ApiResponse(PlayerPositionDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: number) {
+  async remove(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const position = await this.positionsService.remove(id);
     const message = this.i18n.translate('player-positions.DELETE_MESSAGE', {
       lang,

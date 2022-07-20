@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -65,7 +66,10 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const template = await this.templatesService.findOne(id);
     const message = this.i18n.translate(
       'report-skill-assessment-templates.GET_ONE_MESSAGE',
@@ -78,7 +82,7 @@ export class ReportSkillAssessmentTemplatesController {
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body()
     updateReportSkillAssessmentTemplateDto: UpdateReportSkillAssessmentTemplateDto,
   ) {
@@ -95,7 +99,10 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: number) {
+  async remove(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const template = await this.templatesService.remove(id);
     const message = this.i18n.translate(
       'report-skill-assessment-templates.DELETE_MESSAGE',

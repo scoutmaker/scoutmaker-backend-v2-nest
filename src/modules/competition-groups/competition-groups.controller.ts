@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -62,7 +63,10 @@ export class CompetitionGroupsController {
   @Get(':id')
   @ApiResponse(CompetitionGroupDto, { type: 'read' })
   @Serialize(CompetitionGroupDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const group = await this.groupsService.findOne(id);
     const message = this.i18n.translate('competition-groups.GET_ONE_MESSAGE', {
       lang,
@@ -76,7 +80,7 @@ export class CompetitionGroupsController {
   @Serialize(CompetitionGroupDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateCompetitionGroupDto: UpdateCompetitionGroupDto,
   ) {
     const group = await this.groupsService.update(
@@ -93,7 +97,10 @@ export class CompetitionGroupsController {
   @Delete(':id')
   @ApiResponse(CompetitionGroupDto, { type: 'delete' })
   @Serialize(CompetitionGroupDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: number) {
+  async remove(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const group = await this.groupsService.remove(id);
     const message = this.i18n.translate('competition-groups.DELETE_MESSAGE', {
       lang,
