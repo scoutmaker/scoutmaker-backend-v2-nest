@@ -1,19 +1,21 @@
 import { Transform } from 'class-transformer';
 import { IsArray, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
+import { mapStringToNumber } from '../../../utils/helpers';
+
 export class FindAllMatchesDto {
   @IsOptional()
   @IsInt()
   teamId?: number;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
   @IsInt({ each: true })
   competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
   @IsInt({ each: true })
   groupIds?: number[];
