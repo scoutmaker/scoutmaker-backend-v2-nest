@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -15,7 +15,8 @@ export class FindAllTeamsDto {
   name?: string;
 
   @IsOptional()
-  @IsString()
+  @IsInt()
+  @Type(() => Number)
   clubId?: number;
 
   @IsOptional()

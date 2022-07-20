@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
 import { mapStringToNumber } from '../../../utils/helpers';
@@ -6,6 +6,7 @@ import { mapStringToNumber } from '../../../utils/helpers';
 export class FindAllMatchesDto {
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   teamId?: number;
 
   @IsOptional()
@@ -22,6 +23,7 @@ export class FindAllMatchesDto {
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   seasonId?: number;
 
   @IsOptional()

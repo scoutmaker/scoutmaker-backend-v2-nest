@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -13,6 +13,7 @@ import { OrderStatusEnum } from '../types';
 export class FindAllOrdersDto {
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   userId?: number;
 
   @IsOptional()
