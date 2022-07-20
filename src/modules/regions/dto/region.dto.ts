@@ -4,7 +4,7 @@ import { CountryDto } from '../../countries/dto/country.dto';
 
 export class RegionDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   name: string;

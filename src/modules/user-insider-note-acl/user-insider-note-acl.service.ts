@@ -74,7 +74,7 @@ export class UserInsiderNoteAclService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.userInsiderNoteAccessControlEntry.findUnique({
       where: { id },
       include,
@@ -96,7 +96,7 @@ export class UserInsiderNoteAclService {
     });
   }
 
-  update(id: string, updateAceDto: UpdateUserInsiderNoteAceDto) {
+  update(id: number, updateAceDto: UpdateUserInsiderNoteAceDto) {
     return this.prisma.userInsiderNoteAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -104,7 +104,7 @@ export class UserInsiderNoteAclService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.userInsiderNoteAccessControlEntry.delete({
       where: { id },
       include,

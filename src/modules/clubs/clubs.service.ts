@@ -82,7 +82,7 @@ export class ClubsService {
     return this.prisma.club.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.club.findUnique({ where: { id }, include });
   }
 
@@ -111,7 +111,7 @@ export class ClubsService {
     return slug;
   }
 
-  update(id: string, updateClubDto: UpdateClubDto) {
+  update(id: number, updateClubDto: UpdateClubDto) {
     return this.prisma.club.update({
       where: { id },
       data: updateClubDto,
@@ -119,7 +119,7 @@ export class ClubsService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.club.delete({ where: { id }, include });
   }
 }

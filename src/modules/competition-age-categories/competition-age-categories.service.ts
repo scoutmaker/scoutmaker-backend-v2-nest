@@ -18,12 +18,12 @@ export class CompetitionAgeCategoriesService {
     return this.prisma.competitionAgeCategory.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.competitionAgeCategory.findUnique({ where: { id } });
   }
 
   update(
-    id: string,
+    id: number,
     updateCompetitionAgeCategoryDto: UpdateCompetitionAgeCategoryDto,
   ) {
     return this.prisma.competitionAgeCategory.update({
@@ -32,7 +32,7 @@ export class CompetitionAgeCategoriesService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.competitionAgeCategory.delete({ where: { id } });
   }
 }

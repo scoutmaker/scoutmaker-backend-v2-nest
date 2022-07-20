@@ -267,7 +267,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(id: number, userId?: string) {
     const redisKey = `report:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -288,7 +288,7 @@ export class ReportsService {
     return report;
   }
 
-  async update(id: string, updateReportDto: UpdateReportDto) {
+  async update(id: number, updateReportDto: UpdateReportDto) {
     const {
       skillAssessments,
       playerId,
@@ -410,7 +410,7 @@ export class ReportsService {
     return updatedReport;
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await Promise.all([
       this.prisma.reportMeta.delete({ where: { reportId: id } }),
       this.prisma.userReportAccessControlEntry.deleteMany({

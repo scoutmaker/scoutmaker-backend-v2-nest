@@ -68,7 +68,7 @@ export class UserNoteAclService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.userNoteAccessControlEntry.findUnique({
       where: { id },
       include,
@@ -90,7 +90,7 @@ export class UserNoteAclService {
     });
   }
 
-  update(id: string, updateAceDto: UpdateUserNoteAceDto) {
+  update(id: number, updateAceDto: UpdateUserNoteAceDto) {
     return this.prisma.userNoteAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -98,7 +98,7 @@ export class UserNoteAclService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.userNoteAccessControlEntry.delete({
       where: { id },
       include,

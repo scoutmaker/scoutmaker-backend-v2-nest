@@ -62,7 +62,7 @@ export class OrganizationsController {
 
   @Get(':id')
   @ApiResponse(OrganizationDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const organization = await this.organizationsService.findOne(id);
     const message = this.i18n.translate('organizations.GET_ONE_MESSAGE', {
       lang,
@@ -75,7 +75,7 @@ export class OrganizationsController {
   @ApiResponse(OrganizationDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
   ) {
     const organization = await this.organizationsService.update(
@@ -93,7 +93,7 @@ export class OrganizationsController {
   @ApiResponse(OrganizationDto, { type: 'update' })
   async addMember(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() toggleMembershipDto: ToggleMembershipDto,
   ) {
     const organization = await this.organizationsService.addMember(
@@ -112,7 +112,7 @@ export class OrganizationsController {
   @ApiResponse(OrganizationDto, { type: 'update' })
   async removeMember(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() toggleMembershipDto: ToggleMembershipDto,
   ) {
     const organization = await this.organizationsService.removeMember(
@@ -128,7 +128,7 @@ export class OrganizationsController {
 
   @Delete(':id')
   @ApiResponse(OrganizationDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const organization = await this.organizationsService.remove(id);
     const message = this.i18n.translate('organizations.REMOVE_MESSAGE', {
       lang,

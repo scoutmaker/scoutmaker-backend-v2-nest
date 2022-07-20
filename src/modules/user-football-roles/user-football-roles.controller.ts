@@ -58,7 +58,7 @@ export class UserFootballRolesController {
 
   @Get(':id')
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const role = await this.rolesService.findOne(id);
     const message = this.i18n.translate('user-football-roles.GET_ONE_MESSAGE', {
       lang,
@@ -71,7 +71,7 @@ export class UserFootballRolesController {
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateUserFootballRoleDto: UpdateUserFootballRoleDto,
   ) {
     const role = await this.rolesService.update(id, updateUserFootballRoleDto);
@@ -86,7 +86,7 @@ export class UserFootballRolesController {
 
   @Delete(':id')
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const role = await this.rolesService.remove(id);
     const message = this.i18n.translate('user-football-roles.DELETE_MESSAGE', {
       lang,

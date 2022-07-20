@@ -13,7 +13,7 @@ class Count {
 
 export class MatchDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   date: Date;

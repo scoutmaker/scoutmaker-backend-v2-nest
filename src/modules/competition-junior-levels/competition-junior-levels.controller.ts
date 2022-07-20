@@ -61,7 +61,7 @@ export class CompetitionJuniorLevelsController {
 
   @Get(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const juniorLevel = await this.juniorLevelsService.findOne(id);
     const message = this.i18n.translate(
       'competition-junior-levels.GET_ONE_MESSAGE',
@@ -74,7 +74,7 @@ export class CompetitionJuniorLevelsController {
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCompetitionJuniorLevelDto: UpdateCompetitionJuniorLevelDto,
   ) {
     const juniorLevel = await this.juniorLevelsService.update(
@@ -90,7 +90,7 @@ export class CompetitionJuniorLevelsController {
 
   @Delete(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const juniorLevel = await this.juniorLevelsService.remove(id);
     const message = this.i18n.translate(
       'competition-junior-levels.DELETE_MESSAGE',

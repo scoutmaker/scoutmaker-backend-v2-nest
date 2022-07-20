@@ -41,11 +41,11 @@ export class ReportTemplatesService {
     return this.prisma.reportTemplate.findMany({ include });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.reportTemplate.findUnique({ where: { id }, include });
   }
 
-  async update(id: string, updateReportTemplateDto: UpdateReportTemplateDto) {
+  async update(id: number, updateReportTemplateDto: UpdateReportTemplateDto) {
     const { skillAssessmentTemplateIds, ...rest } = updateReportTemplateDto;
 
     // If user wants to update skill assessment templates included in the report template, first we need to delete all existing SkillAssessmentTemplatesOnReportTemplate records
@@ -76,7 +76,7 @@ export class ReportTemplatesService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.reportTemplate.delete({ where: { id } });
   }
 }

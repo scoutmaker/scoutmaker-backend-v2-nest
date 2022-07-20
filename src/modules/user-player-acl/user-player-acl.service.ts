@@ -66,7 +66,7 @@ export class UserPlayerAclService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.userPlayerAccessControlEntry.findUnique({
       where: { id },
       include,
@@ -79,7 +79,7 @@ export class UserPlayerAclService {
     });
   }
 
-  update(id: string, updateAceDto: UpdateUserPlayerAceDto) {
+  update(id: number, updateAceDto: UpdateUserPlayerAceDto) {
     return this.prisma.userPlayerAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -87,7 +87,7 @@ export class UserPlayerAclService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.userPlayerAccessControlEntry.delete({
       where: { id },
       include,

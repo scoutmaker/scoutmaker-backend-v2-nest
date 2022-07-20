@@ -242,7 +242,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(id: number, userId?: string) {
     const redisKey = `note:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -268,7 +268,7 @@ export class NotesService {
     return note;
   }
 
-  async update(id: string, updateNoteDto: UpdateNoteDto) {
+  async update(id: number, updateNoteDto: UpdateNoteDto) {
     const {
       rating,
       maxRatingScore,
@@ -356,7 +356,7 @@ export class NotesService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await Promise.all([
       this.prisma.noteMeta.delete({ where: { noteId: id } }),
       this.prisma.userNoteAccessControlEntry.deleteMany({

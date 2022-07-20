@@ -8,7 +8,7 @@ import { OrderStatusEnum } from '../types';
 
 export class OrderDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   docNumber: number;

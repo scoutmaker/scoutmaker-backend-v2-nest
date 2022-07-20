@@ -91,11 +91,11 @@ export class PlayerStatsService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.playerStats.findUnique({ where: { id }, include });
   }
 
-  async update(id: string, updatePlayerStatsDto: UpdatePlayerStatsDto) {
+  async update(id: number, updatePlayerStatsDto: UpdatePlayerStatsDto) {
     const { playerId, teamId, ...rest } = updatePlayerStatsDto;
 
     let metaTeamId = teamId;
@@ -125,7 +125,7 @@ export class PlayerStatsService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await this.prisma.playerStatsMeta.delete({ where: { statsId: id } });
     return this.prisma.playerStats.delete({ where: { id }, include });
   }

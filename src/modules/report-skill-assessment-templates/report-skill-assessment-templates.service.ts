@@ -33,7 +33,7 @@ export class ReportSkillAssessmentTemplatesService {
     return this.prisma.reportSkillAssessmentTemplate.findMany({ include });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.reportSkillAssessmentTemplate.findUnique({
       where: { id },
       include,
@@ -41,7 +41,7 @@ export class ReportSkillAssessmentTemplatesService {
   }
 
   update(
-    id: string,
+    id: number,
     updateReportSkillAssessmentTemplateDto: UpdateReportSkillAssessmentTemplateDto,
   ) {
     return this.prisma.reportSkillAssessmentTemplate.update({
@@ -51,7 +51,7 @@ export class ReportSkillAssessmentTemplatesService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.reportSkillAssessmentTemplate.delete({
       where: { id },
       include,

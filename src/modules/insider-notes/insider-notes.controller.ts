@@ -116,7 +116,7 @@ export class InsiderNotesController {
   @Serialize(InsiderNoteDto)
   async findOne(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const insiderNote = await this.insiderNotesService.findOne(id, user.id);
@@ -133,7 +133,7 @@ export class InsiderNotesController {
   @Serialize(InsiderNoteDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateInsiderNoteDto: UpdateInsiderNoteDto,
   ) {
     const insiderNote = await this.insiderNotesService.update(
@@ -151,7 +151,7 @@ export class InsiderNotesController {
   @UseGuards(DeleteGuard)
   @ApiResponse(InsiderNoteDto, { type: 'delete' })
   @Serialize(InsiderNoteDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const insiderNote = await this.insiderNotesService.remove(id);
     const message = this.i18n.translate('insider-notes.DELETE_MESSAGE', {
       lang,

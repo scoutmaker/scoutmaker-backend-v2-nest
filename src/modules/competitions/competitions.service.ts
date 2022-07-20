@@ -95,11 +95,11 @@ export class CompetitionsService {
     return this.prisma.competition.findMany({ include: listInclude });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.competition.findUnique({ where: { id }, include });
   }
 
-  update(id: string, updateCompetitionDto: UpdateCompetitionDto) {
+  update(id: number, updateCompetitionDto: UpdateCompetitionDto) {
     return this.prisma.competition.update({
       where: { id },
       data: updateCompetitionDto,
@@ -107,7 +107,7 @@ export class CompetitionsService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.competition.delete({ where: { id }, include });
   }
 }

@@ -43,20 +43,20 @@ export class CountriesService {
     return this.prisma.country.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.country.findUnique({
       where: { id },
     });
   }
 
-  update(id: string, updateCountryDto: UpdateCountryDto) {
+  update(id: number, updateCountryDto: UpdateCountryDto) {
     return this.prisma.country.update({
       where: { id },
       data: updateCountryDto,
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.country.delete({ where: { id } });
   }
 }

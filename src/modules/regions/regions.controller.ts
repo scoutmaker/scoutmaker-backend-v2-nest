@@ -81,7 +81,7 @@ export class RegionsController {
   @Get(':id')
   @ApiResponse(RegionDto, { type: 'read' })
   @Serialize(RegionDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const region = await this.regionsService.findOne(id);
     const message = this.i18n.translate('regions.GET_ONE_MESSAGE', {
       lang,
@@ -95,7 +95,7 @@ export class RegionsController {
   @Serialize(RegionDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateRegionDto: UpdateRegionDto,
   ) {
     const region = await this.regionsService.update(id, updateRegionDto);
@@ -109,7 +109,7 @@ export class RegionsController {
   @Delete(':id')
   @ApiResponse(RegionDto, { type: 'delete' })
   @Serialize(RegionDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const region = await this.regionsService.remove(id);
     const message = this.i18n.translate('regions.DELETE_MESSAGE', {
       lang,

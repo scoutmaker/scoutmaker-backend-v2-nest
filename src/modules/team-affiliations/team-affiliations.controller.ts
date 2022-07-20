@@ -93,7 +93,7 @@ export class TeamAffiliationsController {
   @Get(':id')
   @ApiResponse(TeamAffiliationDto, { type: 'read' })
   @Serialize(TeamAffiliationDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const affiliation = await this.teamAffiliationsService.findOne(id);
     const message = this.i18n.translate('team-affiliations.GET_ONE_MESSAGE', {
       lang,
@@ -110,7 +110,7 @@ export class TeamAffiliationsController {
   @Serialize(TeamAffiliationDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateTeamAffiliationDto: UpdateTeamAffiliationDto,
   ) {
     const affiliation = await this.teamAffiliationsService.update(
@@ -130,7 +130,7 @@ export class TeamAffiliationsController {
   @Delete(':id')
   @ApiResponse(TeamAffiliationDto, { type: 'delete' })
   @Serialize(TeamAffiliationDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const affiliation = await this.teamAffiliationsService.remove(id);
     const message = this.i18n.translate('team-affiliations.DELETE_MESSAGE', {
       lang,

@@ -133,11 +133,11 @@ export class MatchesService {
     return this.prisma.match.findMany({ include: listInclude });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.match.findUnique({ where: { id }, include });
   }
 
-  update(id: string, updateMatchDto: UpdateMatchDto) {
+  update(id: number, updateMatchDto: UpdateMatchDto) {
     return this.prisma.match.update({
       where: { id },
       data: updateMatchDto,
@@ -145,7 +145,7 @@ export class MatchesService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.match.delete({ where: { id }, include });
   }
 }

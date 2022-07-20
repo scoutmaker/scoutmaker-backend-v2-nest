@@ -84,7 +84,7 @@ export class OrganizationPlayerAclController {
   @Get(':id')
   @ApiResponse(OrganizationPlayerAceDto, { type: 'read' })
   @Serialize(OrganizationPlayerAceDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate(
       'organization-player-acl.GET_ONE_MESSAGE',
@@ -104,7 +104,7 @@ export class OrganizationPlayerAclController {
   @Serialize(OrganizationPlayerAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAceDto: UpdateOrganizationPlayerAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -124,7 +124,7 @@ export class OrganizationPlayerAclController {
   @Delete(':id')
   @ApiResponse(OrganizationPlayerAceDto, { type: 'delete' })
   @Serialize(OrganizationPlayerAceDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate(
       'organization-player-acl.DELETE_MESSAGE',

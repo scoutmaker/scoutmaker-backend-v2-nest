@@ -202,7 +202,7 @@ export class InsiderNotesService {
   }
 
   async findOne(
-    id: string,
+    id: number,
     userId?: string,
   ): Promise<SingleInsiderNoteWithInclude> {
     const redisKey = `insider-note:${id}`;
@@ -235,7 +235,7 @@ export class InsiderNotesService {
     return insiderNote;
   }
 
-  async update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {
+  async update(id: number, updateInsiderNoteDto: UpdateInsiderNoteDto) {
     const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
       updateInsiderNoteDto;
 
@@ -284,7 +284,7 @@ export class InsiderNotesService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await Promise.all([
       this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } }),
       this.prisma.userInsiderNoteAccessControlEntry.deleteMany({

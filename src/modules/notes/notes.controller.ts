@@ -114,7 +114,7 @@ export class NotesController {
   @Serialize(NoteDto)
   async findOne(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const note = await this.notesService.findOne(id, user.id);
@@ -131,7 +131,7 @@ export class NotesController {
   @Serialize(NoteDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateNoteDto: UpdateNoteDto,
   ) {
     const note = await this.notesService.update(id, updateNoteDto);
@@ -146,7 +146,7 @@ export class NotesController {
   @UseGuards(DeleteGuard)
   @ApiResponse(NoteDto, { type: 'delete' })
   @Serialize(NoteDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const note = await this.notesService.remove(id);
     const message = this.i18n.translate('notes.DELETE_MESSAGE', {
       lang,

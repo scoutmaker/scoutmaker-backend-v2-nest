@@ -77,7 +77,7 @@ export class UserReportAclController {
   @Get(':id')
   @ApiResponse(UserReportAceDto, { type: 'read' })
   @Serialize(UserReportAceDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate('user-report-acl.GET_ONE_MESSAGE', {
       lang,
@@ -94,7 +94,7 @@ export class UserReportAclController {
   @Serialize(UserReportAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAceDto: UpdateUserReportAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -111,7 +111,7 @@ export class UserReportAclController {
   @Delete(':id')
   @ApiResponse(UserReportAceDto, { type: 'delete' })
   @Serialize(UserReportAceDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate('user-report-acl.DELETE_MESSAGE', {
       lang,

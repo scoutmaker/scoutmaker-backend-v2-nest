@@ -91,7 +91,7 @@ export class ReportsController {
   @Serialize(ReportDto)
   async findOne(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const report = await this.reportsService.findOne(id, user.id);
@@ -108,7 +108,7 @@ export class ReportsController {
   @Serialize(ReportDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateReportDto: UpdateReportDto,
   ) {
     const report = await this.reportsService.update(id, updateReportDto);
@@ -123,7 +123,7 @@ export class ReportsController {
   @UseGuards(DeleteGuard)
   @ApiResponse(ReportDto, { type: 'delete' })
   @Serialize(ReportDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const report = await this.reportsService.remove(id);
     const message = this.i18n.translate('reports.DELETE_MESSAGE', {
       lang,

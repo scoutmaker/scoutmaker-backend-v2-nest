@@ -7,7 +7,7 @@ import { LikeTeamBasicDataDto } from '../../like-teams/dto/like-team.dto';
 
 export class TeamDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   name: string;

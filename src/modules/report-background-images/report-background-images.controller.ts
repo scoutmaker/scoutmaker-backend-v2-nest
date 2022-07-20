@@ -60,7 +60,7 @@ export class ReportBackgroundImagesController {
 
   @Get(':id')
   @ApiResponse(ReportBackgroundImageDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const image = await this.reportBackgroundImagesService.findOne(id);
     const message = this.i18n.translate(
       'report-background-images.GET_ONE_MESSAGE',
@@ -73,7 +73,7 @@ export class ReportBackgroundImagesController {
   @ApiResponse(ReportBackgroundImageDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateReportBackgroundImageDto: UpdateReportBackgroundImageDto,
   ) {
     const image = await this.reportBackgroundImagesService.update(
@@ -89,7 +89,7 @@ export class ReportBackgroundImagesController {
 
   @Delete(':id')
   @ApiResponse(ReportBackgroundImageDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const image = await this.reportBackgroundImagesService.remove(id);
     const message = this.i18n.translate(
       'report-background-images.DELETE_MESSAGE',

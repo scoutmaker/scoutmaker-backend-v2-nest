@@ -9,7 +9,7 @@ import { GenderEnum } from '../types';
 
 export class CompetitionDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   name: string;
