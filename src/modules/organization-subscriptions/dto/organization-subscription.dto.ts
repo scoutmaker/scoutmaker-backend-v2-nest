@@ -6,7 +6,7 @@ import { OrganizationBasicDataDto } from '../../organizations/dto/organization.d
 
 export class OrganizationSubscriptionDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   startDate: Date;

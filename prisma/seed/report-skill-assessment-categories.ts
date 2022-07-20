@@ -10,7 +10,7 @@ const categoryNames = [
 ];
 
 export async function generateReportSkillAssessmentCategories(
-  authorId: string,
+  authorId: number,
 ) {
   const promiseArr = categoryNames.map((name) =>
     prisma.reportSkillAssessmentCategory.create({

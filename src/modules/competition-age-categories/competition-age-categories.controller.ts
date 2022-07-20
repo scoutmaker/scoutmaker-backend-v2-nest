@@ -61,7 +61,7 @@ export class CompetitionAgeCategoriesController {
 
   @Get(':id')
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const ageCategory = await this.ageCategoriesService.findOne(id);
     const message = this.i18n.translate(
       'competition-age-categories.GET_ONE_MESSAGE',
@@ -74,7 +74,7 @@ export class CompetitionAgeCategoriesController {
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCompetitionAgeCategoryDto: UpdateCompetitionAgeCategoryDto,
   ) {
     const ageCategory = await this.ageCategoriesService.update(
@@ -90,7 +90,7 @@ export class CompetitionAgeCategoriesController {
 
   @Delete(':id')
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const ageCategory = await this.ageCategoriesService.remove(id);
     const message = this.i18n.translate(
       'competition-age-categories.DELETE_MESSAGE',

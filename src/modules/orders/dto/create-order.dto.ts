@@ -1,16 +1,14 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrderDto {
   @IsOptional()
-  @IsCuid()
-  playerId?: string;
+  @IsInt()
+  playerId?: number;
 
   @IsOptional()
-  @IsCuid()
-  matchId?: string;
+  @IsInt()
+  matchId?: number;
 
   @IsOptional()
   @IsString()

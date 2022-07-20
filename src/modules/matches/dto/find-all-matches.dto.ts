@@ -1,28 +1,30 @@
-import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsOptional } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { mapStringToNumber } from '../../../utils/helpers';
 
 export class FindAllMatchesDto {
   @IsOptional()
-  @IsCuid()
-  teamId?: string;
+  @IsInt()
+  @Type(() => Number)
+  teamId?: number;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  competitionIds?: string[];
+  @IsInt({ each: true })
+  competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  groupIds?: string[];
+  @IsInt({ each: true })
+  groupIds?: number[];
 
   @IsOptional()
-  @IsCuid()
-  seasonId?: string;
+  @IsInt()
+  @Type(() => Number)
+  seasonId?: number;
 
   @IsOptional()
   @IsBoolean()

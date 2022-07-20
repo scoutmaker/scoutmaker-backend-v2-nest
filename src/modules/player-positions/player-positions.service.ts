@@ -16,18 +16,18 @@ export class PlayerPositionsService {
     return this.prisma.playerPosition.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.playerPosition.findUnique({ where: { id } });
   }
 
-  update(id: string, updatePlayerPositionDto: UpdatePlayerPositionDto) {
+  update(id: number, updatePlayerPositionDto: UpdatePlayerPositionDto) {
     return this.prisma.playerPosition.update({
       where: { id },
       data: updatePlayerPositionDto,
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.playerPosition.delete({ where: { id } });
   }
 }

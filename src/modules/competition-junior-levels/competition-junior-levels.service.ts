@@ -18,12 +18,12 @@ export class CompetitionJuniorLevelsService {
     return this.prisma.competitionJuniorLevel.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.competitionJuniorLevel.findUnique({ where: { id } });
   }
 
   update(
-    id: string,
+    id: number,
     updateCompetitionJuniorLevelDto: UpdateCompetitionJuniorLevelDto,
   ) {
     return this.prisma.competitionJuniorLevel.update({
@@ -32,7 +32,7 @@ export class CompetitionJuniorLevelsService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.competitionJuniorLevel.delete({ where: { id } });
   }
 }

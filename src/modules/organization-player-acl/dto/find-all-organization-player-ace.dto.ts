@@ -1,13 +1,14 @@
-import { IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class FindAllOrganizationPlayerAceDto {
   @IsOptional()
-  @IsCuid()
-  organizationId?: string;
+  @IsInt()
+  @Type(() => Number)
+  organizationId?: number;
 
   @IsOptional()
-  @IsCuid()
-  playerId?: string;
+  @IsInt()
+  @Type(() => Number)
+  playerId?: number;
 }

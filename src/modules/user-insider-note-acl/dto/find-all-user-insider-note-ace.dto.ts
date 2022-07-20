@@ -1,13 +1,14 @@
-import { IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class FindAllUserInsiderNoteAceDto {
   @IsOptional()
-  @IsCuid()
-  userId?: string;
+  @IsInt()
+  @Type(() => Number)
+  userId?: number;
 
   @IsOptional()
-  @IsCuid()
-  insiderNoteId?: string;
+  @IsInt()
+  @Type(() => Number)
+  insiderNoteId?: number;
 }

@@ -94,7 +94,7 @@ export class TeamsController {
   @Serialize(TeamDto)
   async findOne(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const team = await this.teamsService.findOne(id, user.id);
@@ -126,7 +126,7 @@ export class TeamsController {
   @Serialize(TeamDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateTeamDto: UpdateTeamDto,
   ) {
     const team = await this.teamsService.update(id, updateTeamDto);
@@ -140,7 +140,7 @@ export class TeamsController {
   @Delete(':id')
   @ApiResponse(TeamDto, { type: 'delete' })
   @Serialize(TeamDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const team = await this.teamsService.remove(id);
     const message = this.i18n.translate('teams.DELETE_MESSAGE', {
       lang,

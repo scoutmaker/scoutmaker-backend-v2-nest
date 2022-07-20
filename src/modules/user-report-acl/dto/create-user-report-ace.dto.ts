@@ -1,14 +1,13 @@
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateUserReportAceDto {
-  @IsCuid()
-  userId: string;
+  @IsInt()
+  userId: number;
 
-  @IsCuid()
-  reportId: string;
+  @IsInt()
+  reportId: number;
 
   @IsOptional()
   @IsEnum(AccessControlEntryPermissionLevelEnum, {

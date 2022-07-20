@@ -54,7 +54,9 @@ export class ReadGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the player to determine if they can read it
-    const player = await this.playersService.findOne(request.params.id);
+    const player = await this.playersService.findOne(
+      parseInt(request.params.id),
+    );
 
     // If user is a playmaker-scout, they can read all players data created by other playmaker-scouts
     if (

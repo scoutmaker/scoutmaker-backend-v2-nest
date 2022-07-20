@@ -11,7 +11,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class ReportDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   docNumber: number;

@@ -6,7 +6,7 @@ import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 
 export class TeamAffiliationDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Transform(({ value }) =>
     plainToInstance(PlayerSuperBasicDataDto, value, {

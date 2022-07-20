@@ -48,7 +48,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.docNumber,
+        docNumber: accessControlEntry.note.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -77,13 +77,13 @@ export class UserNoteAclController {
   @Get(':id')
   @ApiResponse(UserNoteAceDto, { type: 'read' })
   @Serialize(UserNoteAceDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate('user-note-acl.GET_ONE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.docNumber,
+        docNumber: accessControlEntry.note.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -94,7 +94,7 @@ export class UserNoteAclController {
   @Serialize(UserNoteAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAceDto: UpdateUserNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -102,7 +102,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.docNumber,
+        docNumber: accessControlEntry.note.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -111,13 +111,13 @@ export class UserNoteAclController {
   @Delete(':id')
   @ApiResponse(UserNoteAceDto, { type: 'delete' })
   @Serialize(UserNoteAceDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate('user-note-acl.DELETE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.docNumber,
+        docNumber: accessControlEntry.note.id,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);

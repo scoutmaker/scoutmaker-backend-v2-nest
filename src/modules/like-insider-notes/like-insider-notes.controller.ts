@@ -36,7 +36,7 @@ export class InsiderNotesLikesController {
     );
     const message = this.i18n.translate('like-insider-notes.LIKE_MESSAGE', {
       lang,
-      args: { docNumber: like.insiderNote.docNumber },
+      args: { docNumber: like.insiderNote.id },
     });
     return formatSuccessResponse(message, like);
   }
@@ -54,7 +54,7 @@ export class InsiderNotesLikesController {
     );
     const message = this.i18n.translate('like-insider-notes.UNLIKE_MESSAGE', {
       lang,
-      args: { docNumber: unlike.insiderNote.docNumber },
+      args: { docNumber: unlike.insiderNote.id },
     });
     return formatSuccessResponse(message, unlike);
   }

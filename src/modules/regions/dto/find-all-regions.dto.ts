@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class FindAllRegionsDto {
   @IsOptional()
@@ -6,6 +7,7 @@ export class FindAllRegionsDto {
   name?: string;
 
   @IsOptional()
-  @IsString()
-  countryId?: string;
+  @IsInt()
+  @Type(() => Number)
+  countryId?: number;
 }

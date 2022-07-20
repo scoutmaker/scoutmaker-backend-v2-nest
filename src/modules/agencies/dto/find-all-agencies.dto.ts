@@ -1,13 +1,13 @@
-import { IsOptional, IsString } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class FindAllAgenciesDto {
   @IsOptional()
   @IsString()
   name?: string;
 
+  @IsInt()
   @IsOptional()
-  @IsCuid()
-  countryId?: string;
+  @Type(() => Number)
+  countryId?: number;
 }

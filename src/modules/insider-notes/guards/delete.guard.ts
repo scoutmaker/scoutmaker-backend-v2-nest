@@ -33,7 +33,7 @@ export class DeleteGuard implements CanActivate {
 
     // If user is not an admin, we have to fetch the note to determine if they can delete it
     const insiderNote = await this.insiderNotesService.findOne(
-      request.params.id,
+      parseInt(request.params.id),
     );
 
     // Users can delete their own notes
@@ -70,7 +70,7 @@ export class DeleteGuard implements CanActivate {
 
     const message = this.i18n.translate('insider-notes.DELETE_ACCESS_ERROR', {
       lang,
-      args: { docNumber: insiderNote.docNumber },
+      args: { docNumber: insiderNote.id },
     });
 
     throw new UnauthorizedException(message);

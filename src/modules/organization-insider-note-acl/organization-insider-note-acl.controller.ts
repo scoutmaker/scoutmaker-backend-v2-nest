@@ -50,7 +50,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -84,7 +84,7 @@ export class OrganizationInsiderNoteAclController {
   @Get(':id')
   @ApiResponse(OrganizationInsiderNoteAceDto, { type: 'read' })
   @Serialize(OrganizationInsiderNoteAceDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate(
       'organization-insider-note-acl.GET_ONE_MESSAGE',
@@ -92,7 +92,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -104,7 +104,7 @@ export class OrganizationInsiderNoteAclController {
   @Serialize(OrganizationInsiderNoteAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAceDto: UpdateOrganizationInsiderNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -114,7 +114,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );
@@ -124,7 +124,7 @@ export class OrganizationInsiderNoteAclController {
   @Delete(':id')
   @ApiResponse(OrganizationInsiderNoteAceDto, { type: 'delete' })
   @Serialize(OrganizationInsiderNoteAceDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate(
       'organization-insider-note-acl.DELETE_MESSAGE',
@@ -132,7 +132,7 @@ export class OrganizationInsiderNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.insiderNote.docNumber,
+          docNumber: accessControlEntry.insiderNote.id,
         },
       },
     );

@@ -1,12 +1,11 @@
 import {
+  IsInt,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsString,
   Min,
 } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -18,12 +17,12 @@ export class UpdateUserDto {
   lastName?: string;
 
   @IsOptional()
-  @IsCuid()
-  clubId?: string;
+  @IsInt()
+  clubId?: number;
 
   @IsOptional()
-  @IsCuid()
-  footballRoleId?: string;
+  @IsInt()
+  footballRoleId?: number;
 
   @IsOptional()
   @IsPhoneNumber()
@@ -39,6 +38,6 @@ export class UpdateUserDto {
   activeRadius?: number;
 
   @IsOptional()
-  @IsCuid()
-  regionId?: string;
+  @IsInt()
+  regionId?: number;
 }

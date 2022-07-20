@@ -18,18 +18,18 @@ export class UserFootballRolesService {
     return this.prisma.userFootballRole.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.userFootballRole.findUnique({ where: { id } });
   }
 
-  update(id: string, updateUserFootballRoleDto: UpdateUserFootballRoleDto) {
+  update(id: number, updateUserFootballRoleDto: UpdateUserFootballRoleDto) {
     return this.prisma.userFootballRole.update({
       where: { id },
       data: updateUserFootballRoleDto,
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.userFootballRole.delete({ where: { id } });
   }
 }

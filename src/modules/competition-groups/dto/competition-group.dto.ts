@@ -6,7 +6,7 @@ import { RegionWithoutCountryDto } from '../../regions/dto/region-without-countr
 
 export class CompetitionGroupDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   name: string;

@@ -6,7 +6,7 @@ import { RegionWithoutCountryDto } from '../../regions/dto/region-without-countr
 
 export class ClubDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   name: string;
@@ -15,7 +15,7 @@ export class ClubDto {
   slug: string;
 
   @Expose()
-  lnpId?: string;
+  lnpId?: number;
 
   @Expose()
   city?: string;

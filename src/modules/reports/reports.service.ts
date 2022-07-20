@@ -68,7 +68,7 @@ export class ReportsService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createReportDto: CreateReportDto, authorId: string) {
+  async create(createReportDto: CreateReportDto, authorId: number) {
     const {
       templateId,
       playerId,
@@ -170,7 +170,7 @@ export class ReportsService {
       hasVideo,
       isLiked,
     }: FindAllReportsDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.ReportOrderByWithRelationInput;
@@ -267,7 +267,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(id: number, userId?: number) {
     const redisKey = `report:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -288,7 +288,7 @@ export class ReportsService {
     return report;
   }
 
-  async update(id: string, updateReportDto: UpdateReportDto) {
+  async update(id: number, updateReportDto: UpdateReportDto) {
     const {
       skillAssessments,
       playerId,
@@ -300,10 +300,10 @@ export class ReportsService {
       ...rest
     } = updateReportDto;
 
-    let metaPositionId: string;
-    let metaTeamId: string;
-    let metaCompetitionId: string;
-    let metaCompetitionGroupId: string | undefined;
+    let metaPositionId: number;
+    let metaTeamId: number;
+    let metaCompetitionId: number;
+    let metaCompetitionGroupId: number | undefined;
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {
@@ -410,7 +410,7 @@ export class ReportsService {
     return updatedReport;
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await Promise.all([
       this.prisma.reportMeta.delete({ where: { reportId: id } }),
       this.prisma.userReportAccessControlEntry.deleteMany({

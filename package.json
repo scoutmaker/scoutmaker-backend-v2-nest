@@ -14,6 +14,7 @@
     "start:debug": "dotenv -e .env.development nest start --debug --watch",
     "start:prod": "nest start",
     "migrate:postgres": "dotenv -e .env.development -- npx prisma migrate dev",
+    "reset:postgres": "dotenv -e .env.development -- npx prisma migrate reset",
     "push:postgres": "dotenv -e .env.development -- npx prisma db push",
     "seed:dev": "dotenv -e .env.development -- ts-node prisma/seed/seed.ts",
     "seed:staging": "dotenv -e .env.staging -- ts-node prisma/seed/seed.ts",

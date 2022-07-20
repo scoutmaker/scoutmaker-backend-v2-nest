@@ -37,7 +37,9 @@ export class ReadGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the report to determine if they can read it
-    const report = await this.reportsService.findOne(request.params.id);
+    const report = await this.reportsService.findOne(
+      parseInt(request.params.id),
+    );
 
     // If user is a playmaker-scout, they can read all reports created by other playmaker-scouts
     if (
@@ -111,7 +113,7 @@ export class ReadGuard implements CanActivate {
 
     const message = this.i18n.translate('reports.GET_ONE_ACCESS_ERROR', {
       lang,
-      args: { docNumber: report.docNumber },
+      args: { docNumber: report.id },
     });
 
     throw new UnauthorizedException(message);

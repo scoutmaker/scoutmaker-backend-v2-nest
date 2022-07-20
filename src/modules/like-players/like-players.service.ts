@@ -12,7 +12,7 @@ const include = Prisma.validator<Prisma.LikePlayerInclude>()({
 export class LikePlayersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  like(playerId: string, userId: string) {
+  like(playerId: number, userId: number) {
     return this.prisma.likePlayer.create({
       data: {
         player: { connect: { id: playerId } },
@@ -22,7 +22,7 @@ export class LikePlayersService {
     });
   }
 
-  unlike(playerId: string, userId: string) {
+  unlike(playerId: number, userId: number) {
     return this.prisma.likePlayer.delete({
       where: {
         playerId_userId: { playerId, userId },

@@ -6,7 +6,7 @@ import { OrganizationBasicDataDto } from '../../organizations/dto/organization.d
 
 export class OrganizationNoteAceDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Transform(({ value }) =>
     plainToInstance(OrganizationBasicDataDto, value, {

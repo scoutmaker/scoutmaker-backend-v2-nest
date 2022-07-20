@@ -31,12 +31,12 @@ export class CompetitionGroupsService {
     return this.prisma.competitionGroup.findMany({ include });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.competitionGroup.findUnique({ where: { id }, include });
   }
 
   async update(
-    id: string,
+    id: number,
     updateCompetitionGroupDto: UpdateCompetitionGroupDto,
   ) {
     const { regionIds, ...rest } = updateCompetitionGroupDto;
@@ -62,7 +62,7 @@ export class CompetitionGroupsService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     // Remove all existing RegionsOnCompetitionGroups records
     await this.prisma.regionsOnCompetitionGroups.deleteMany({
       where: { groupId: id },

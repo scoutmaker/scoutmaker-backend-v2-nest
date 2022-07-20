@@ -1,15 +1,15 @@
 export type FormattedSubscription = {
-  id: string;
+  id: number;
   startDate: Date;
   endDate: Date;
-  competitions: string[];
-  competitionGroups: string[];
+  competitions: number[];
+  competitionGroups: number[];
 };
 
 export type CachedFormattedSubscription = {
-  id: string;
+  id: number;
   startDate: string;
   endDate: string;
-  competitions: string[];
-  competitionGroups: string[];
+  competitions: number[];
+  competitionGroups: number[];
 };

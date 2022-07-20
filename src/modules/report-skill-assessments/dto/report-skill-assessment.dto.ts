@@ -6,7 +6,7 @@ import { ReportBasicDataDto } from '../../reports/dto/report.dto';
 
 export class ReportSkillAssessmentDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   rating?: number;

@@ -1,21 +1,24 @@
-import { IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class FindAllCompetitionParticipationsDto {
   @IsOptional()
-  @IsCuid()
-  seasonId?: string;
+  @IsInt()
+  @Type(() => Number)
+  seasonId?: number;
 
   @IsOptional()
-  @IsCuid()
-  teamId?: string;
+  @IsInt()
+  @Type(() => Number)
+  teamId?: number;
 
   @IsOptional()
-  @IsCuid()
-  competitionId?: string;
+  @IsInt()
+  @Type(() => Number)
+  competitionId?: number;
 
   @IsOptional()
-  @IsCuid()
-  groupId?: string;
+  @IsInt()
+  @Type(() => Number)
+  groupId?: number;
 }

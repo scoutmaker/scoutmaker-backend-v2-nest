@@ -42,7 +42,7 @@ export class NotesService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createNoteDto: CreateNoteDto, authorId: string) {
+  async create(createNoteDto: CreateNoteDto, authorId: number) {
     const {
       playerId,
       matchId,
@@ -61,10 +61,10 @@ export class NotesService {
       percentageRating = calculatePercentageRating(rating, maxRatingScore);
     }
 
-    let metaPositionId: string;
-    let metaTeamId: string;
-    let metaCompetitionId: string;
-    let metaCompetitionGroupId: string | undefined;
+    let metaPositionId: number;
+    let metaTeamId: number;
+    let metaCompetitionId: number;
+    let metaCompetitionGroupId: number | undefined;
 
     // If there's playerId supplied, we need to create note meta
     if (playerId) {
@@ -121,7 +121,7 @@ export class NotesService {
       playerBornBefore,
       isLiked,
     }: FindAllNotesDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.NoteWhereInput,
   ) {
     let sort: Prisma.NoteOrderByWithRelationInput;
@@ -242,7 +242,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(id: number, userId?: number) {
     const redisKey = `note:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -268,7 +268,7 @@ export class NotesService {
     return note;
   }
 
-  async update(id: string, updateNoteDto: UpdateNoteDto) {
+  async update(id: number, updateNoteDto: UpdateNoteDto) {
     const {
       rating,
       maxRatingScore,
@@ -356,7 +356,7 @@ export class NotesService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await Promise.all([
       this.prisma.noteMeta.delete({ where: { noteId: id } }),
       this.prisma.userNoteAccessControlEntry.deleteMany({

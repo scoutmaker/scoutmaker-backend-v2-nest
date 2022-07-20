@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -8,68 +8,68 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { mapStringToNumber } from '../../../utils/helpers';
 
 export class FindAllReportsDto {
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  playerIds?: string[];
+  @IsInt({ each: true })
+  playerIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  positionIds?: string[];
+  @IsInt({ each: true })
+  positionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  matchIds?: string[];
+  @IsInt({ each: true })
+  matchIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  teamIds?: string[];
+  @IsInt({ each: true })
+  teamIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  competitionIds?: string[];
+  @IsInt({ each: true })
+  competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsCuid({ each: true })
-  competitionGroupIds?: string[];
+  @IsInt({ each: true })
+  competitionGroupIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(0)
   @Max(100)
   percentageRatingRangeStart?: number;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(0)
   @Max(100)
   percentageRatingRangeEnd?: number;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(1950)
   @Max(2050)
   playerBornAfter?: number;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(1950)
   @Max(2050)

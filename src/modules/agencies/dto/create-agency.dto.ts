@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
+  IsInt,
   IsOptional,
   IsPostalCode,
   IsString,
@@ -8,15 +9,14 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateAgencyDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsCuid()
-  countryId: string;
+  @IsInt()
+  countryId: number;
 
   @IsOptional()
   @IsString()

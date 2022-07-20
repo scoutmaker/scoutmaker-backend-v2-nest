@@ -65,7 +65,7 @@ export class ReportSkillAssessmentCategoriesController {
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const category = await this.categoriesService.findOne(id);
     const message = this.i18n.translate(
       'report-skill-assessment-categories.GET_ONE_MESSAGE',
@@ -78,7 +78,7 @@ export class ReportSkillAssessmentCategoriesController {
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body()
     updateReportSkillAssessmentCategoryDto: UpdateReportSkillAssessmentCategoryDto,
   ) {
@@ -95,7 +95,7 @@ export class ReportSkillAssessmentCategoriesController {
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const category = await this.categoriesService.remove(id);
     const message = this.i18n.translate(
       'report-skill-assessment-categories.DELETE_MESSAGE',

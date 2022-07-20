@@ -60,7 +60,7 @@ export class PlayersService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createPlayerDto: CreatePlayerDto, authorId: string) {
+  async create(createPlayerDto: CreatePlayerDto, authorId: number) {
     const {
       countryId,
       primaryPositionId,
@@ -108,7 +108,7 @@ export class PlayersService {
       positionIds,
       teamIds,
     }: FindAllPlayersDto,
-    userId?: string,
+    userId?: number,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
@@ -239,7 +239,7 @@ export class PlayersService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(id: number, userId?: number) {
     const redisKey = `player:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -265,7 +265,7 @@ export class PlayersService {
     return player;
   }
 
-  async findOneBySlug(slug: string, userId?: string) {
+  async findOneBySlug(slug: string, userId?: number) {
     const redisKey = `player:${slug}`;
 
     const cached = await this.redis.get(redisKey);
@@ -312,7 +312,7 @@ export class PlayersService {
     return slug;
   }
 
-  findOneWithCurrentTeamDetails(id: string) {
+  findOneWithCurrentTeamDetails(id: number) {
     return this.prisma.player.findUnique({
       where: { id },
       include: {
@@ -333,7 +333,7 @@ export class PlayersService {
     });
   }
 
-  async update(id: string, updatePlayerDto: UpdatePlayerDto) {
+  async update(id: number, updatePlayerDto: UpdatePlayerDto) {
     const { secondaryPositionIds, ...rest } = updatePlayerDto;
 
     // If user wants to update players secondary positions, first we need to delete all existing SecondaryPositionsOnPlayers records, then create new ones
@@ -362,7 +362,7 @@ export class PlayersService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await Promise.all([
       this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } }),
       this.prisma.secondaryPositionsOnPlayers.deleteMany({

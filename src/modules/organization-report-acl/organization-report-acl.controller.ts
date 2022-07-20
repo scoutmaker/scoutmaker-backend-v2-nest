@@ -50,7 +50,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.docNumber,
+          docNumber: accessControlEntry.report.id,
         },
       },
     );
@@ -84,7 +84,7 @@ export class OrganizationReportAclController {
   @Get(':id')
   @ApiResponse(OrganizationReportAceDto, { type: 'read' })
   @Serialize(OrganizationReportAceDto)
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate(
       'organization-report-acl.GET_ONE_MESSAGE',
@@ -92,7 +92,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.docNumber,
+          docNumber: accessControlEntry.report.id,
         },
       },
     );
@@ -104,7 +104,7 @@ export class OrganizationReportAclController {
   @Serialize(OrganizationReportAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAceDto: UpdateOrganizationReportAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -114,7 +114,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.docNumber,
+          docNumber: accessControlEntry.report.id,
         },
       },
     );
@@ -124,7 +124,7 @@ export class OrganizationReportAclController {
   @Delete(':id')
   @ApiResponse(OrganizationReportAceDto, { type: 'delete' })
   @Serialize(OrganizationReportAceDto)
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate(
       'organization-report-acl.DELETE_MESSAGE',
@@ -132,7 +132,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.docNumber,
+          docNumber: accessControlEntry.report.id,
         },
       },
     );

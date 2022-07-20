@@ -103,12 +103,12 @@ export class UserSubscriptionsService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.userSubscription.findUnique({ where: { id }, include });
   }
 
   async update(
-    id: string,
+    id: number,
     updateUserSubscriptionDto: UpdateUserSubscriptionDto,
   ) {
     const { startDate, endDate, competitionIds, competitionGroupIds } =
@@ -160,7 +160,7 @@ export class UserSubscriptionsService {
   }
 
   async getFormattedForSingleUser(
-    userId: string,
+    userId: number,
   ): Promise<FormattedSubscription[]> {
     const redisKey = `user:${userId}:subscriptions`;
 
@@ -203,7 +203,7 @@ export class UserSubscriptionsService {
     return formattedSubscriptions;
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     await this.prisma.competitionsOnUserSubscriptions.deleteMany({
       where: { subscriptionId: id },
     });

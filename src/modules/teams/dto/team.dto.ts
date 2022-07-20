@@ -7,7 +7,7 @@ import { LikeTeamBasicDataDto } from '../../like-teams/dto/like-team.dto';
 
 export class TeamDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   name: string;
@@ -30,7 +30,7 @@ export class TeamDto {
   transfermarktUrl?: string;
 
   @Expose()
-  lnpId?: string;
+  lnpId?: number;
 
   @Transform(({ value }) =>
     plainToInstance(ClubBasicDataDto, value, {

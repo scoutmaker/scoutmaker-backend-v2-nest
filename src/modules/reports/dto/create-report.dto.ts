@@ -10,8 +10,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
-
 class CreateReportSkillAssessmentDto {
   @IsOptional()
   @IsInt()
@@ -24,8 +22,8 @@ class CreateReportSkillAssessmentDto {
   @Transform(({ value }) => value.trim())
   description?: string;
 
-  @IsCuid()
-  templateId: string;
+  @IsInt()
+  templateId: number;
 }
 
 export class CreateReportDto {
@@ -84,31 +82,31 @@ export class CreateReportDto {
   @Transform(({ value }) => value.trim())
   summary?: string;
 
-  @IsCuid()
-  templateId: string;
+  @IsInt()
+  templateId: number;
 
-  @IsCuid()
-  playerId: string;
-
-  @IsOptional()
-  @IsCuid()
-  positionPlayedId?: string;
+  @IsInt()
+  playerId: number;
 
   @IsOptional()
-  @IsCuid()
-  teamId?: string;
+  @IsInt()
+  positionPlayedId?: number;
 
   @IsOptional()
-  @IsCuid()
-  competitionId?: string;
+  @IsInt()
+  teamId?: number;
 
   @IsOptional()
-  @IsCuid()
-  competitionGroupId?: string;
+  @IsInt()
+  competitionId?: number;
 
   @IsOptional()
-  @IsCuid()
-  matchId?: string;
+  @IsInt()
+  competitionGroupId?: number;
+
+  @IsOptional()
+  @IsInt()
+  matchId?: number;
 
   @IsArray()
   @ValidateNested({ each: true })

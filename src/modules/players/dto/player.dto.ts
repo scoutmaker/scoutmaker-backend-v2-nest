@@ -14,7 +14,7 @@ class Count {
 
 export class PlayerDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   firstName: string;
@@ -39,7 +39,7 @@ export class PlayerDto {
   footed: Foot;
 
   @Expose()
-  lnpId?: string;
+  lnpId?: number;
 
   @Expose()
   lnpUrl?: string;
@@ -51,7 +51,7 @@ export class PlayerDto {
   minut90url?: string;
 
   @Expose()
-  transfermarktId?: string;
+  transfermarktId?: number;
 
   @Expose()
   transfermarktUrl?: string;

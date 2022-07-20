@@ -59,7 +59,7 @@ export class SeasonsController {
 
   @Get(':id')
   @ApiResponse(SeasonDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
     const season = await this.seasonsService.findOne(id);
     const message = this.i18n.translate('seasons.GET_ONE_MESSAGE', {
       lang,
@@ -72,7 +72,7 @@ export class SeasonsController {
   @ApiResponse(SeasonDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateSeasonDto: UpdateSeasonDto,
   ) {
     const season = await this.seasonsService.update(id, updateSeasonDto);
@@ -87,7 +87,7 @@ export class SeasonsController {
   @ApiResponse(SeasonDto, { type: 'update' })
   async toggleIsActive(
     @I18nLang() lang: string,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() toggleIsActiveDto: ToggleIsActiveDto,
   ) {
     const { isActive } = toggleIsActiveDto;
@@ -112,7 +112,7 @@ export class SeasonsController {
 
   @Delete(':id')
   @ApiResponse(SeasonDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+  async remove(@I18nLang() lang: string, @Param('id') id: number) {
     const season = await this.seasonsService.remove(id);
     const message = this.i18n.translate('seasons.DELETE_MESSAGE', {
       lang,

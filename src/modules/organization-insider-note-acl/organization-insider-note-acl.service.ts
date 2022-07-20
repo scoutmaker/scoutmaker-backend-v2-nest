@@ -74,7 +74,7 @@ export class OrganizationInsiderNoteAclService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.findUnique({
       where: { id },
       include,
@@ -82,8 +82,8 @@ export class OrganizationInsiderNoteAclService {
   }
 
   findOneByOrganizationAndInsiderNoteId(
-    organizationId: string,
-    insiderNoteId: string,
+    organizationId: number,
+    insiderNoteId: number,
   ) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.findUnique({
       where: {
@@ -92,7 +92,7 @@ export class OrganizationInsiderNoteAclService {
     });
   }
 
-  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
+  findOneByOrganizationAndPlayerId(organizationId: number, playerId: number) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.findFirst({
       where: {
         organization: { id: organizationId },
@@ -101,7 +101,7 @@ export class OrganizationInsiderNoteAclService {
     });
   }
 
-  update(id: string, updateAceDto: UpdateOrganizationInsiderNoteAceDto) {
+  update(id: number, updateAceDto: UpdateOrganizationInsiderNoteAceDto) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -109,7 +109,7 @@ export class OrganizationInsiderNoteAclService {
     });
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.prisma.organizationInsiderNoteAccessControlEntry.delete({
       where: { id },
       include,

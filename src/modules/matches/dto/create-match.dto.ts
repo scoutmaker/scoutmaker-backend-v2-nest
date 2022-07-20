@@ -1,8 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsDate, IsInt, IsOptional, IsUrl, Min } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
-
 export class CreateMatchDto {
   @IsDate()
   @Transform(({ value }) => new Date(value))
@@ -22,19 +20,19 @@ export class CreateMatchDto {
   @IsUrl()
   videoUrl?: string;
 
-  @IsCuid()
-  homeTeamId: string;
+  @IsInt()
+  homeTeamId: number;
 
-  @IsCuid()
-  awayTeamId: string;
+  @IsInt()
+  awayTeamId: number;
 
-  @IsCuid()
-  competitionId: string;
+  @IsInt()
+  competitionId: number;
 
   @IsOptional()
-  @IsCuid()
-  groupId?: string;
+  @IsInt()
+  groupId?: number;
 
-  @IsCuid()
-  seasonId: string;
+  @IsInt()
+  seasonId: number;
 }

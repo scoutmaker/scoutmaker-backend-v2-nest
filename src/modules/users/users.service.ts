@@ -30,7 +30,7 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.prisma.user.findUnique({ where: { id }, include });
   }
 
@@ -46,7 +46,7 @@ export class UsersService {
     });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
+  update(id: number, updateUserDto: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },
       data: updateUserDto,
@@ -54,7 +54,7 @@ export class UsersService {
     });
   }
 
-  updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+  updatePassword(id: number, updatePasswordDto: UpdatePasswordDto) {
     return this.prisma.user.update({
       where: { id },
       data: {
@@ -74,7 +74,7 @@ export class UsersService {
     });
   }
 
-  changeRole(id: string, role: UserRole) {
+  changeRole(id: number, role: UserRole) {
     return this.prisma.user.update({
       where: { id },
       data: { role },
