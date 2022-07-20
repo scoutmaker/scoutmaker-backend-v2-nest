@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -63,7 +64,10 @@ export class ReportTemplatesController {
 
   @Get(':id')
   @ApiResponse(ReportTemplateDto, { type: 'read' })
-  async findOne(@I18nLang() lang: string, @Param('id') id: number) {
+  async findOne(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const template = await this.reportTemplatesService.findOne(id);
     const message = this.i18n.translate('report-templates.GET_ONE_MESSAGE', {
       lang,
@@ -76,7 +80,7 @@ export class ReportTemplatesController {
   @ApiResponse(ReportTemplateDto, { type: 'update' })
   async update(
     @I18nLang() lang: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateReportTemplateDto: UpdateReportTemplateDto,
   ) {
     const template = await this.reportTemplatesService.update(
@@ -92,7 +96,10 @@ export class ReportTemplatesController {
 
   @Delete(':id')
   @ApiResponse(ReportTemplateDto, { type: 'delete' })
-  async remove(@I18nLang() lang: string, @Param('id') id: number) {
+  async remove(
+    @I18nLang() lang: string,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const template = await this.reportTemplatesService.remove(id);
     const message = this.i18n.translate('report-templates.DELETE_MESSAGE', {
       lang,
