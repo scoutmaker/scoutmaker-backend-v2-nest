@@ -21,10 +21,10 @@ export class CreatePlayerDto {
   @IsRequiredStringWithMaxLength(30)
   lastName: string;
 
-  @IsCuid()
+  @IsInt()
   countryId: number;
 
-  @IsCuid()
+  @IsInt()
   primaryPositionId: number;
 
   @IsOptional()
@@ -32,7 +32,7 @@ export class CreatePlayerDto {
   @IsCuid({ each: true })
   secondaryPositionIds?: string[];
 
-  @IsCuid()
+  @IsInt()
   teamId: number;
 
   @IsInt()

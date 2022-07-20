@@ -1,9 +1,9 @@
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsInt } from 'class-validator';
 
 export class CopySeasonToSeasonDto {
-  @IsCuid()
+  @IsInt()
   fromSeasonId: number;
 
-  @IsCuid()
+  @IsInt()
   toSeasonId: number;
 }

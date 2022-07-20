@@ -1,13 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsDate, IsInt, IsOptional } from 'class-validator';
 
 export class CreateTeamAffiliationDto {
-  @IsCuid()
+  @IsInt()
   playerId: number;
 
-  @IsCuid()
+  @IsInt()
   teamId: number;
 
   @IsDate()

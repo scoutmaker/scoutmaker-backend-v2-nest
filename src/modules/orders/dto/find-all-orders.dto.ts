@@ -1,12 +1,18 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsDateString, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsOptional,
+} from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { OrderStatusEnum } from '../types';
 
 export class FindAllOrdersDto {
   @IsOptional()
-  @IsCuid()
+  @IsInt()
   userId?: string;
 
   @IsOptional()

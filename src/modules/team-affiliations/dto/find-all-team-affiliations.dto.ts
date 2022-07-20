@@ -1,13 +1,11 @@
-import { IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class FindAllTeamAffiliationsDto {
   @IsOptional()
-  @IsCuid()
+  @IsInt()
   playerId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsInt()
   teamId?: string;
 }

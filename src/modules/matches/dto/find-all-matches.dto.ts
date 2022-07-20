@@ -1,11 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsOptional } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class FindAllMatchesDto {
   @IsOptional()
-  @IsCuid()
+  @IsInt()
   teamId?: string;
 
   @IsOptional()
@@ -21,7 +21,7 @@ export class FindAllMatchesDto {
   groupIds?: string[];
 
   @IsOptional()
-  @IsCuid()
+  @IsInt()
   seasonId?: string;
 
   @IsOptional()

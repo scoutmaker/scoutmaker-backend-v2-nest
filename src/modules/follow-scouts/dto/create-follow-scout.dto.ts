@@ -1,6 +1,6 @@
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsInt } from 'class-validator';
 
 export class CreateFollowScoutDto {
-  @IsCuid()
+  @IsInt()
   scoutId: number;
 }
