@@ -46,10 +46,10 @@ export class UserFootballRolesController {
     return formatSuccessResponse(message, role);
   }
 
-  @Get()
+  @Get('list')
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
-    const roles = await this.rolesService.findAll();
+    const roles = await this.rolesService.getList();
     const message = this.i18n.translate(
       'user-football-roles.GET_LIST_MESSAGE',
       { lang },
