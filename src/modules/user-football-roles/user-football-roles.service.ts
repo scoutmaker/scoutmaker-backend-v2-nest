@@ -14,7 +14,7 @@ export class UserFootballRolesService {
     });
   }
 
-  findAll() {
+  getList() {
     return this.prisma.userFootballRole.findMany();
   }
 
