@@ -14,7 +14,7 @@ export class SeasonsService {
     return this.prisma.season.create({ data: createSeasonDto });
   }
 
-  findAll() {
+  getList() {
     return this.prisma.season.findMany();
   }
 

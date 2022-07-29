@@ -48,10 +48,10 @@ export class SeasonsController {
     return formatSuccessResponse(message, season);
   }
 
-  @Get()
+  @Get('list')
   @ApiResponse(SeasonDto, { type: 'read' })
   async findAll(@I18nLang() lang: string) {
-    const seasons = await this.seasonsService.findAll();
+    const seasons = await this.seasonsService.getList();
     const message = this.i18n.translate('seasons.GET_LIST_MESSAGE', {
       lang,
     });
