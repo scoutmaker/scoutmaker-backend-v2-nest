@@ -12,6 +12,7 @@ export class FindAllCompetitionsDto {
   @IsInt()
   @Min(1)
   @Max(15)
+  @Type(() => Number)
   level?: number;
 
   @IsOptional()
