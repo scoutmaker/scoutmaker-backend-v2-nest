@@ -2,9 +2,16 @@ import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
-import { PlayerBasicDataWithoutTeamsDto } from '../../players/dto/player.dto';
+import {
+  PlayerBasicDataDto,
+  PlayerBasicDataWithoutTeamsDto,
+} from '../../players/dto/player.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 import { OrderStatusEnum } from '../types';
+
+class OrderCount {
+  reports: number;
+}
 
 export class OrderDto {
   @Expose()
@@ -45,12 +52,12 @@ export class OrderDto {
   scout?: UserBasicDataDto;
 
   @Transform(({ value }) =>
-    plainToInstance(PlayerBasicDataWithoutTeamsDto, value, {
+    plainToInstance(PlayerBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  player?: PlayerBasicDataWithoutTeamsDto;
+  player?: PlayerBasicDataDto;
 
   @Transform(({ value }) =>
     plainToInstance(MatchBasicDataDto, value, {
@@ -59,6 +66,9 @@ export class OrderDto {
   )
   @Expose()
   match?: MatchBasicDataDto;
+
+  @Expose()
+  _count: OrderCount;
 }
 
 class PlayerSuperBasicInfoDto extends PickType(PlayerBasicDataWithoutTeamsDto, [

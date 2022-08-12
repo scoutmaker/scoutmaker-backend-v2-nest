@@ -20,8 +20,15 @@ import { OrdersPaginationOptionsDto } from './dto/orders-pagination-options.dto'
 const include: Prisma.OrderInclude = {
   author: true,
   scout: true,
-  player: { include: { primaryPosition: true, country: true } },
+  player: {
+    include: {
+      primaryPosition: true,
+      country: true,
+      teams: { where: { endDate: null }, include: { team: true } },
+    },
+  },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
+  _count: { select: { reports: true } },
 };
 
 const { author, scout, ...listInclude } = include;
