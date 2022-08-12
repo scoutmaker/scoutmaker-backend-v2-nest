@@ -3,11 +3,36 @@ import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { LikeNoteBasicDataDto } from '../../like-notes/dto/like-note.dto';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
+import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import {
   PlayerBasicDataWithoutTeamsDto,
   PlayerSuperBasicDataDto,
 } from '../../players/dto/player.dto';
+import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
+
+class NoteMetaDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(TeamBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  team: TeamBasicDataDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(PlayerPositionDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  position: PlayerPositionDto;
+}
 
 export class NoteDto {
   @Expose()
@@ -66,6 +91,14 @@ export class NoteDto {
   )
   @Expose()
   likes: LikeNoteBasicDataDto[];
+
+  @Transform(({ value }) =>
+    plainToInstance(NoteMetaDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  meta?: NoteMetaDto;
 }
 
 export class NotePaginatedDataDto extends OmitType(NoteDto, ['player']) {
