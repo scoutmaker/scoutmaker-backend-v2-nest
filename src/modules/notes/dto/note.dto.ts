@@ -1,6 +1,8 @@
 import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
+import { CompetitionGroupBasicDataDto } from '../../competition-groups/dto/competition-group.dto';
+import { CompetitionBasicDataDto } from '../../competitions/dto/competition.dto';
 import { LikeNoteBasicDataDto } from '../../like-notes/dto/like-note.dto';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
@@ -11,7 +13,7 @@ import {
 import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
-class NoteMetaDto {
+export class NoteMetaDto {
   @Expose()
   id: number;
 
@@ -32,14 +34,35 @@ class NoteMetaDto {
   )
   @Expose()
   position: PlayerPositionDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  competition: CompetitionBasicDataDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionGroupBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  competitionGroup: CompetitionGroupBasicDataDto;
 }
+
+export class NoteMetaBasicDataDto extends PickType(NoteMetaDto, [
+  'id',
+  'team',
+  'position',
+]) {}
 
 export class NoteDto {
   @Expose()
   id: number;
-
-  @Expose()
-  docNumber: number;
 
   @Expose()
   shirtNo?: number;
@@ -101,7 +124,10 @@ export class NoteDto {
   meta?: NoteMetaDto;
 }
 
-export class NotePaginatedDataDto extends OmitType(NoteDto, ['player']) {
+export class NotePaginatedDataDto extends OmitType(NoteDto, [
+  'player',
+  'meta',
+]) {
   @Transform(({ value }) =>
     plainToInstance(PlayerSuperBasicDataDto, value, {
       excludeExtraneousValues: true,
@@ -110,6 +136,14 @@ export class NotePaginatedDataDto extends OmitType(NoteDto, ['player']) {
   )
   @Expose()
   player?: PlayerSuperBasicDataDto;
+
+  @Transform(({ value }) =>
+    plainToInstance(NoteMetaBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  meta?: NoteMetaBasicDataDto;
 }
 
 export class NoteBasicDataDto extends PickType(NoteDto, [
@@ -119,11 +153,9 @@ export class NoteBasicDataDto extends PickType(NoteDto, [
   'rating',
   'createdAt',
   'shirtNo',
-  'docNumber',
 ]) {}
 
 export class NoteSuperBasicDataDto extends PickType(NoteDto, [
   'id',
-  'docNumber',
   'createdAt',
 ]) {}

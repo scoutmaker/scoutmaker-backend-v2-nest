@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Note, Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
@@ -29,7 +29,12 @@ const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
   meta: {
-    include: { competition: true, competitionGroup: true, position: true },
+    include: {
+      competition: true,
+      competitionGroup: true,
+      position: true,
+      team: true,
+    },
   },
 });
 
@@ -42,6 +47,23 @@ export class NotesService {
     private readonly playersService: PlayersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
+
+  private getCacheKey(id: number) {
+    return `note:${id}`;
+  }
+
+  private getOneFromCache(id: number) {
+    return this.redis.get(this.getCacheKey(id));
+  }
+
+  private saveOneToCache<T extends Note>(note: T) {
+    return this.redis.set(
+      this.getCacheKey(note.id),
+      JSON.stringify(note),
+      'EX',
+      REDIS_TTL,
+    );
+  }
 
   async create(createNoteDto: CreateNoteDto, authorId: number) {
     const {
@@ -244,9 +266,7 @@ export class NotesService {
   }
 
   async findOne(id: number, userId?: number) {
-    const redisKey = `note:${id}`;
-
-    const cached = await this.redis.get(redisKey);
+    const cached = await this.getOneFromCache(id);
 
     if (cached) {
       return JSON.parse(cached);
@@ -264,7 +284,7 @@ export class NotesService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);
+    await this.saveOneToCache(note);
 
     return note;
   }
@@ -345,7 +365,7 @@ export class NotesService {
       });
     }
 
-    return this.prisma.note.update({
+    const updated = await this.prisma.note.update({
       where: { id },
       data: {
         ...rest,
@@ -355,6 +375,10 @@ export class NotesService {
       },
       include,
     });
+
+    await this.saveOneToCache(updated);
+
+    return updated;
   }
 
   async remove(id: number) {
