@@ -21,7 +21,7 @@ export class CreateNoteDto {
 
   @IsOptional()
   @IsInt()
-  @Min(2)
+  @Min(1)
   @Max(20)
   rating?: number;
 
