@@ -1,14 +1,64 @@
 import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
+import { CompetitionGroupBasicDataDto } from '../../competition-groups/dto/competition-group.dto';
+import { CompetitionBasicDataDto } from '../../competitions/dto/competition.dto';
 import { LikeNoteBasicDataDto } from '../../like-notes/dto/like-note.dto';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
+import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import {
   PlayerBasicDataWithoutTeamsDto,
   PlayerSuperBasicDataDto,
 } from '../../players/dto/player.dto';
+import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
-import { NoteMetaBasicDataDto, NoteMetaDto } from './note-meta-dto';
+
+export class NoteMetaDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(TeamBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  team: TeamBasicDataDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(PlayerPositionDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  position: PlayerPositionDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  competition: CompetitionBasicDataDto;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToInstance(CompetitionGroupBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  competitionGroup: CompetitionGroupBasicDataDto;
+}
+
+export class NoteMetaBasicDataDto extends PickType(NoteMetaDto, [
+  'id',
+  'team',
+  'position',
+]) {}
 
 export class NoteDto {
   @Expose()
