@@ -29,7 +29,12 @@ const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
   meta: {
-    include: { competition: true, competitionGroup: true, position: true },
+    include: {
+      competition: true,
+      competitionGroup: true,
+      position: true,
+      team: true,
+    },
   },
 });
 
