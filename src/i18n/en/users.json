@@ -1,5 +1,6 @@
 {
   "GET_LIST_MESSAGE": "Successfully fetched all users list",
+  "GET_ALL_MESSAGE": "Successfully fetched all users data, page {currentPage} of {totalPages}",
   "GET_ONE_MESSAGE": "Successfully fetched user data - {name}",
   "CHANGE_ROLE_MESSAGE": "Successfully change user {userName} role to {roleName}"
 }

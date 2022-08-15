@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
+import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -7,4 +8,11 @@ import { UsersService } from './users.service';
   controllers: [UsersController],
   providers: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(PrepareQueryMiddleware).forRoutes({
+      path: 'users',
+      method: RequestMethod.GET,
+    });
+  }
+}
