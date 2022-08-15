@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nowy juniorski poziom rozgrywkowy - {name}",
-  "GET_ALL_MESSAGE": "Pomyślnie pobrano listę wszystkich juniorskich poziomów rozgrywkowych",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich juniorskich poziomów rozgrywkowych, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich juniorskich poziomów rozgrywkowych",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane juniorskiego poziomu rozgrywkowego - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane juniorskiego poziomu rozgrywkowego - {name}",
   "DELETE_MESSAGE": "Pomyślnie usunięto dane juniorskiego poziomu rozgrywkowego - {name}"
