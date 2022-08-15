@@ -7,18 +7,23 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CreateSeasonDto } from './dto/create-season.dto';
+import { FindAllSeasonsDto } from './dto/find-all-seasons.dto';
 import { SeasonDto } from './dto/season.dto';
+import { SeasonsPaginationOptionsDto } from './dto/seasons-pagination-options.dto';
 import { ToggleIsActiveDto } from './dto/toggle-is-active.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
 import { SeasonsService } from './seasons.service';
@@ -27,7 +32,6 @@ import { SeasonsService } from './seasons.service';
 @ApiTags('seasons')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
 @ApiCookieAuth()
-@Serialize(SeasonDto)
 export class SeasonsController {
   constructor(
     private readonly seasonsService: SeasonsService,
@@ -36,6 +40,7 @@ export class SeasonsController {
 
   @Post()
   @ApiResponse(SeasonDto, { type: 'create' })
+  @Serialize(SeasonDto)
   async create(
     @I18nLang() lang: string,
     @Body() createSeasonDto: CreateSeasonDto,
@@ -48,9 +53,28 @@ export class SeasonsController {
     return formatSuccessResponse(message, season);
   }
 
+  @Get()
+  @ApiPaginatedResponse(SeasonDto)
+  @ApiQuery({ type: SeasonsPaginationOptionsDto })
+  @Serialize(SeasonDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: SeasonsPaginationOptionsDto,
+    @Query() query: FindAllSeasonsDto,
+  ) {
+    const data = await this.seasonsService.findAll(paginationOptions, query);
+    const message = this.i18n.translate('seasons.GET_ALL_MESSAGE', {
+      lang,
+      args: { currentPage: data.page, totalPages: data.totalPages },
+    });
+    return formatSuccessResponse(message, data);
+  }
+
   @Get('list')
   @ApiResponse(SeasonDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
+  @Serialize(SeasonDto)
+  async getList(@I18nLang() lang: string) {
     const seasons = await this.seasonsService.getList();
     const message = this.i18n.translate('seasons.GET_LIST_MESSAGE', {
       lang,
@@ -60,6 +84,7 @@ export class SeasonsController {
 
   @Get(':id')
   @ApiResponse(SeasonDto, { type: 'read' })
+  @Serialize(SeasonDto)
   async findOne(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -74,6 +99,7 @@ export class SeasonsController {
 
   @Patch(':id')
   @ApiResponse(SeasonDto, { type: 'update' })
+  @Serialize(SeasonDto)
   async update(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -89,6 +115,7 @@ export class SeasonsController {
 
   @Patch(':id/toggle-active')
   @ApiResponse(SeasonDto, { type: 'update' })
+  @Serialize(SeasonDto)
   async toggleIsActive(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -116,6 +143,7 @@ export class SeasonsController {
 
   @Delete(':id')
   @ApiResponse(SeasonDto, { type: 'delete' })
+  @Serialize(SeasonDto)
   async remove(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,

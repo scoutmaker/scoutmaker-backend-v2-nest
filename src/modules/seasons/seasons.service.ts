@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSeasonDto } from './dto/create-season.dto';
+import { FindAllSeasonsDto } from './dto/find-all-seasons.dto';
+import { SeasonsPaginationOptionsDto } from './dto/seasons-pagination-options.dto';
 import { ToggleIsActiveDto } from './dto/toggle-is-active.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
 
@@ -12,6 +15,31 @@ export class SeasonsService {
 
   create(createSeasonDto: CreateSeasonDto) {
     return this.prisma.season.create({ data: createSeasonDto });
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: SeasonsPaginationOptionsDto,
+    { name }: FindAllSeasonsDto,
+  ) {
+    const where: Prisma.SeasonWhereInput = {
+      name: { contains: name, mode: 'insensitive' },
+    };
+
+    const seasons = await this.prisma.season.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: { [sortBy]: sortingOrder },
+    });
+
+    const total = await this.prisma.season.count({ where });
+
+    return formatPaginatedResponse({
+      docs: seasons,
+      totalDocs: total,
+      limit,
+      page,
+    });
   }
 
   getList() {
