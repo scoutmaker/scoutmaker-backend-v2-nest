@@ -3,10 +3,10 @@ import { Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
-import { OrganizationsPaginationOptionsDto } from '../competition-junior-levels/dto/organizations-pagination-options.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { FindAllOrganizationsDto } from './dto/find-all-organizations.dto';
+import { OrganizationsPaginationOptionsDto } from './dto/organizations-pagination-options.dto';
 import { ToggleMembershipDto } from './dto/toggle-membership.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { getUserNamesString } from './helpers';
