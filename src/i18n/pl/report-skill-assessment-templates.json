@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nowy szablon ocen umiejętności - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich szablonów ocen umiejętności, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich szablonów ocen umiejętności",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane szablonu ocen umiejętności - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane szablonu ocen umiejętności - {name}",

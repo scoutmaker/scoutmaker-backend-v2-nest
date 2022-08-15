@@ -7,19 +7,24 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportSkillAssessmentTemplateDto } from './dto/create-report-skill-assessment-template.dto';
+import { FindAllReportSkillAssessmentTemplatesDto } from './dto/find-all-report-skill-assessment-templates.dto';
 import { ReportSkillAssessmentTemplateDto } from './dto/report-skill-assessment-template.dto';
+import { ReportSkillAssessmentTemplatesPaginationOptionsDto } from './dto/report-skill-assessment-templates-pagination-options.dto';
 import { UpdateReportSkillAssessmentTemplateDto } from './dto/update-report-skill-assessment-template.dto';
 import { ReportSkillAssessmentTemplatesService } from './report-skill-assessment-templates.service';
 
@@ -27,7 +32,6 @@ import { ReportSkillAssessmentTemplatesService } from './report-skill-assessment
 @ApiTags('report skill assessment templates')
 @UseGuards(AuthGuard)
 @ApiCookieAuth()
-@Serialize(ReportSkillAssessmentTemplateDto)
 export class ReportSkillAssessmentTemplatesController {
   constructor(
     private readonly templatesService: ReportSkillAssessmentTemplatesService,
@@ -36,6 +40,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Post()
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'create' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async create(
     @I18nLang() lang: string,
     @Body()
@@ -54,9 +59,31 @@ export class ReportSkillAssessmentTemplatesController {
   }
 
   @Get()
+  @ApiPaginatedResponse(ReportSkillAssessmentTemplateDto)
+  @ApiQuery({ type: ReportSkillAssessmentTemplatesPaginationOptionsDto })
+  @Serialize(ReportSkillAssessmentTemplateDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: ReportSkillAssessmentTemplatesPaginationOptionsDto,
+    @Query() query: FindAllReportSkillAssessmentTemplatesDto,
+  ) {
+    const data = await this.templatesService.findAll(paginationOptions, query);
+    const message = this.i18n.translate(
+      'report-skill-assessment-templates.GET_ALL_MESSAGE',
+      {
+        lang,
+        args: { currentPage: data.page, totalPages: data.totalPages },
+      },
+    );
+    return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
-    const templates = await this.templatesService.findAll();
+  @Serialize(ReportSkillAssessmentTemplateDto)
+  async getList(@I18nLang() lang: string) {
+    const templates = await this.templatesService.getList();
     const message = this.i18n.translate(
       'report-skill-assessment-templates.GET_LIST_MESSAGE',
       { lang },
@@ -66,6 +93,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async findOne(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -80,6 +108,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Patch(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'update' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async update(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -99,6 +128,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'delete' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async remove(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
