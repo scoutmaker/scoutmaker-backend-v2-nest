@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Successfully created new organization - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all organizations data, page {currentPage} of {totalPages}",
   "GET_LIST_MESSAGE": "Successfully fetched all organizations list",
   "GET_ONE_MESSAGE": "Successfully fetched organization data - {name}",
   "UPDATE_MESSAGE": "Successfully updated organization data - {name}",

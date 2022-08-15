@@ -2,8 +2,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import { OrganizationsPaginationOptionsDto } from '../competition-junior-levels/dto/organizations-pagination-options.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { FindAllOrganizationsDto } from './dto/find-all-organizations.dto';
 import { ToggleMembershipDto } from './dto/toggle-membership.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { getUserNamesString } from './helpers';
@@ -60,7 +63,33 @@ export class OrganizationsService {
     });
   }
 
-  findAll() {
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: OrganizationsPaginationOptionsDto,
+    { name }: FindAllOrganizationsDto,
+  ) {
+    const where: Prisma.OrganizationWhereInput = {
+      name: { contains: name, mode: 'insensitive' },
+    };
+
+    const organizations = await this.prisma.organization.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: { [sortBy]: sortingOrder },
+      include,
+    });
+
+    const total = await this.prisma.organization.count({ where });
+
+    return formatPaginatedResponse({
+      docs: organizations,
+      totalDocs: total,
+      limit,
+      page,
+    });
+  }
+
+  getList() {
     return this.prisma.organization.findMany({ include });
   }
 

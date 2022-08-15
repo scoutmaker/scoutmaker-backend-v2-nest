@@ -7,17 +7,22 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
+import { OrganizationsPaginationOptionsDto } from '../competition-junior-levels/dto/organizations-pagination-options.dto';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
+import { FindAllOrganizationsDto } from './dto/find-all-organizations.dto';
 import { OrganizationDto } from './dto/organization.dto';
 import { ToggleMembershipDto } from './dto/toggle-membership.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -27,7 +32,6 @@ import { OrganizationsService } from './organizations.service';
 @ApiTags('organizations')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
 @ApiCookieAuth()
-@Serialize(OrganizationDto)
 export class OrganizationsController {
   constructor(
     private readonly organizationsService: OrganizationsService,
@@ -36,6 +40,7 @@ export class OrganizationsController {
 
   @Post()
   @ApiResponse(OrganizationDto, { type: 'create' })
+  @Serialize(OrganizationDto)
   async create(
     @I18nLang() lang: string,
     @Body() createOrganizationDto: CreateOrganizationDto,
@@ -52,9 +57,31 @@ export class OrganizationsController {
   }
 
   @Get()
+  @ApiPaginatedResponse(OrganizationDto)
+  @ApiQuery({ type: OrganizationsPaginationOptionsDto })
+  @Serialize(OrganizationDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: OrganizationsPaginationOptionsDto,
+    @Query() query: FindAllOrganizationsDto,
+  ) {
+    const data = await this.organizationsService.findAll(
+      paginationOptions,
+      query,
+    );
+    const message = this.i18n.translate('organizations.GET_ALL_MESSAGE', {
+      lang,
+      args: { currentPage: data.page, totalPages: data.totalPages },
+    });
+    return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
   @ApiResponse(OrganizationDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
-    const organizations = await this.organizationsService.findAll();
+  @Serialize(OrganizationDto)
+  async getList(@I18nLang() lang: string) {
+    const organizations = await this.organizationsService.getList();
     const message = this.i18n.translate('organizations.GET_LIST_MESSAGE', {
       lang,
     });
@@ -63,6 +90,7 @@ export class OrganizationsController {
 
   @Get(':id')
   @ApiResponse(OrganizationDto, { type: 'read' })
+  @Serialize(OrganizationDto)
   async findOne(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -77,6 +105,7 @@ export class OrganizationsController {
 
   @Patch(':id')
   @ApiResponse(OrganizationDto, { type: 'update' })
+  @Serialize(OrganizationDto)
   async update(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -95,6 +124,7 @@ export class OrganizationsController {
 
   @Patch(':id/add-member')
   @ApiResponse(OrganizationDto, { type: 'update' })
+  @Serialize(OrganizationDto)
   async addMember(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -114,6 +144,7 @@ export class OrganizationsController {
 
   @Patch(':id/remove-member')
   @ApiResponse(OrganizationDto, { type: 'update' })
+  @Serialize(OrganizationDto)
   async removeMember(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,
@@ -132,6 +163,7 @@ export class OrganizationsController {
 
   @Delete(':id')
   @ApiResponse(OrganizationDto, { type: 'delete' })
+  @Serialize(OrganizationDto)
   async remove(
     @I18nLang() lang: string,
     @Param('id', ParseIntPipe) id: number,

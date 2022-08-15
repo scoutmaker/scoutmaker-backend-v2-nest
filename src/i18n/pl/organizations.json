@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nową organizację - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich organizacji, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich organizacji",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane organizacji - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane organizacji - {name}",
