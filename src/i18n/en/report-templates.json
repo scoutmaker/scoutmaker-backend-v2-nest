@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Successfully created new report template - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all report templates data, page {currentPage} of {totalPages}",
   "GET_LIST_MESSAGE": "Successfully fetched all report templates list",
   "GET_ONE_MESSAGE": "Successfully fetched report template data - {name}",
   "UPDATE_MESSAGE": "Successfully updated report template data - {name}",
