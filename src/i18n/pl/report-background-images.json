@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie dodano nowy obrazek tła raportu - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich obrazków tła raportów, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich obrazków tła raportów",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane obrazka tła raportu - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane obrazka tła raportu - {name}",
