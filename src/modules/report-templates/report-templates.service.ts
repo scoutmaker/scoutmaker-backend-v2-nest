@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReportTemplateDto } from './dto/create-report-template.dto';
+import { FindAllReportTemplatesDto } from './dto/find-all-report-templates.dto';
+import { ReportTemplatesPaginationOptionsDto } from './dto/report-templates-pagination-options.dto';
 import { UpdateReportTemplateDto } from './dto/update-report-template.dto';
 
 const include: Prisma.ReportTemplateInclude = {
@@ -37,7 +40,33 @@ export class ReportTemplatesService {
     });
   }
 
-  findAll() {
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: ReportTemplatesPaginationOptionsDto,
+    { name }: FindAllReportTemplatesDto,
+  ) {
+    const where: Prisma.ReportTemplateWhereInput = {
+      name: { contains: name, mode: 'insensitive' },
+    };
+
+    const reportTemplates = await this.prisma.reportTemplate.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: { [sortBy]: sortingOrder },
+      include,
+    });
+
+    const total = await this.prisma.reportTemplate.count({ where });
+
+    return formatPaginatedResponse({
+      docs: reportTemplates,
+      totalDocs: total,
+      limit,
+      page,
+    });
+  }
+
+  getList() {
     return this.prisma.reportTemplate.findMany({ include });
   }
 
