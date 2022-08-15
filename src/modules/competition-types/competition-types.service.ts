@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
+import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
+import { CompetitionTypesPaginationOptionsDto } from './dto/competition-types-pagination-options.dto';
 import { CreateCompetitionTypeDto } from './dto/create-competition-type.dto';
+import { FindAllCompetitionTypesDto } from './dto/find-all-competition-types.dto';
 import { UpdateCompetitionTypeDto } from './dto/update-competition-type.dto';
 
 @Injectable()
@@ -14,7 +18,32 @@ export class CompetitionTypesService {
     });
   }
 
-  findAll() {
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: CompetitionTypesPaginationOptionsDto,
+    { name }: FindAllCompetitionTypesDto,
+  ) {
+    const where: Prisma.CompetitionTypeWhereInput = {
+      name: { contains: name, mode: 'insensitive' },
+    };
+
+    const competitionType = await this.prisma.competitionType.findMany({
+      where,
+      take: limit,
+      skip: calculateSkip(page, limit),
+      orderBy: { [sortBy]: sortingOrder },
+    });
+
+    const total = await this.prisma.competitionType.count({ where });
+
+    return formatPaginatedResponse({
+      docs: competitionType,
+      totalDocs: total,
+      limit,
+      page,
+    });
+  }
+
+  getList() {
     return this.prisma.competitionType.findMany();
   }
 
