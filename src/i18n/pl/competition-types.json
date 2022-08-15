@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono dodano nowy typ rozgrywek - {name}",
-  "GET_ALL_MESSAGE": "Pomyślnie pobrano listę wszystkich typów rozgrywek",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich typów rozgrywek, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich typów rozgrywek",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane typu rozgrywek - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane typu rozgrywek - {name}",
   "DELETE_MESSAGE": "Pomyślnie usunięto dane typu rozgrywek - {name}"
