@@ -26,7 +26,7 @@ export class CompetitionTypesService {
       name: { contains: name, mode: 'insensitive' },
     };
 
-    const competitionType = await this.prisma.competitionType.findMany({
+    const competitionTypes = await this.prisma.competitionType.findMany({
       where,
       take: limit,
       skip: calculateSkip(page, limit),
@@ -36,7 +36,7 @@ export class CompetitionTypesService {
     const total = await this.prisma.competitionType.count({ where });
 
     return formatPaginatedResponse({
-      docs: competitionType,
+      docs: competitionTypes,
       totalDocs: total,
       limit,
       page,
