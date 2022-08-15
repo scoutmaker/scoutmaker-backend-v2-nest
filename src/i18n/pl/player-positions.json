@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nową pozycję boiskową - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich pozycji boiskowych, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich pozycji boiskowych",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane pozycji boiskowej - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane pozycji boiskowej - {name}",
