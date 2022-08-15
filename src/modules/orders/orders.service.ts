@@ -84,7 +84,12 @@ export class OrdersService {
             { match: { awayTeam: { id: { in: teamIds } } } },
             {
               player: {
-                teams: { some: { endDate: null, id: { in: teamIds } } },
+                teams: {
+                  some: {
+                    endDate: null,
+                    team: { id: { in: teamIds } },
+                  },
+                },
               },
             },
           ]
