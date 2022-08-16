@@ -110,6 +110,7 @@ export class OrdersService {
         break;
       case 'position':
         sort = { player: { primaryPosition: { name: sortingOrder } } };
+        break;
       default:
         sort = { [sortBy]: sortingOrder };
         break;
