@@ -30,7 +30,6 @@ import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import {
   InsiderNoteBasicDataDto,
   InsiderNoteDto,
-  InsiderNotePaginatedDataDto,
 } from './dto/insider-note.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
@@ -70,9 +69,9 @@ export class InsiderNotesController {
 
   @Get()
   @UseInterceptors(DocumentAccessFiltersInterceptor)
-  @ApiPaginatedResponse(InsiderNotePaginatedDataDto)
+  @ApiPaginatedResponse(InsiderNoteDto)
   @ApiQuery({ type: InsiderNotesPaginationOptionsDto })
-  @Serialize(InsiderNotePaginatedDataDto, 'docs')
+  @Serialize(InsiderNoteDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: InsiderNotesPaginationOptionsDto,

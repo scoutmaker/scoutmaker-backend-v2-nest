@@ -25,14 +25,15 @@ import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
 
 const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
-  player: true,
+  player: { include: { primaryPosition: true } },
   author: true,
+  meta: { include: { team: true } },
 });
 
 const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { country: true, primaryPosition: true } },
   author: true,
-  meta: { include: { competition: true, competitionGroup: true } },
+  meta: { include: { competition: true, competitionGroup: true, team: true } },
 });
 
 type SingleInsiderNoteWithInclude = InsiderNote & {
