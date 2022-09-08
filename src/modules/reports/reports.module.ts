@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
 import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
+import { OrdersModule } from '../orders/orders.module';
 import { OrganizationReportAclService } from '../organization-report-acl/organization-report-acl.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { PlayersModule } from '../players/players.module';
@@ -19,7 +20,7 @@ import { ReportsService } from './reports.service';
     UserReportAclService,
     OrganizationReportAclService,
   ],
-  imports: [ReportTemplatesModule, PlayersModule],
+  imports: [ReportTemplatesModule, PlayersModule, OrdersModule],
 })
 export class ReportsModule {
   configure(consumer: MiddlewareConsumer) {

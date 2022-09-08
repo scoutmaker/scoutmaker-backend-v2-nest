@@ -1,5 +1,5 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, Report, ReportTemplate } from '@prisma/client';
 import Redis from 'ioredis';
 
@@ -11,6 +11,7 @@ import {
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
+import { OrdersService } from '../orders/orders.service';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportTemplatesService } from '../report-templates/report-templates.service';
@@ -67,6 +68,7 @@ export class ReportsService {
     private readonly prisma: PrismaService,
     private readonly templatesService: ReportTemplatesService,
     private readonly playersService: PlayersService,
+    private readonly ordersService: OrdersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -91,6 +93,7 @@ export class ReportsService {
     const {
       templateId,
       playerId,
+      orderId,
       matchId,
       positionPlayedId,
       teamId,
@@ -100,6 +103,17 @@ export class ReportsService {
       finalRating,
       ...rest
     } = createReportDto;
+
+    if (!playerId && !orderId) {
+      throw new BadRequestException('Please provide playerId or orderId');
+    }
+
+    let finalPlayerId = playerId;
+
+    if (!finalPlayerId) {
+      const order = await this.ordersService.findOne(orderId);
+      finalPlayerId = order.playerId;
+    }
 
     let percentageRating: number;
     let template: ReportTemplate;
@@ -122,7 +136,7 @@ export class ReportsService {
 
     // Calculate report meta data
     const player = await this.playersService.findOneWithCurrentTeamDetails(
-      playerId,
+      finalPlayerId,
     );
 
     const metaPositionId = positionPlayedId || player.primaryPositionId;
@@ -142,7 +156,8 @@ export class ReportsService {
         percentageRating,
         avgRating,
         template: { connect: { id: templateId } },
-        player: { connect: { id: playerId } },
+        player: { connect: { id: finalPlayerId } },
+        order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
         author: { connect: { id: authorId } },
         skills: areSkillAssessmentsIncluded
