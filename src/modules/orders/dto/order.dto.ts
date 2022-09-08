@@ -81,6 +81,7 @@ export class OrderBasicDataDto extends PickType(OrderDto, [
   'id',
   'docNumber',
   'match',
+  'status',
 ]) {
   @Transform(({ value }) =>
     plainToInstance(PlayerSuperBasicInfoDto, value, {
