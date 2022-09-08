@@ -48,7 +48,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
       teams: { include: { team: true } },
     },
   },
-  match: { include: { homeTeam: true, awayTeam: true } },
+  match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
   skills: { include: { template: { include: { category: true } } } },
   meta: {

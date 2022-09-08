@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { ReportStatus } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
@@ -65,7 +65,7 @@ export class ReportDto {
   id: number;
 
   @Expose()
-  docNumber: number;
+  shirtNo?: number;
 
   @Expose()
   minutesPlayed?: number;
@@ -101,6 +101,7 @@ export class ReportDto {
   percentageRating?: number;
 
   @Expose()
+  @ApiProperty({ enum: ReportStatus })
   status: ReportStatus;
 
   @Expose()
@@ -165,7 +166,6 @@ export class ReportDto {
 
 export class ReportPaginatedDataDto extends PickType(ReportDto, [
   'id',
-  'docNumber',
   'player',
   'finalRating',
   'percentageRating',
@@ -189,7 +189,6 @@ export class ReportPaginatedDataDto extends PickType(ReportDto, [
 
 export class ReportBasicDataDto extends PickType(ReportDto, [
   'id',
-  'docNumber',
   'status',
   'player',
   'author',
@@ -197,6 +196,5 @@ export class ReportBasicDataDto extends PickType(ReportDto, [
 
 export class ReportSuperBasicDataDto extends PickType(ReportDto, [
   'id',
-  'docNumber',
   'createdAt',
 ]) {}
