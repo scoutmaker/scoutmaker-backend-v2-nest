@@ -56,6 +56,7 @@ export class MatchesService {
     groupIds,
     hasVideo,
     seasonId,
+    orderId,
     teamId,
   }: FindAllMatchesDto): Prisma.MatchWhereInput {
     return {
@@ -66,6 +67,7 @@ export class MatchesService {
         ? { id: { in: groupIds } }
         : undefined,
       seasonId,
+      orders: orderId ? { some: { id: orderId } } : undefined,
       videoUrl: hasVideo ? { not: null } : undefined,
       AND: teamId
         ? [

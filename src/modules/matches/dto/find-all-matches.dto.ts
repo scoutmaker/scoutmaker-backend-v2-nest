@@ -27,6 +27,11 @@ export class FindAllMatchesDto {
   seasonId?: number;
 
   @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  orderId?: number;
+
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   hasVideo?: boolean;
