@@ -85,13 +85,8 @@ export class CreateReportDto {
   @IsInt()
   templateId: number;
 
-  @IsOptional()
   @IsInt()
-  playerId?: number;
-
-  @IsOptional()
-  @IsInt()
-  orderId?: number;
+  playerId: number;
 
   @IsOptional()
   @IsInt()
