@@ -96,6 +96,7 @@ export class ReportsService {
       teamId,
       competitionId,
       competitionGroupId,
+      orderId,
       skillAssessments,
       finalRating,
       ...rest
@@ -143,6 +144,7 @@ export class ReportsService {
         avgRating,
         template: { connect: { id: templateId } },
         player: { connect: { id: playerId } },
+        order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
         author: { connect: { id: authorId } },
         skills: areSkillAssessmentsIncluded
