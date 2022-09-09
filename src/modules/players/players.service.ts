@@ -53,6 +53,12 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   _count: { select: { notes: true, reports: true } },
 });
 
+interface IGenerateWhereClauseArgs {
+  query: FindAllPlayersDto;
+  accessFilters?: Prisma.PlayerWhereInput;
+  userId?: number;
+}
+
 @Injectable()
 export class PlayersService {
   constructor(
@@ -94,9 +100,12 @@ export class PlayersService {
     });
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
-    {
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.PlayerWhereInput {
+    const {
       bornAfter,
       bornBefore,
       competitionIds,
@@ -106,37 +115,16 @@ export class PlayersService {
       isLiked,
       name,
       positionIds,
+      orderId,
       teamIds,
-    }: FindAllPlayersDto,
-    userId?: number,
-    accessFilters?: Prisma.PlayerWhereInput,
-  ) {
-    let sort: Prisma.PlayerOrderByWithRelationInput;
+    } = query;
 
-    switch (sortBy) {
-      case 'country':
-      case 'primaryPosition':
-        sort = { [sortBy]: { name: sortingOrder } };
-        break;
-
-      case 'reportsCount':
-        sort = { reports: { _count: sortingOrder } };
-        break;
-
-      case 'notesCount':
-        sort = { notes: { _count: sortingOrder } };
-        break;
-
-      default:
-        sort = { [sortBy]: sortingOrder };
-        break;
-    }
-
-    const where: Prisma.PlayerWhereInput = {
+    return {
       AND: [
         accessFilters,
         {
           yearOfBirth: { gte: bornAfter, lte: bornBefore },
+          orders: orderId ? { some: { id: orderId } } : undefined,
           footed,
           country: isIdsArrayFilterDefined(countryIds)
             ? {
@@ -206,6 +194,36 @@ export class PlayersService {
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
+    query: FindAllPlayersDto,
+    userId?: number,
+    accessFilters?: Prisma.PlayerWhereInput,
+  ) {
+    let sort: Prisma.PlayerOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'country':
+      case 'primaryPosition':
+        sort = { [sortBy]: { name: sortingOrder } };
+        break;
+
+      case 'reportsCount':
+        sort = { reports: { _count: sortingOrder } };
+        break;
+
+      case 'notesCount':
+        sort = { notes: { _count: sortingOrder } };
+        break;
+
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, userId, accessFilters });
 
     const players = await this.prisma.player.findMany({
       where,
@@ -232,9 +250,15 @@ export class PlayersService {
     });
   }
 
-  getList(accessFilters?: Prisma.PlayerWhereInput) {
+  getList(
+    query: FindAllPlayersDto,
+    userId?: number,
+    accessFilters?: Prisma.PlayerWhereInput,
+  ) {
+    const where = this.generateWhereClause({ query, userId, accessFilters });
+
     return this.prisma.player.findMany({
-      where: { ...accessFilters },
+      where,
       include: listInclude,
     });
   }
