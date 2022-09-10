@@ -90,6 +90,10 @@ export class CreateReportDto {
 
   @IsOptional()
   @IsInt()
+  orderId?: number;
+
+  @IsOptional()
+  @IsInt()
   positionPlayedId?: number;
 
   @IsOptional()

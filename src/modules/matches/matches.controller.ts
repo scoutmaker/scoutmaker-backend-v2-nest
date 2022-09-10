@@ -80,8 +80,8 @@ export class MatchesController {
   @Get('list')
   @ApiResponse(MatchBasicDataDto, { type: 'read' })
   @Serialize(MatchBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const matches = await this.matchesService.getList();
+  async getList(@I18nLang() lang: string, @Query() query: FindAllMatchesDto) {
+    const matches = await this.matchesService.getList(query);
     const message = this.i18n.translate('matches.GET_LIST_MESSAGE', {
       lang,
     });

@@ -51,9 +51,37 @@ export class MatchesService {
     });
   }
 
+  private generateWhereClause({
+    competitionIds,
+    groupIds,
+    hasVideo,
+    seasonId,
+    orderId,
+    teamId,
+  }: FindAllMatchesDto): Prisma.MatchWhereInput {
+    return {
+      competition: isIdsArrayFilterDefined(competitionIds)
+        ? { id: { in: competitionIds } }
+        : undefined,
+      group: isIdsArrayFilterDefined(groupIds)
+        ? { id: { in: groupIds } }
+        : undefined,
+      seasonId,
+      orders: orderId ? { some: { id: orderId } } : undefined,
+      videoUrl: hasVideo ? { not: null } : undefined,
+      AND: teamId
+        ? [
+            {
+              OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
+            },
+          ]
+        : undefined,
+    };
+  }
+
   async findAll(
     { limit, page, sortBy, sortingOrder }: MatchesPaginationOptionsDto,
-    { teamId, competitionIds, groupIds, seasonId, hasVideo }: FindAllMatchesDto,
+    query: FindAllMatchesDto,
   ) {
     let sort: Prisma.MatchOrderByWithRelationInput;
 
@@ -93,23 +121,7 @@ export class MatchesService {
         break;
     }
 
-    const where: Prisma.MatchWhereInput = {
-      competition: isIdsArrayFilterDefined(competitionIds)
-        ? { id: { in: competitionIds } }
-        : undefined,
-      group: isIdsArrayFilterDefined(groupIds)
-        ? { id: { in: groupIds } }
-        : undefined,
-      seasonId,
-      videoUrl: hasVideo ? { not: null } : undefined,
-      AND: teamId
-        ? [
-            {
-              OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
-            },
-          ]
-        : undefined,
-    };
+    const where = this.generateWhereClause(query);
 
     const matches = await this.prisma.match.findMany({
       where,
@@ -129,8 +141,11 @@ export class MatchesService {
     });
   }
 
-  getList() {
-    return this.prisma.match.findMany({ include: listInclude });
+  getList(query: FindAllMatchesDto) {
+    return this.prisma.match.findMany({
+      where: this.generateWhereClause(query),
+      include: listInclude,
+    });
   }
 
   findOne(id: number) {

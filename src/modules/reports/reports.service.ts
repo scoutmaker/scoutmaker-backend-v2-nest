@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma, ReportTemplate } from '@prisma/client';
+import { Prisma, Report, ReportTemplate } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
@@ -36,6 +36,7 @@ const include: Prisma.ReportInclude = {
 const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
   player: true,
   author: true,
+  meta: { include: { team: true, position: true } },
 });
 
 const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
@@ -47,7 +48,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
       teams: { include: { team: true } },
     },
   },
-  match: { include: { homeTeam: true, awayTeam: true } },
+  match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
   skills: { include: { template: { include: { category: true } } } },
   meta: {
@@ -55,6 +56,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
       competition: true,
       competitionGroup: true,
       position: true,
+      team: true,
     },
   },
 });
@@ -68,6 +70,23 @@ export class ReportsService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
+  private getCacheKey(id: number) {
+    return `note:${id}`;
+  }
+
+  private getOneFromCache(id: number) {
+    return this.redis.get(this.getCacheKey(id));
+  }
+
+  private saveOneToCache<T extends Report>(report: T) {
+    return this.redis.set(
+      this.getCacheKey(report.id),
+      JSON.stringify(report),
+      'EX',
+      REDIS_TTL,
+    );
+  }
+
   async create(createReportDto: CreateReportDto, authorId: number) {
     const {
       templateId,
@@ -77,6 +96,7 @@ export class ReportsService {
       teamId,
       competitionId,
       competitionGroupId,
+      orderId,
       skillAssessments,
       finalRating,
       ...rest
@@ -124,6 +144,7 @@ export class ReportsService {
         avgRating,
         template: { connect: { id: templateId } },
         player: { connect: { id: playerId } },
+        order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
         author: { connect: { id: authorId } },
         skills: areSkillAssessmentsIncluded
@@ -268,9 +289,7 @@ export class ReportsService {
   }
 
   async findOne(id: number, userId?: number) {
-    const redisKey = `report:${id}`;
-
-    const cached = await this.redis.get(redisKey);
+    const cached = await this.getOneFromCache(id);
 
     if (cached) {
       return JSON.parse(cached);
@@ -283,7 +302,7 @@ export class ReportsService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(report), 'EX', REDIS_TTL);
+    await this.saveOneToCache(report);
 
     return report;
   }
@@ -407,6 +426,8 @@ export class ReportsService {
       });
     }
 
+    await this.saveOneToCache(updatedReport);
+
     return updatedReport;
   }
 
@@ -420,6 +441,7 @@ export class ReportsService {
         where: { reportId: id },
       }),
     ]);
+
     return this.prisma.report.delete({ where: { id }, include });
   }
 }

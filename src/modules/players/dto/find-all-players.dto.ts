@@ -71,6 +71,11 @@ export class FindAllPlayersDto {
   competitionGroupIds?: number[];
 
   @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  orderId?: number;
+
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;

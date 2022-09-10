@@ -92,9 +92,15 @@ export class PlayersController {
   @Serialize(PlayerBasicDataDto)
   async getList(
     @I18nLang() lang: string,
+    @Query() query: FindAllPlayersDto,
+    @CurrentUser() user: CurrentUserDto,
     @AccessFilters() accessFilters: Prisma.PlayerWhereInput,
   ) {
-    const players = await this.playersService.getList(accessFilters);
+    const players = await this.playersService.getList(
+      query,
+      user.id,
+      accessFilters,
+    );
     const message = this.i18n.translate('players.GET_LIST_MESSAGE', {
       lang,
     });

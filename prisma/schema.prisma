@@ -423,7 +423,7 @@ model Match {
   authorId      Int
   notes         Note[]
   reports       Report[]
-  order         Order[]
+  orders        Order[]
   stats         PlayerStats[]
   attendances   MatchAttendance[]
 }
