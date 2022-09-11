@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -25,7 +24,6 @@ import { CompetitionParticipationsPaginationOptionsDto } from './dto/competition
 import { CopySeasonToSeasonDto } from './dto/copy-season-to-season.dto';
 import { CreateCompetitionParticipationDto } from './dto/create-competition-participation.dto';
 import { FindAllCompetitionParticipationsDto } from './dto/find-all-competition-participations.dto';
-import { FindUniqueCompetitionParticipationDto } from './dto/find-unique-competition-participation.dto';
 import { UpdateCompetitionParticipationDto } from './dto/update-competition-participation.dto';
 
 @Controller('competition-participations')
@@ -95,14 +93,11 @@ export class CompetitionParticipationsController {
     return formatSuccessResponse(message, participations);
   }
 
-  @Get(':teamId/:competitionId/:seasonId')
+  @Get(':id')
   @ApiResponse(CompetitionParticipationDto, { type: 'read' })
   @Serialize(CompetitionParticipationDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param() params: FindUniqueCompetitionParticipationDto,
-  ) {
-    const participation = await this.participationsService.findOne(params);
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+    const participation = await this.participationsService.findOne(id);
     const message = this.i18n.translate(
       'competition-participations.GET_ONE_MESSAGE',
       { lang },
@@ -130,17 +125,17 @@ export class CompetitionParticipationsController {
     return formatSuccessResponse(message, participations);
   }
 
-  @Patch(':teamId/:competitionId/:seasonId')
+  @Patch(':id')
   @ApiResponse(CompetitionParticipationDto, { type: 'update' })
   @Serialize(CompetitionParticipationDto)
   async update(
     @I18nLang() lang: string,
-    @Param() params: FindUniqueCompetitionParticipationDto,
+    @Param('id') id: string,
     @Body()
     updateCompetitionParticipationDto: UpdateCompetitionParticipationDto,
   ) {
     const participation = await this.participationsService.update(
-      params,
+      id,
       updateCompetitionParticipationDto,
     );
     const message = this.i18n.translate(
@@ -150,14 +145,11 @@ export class CompetitionParticipationsController {
     return formatSuccessResponse(message, participation);
   }
 
-  @Delete(':teamId/:competitionId/:seasonId')
+  @Delete(':id')
   @ApiResponse(CompetitionParticipationDto, { type: 'delete' })
   @Serialize(CompetitionParticipationDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param() params: FindUniqueCompetitionParticipationDto,
-  ) {
-    const participation = await this.participationsService.remove(params);
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+    const participation = await this.participationsService.remove(id);
     const message = this.i18n.translate(
       'competition-participations.DELETE_MESSAGE',
       { lang },

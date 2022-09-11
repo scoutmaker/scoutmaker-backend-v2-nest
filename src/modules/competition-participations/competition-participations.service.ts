@@ -7,7 +7,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CompetitionParticipationsPaginationOptionsDto } from './dto/competition-participations-pagination-options.dto';
 import { CreateCompetitionParticipationDto } from './dto/create-competition-participation.dto';
 import { FindAllCompetitionParticipationsDto } from './dto/find-all-competition-participations.dto';
-import { FindUniqueCompetitionParticipationDto } from './dto/find-unique-competition-participation.dto';
 import { UpdateCompetitionParticipationDto } from './dto/update-competition-participation.dto';
 
 const include: Prisma.CompetitionParticipationInclude = {
@@ -89,27 +88,27 @@ export class CompetitionParticipationsService {
     return this.prisma.competitionParticipation.findMany({ include });
   }
 
-  findOne(findUniqueDto: FindUniqueCompetitionParticipationDto) {
+  findOne(id: string) {
     return this.prisma.competitionParticipation.findUnique({
-      where: { teamId_competitionId_seasonId: { ...findUniqueDto } },
+      where: { id },
       include,
     });
   }
 
   update(
-    findUniqueDto: FindUniqueCompetitionParticipationDto,
+    id: string,
     updateCompetitionParticipationDto: UpdateCompetitionParticipationDto,
   ) {
     return this.prisma.competitionParticipation.update({
-      where: { teamId_competitionId_seasonId: { ...findUniqueDto } },
+      where: { id },
       data: updateCompetitionParticipationDto,
       include,
     });
   }
 
-  remove(findUniqueDto: FindUniqueCompetitionParticipationDto) {
+  remove(id: string) {
     return this.prisma.competitionParticipation.delete({
-      where: { teamId_competitionId_seasonId: { ...findUniqueDto } },
+      where: { id },
       include,
     });
   }
