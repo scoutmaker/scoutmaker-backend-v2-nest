@@ -16,8 +16,9 @@ export class CreateClubDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
+  @IsOptional()
   @IsString()
-  regionId: string;
+  regionId?: string;
 
   @IsString()
   countryId: string;

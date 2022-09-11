@@ -28,7 +28,7 @@ export class ClubsService {
         ...rest,
         slug,
         country: { connect: { id: countryId } },
-        region: { connect: { id: regionId } },
+        region: regionId ? { connect: { id: regionId } } : undefined,
         author: { connect: { id: authorId } },
       },
       include,

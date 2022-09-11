@@ -144,8 +144,8 @@ model Club {
   // Relation fields
   country   Country @relation(fields: [countryId], references: [id])
   countryId String
-  region    Region  @relation(fields: [regionId], references: [id])
-  regionId  String
+  region    Region? @relation(fields: [regionId], references: [id])
+  regionId  String?
   author    User    @relation(fields: [authorId], references: [id], name: "created-clubs")
   authorId  String
   teams     Team[]
