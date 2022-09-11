@@ -3,6 +3,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
   Max,
   Min,
 } from 'class-validator';
@@ -29,18 +30,18 @@ export class CreateCompetitionDto {
   gender?: GenderEnum;
 
   @IsNotEmpty()
-  @IsInt()
-  countryId: number;
+  @IsString()
+  countryId: string;
 
   @IsNotEmpty()
-  @IsInt()
-  ageCategoryId: number;
+  @IsString()
+  ageCategoryId: string;
 
   @IsNotEmpty()
-  @IsInt()
-  typeId: number;
+  @IsString()
+  typeId: string;
 
   @IsOptional()
-  @IsInt()
-  juniorLevelId?: number;
+  @IsString()
+  juniorLevelId?: string;
 }

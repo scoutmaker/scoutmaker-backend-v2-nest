@@ -1,16 +1,16 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateCompetitionParticipationDto {
-  @IsInt()
-  teamId: number;
+  @IsString()
+  teamId: string;
 
-  @IsInt()
-  competitionId: number;
+  @IsString()
+  competitionId: string;
 
-  @IsInt()
-  seasonId: number;
+  @IsString()
+  seasonId: string;
 
   @IsOptional()
-  @IsInt()
-  groupId?: number;
+  @IsString()
+  groupId?: string;
 }

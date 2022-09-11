@@ -46,18 +46,18 @@ export class PlayerPositionsService {
     return this.prisma.playerPosition.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.playerPosition.findUnique({ where: { id } });
   }
 
-  update(id: number, updatePlayerPositionDto: UpdatePlayerPositionDto) {
+  update(id: string, updatePlayerPositionDto: UpdatePlayerPositionDto) {
     return this.prisma.playerPosition.update({
       where: { id },
       data: updatePlayerPositionDto,
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.playerPosition.delete({ where: { id } });
   }
 }

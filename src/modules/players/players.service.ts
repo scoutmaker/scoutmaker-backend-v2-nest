@@ -56,7 +56,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
 interface IGenerateWhereClauseArgs {
   query: FindAllPlayersDto;
   accessFilters?: Prisma.PlayerWhereInput;
-  userId?: number;
+  userId?: string;
 }
 
 @Injectable()
@@ -66,7 +66,7 @@ export class PlayersService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createPlayerDto: CreatePlayerDto, authorId: number) {
+  async create(createPlayerDto: CreatePlayerDto, authorId: string) {
     const {
       countryId,
       primaryPositionId,
@@ -199,7 +199,7 @@ export class PlayersService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
     query: FindAllPlayersDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
@@ -252,7 +252,7 @@ export class PlayersService {
 
   getList(
     query: FindAllPlayersDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     const where = this.generateWhereClause({ query, userId, accessFilters });
@@ -263,7 +263,7 @@ export class PlayersService {
     });
   }
 
-  async findOne(id: number, userId?: number) {
+  async findOne(id: string, userId?: string) {
     const redisKey = `player:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -289,7 +289,7 @@ export class PlayersService {
     return player;
   }
 
-  async findOneBySlug(slug: string, userId?: number) {
+  async findOneBySlug(slug: string, userId?: string) {
     const redisKey = `player:${slug}`;
 
     const cached = await this.redis.get(redisKey);
@@ -336,7 +336,7 @@ export class PlayersService {
     return slug;
   }
 
-  findOneWithCurrentTeamDetails(id: number) {
+  findOneWithCurrentTeamDetails(id: string) {
     return this.prisma.player.findUnique({
       where: { id },
       include: {
@@ -357,7 +357,7 @@ export class PlayersService {
     });
   }
 
-  async update(id: number, updatePlayerDto: UpdatePlayerDto) {
+  async update(id: string, updatePlayerDto: UpdatePlayerDto) {
     const { secondaryPositionIds, ...rest } = updatePlayerDto;
 
     // If user wants to update players secondary positions, first we need to delete all existing SecondaryPositionsOnPlayers records, then create new ones
@@ -386,7 +386,7 @@ export class PlayersService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } }),
       this.prisma.secondaryPositionsOnPlayers.deleteMany({

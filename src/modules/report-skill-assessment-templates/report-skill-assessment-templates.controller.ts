@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -94,10 +93,7 @@ export class ReportSkillAssessmentTemplatesController {
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
   @Serialize(ReportSkillAssessmentTemplateDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.findOne(id);
     const message = this.i18n.translate(
       'report-skill-assessment-templates.GET_ONE_MESSAGE',
@@ -111,7 +107,7 @@ export class ReportSkillAssessmentTemplatesController {
   @Serialize(ReportSkillAssessmentTemplateDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body()
     updateReportSkillAssessmentTemplateDto: UpdateReportSkillAssessmentTemplateDto,
   ) {
@@ -129,10 +125,7 @@ export class ReportSkillAssessmentTemplatesController {
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'delete' })
   @Serialize(ReportSkillAssessmentTemplateDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.remove(id);
     const message = this.i18n.translate(
       'report-skill-assessment-templates.DELETE_MESSAGE',

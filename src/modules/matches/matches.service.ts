@@ -27,7 +27,7 @@ const { group, season, ...listInclude } = include;
 export class MatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createMatchDto: CreateMatchDto, authorId: number) {
+  create(createMatchDto: CreateMatchDto, authorId: string) {
     const {
       homeTeamId,
       awayTeamId,
@@ -148,11 +148,11 @@ export class MatchesService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.match.findUnique({ where: { id }, include });
   }
 
-  update(id: number, updateMatchDto: UpdateMatchDto) {
+  update(id: string, updateMatchDto: UpdateMatchDto) {
     return this.prisma.match.update({
       where: { id },
       data: updateMatchDto,
@@ -160,7 +160,7 @@ export class MatchesService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.match.delete({ where: { id }, include });
   }
 }

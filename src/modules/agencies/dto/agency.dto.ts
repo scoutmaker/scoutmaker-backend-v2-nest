@@ -5,7 +5,7 @@ import { CountryDto } from '../../countries/dto/country.dto';
 
 export class AgencyDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;

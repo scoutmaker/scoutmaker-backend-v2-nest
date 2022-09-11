@@ -1,14 +1,11 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindAllUserInsiderNoteAceDto {
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  userId?: number;
+  @IsString()
+  userId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  insiderNoteId?: number;
+  @IsString()
+  insiderNoteId?: string;
 }

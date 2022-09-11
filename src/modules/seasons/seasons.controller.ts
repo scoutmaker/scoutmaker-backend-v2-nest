@@ -85,10 +85,7 @@ export class SeasonsController {
   @Get(':id')
   @ApiResponse(SeasonDto, { type: 'read' })
   @Serialize(SeasonDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const season = await this.seasonsService.findOne(id);
     const message = this.i18n.translate('seasons.GET_ONE_MESSAGE', {
       lang,
@@ -102,7 +99,7 @@ export class SeasonsController {
   @Serialize(SeasonDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateSeasonDto: UpdateSeasonDto,
   ) {
     const season = await this.seasonsService.update(id, updateSeasonDto);
@@ -118,7 +115,7 @@ export class SeasonsController {
   @Serialize(SeasonDto)
   async toggleIsActive(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() toggleIsActiveDto: ToggleIsActiveDto,
   ) {
     const { isActive } = toggleIsActiveDto;
@@ -144,10 +141,7 @@ export class SeasonsController {
   @Delete(':id')
   @ApiResponse(SeasonDto, { type: 'delete' })
   @Serialize(SeasonDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const season = await this.seasonsService.remove(id);
     const message = this.i18n.translate('seasons.DELETE_MESSAGE', {
       lang,

@@ -23,8 +23,8 @@ export class LikeNoteDto {
 
 export class LikeNoteBasicDataDto {
   @Expose()
-  userId: number;
+  userId: string;
 
   @Expose()
-  noteId: number;
+  noteId: string;
 }

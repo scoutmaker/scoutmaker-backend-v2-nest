@@ -1,11 +1,11 @@
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class CreatePlayerStatsDto {
-  @IsInt()
-  playerId: number;
+  @IsString()
+  playerId: string;
 
-  @IsInt()
-  matchId: number;
+  @IsString()
+  matchId: string;
 
   @IsOptional()
   @IsInt()
@@ -36,6 +36,6 @@ export class CreatePlayerStatsDto {
   redCards?: number;
 
   @IsOptional()
-  @IsInt()
-  teamId?: number;
+  @IsString()
+  teamId?: string;
 }

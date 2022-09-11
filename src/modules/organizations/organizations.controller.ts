@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -91,10 +90,7 @@ export class OrganizationsController {
   @Get(':id')
   @ApiResponse(OrganizationDto, { type: 'read' })
   @Serialize(OrganizationDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.findOne(id);
     const message = this.i18n.translate('organizations.GET_ONE_MESSAGE', {
       lang,
@@ -108,7 +104,7 @@ export class OrganizationsController {
   @Serialize(OrganizationDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
   ) {
     const organization = await this.organizationsService.update(
@@ -127,7 +123,7 @@ export class OrganizationsController {
   @Serialize(OrganizationDto)
   async addMember(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() toggleMembershipDto: ToggleMembershipDto,
   ) {
     const organization = await this.organizationsService.addMember(
@@ -147,7 +143,7 @@ export class OrganizationsController {
   @Serialize(OrganizationDto)
   async removeMember(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() toggleMembershipDto: ToggleMembershipDto,
   ) {
     const organization = await this.organizationsService.removeMember(
@@ -164,10 +160,7 @@ export class OrganizationsController {
   @Delete(':id')
   @ApiResponse(OrganizationDto, { type: 'delete' })
   @Serialize(OrganizationDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.remove(id);
     const message = this.i18n.translate('organizations.REMOVE_MESSAGE', {
       lang,

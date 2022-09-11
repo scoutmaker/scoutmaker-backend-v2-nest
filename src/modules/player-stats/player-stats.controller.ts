@@ -86,10 +86,7 @@ export class PlayerStatsController {
   @Get(':id')
   @ApiResponse(PlayerStatsDto, { type: 'read' })
   @Serialize(PlayerStatsDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const stats = await this.playerStatsService.findOne(id);
     const message = this.i18n.translate('player-stats.GET_ONE_MESSAGE', {
       lang,
@@ -106,7 +103,7 @@ export class PlayerStatsController {
   @Serialize(PlayerStatsDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updatePlayerStatDto: UpdatePlayerStatsDto,
   ) {
     const stats = await this.playerStatsService.update(id, updatePlayerStatDto);
@@ -123,10 +120,7 @@ export class PlayerStatsController {
   @Delete(':id')
   @ApiResponse(PlayerStatsDto, { type: 'delete' })
   @Serialize(PlayerStatsDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const stats = await this.playerStatsService.remove(id);
     const message = this.i18n.translate('player-stats.DELETE_MESSAGE', {
       lang,

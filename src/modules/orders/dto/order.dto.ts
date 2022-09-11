@@ -15,7 +15,10 @@ class OrderCount {
 
 export class OrderDto {
   @Expose()
-  id: number;
+  id: string;
+
+  @Expose()
+  docNumber: number;
 
   @Expose()
   status: OrderStatusEnum;
@@ -76,6 +79,7 @@ class PlayerSuperBasicInfoDto extends PickType(PlayerBasicDataWithoutTeamsDto, [
 
 export class OrderBasicDataDto extends PickType(OrderDto, [
   'id',
+  'docNumber',
   'match',
   'status',
   'createdAt',

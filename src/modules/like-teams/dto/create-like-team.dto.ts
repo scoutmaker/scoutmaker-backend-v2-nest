@@ -1,8 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateLikeTeamDto {
-  @IsInt()
-  @Type(() => Number)
-  teamId: number;
+  @IsString()
+  teamId: string;
 }

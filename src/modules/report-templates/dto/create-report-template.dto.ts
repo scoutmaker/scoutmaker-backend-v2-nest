@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsInt,
   IsOptional,
+  IsString,
   Max,
   Min,
 } from 'class-validator';
@@ -23,6 +24,6 @@ export class CreateReportTemplateDto {
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  skillAssessmentTemplateIds: number[];
+  @IsString({ each: true })
+  skillAssessmentTemplateIds: string[];
 }

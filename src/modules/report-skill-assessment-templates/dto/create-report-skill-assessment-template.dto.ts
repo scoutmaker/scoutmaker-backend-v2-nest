@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
@@ -12,6 +12,6 @@ export class CreateReportSkillAssessmentTemplateDto {
   @IsBoolean()
   hasScore: boolean;
 
-  @IsInt()
-  categoryId: number;
+  @IsString()
+  categoryId: string;
 }

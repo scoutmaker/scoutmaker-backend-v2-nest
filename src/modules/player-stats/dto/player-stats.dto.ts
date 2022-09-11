@@ -5,7 +5,7 @@ import { PlayerBasicDataDto } from '../../players/dto/player.dto';
 
 export class PlayerStatsDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Transform(({ value }) =>
     plainToInstance(PlayerBasicDataDto, value, {

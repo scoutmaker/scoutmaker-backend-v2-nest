@@ -1,8 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateFollowAgencyDto {
-  @IsInt()
-  @Type(() => Number)
-  agencyId: number;
+  @IsString()
+  agencyId: string;
 }

@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  IsInt,
   IsOptional,
   IsPostalCode,
   IsString,
@@ -13,14 +12,14 @@ export class CreateClubDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsInt()
-  regionId: number;
+  @IsString()
+  regionId: string;
 
-  @IsInt()
-  countryId: number;
+  @IsString()
+  countryId: string;
 
   @IsOptional()
-  @IsInt()
+  @IsString()
   lnpId?: string;
 
   @IsOptional()

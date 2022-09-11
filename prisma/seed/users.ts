@@ -7,7 +7,7 @@ const chance = new Chance();
 
 const arrayOfFour = Array.from({ length: 4 }, (_, i) => i + 1);
 
-export async function generateUsers(regionId: number) {
+export async function generateUsers(regionId: string) {
   const hashedPassword = await bcrypt.hash('Password123', 10);
 
   const adminPromise = prisma.user.create({

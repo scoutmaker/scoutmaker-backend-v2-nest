@@ -11,7 +11,7 @@ const include = Prisma.validator<Prisma.FollowTeamInclude>()({
 export class FollowTeamsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(teamId: number, userId: number) {
+  create(teamId: string, userId: string) {
     return this.prisma.followTeam.create({
       data: {
         team: { connect: { id: teamId } },
@@ -21,7 +21,7 @@ export class FollowTeamsService {
     });
   }
 
-  remove(teamId: number, userId: number) {
+  remove(teamId: string, userId: string) {
     return this.prisma.followTeam.delete({
       where: {
         teamId_followerId: { teamId, followerId: userId },

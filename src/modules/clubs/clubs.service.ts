@@ -18,7 +18,7 @@ const include: Prisma.ClubInclude = {
 export class ClubsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createClubDto: CreateClubDto, authorId: number) {
+  async create(createClubDto: CreateClubDto, authorId: string) {
     const { regionId, countryId, ...rest } = createClubDto;
 
     const slug = await this.generateSlug(rest.name);
@@ -82,7 +82,7 @@ export class ClubsService {
     return this.prisma.club.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.club.findUnique({ where: { id }, include });
   }
 
@@ -111,7 +111,7 @@ export class ClubsService {
     return slug;
   }
 
-  update(id: number, updateClubDto: UpdateClubDto) {
+  update(id: string, updateClubDto: UpdateClubDto) {
     return this.prisma.club.update({
       where: { id },
       data: updateClubDto,
@@ -119,7 +119,7 @@ export class ClubsService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.club.delete({ where: { id }, include });
   }
 }

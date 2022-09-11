@@ -4,7 +4,7 @@ import { ReportSkillAssessmentCategoryDto } from '../../report-skill-assessment-
 
 export class ReportSkillAssessmentTemplateDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;

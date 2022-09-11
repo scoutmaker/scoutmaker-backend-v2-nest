@@ -68,10 +68,7 @@ export class UsersController {
   @Get(':id')
   @ApiResponse(UserDto, { type: 'read' })
   @Serialize(UserDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const user = await this.usersService.findOne(id);
     const message = this.i18n.translate('users.GET_ONE_MESSAGE', {
       lang,
@@ -85,7 +82,7 @@ export class UsersController {
   @Serialize(UserDto)
   async changeRole(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() { role }: ChangeRoleDto,
   ) {
     const user = await this.usersService.changeRole(id, role);

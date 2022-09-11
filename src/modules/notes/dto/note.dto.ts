@@ -15,7 +15,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class NoteMetaDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   @Transform(({ value }) =>
@@ -62,7 +62,10 @@ export class NoteMetaBasicDataDto extends PickType(NoteMetaDto, [
 
 export class NoteDto {
   @Expose()
-  id: number;
+  id: string;
+
+  @Expose()
+  docNumber: number;
 
   @Expose()
   shirtNo?: number;
@@ -148,6 +151,7 @@ export class NotePaginatedDataDto extends OmitType(NoteDto, [
 
 export class NoteBasicDataDto extends PickType(NoteDto, [
   'id',
+  'docNumber',
   'player',
   'description',
   'rating',

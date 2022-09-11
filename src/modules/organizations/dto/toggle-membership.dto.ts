@@ -1,6 +1,6 @@
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class ToggleMembershipDto {
-  @IsInt()
-  memberId: number;
+  @IsString()
+  memberId: string;
 }

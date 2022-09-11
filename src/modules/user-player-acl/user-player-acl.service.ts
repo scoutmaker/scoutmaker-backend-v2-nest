@@ -66,20 +66,20 @@ export class UserPlayerAclService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.userPlayerAccessControlEntry.findUnique({
       where: { id },
       include,
     });
   }
 
-  findOneByUserAndPlayerId(userId: number, playerId: number) {
+  findOneByUserAndPlayerId(userId: string, playerId: string) {
     return this.prisma.userPlayerAccessControlEntry.findUnique({
       where: { userId_playerId: { userId, playerId } },
     });
   }
 
-  update(id: number, updateAceDto: UpdateUserPlayerAceDto) {
+  update(id: string, updateAceDto: UpdateUserPlayerAceDto) {
     return this.prisma.userPlayerAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -87,7 +87,7 @@ export class UserPlayerAclService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.userPlayerAccessControlEntry.delete({
       where: { id },
       include,

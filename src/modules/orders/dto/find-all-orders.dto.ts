@@ -1,38 +1,36 @@
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
   IsEnum,
-  IsInt,
   IsOptional,
+  IsString,
 } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
 import { OrderStatusEnum } from '../types';
 
 export class FindAllOrdersDto {
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  userId?: number;
+  @IsString()
+  userId?: string;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  playerIds?: number[];
+  @IsString({ each: true })
+  playerIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  teamIds?: number[];
+  @IsString({ each: true })
+  teamIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  matchIds?: number[];
+  @IsString({ each: true })
+  matchIds?: string[];
 
   @IsOptional()
   @IsEnum(OrderStatusEnum, {

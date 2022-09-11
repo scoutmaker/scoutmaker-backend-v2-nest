@@ -1,8 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateLikeReportDto {
-  @IsInt()
-  @Type(() => Number)
-  reportId: number;
+  @IsString()
+  reportId: string;
 }

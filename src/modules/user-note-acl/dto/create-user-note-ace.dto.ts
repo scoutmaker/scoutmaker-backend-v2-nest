@@ -1,13 +1,13 @@
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateUserNoteAceDto {
-  @IsInt()
-  userId: number;
+  @IsString()
+  userId: string;
 
-  @IsInt()
-  noteId: number;
+  @IsString()
+  noteId: string;
 
   @IsOptional()
   @IsEnum(AccessControlEntryPermissionLevelEnum, {

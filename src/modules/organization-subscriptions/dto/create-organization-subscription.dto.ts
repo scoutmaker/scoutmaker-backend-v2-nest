@@ -1,8 +1,8 @@
-import { IsArray, IsDateString, IsInt, IsOptional } from 'class-validator';
+import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrganizationSubscriptionDto {
-  @IsInt()
-  organizationId: number;
+  @IsString()
+  organizationId: string;
 
   @IsDateString()
   startDate: string;
@@ -11,11 +11,11 @@ export class CreateOrganizationSubscriptionDto {
   endDate: string;
 
   @IsArray()
-  @IsInt({ each: true })
-  competitionIds: number[];
+  @IsString({ each: true })
+  competitionIds: string[];
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  competitionGroupIds: number[];
+  @IsString({ each: true })
+  competitionGroupIds: string[];
 }

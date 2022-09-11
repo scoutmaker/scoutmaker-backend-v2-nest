@@ -83,10 +83,7 @@ export class UserSubscriptionsController {
   @Get(':id')
   @ApiResponse(UserSubscriptionDto, { type: 'read' })
   @Serialize(UserSubscriptionDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.userSubscriptionsService.findOne(id);
     const message = this.i18n.translate('user-subscriptions.GET_ONE_MESSAGE', {
       lang,
@@ -103,7 +100,7 @@ export class UserSubscriptionsController {
   async update(
     @I18nLang() lang: string,
 
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateUserSubscriptionDto: UpdateUserSubscriptionDto,
   ) {
     const subscription = await this.userSubscriptionsService.update(
@@ -122,10 +119,7 @@ export class UserSubscriptionsController {
   @Delete(':id')
   @ApiResponse(UserSubscriptionDto, { type: 'read' })
   @Serialize(UserSubscriptionDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.userSubscriptionsService.remove(id);
     const message = this.i18n.translate('user-subscriptions.DELETE_MESSAGE', {
       lang,

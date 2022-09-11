@@ -70,11 +70,11 @@ export class ReportsService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  private getCacheKey(id: number) {
+  private getCacheKey(id: string) {
     return `note:${id}`;
   }
 
-  private getOneFromCache(id: number) {
+  private getOneFromCache(id: string) {
     return this.redis.get(this.getCacheKey(id));
   }
 
@@ -87,7 +87,7 @@ export class ReportsService {
     );
   }
 
-  async create(createReportDto: CreateReportDto, authorId: number) {
+  async create(createReportDto: CreateReportDto, authorId: string) {
     const {
       templateId,
       playerId,
@@ -191,7 +191,7 @@ export class ReportsService {
       hasVideo,
       isLiked,
     }: FindAllReportsDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.ReportOrderByWithRelationInput;
@@ -288,7 +288,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: number, userId?: number) {
+  async findOne(id: string, userId?: string) {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {
@@ -307,7 +307,7 @@ export class ReportsService {
     return report;
   }
 
-  async update(id: number, updateReportDto: UpdateReportDto) {
+  async update(id: string, updateReportDto: UpdateReportDto) {
     const {
       skillAssessments,
       playerId,
@@ -319,10 +319,10 @@ export class ReportsService {
       ...rest
     } = updateReportDto;
 
-    let metaPositionId: number;
-    let metaTeamId: number;
-    let metaCompetitionId: number;
-    let metaCompetitionGroupId: number | undefined;
+    let metaPositionId: string;
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string | undefined;
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {
@@ -431,7 +431,7 @@ export class ReportsService {
     return updatedReport;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.reportMeta.delete({ where: { reportId: id } }),
       this.prisma.userReportAccessControlEntry.deleteMany({

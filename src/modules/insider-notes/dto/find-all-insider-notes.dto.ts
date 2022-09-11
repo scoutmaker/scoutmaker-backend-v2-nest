@@ -1,38 +1,38 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsInt, IsOptional } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
+import { IsString } from 'class-validator';
 
 export class FindAllInsiderNotesDto {
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  playerIds?: number[];
+  @IsString({ each: true })
+  playerIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  positionIds?: number[];
+  @IsString({ each: true })
+  positionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  teamIds?: number[];
+  @IsString({ each: true })
+  teamIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  competitionIds?: number[];
+  @IsString({ each: true })
+  competitionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  competitionGroupIds?: number[];
+  @IsString({ each: true })
+  competitionGroupIds?: string[];
 
   @IsOptional()
   @IsBoolean()

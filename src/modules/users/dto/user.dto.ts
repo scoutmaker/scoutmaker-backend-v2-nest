@@ -14,7 +14,7 @@ class Count {
 
 export class UserDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   @ApiProperty({ enum: UserRole })

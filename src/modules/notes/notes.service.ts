@@ -48,11 +48,11 @@ export class NotesService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  private getCacheKey(id: number) {
+  private getCacheKey(id: string) {
     return `note:${id}`;
   }
 
-  private getOneFromCache(id: number) {
+  private getOneFromCache(id: string) {
     return this.redis.get(this.getCacheKey(id));
   }
 
@@ -65,7 +65,7 @@ export class NotesService {
     );
   }
 
-  async create(createNoteDto: CreateNoteDto, authorId: number) {
+  async create(createNoteDto: CreateNoteDto, authorId: string) {
     const {
       playerId,
       matchId,
@@ -84,10 +84,10 @@ export class NotesService {
       percentageRating = calculatePercentageRating(rating, maxRatingScore);
     }
 
-    let metaPositionId: number;
-    let metaTeamId: number;
-    let metaCompetitionId: number;
-    let metaCompetitionGroupId: number | undefined;
+    let metaPositionId: string;
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string | undefined;
 
     // If there's playerId supplied, we need to create note meta
     if (playerId) {
@@ -144,7 +144,7 @@ export class NotesService {
       playerBornBefore,
       isLiked,
     }: FindAllNotesDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
   ) {
     let sort: Prisma.NoteOrderByWithRelationInput;
@@ -265,7 +265,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: number, userId?: number) {
+  async findOne(id: string, userId?: string) {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {
@@ -289,7 +289,7 @@ export class NotesService {
     return note;
   }
 
-  async update(id: number, updateNoteDto: UpdateNoteDto) {
+  async update(id: string, updateNoteDto: UpdateNoteDto) {
     const {
       rating,
       maxRatingScore,
@@ -381,7 +381,7 @@ export class NotesService {
     return updated;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.noteMeta.delete({ where: { noteId: id } }),
       this.prisma.userNoteAccessControlEntry.deleteMany({

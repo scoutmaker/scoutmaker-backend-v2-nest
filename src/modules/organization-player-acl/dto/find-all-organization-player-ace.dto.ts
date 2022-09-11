@@ -1,14 +1,11 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindAllOrganizationPlayerAceDto {
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  organizationId?: number;
+  @IsString()
+  organizationId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  playerId?: number;
+  @IsString()
+  playerId?: string;
 }

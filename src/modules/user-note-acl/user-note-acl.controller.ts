@@ -49,7 +49,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -78,16 +78,13 @@ export class UserNoteAclController {
   @Get(':id')
   @ApiResponse(UserNoteAceDto, { type: 'read' })
   @Serialize(UserNoteAceDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate('user-note-acl.GET_ONE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -98,7 +95,7 @@ export class UserNoteAclController {
   @Serialize(UserNoteAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateAceDto: UpdateUserNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -106,7 +103,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -115,16 +112,13 @@ export class UserNoteAclController {
   @Delete(':id')
   @ApiResponse(UserNoteAceDto, { type: 'delete' })
   @Serialize(UserNoteAceDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate('user-note-acl.DELETE_MESSAGE', {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);

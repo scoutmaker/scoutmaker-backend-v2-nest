@@ -73,14 +73,14 @@ export class OrganizationPlayerAclService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.organizationPlayerAccessControlEntry.findUnique({
       where: { id },
       include,
     });
   }
 
-  findOneByOrganizationAndPlayerId(organizationId: number, playerId: number) {
+  findOneByOrganizationAndPlayerId(organizationId: string, playerId: string) {
     return this.prisma.organizationPlayerAccessControlEntry.findUnique({
       where: {
         organizationId_playerId: { organizationId, playerId },
@@ -88,7 +88,7 @@ export class OrganizationPlayerAclService {
     });
   }
 
-  update(id: number, updateAceDto: UpdateOrganizationPlayerAceDto) {
+  update(id: string, updateAceDto: UpdateOrganizationPlayerAceDto) {
     return this.prisma.organizationPlayerAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -96,7 +96,7 @@ export class OrganizationPlayerAclService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.organizationPlayerAccessControlEntry.delete({
       where: { id },
       include,

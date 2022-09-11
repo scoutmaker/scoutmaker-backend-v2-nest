@@ -1,14 +1,14 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateOrderDto {
   @IsOptional()
-  @IsInt()
-  playerId?: number;
+  @IsString()
+  playerId?: string;
 
   @IsOptional()
-  @IsInt()
-  matchId?: number;
+  @IsString()
+  matchId?: string;
 
   @IsOptional()
   @IsString()

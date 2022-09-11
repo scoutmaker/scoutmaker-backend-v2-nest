@@ -85,11 +85,11 @@ export class TeamAffiliationsService {
     return this.prisma.teamAffiliation.findMany({ include });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.teamAffiliation.findUnique({ where: { id }, include });
   }
 
-  update(id: number, updateTeamAffiliationDto: UpdateTeamAffiliationDto) {
+  update(id: string, updateTeamAffiliationDto: UpdateTeamAffiliationDto) {
     return this.prisma.teamAffiliation.update({
       where: { id },
       data: updateTeamAffiliationDto,
@@ -97,7 +97,7 @@ export class TeamAffiliationsService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.teamAffiliation.delete({ where: { id }, include });
   }
 }

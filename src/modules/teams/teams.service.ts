@@ -24,7 +24,7 @@ const include: Prisma.TeamInclude = {
 export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createTeamDto: CreateTeamDto, authorId: number) {
+  async create(createTeamDto: CreateTeamDto, authorId: string) {
     const { clubId, competitionId, groupId, ...rest } = createTeamDto;
 
     const slug = await this.generateSlug(rest.name);
@@ -58,7 +58,7 @@ export class TeamsService {
       competitionIds,
       competitionGroupIds,
     }: FindAllTeamsDto,
-    userId?: number,
+    userId?: string,
   ) {
     let sort: Prisma.TeamOrderByWithRelationInput;
 
@@ -147,7 +147,7 @@ export class TeamsService {
     return this.prisma.team.findMany();
   }
 
-  findOne(id: number, userId?: number) {
+  findOne(id: string, userId?: string) {
     return this.prisma.team.findUnique({
       where: { id },
       include: userId
@@ -161,7 +161,7 @@ export class TeamsService {
     });
   }
 
-  findOneBySlug(slug: string, userId?: number) {
+  findOneBySlug(slug: string, userId?: string) {
     return this.prisma.team.findUnique({
       where: { slug },
       include: userId
@@ -196,7 +196,7 @@ export class TeamsService {
     return slug;
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
+  update(id: string, updateTeamDto: UpdateTeamDto) {
     return this.prisma.team.update({
       where: { id },
       data: updateTeamDto,
@@ -204,7 +204,7 @@ export class TeamsService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.prisma.competitionParticipation.deleteMany({
       where: { teamId: id },
     });

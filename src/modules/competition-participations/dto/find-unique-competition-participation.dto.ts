@@ -1,16 +1,12 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class FindUniqueCompetitionParticipationDto {
-  @IsInt()
-  @Type(() => Number)
-  teamId: number;
+  @IsString()
+  teamId: string;
 
-  @IsInt()
-  @Type(() => Number)
-  competitionId: number;
+  @IsString()
+  competitionId: string;
 
-  @IsInt()
-  @Type(() => Number)
-  seasonId: number;
+  @IsString()
+  seasonId: string;
 }

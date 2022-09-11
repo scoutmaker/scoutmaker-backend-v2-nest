@@ -53,7 +53,7 @@ export class InsiderNotesService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: number) {
+  async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
     const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
       createInsiderNoteDto;
 
@@ -96,7 +96,7 @@ export class InsiderNotesService {
       teamIds,
       isLiked,
     }: FindAllInsiderNotesDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.InsiderNoteWhereInput,
   ) {
     let sort: Prisma.InsiderNoteOrderByWithRelationInput;
@@ -203,8 +203,8 @@ export class InsiderNotesService {
   }
 
   async findOne(
-    id: number,
-    userId?: number,
+    id: string,
+    userId?: string,
   ): Promise<SingleInsiderNoteWithInclude> {
     const redisKey = `insider-note:${id}`;
 
@@ -236,13 +236,13 @@ export class InsiderNotesService {
     return insiderNote;
   }
 
-  async update(id: number, updateInsiderNoteDto: UpdateInsiderNoteDto) {
+  async update(id: string, updateInsiderNoteDto: UpdateInsiderNoteDto) {
     const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
       updateInsiderNoteDto;
 
-    let metaTeamId: number;
-    let metaCompetitionId: number;
-    let metaCompetitionGroupId: number | undefined;
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string | undefined;
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {
@@ -285,7 +285,7 @@ export class InsiderNotesService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.insiderNoteMeta.delete({ where: { insiderNoteId: id } }),
       this.prisma.userInsiderNoteAccessControlEntry.deleteMany({

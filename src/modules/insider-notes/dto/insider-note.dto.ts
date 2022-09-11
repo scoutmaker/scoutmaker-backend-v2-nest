@@ -10,7 +10,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class InsiderNoteMetaDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   @Transform(({ value }) =>
@@ -42,7 +42,7 @@ export class InsiderNoteMetaDto {
 
 export class InsiderNoteDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   docNumber: number;

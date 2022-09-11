@@ -1,7 +1,7 @@
 import { UserRole } from '@prisma/client';
 
 export type CurrentUserDto = {
-  id: number;
+  id: string;
   role: UserRole;
-  organizationId: number;
+  organizationId: string;
 };

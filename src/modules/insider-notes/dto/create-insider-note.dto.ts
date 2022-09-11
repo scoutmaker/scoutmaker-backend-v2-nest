@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateInsiderNoteDto {
   @IsOptional()
@@ -13,18 +13,18 @@ export class CreateInsiderNoteDto {
   @Transform(({ value }) => value.trim())
   description?: string;
 
-  @IsInt()
-  playerId: number;
+  @IsString()
+  playerId: string;
 
   @IsOptional()
-  @IsInt()
-  teamId?: number;
+  @IsString()
+  teamId?: string;
 
   @IsOptional()
-  @IsInt()
-  competitionId?: number;
+  @IsString()
+  competitionId?: string;
 
   @IsOptional()
-  @IsInt()
-  competitionGroupId?: number;
+  @IsString()
+  competitionGroupId?: string;
 }

@@ -10,7 +10,6 @@ import {
   Min,
 } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
 import { FootEnum } from '../types';
 
 export class FindAllPlayersDto {
@@ -41,39 +40,38 @@ export class FindAllPlayersDto {
   footed?: FootEnum;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  countryIds?: number[];
+  @IsString({ each: true })
+  countryIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  positionIds?: number[];
+  @IsString({ each: true })
+  positionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  teamIds?: number[];
+  @IsString({ each: true })
+  teamIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  competitionIds?: number[];
+  @IsString({ each: true })
+  competitionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
-  competitionGroupIds?: number[];
+  @IsString({ each: true })
+  competitionGroupIds?: string[];
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  orderId?: number;
+  @IsString()
+  orderId?: string;
 
   @IsOptional()
   @IsBoolean()

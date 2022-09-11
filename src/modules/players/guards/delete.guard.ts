@@ -32,9 +32,7 @@ export class DeleteGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch players data to determine if they can delete it
-    const player = await this.playersService.findOne(
-      parseInt(request.params.id),
-    );
+    const player = await this.playersService.findOne(request.params.id);
 
     // Users can delete players data created by them
     if (user.id === player.author.id) {

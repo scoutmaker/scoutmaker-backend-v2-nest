@@ -92,10 +92,7 @@ export class ReportTemplatesController {
   @Get(':id')
   @ApiResponse(ReportTemplateDto, { type: 'read' })
   @Serialize(ReportTemplateDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.reportTemplatesService.findOne(id);
     const message = this.i18n.translate('report-templates.GET_ONE_MESSAGE', {
       lang,
@@ -109,7 +106,7 @@ export class ReportTemplatesController {
   @Serialize(ReportTemplateDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateReportTemplateDto: UpdateReportTemplateDto,
   ) {
     const template = await this.reportTemplatesService.update(
@@ -126,10 +123,7 @@ export class ReportTemplatesController {
   @Delete(':id')
   @ApiResponse(ReportTemplateDto, { type: 'delete' })
   @Serialize(ReportTemplateDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.reportTemplatesService.remove(id);
     const message = this.i18n.translate('report-templates.DELETE_MESSAGE', {
       lang,

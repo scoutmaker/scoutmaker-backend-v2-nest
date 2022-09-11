@@ -14,7 +14,7 @@ const include: Prisma.AgencyInclude = { country: true };
 export class AgenciesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createAgencyDto: CreateAgencyDto, authorId: number) {
+  async create(createAgencyDto: CreateAgencyDto, authorId: string) {
     const { countryId, ...rest } = createAgencyDto;
 
     const slug = await this.generateSlug(rest.name);
@@ -71,7 +71,7 @@ export class AgenciesService {
     return this.prisma.agency.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.agency.findUnique({ where: { id }, include });
   }
 
@@ -96,7 +96,7 @@ export class AgenciesService {
     return slug;
   }
 
-  update(id: number, updateAgencyDto: UpdateAgencyDto) {
+  update(id: string, updateAgencyDto: UpdateAgencyDto) {
     return this.prisma.agency.update({
       where: { id },
       data: updateAgencyDto,
@@ -104,7 +104,7 @@ export class AgenciesService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.agency.delete({ where: { id }, include });
   }
 }

@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsInt, IsOptional, IsUrl, Min } from 'class-validator';
+import {
+  IsDate,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Min,
+} from 'class-validator';
 
 export class CreateMatchDto {
   @IsDate()
@@ -20,19 +27,19 @@ export class CreateMatchDto {
   @IsUrl()
   videoUrl?: string;
 
-  @IsInt()
-  homeTeamId: number;
+  @IsString()
+  homeTeamId: string;
 
-  @IsInt()
-  awayTeamId: number;
+  @IsString()
+  awayTeamId: string;
 
-  @IsInt()
-  competitionId: number;
+  @IsString()
+  competitionId: string;
 
   @IsOptional()
-  @IsInt()
-  groupId?: number;
+  @IsString()
+  groupId?: string;
 
-  @IsInt()
-  seasonId: number;
+  @IsString()
+  seasonId: string;
 }

@@ -24,22 +24,18 @@ export class FindAllCompetitionsDto {
   gender?: GenderEnum;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  countryId?: number;
+  @IsString()
+  countryId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  ageCategoryId?: number;
+  @IsString()
+  ageCategoryId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  typeId?: number;
+  @IsString()
+  typeId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  juniorLevelId?: number;
+  @IsString()
+  juniorLevelId?: string;
 }

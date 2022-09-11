@@ -115,8 +115,8 @@ export class CompetitionParticipationsService {
   }
 
   async copyFromSeasonToSeason(
-    fromSeasonId: number,
-    toSeasonId: number,
+    fromSeasonId: string,
+    toSeasonId: string,
     lang: string,
   ) {
     if (fromSeasonId === toSeasonId) {

@@ -22,7 +22,7 @@ export class ReportSkillAssessmentTemplatesService {
 
   create(
     createReportSkillAssessmentTemplateDto: CreateReportSkillAssessmentTemplateDto,
-    authorId: number,
+    authorId: string,
   ) {
     const { categoryId, ...rest } = createReportSkillAssessmentTemplateDto;
 
@@ -76,7 +76,7 @@ export class ReportSkillAssessmentTemplatesService {
     return this.prisma.reportSkillAssessmentTemplate.findMany({ include });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.reportSkillAssessmentTemplate.findUnique({
       where: { id },
       include,
@@ -84,7 +84,7 @@ export class ReportSkillAssessmentTemplatesService {
   }
 
   update(
-    id: number,
+    id: string,
     updateReportSkillAssessmentTemplateDto: UpdateReportSkillAssessmentTemplateDto,
   ) {
     return this.prisma.reportSkillAssessmentTemplate.update({
@@ -94,7 +94,7 @@ export class ReportSkillAssessmentTemplatesService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.reportSkillAssessmentTemplate.delete({
       where: { id },
       include,

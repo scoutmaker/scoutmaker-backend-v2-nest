@@ -77,16 +77,6 @@ export function formatSortingEnumErrorMessage(
   )}`;
 }
 
-export function isIdsArrayFilterDefined(ids: number[] | undefined) {
+export function isIdsArrayFilterDefined(ids: string[] | undefined) {
   return ids && ids.length > 0;
-}
-
-export function mapStringToNumber(
-  value: string | string[],
-): number[] | undefined {
-  if (typeof value === 'string') {
-    return [parseInt(value)];
-  }
-
-  return value.map((item) => parseInt(item));
 }

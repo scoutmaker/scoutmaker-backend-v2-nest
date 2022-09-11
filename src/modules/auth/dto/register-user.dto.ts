@@ -1,6 +1,5 @@
 import {
   IsEmail,
-  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -27,12 +26,12 @@ export class RegisterUserDto {
   lastName: string;
 
   @IsOptional()
-  @IsInt()
-  clubId?: number;
+  @IsString()
+  clubId?: string;
 
   @IsOptional()
-  @IsInt()
-  footballRoleId?: number;
+  @IsString()
+  footballRoleId?: string;
 
   @IsOptional()
   @IsPhoneNumber()
@@ -63,6 +62,6 @@ export class RegisterUserDto {
   activeRadius?: number;
 
   @IsOptional()
-  @IsInt()
-  regionId?: number;
+  @IsString()
+  regionId?: string;
 }

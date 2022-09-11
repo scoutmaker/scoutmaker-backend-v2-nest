@@ -2,7 +2,7 @@ import { Expose } from 'class-transformer';
 
 export class PlayerPositionDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;

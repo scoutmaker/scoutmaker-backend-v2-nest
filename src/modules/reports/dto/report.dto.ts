@@ -15,7 +15,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class ReportMetaDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   @Transform(({ value }) =>
@@ -62,7 +62,10 @@ export class ReportMetaBasicDataDto extends PickType(ReportMetaDto, [
 
 export class ReportDto {
   @Expose()
-  id: number;
+  id: string;
+
+  @Expose()
+  docNumber: number;
 
   @Expose()
   shirtNo?: number;
@@ -166,6 +169,7 @@ export class ReportDto {
 
 export class ReportPaginatedDataDto extends PickType(ReportDto, [
   'id',
+  'docNumber',
   'player',
   'finalRating',
   'percentageRating',
@@ -189,6 +193,7 @@ export class ReportPaginatedDataDto extends PickType(ReportDto, [
 
 export class ReportBasicDataDto extends PickType(ReportDto, [
   'id',
+  'docNumber',
   'status',
   'player',
   'author',
@@ -196,5 +201,6 @@ export class ReportBasicDataDto extends PickType(ReportDto, [
 
 export class ReportSuperBasicDataDto extends PickType(ReportDto, [
   'id',
+  'docNumber',
   'createdAt',
 ]) {}

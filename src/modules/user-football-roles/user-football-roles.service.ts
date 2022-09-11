@@ -52,18 +52,18 @@ export class UserFootballRolesService {
     return this.prisma.userFootballRole.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.userFootballRole.findUnique({ where: { id } });
   }
 
-  update(id: number, updateUserFootballRoleDto: UpdateUserFootballRoleDto) {
+  update(id: string, updateUserFootballRoleDto: UpdateUserFootballRoleDto) {
     return this.prisma.userFootballRole.update({
       where: { id },
       data: updateUserFootballRoleDto,
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.userFootballRole.delete({ where: { id } });
   }
 }

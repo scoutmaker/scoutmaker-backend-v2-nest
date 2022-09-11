@@ -20,19 +20,19 @@ export class CreatePlayerDto {
   @IsRequiredStringWithMaxLength(30)
   lastName: string;
 
-  @IsInt()
-  countryId: number;
+  @IsString()
+  countryId: string;
 
-  @IsInt()
-  primaryPositionId: number;
+  @IsString()
+  primaryPositionId: string;
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  secondaryPositionIds?: number[];
+  @IsString({ each: true })
+  secondaryPositionIds?: string[];
 
-  @IsInt()
-  teamId: number;
+  @IsString()
+  teamId: string;
 
   @IsInt()
   @Min(1950)

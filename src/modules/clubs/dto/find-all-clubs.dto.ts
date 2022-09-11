@@ -1,5 +1,4 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindAllClubsDto {
   @IsOptional()
@@ -7,12 +6,10 @@ export class FindAllClubsDto {
   name?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  regionId?: number;
+  @IsString()
+  regionId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  countryId?: number;
+  @IsString()
+  countryId?: string;
 }

@@ -42,7 +42,7 @@ export class OrdersService {
     private readonly i18n: I18nService,
   ) {}
 
-  create(createOrderDto: CreateOrderDto, authorId: number) {
+  create(createOrderDto: CreateOrderDto, authorId: string) {
     const { matchId, playerId, ...rest } = createOrderDto;
 
     return this.prisma.order.create({
@@ -143,17 +143,17 @@ export class OrdersService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.order.findUnique({ where: { id }, include });
   }
 
-  async accept(id: number, userId: number, lang: string) {
+  async accept(id: string, userId: string, lang: string) {
     const order = await this.findOne(id);
 
     if (order.status !== 'OPEN') {
       const message = this.i18n.translate('orders.ACCEPT_STATUS_ERROR', {
         lang,
-        args: { docNumber: order.id },
+        args: { docNumber: order.docNumber },
       });
       throw new BadRequestException(message);
     }
@@ -169,7 +169,7 @@ export class OrdersService {
     });
   }
 
-  async reject(id: number, userId: number, lang: string) {
+  async reject(id: string, userId: string, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },
@@ -178,7 +178,7 @@ export class OrdersService {
     if (order.status !== 'ACCEPTED') {
       const message = this.i18n.translate('orders.REJECT_STATUS_ERROR', {
         lang,
-        args: { docNumber: order.id },
+        args: { docNumber: order.docNumber },
       });
       throw new BadRequestException(message);
     }
@@ -186,7 +186,7 @@ export class OrdersService {
     if (order.scoutId !== userId) {
       const message = this.i18n.translate('orders.REJECT_ASSIGNEE_ERROR', {
         lang,
-        args: { docNumber: order.id },
+        args: { docNumber: order.docNumber },
       });
       throw new BadRequestException(message);
     }
@@ -195,7 +195,7 @@ export class OrdersService {
       const message = this.i18n.translate('orders.REJECT_REPORTS_ERROR', {
         lang,
         args: {
-          docNumber: order.id,
+          docNumber: order.docNumber,
           reportsCount: order.reports.length,
         },
       });
@@ -213,7 +213,7 @@ export class OrdersService {
     });
   }
 
-  async close(id: number, user: CurrentUserDto, lang: string) {
+  async close(id: string, user: CurrentUserDto, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },
@@ -222,7 +222,7 @@ export class OrdersService {
     if (order.authorId !== user.id || user.role !== 'ADMIN') {
       const message = this.i18n.translate('orders.CLOSE_ROLE_ERROR', {
         lang,
-        args: { docNumber: order.id },
+        args: { docNumber: order.docNumber },
       });
       throw new UnauthorizedException(message);
     }
@@ -237,7 +237,7 @@ export class OrdersService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.order.delete({ where: { id }, include });
   }
 }

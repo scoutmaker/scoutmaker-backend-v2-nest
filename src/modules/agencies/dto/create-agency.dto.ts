@@ -1,7 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
-  IsInt,
   IsOptional,
   IsPostalCode,
   IsString,
@@ -15,8 +14,8 @@ export class CreateAgencyDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsInt()
-  countryId: number;
+  @IsString()
+  countryId: string;
 
   @IsOptional()
   @IsString()

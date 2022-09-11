@@ -1,12 +1,9 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CopySeasonToSeasonDto {
-  @IsInt()
-  @Type(() => Number)
-  fromSeasonId: number;
+  @IsString()
+  fromSeasonId: string;
 
-  @IsInt()
-  @Type(() => Number)
-  toSeasonId: number;
+  @IsString()
+  toSeasonId: string;
 }

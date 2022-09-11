@@ -1,12 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsInt, IsOptional } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreateTeamAffiliationDto {
-  @IsInt()
-  playerId: number;
+  @IsString()
+  playerId: string;
 
-  @IsInt()
-  teamId: number;
+  @IsString()
+  teamId: string;
 
   @IsDate()
   @Transform(({ value }) => new Date(value))

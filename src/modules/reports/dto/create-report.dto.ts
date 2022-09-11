@@ -22,8 +22,8 @@ class CreateReportSkillAssessmentDto {
   @Transform(({ value }) => value.trim())
   description?: string;
 
-  @IsInt()
-  templateId: number;
+  @IsString()
+  templateId: string;
 }
 
 export class CreateReportDto {
@@ -82,35 +82,35 @@ export class CreateReportDto {
   @Transform(({ value }) => value.trim())
   summary?: string;
 
-  @IsInt()
-  templateId: number;
+  @IsString()
+  templateId: string;
 
-  @IsInt()
-  playerId: number;
-
-  @IsOptional()
-  @IsInt()
-  orderId?: number;
+  @IsString()
+  playerId: string;
 
   @IsOptional()
   @IsInt()
-  positionPlayedId?: number;
+  orderId?: string;
 
   @IsOptional()
-  @IsInt()
-  teamId?: number;
+  @IsString()
+  positionPlayedId?: string;
 
   @IsOptional()
-  @IsInt()
-  competitionId?: number;
+  @IsString()
+  teamId?: string;
 
   @IsOptional()
-  @IsInt()
-  competitionGroupId?: number;
+  @IsString()
+  competitionId?: string;
 
   @IsOptional()
-  @IsInt()
-  matchId?: number;
+  @IsString()
+  competitionGroupId?: string;
+
+  @IsOptional()
+  @IsString()
+  matchId?: string;
 
   @IsArray()
   @ValidateNested({ each: true })

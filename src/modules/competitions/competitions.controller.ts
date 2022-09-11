@@ -88,10 +88,7 @@ export class CompetitionsController {
   @Get(':id')
   @ApiResponse(CompetitionDto, { type: 'read' })
   @Serialize(CompetitionDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const competition = await this.competitionsService.findOne(id);
     const message = this.i18n.translate('competitions.GET_ONE_MESSAGE', {
       lang,
@@ -105,7 +102,7 @@ export class CompetitionsController {
   @Serialize(CompetitionDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
   ) {
     const competition = await this.competitionsService.update(
@@ -122,10 +119,7 @@ export class CompetitionsController {
   @Delete(':id')
   @ApiResponse(CompetitionDto, { type: 'delete' })
   @Serialize(CompetitionDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const competition = await this.competitionsService.remove(id);
     const message = this.i18n.translate('competitions.DELETE_MESSAGE', {
       lang,
