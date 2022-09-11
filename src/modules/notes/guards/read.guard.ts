@@ -37,7 +37,7 @@ export class ReadGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the note to determine if they can read it
-    const note = await this.notesService.findOne(parseInt(request.params.id));
+    const note = await this.notesService.findOne(request.params.id);
 
     // If user is a playmaker-scout, they can read all notes created by other playmaker-scouts
     if (
@@ -111,7 +111,7 @@ export class ReadGuard implements CanActivate {
 
     const message = this.i18n.translate('notes.GET_ONE_ACCESS_ERROR', {
       lang,
-      args: { docNumber: note.id },
+      args: { docNumber: note.docNumber },
     });
 
     throw new UnauthorizedException(message);

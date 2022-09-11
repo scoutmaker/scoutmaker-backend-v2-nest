@@ -61,7 +61,7 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  lnpId?: string;
+  lnpId?: number;
 
   @IsOptional()
   @IsUrl()
@@ -79,7 +79,7 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  transfermarktId?: string;
+  transfermarktId?: number;
 
   @IsOptional()
   @IsUrl()

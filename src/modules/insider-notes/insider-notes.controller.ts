@@ -62,7 +62,7 @@ export class InsiderNotesController {
     );
     const message = this.i18n.translate('insider-notes.CREATE_MESSAGE', {
       lang,
-      args: { docNumber: insiderNote.id },
+      args: { docNumber: insiderNote.docNumber },
     });
     return formatSuccessResponse(message, insiderNote);
   }
@@ -122,7 +122,7 @@ export class InsiderNotesController {
     const insiderNote = await this.insiderNotesService.findOne(id, user.id);
     const message = this.i18n.translate('insider-notes.GET_ONE_MESSAGE', {
       lang,
-      args: { docNumber: insiderNote.id },
+      args: { docNumber: insiderNote.docNumber },
     });
     return formatSuccessResponse(message, insiderNote);
   }
@@ -142,7 +142,7 @@ export class InsiderNotesController {
     );
     const message = this.i18n.translate('insider-notes.UPDATE_MESSAGE', {
       lang,
-      args: { docNumber: insiderNote.id },
+      args: { docNumber: insiderNote.docNumber },
     });
     return formatSuccessResponse(message, insiderNote);
   }
@@ -158,7 +158,7 @@ export class InsiderNotesController {
     const insiderNote = await this.insiderNotesService.remove(id);
     const message = this.i18n.translate('insider-notes.DELETE_MESSAGE', {
       lang,
-      args: { docNumber: insiderNote.id },
+      args: { docNumber: insiderNote.docNumber },
     });
     return formatSuccessResponse(message, insiderNote);
   }

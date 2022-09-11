@@ -28,7 +28,7 @@ export class CreateTeamDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  lnpId?: string;
+  lnpId?: number;
 
   @IsOptional()
   @IsBoolean()

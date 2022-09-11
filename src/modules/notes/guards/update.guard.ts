@@ -32,7 +32,7 @@ export class UpdateGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the note to determine if they can update it
-    const note = await this.notesService.findOne(parseInt(request.params.id));
+    const note = await this.notesService.findOne(request.params.id);
 
     // If user is a playmaker-scout, they can update all notes created by other playmaker-scouts
     if (
@@ -82,7 +82,7 @@ export class UpdateGuard implements CanActivate {
 
     const message = this.i18n.translate('notes.UPDATE_ACCESS_ERROR', {
       lang,
-      args: { docNumber: note.id },
+      args: { docNumber: note.docNumber },
     });
 
     throw new UnauthorizedException(message);

@@ -49,7 +49,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -87,7 +87,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -106,7 +106,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);
@@ -124,7 +124,7 @@ export class UserNoteAclController {
       lang,
       args: {
         userName: `${accessControlEntry.user.firstName} ${accessControlEntry.user.lastName}`,
-        docNumber: accessControlEntry.note.id,
+        docNumber: accessControlEntry.note.docNumber,
       },
     });
     return formatSuccessResponse(message, accessControlEntry);

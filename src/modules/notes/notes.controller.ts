@@ -60,7 +60,7 @@ export class NotesController {
     const note = await this.notesService.create(createNoteDto, user.id);
     const message = this.i18n.translate('notes.CREATE_MESSAGE', {
       lang,
-      args: { docNumber: note.id },
+      args: { docNumber: note.docNumber },
     });
     return formatSuccessResponse(message, note);
   }
@@ -121,7 +121,7 @@ export class NotesController {
     const note = await this.notesService.findOne(id, user.id);
     const message = this.i18n.translate('notes.GET_ONE_MESSAGE', {
       lang,
-      args: { docNumber: note.id },
+      args: { docNumber: note.docNumber },
     });
     return formatSuccessResponse(message, note);
   }
@@ -138,7 +138,7 @@ export class NotesController {
     const note = await this.notesService.update(id, updateNoteDto);
     const message = this.i18n.translate('notes.UPDATE_MESSAGE', {
       lang,
-      args: { docNumber: note.id },
+      args: { docNumber: note.docNumber },
     });
     return formatSuccessResponse(message, note);
   }
@@ -154,7 +154,7 @@ export class NotesController {
     const note = await this.notesService.remove(id);
     const message = this.i18n.translate('notes.DELETE_MESSAGE', {
       lang,
-      args: { docNumber: note.id },
+      args: { docNumber: note.docNumber },
     });
     return formatSuccessResponse(message, note);
   }

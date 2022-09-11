@@ -51,7 +51,7 @@ export class OrganizationNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.id,
+          docNumber: accessControlEntry.note.docNumber,
         },
       },
     );
@@ -96,7 +96,7 @@ export class OrganizationNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.id,
+          docNumber: accessControlEntry.note.docNumber,
         },
       },
     );
@@ -118,7 +118,7 @@ export class OrganizationNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.id,
+          docNumber: accessControlEntry.note.docNumber,
         },
       },
     );
@@ -139,7 +139,7 @@ export class OrganizationNoteAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.note.id,
+          docNumber: accessControlEntry.note.docNumber,
         },
       },
     );

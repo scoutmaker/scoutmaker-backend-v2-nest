@@ -51,7 +51,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.id,
+          docNumber: accessControlEntry.report.docNumber,
         },
       },
     );
@@ -96,7 +96,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.id,
+          docNumber: accessControlEntry.report.docNumber,
         },
       },
     );
@@ -118,7 +118,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.id,
+          docNumber: accessControlEntry.report.docNumber,
         },
       },
     );
@@ -139,7 +139,7 @@ export class OrganizationReportAclController {
         lang,
         args: {
           orgName: accessControlEntry.organization.name,
-          docNumber: accessControlEntry.report.id,
+          docNumber: accessControlEntry.report.docNumber,
         },
       },
     );
