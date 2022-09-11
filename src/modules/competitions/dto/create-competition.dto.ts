@@ -12,6 +12,10 @@ import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-req
 import { GenderEnum } from '../types';
 
 export class CreateCompetitionDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   name: string;
 

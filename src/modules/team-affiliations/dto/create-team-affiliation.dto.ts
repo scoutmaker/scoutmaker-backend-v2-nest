@@ -2,6 +2,10 @@ import { Transform } from 'class-transformer';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreateTeamAffiliationDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   playerId: string;
 

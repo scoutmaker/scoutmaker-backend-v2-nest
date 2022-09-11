@@ -3,6 +3,10 @@ import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class CreateNoteDto {
   @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(99)
