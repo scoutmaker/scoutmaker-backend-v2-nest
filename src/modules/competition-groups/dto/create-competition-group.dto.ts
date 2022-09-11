@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
 
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
@@ -12,6 +12,10 @@ export class CreateCompetitionGroupDto {
 
   @IsString()
   competitionId: string;
+
+  @IsOptional()
+  @IsUrl()
+  transfermarktUrl?: string;
 
   @IsArray()
   @IsString({ each: true })
