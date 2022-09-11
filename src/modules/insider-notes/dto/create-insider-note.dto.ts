@@ -4,6 +4,10 @@ import { IsOptional, IsString, MaxLength } from 'class-validator';
 export class CreateInsiderNoteDto {
   @IsOptional()
   @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsString()
   @Transform(({ value }) => value.trim())
   @MaxLength(30)
   informant?: string;

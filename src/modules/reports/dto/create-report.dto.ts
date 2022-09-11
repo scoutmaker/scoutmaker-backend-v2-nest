@@ -28,6 +28,10 @@ class CreateReportSkillAssessmentDto {
 
 export class CreateReportDto {
   @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(99)

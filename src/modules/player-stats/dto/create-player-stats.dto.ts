@@ -1,6 +1,10 @@
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class CreatePlayerStatsDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   playerId: string;
 

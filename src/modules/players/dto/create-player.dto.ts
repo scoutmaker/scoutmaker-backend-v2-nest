@@ -14,6 +14,10 @@ import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-req
 import { FootEnum } from '../types';
 
 export class CreatePlayerDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   firstName: string;
 

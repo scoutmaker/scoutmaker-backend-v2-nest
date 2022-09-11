@@ -9,6 +9,10 @@ import {
 } from 'class-validator';
 
 export class CreateMatchDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsDate()
   @Transform(({ value }) => new Date(value))
   date: string;
