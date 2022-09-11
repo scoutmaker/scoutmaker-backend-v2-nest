@@ -25,9 +25,8 @@ export class FindAllMatchesDto {
   seasonId?: string;
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  orderId?: number;
+  @IsCuid()
+  orderId?: string;
 
   @IsOptional()
   @IsBoolean()

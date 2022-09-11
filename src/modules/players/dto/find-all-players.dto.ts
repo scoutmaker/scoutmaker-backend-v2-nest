@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -19,14 +19,14 @@ export class FindAllPlayersDto {
   name?: string;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(1950)
   @Max(2050)
   bornAfter?: number;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(1950)
   @Max(2050)
@@ -71,9 +71,8 @@ export class FindAllPlayersDto {
   competitionGroupIds?: string[];
 
   @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  orderId?: number;
+  @IsString()
+  orderId?: string;
 
   @IsOptional()
   @IsBoolean()

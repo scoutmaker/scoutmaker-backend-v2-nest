@@ -1,7 +1,4 @@
-import { Transform } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
-
-import { mapStringToNumber } from '../../../utils/helpers';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class FindAllReportSkillAssessmentTemplatesDto {
   @IsOptional()
@@ -9,8 +6,7 @@ export class FindAllReportSkillAssessmentTemplatesDto {
   name?: string;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsInt({ each: true })
-  categoryIds?: number[];
+  @IsString({ each: true })
+  categoryIds?: string[];
 }

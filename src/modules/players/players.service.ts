@@ -56,7 +56,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
 interface IGenerateWhereClauseArgs {
   query: FindAllPlayersDto;
   accessFilters?: Prisma.PlayerWhereInput;
-  userId?: number;
+  userId?: string;
 }
 
 @Injectable()
@@ -199,7 +199,7 @@ export class PlayersService {
   async findAll(
     { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
     query: FindAllPlayersDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     let sort: Prisma.PlayerOrderByWithRelationInput;
@@ -252,7 +252,7 @@ export class PlayersService {
 
   getList(
     query: FindAllPlayersDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.PlayerWhereInput,
   ) {
     const where = this.generateWhereClause({ query, userId, accessFilters });

@@ -1,7 +1,5 @@
-import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
 import { UserRoleEnum } from '../types';
 
 export class FindAllUsersDto {
@@ -18,20 +16,17 @@ export class FindAllUsersDto {
   role?: UserRoleEnum;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsInt({ each: true })
-  regionIds?: number[];
+  @IsString({ each: true })
+  regionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsInt({ each: true })
-  clubIds?: number[];
+  @IsString({ each: true })
+  clubIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsInt({ each: true })
-  footballRoleIds?: number[];
+  @IsString({ each: true })
+  footballRoleIds?: string[];
 }

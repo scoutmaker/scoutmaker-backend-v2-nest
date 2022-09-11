@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import { IsCuid } from '../../../common/decorators/is-cuid.decorator';

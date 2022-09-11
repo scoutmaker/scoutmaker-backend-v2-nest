@@ -1,7 +1,4 @@
-import { Transform } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
-
-import { mapStringToNumber } from '../../../utils/helpers';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class FindAllCompetitionGroupsDto {
   @IsOptional()
@@ -9,14 +6,12 @@ export class FindAllCompetitionGroupsDto {
   name?: string;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsInt({ each: true })
-  competitionIds?: number[];
+  @IsString({ each: true })
+  competitionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
   @IsArray()
-  @IsInt({ each: true })
-  regionIds?: number[];
+  @IsString({ each: true })
+  regionIds?: string[];
 }
