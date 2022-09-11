@@ -62,7 +62,7 @@ export class NoteMetaBasicDataDto extends PickType(NoteMetaDto, [
 
 export class NoteDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   shirtNo?: number;

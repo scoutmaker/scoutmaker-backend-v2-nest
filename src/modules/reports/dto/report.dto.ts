@@ -15,7 +15,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class ReportMetaDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   @Transform(({ value }) =>
