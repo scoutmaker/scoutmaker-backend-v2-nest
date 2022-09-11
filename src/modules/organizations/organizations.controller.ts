@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -90,6 +89,7 @@ export class OrganizationsController {
 
   @Get(':id')
   @ApiResponse(OrganizationDto, { type: 'read' })
+  @Serialize(OrganizationDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.findOne(id);
     const message = this.i18n.translate('organizations.GET_ONE_MESSAGE', {
@@ -159,6 +159,7 @@ export class OrganizationsController {
 
   @Delete(':id')
   @ApiResponse(OrganizationDto, { type: 'delete' })
+  @Serialize(OrganizationDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const organization = await this.organizationsService.remove(id);
     const message = this.i18n.translate('organizations.REMOVE_MESSAGE', {

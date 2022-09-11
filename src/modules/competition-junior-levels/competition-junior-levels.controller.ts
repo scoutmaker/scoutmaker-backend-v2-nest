@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -92,6 +91,7 @@ export class CompetitionJuniorLevelsController {
 
   @Get(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'read' })
+  @Serialize(CompetitionJuniorLevelDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const juniorLevel = await this.juniorLevelsService.findOne(id);
     const message = this.i18n.translate(
@@ -122,6 +122,7 @@ export class CompetitionJuniorLevelsController {
 
   @Delete(':id')
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'delete' })
+  @Serialize(CompetitionJuniorLevelDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const juniorLevel = await this.juniorLevelsService.remove(id);
     const message = this.i18n.translate(

@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -91,6 +90,7 @@ export class ReportBackgroundImagesController {
 
   @Get(':id')
   @ApiResponse(ReportBackgroundImageDto, { type: 'read' })
+  @Serialize(ReportBackgroundImageDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const image = await this.reportBackgroundImagesService.findOne(id);
     const message = this.i18n.translate(
@@ -121,6 +121,7 @@ export class ReportBackgroundImagesController {
 
   @Delete(':id')
   @ApiResponse(ReportBackgroundImageDto, { type: 'delete' })
+  @Serialize(ReportBackgroundImageDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const image = await this.reportBackgroundImagesService.remove(id);
     const message = this.i18n.translate(

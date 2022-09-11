@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -93,6 +92,7 @@ export class ReportSkillAssessmentCategoriesController {
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'read' })
+  @Serialize(ReportSkillAssessmentCategoryDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const category = await this.categoriesService.findOne(id);
     const message = this.i18n.translate(
@@ -124,6 +124,7 @@ export class ReportSkillAssessmentCategoriesController {
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentCategoryDto, { type: 'delete' })
+  @Serialize(ReportSkillAssessmentCategoryDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const category = await this.categoriesService.remove(id);
     const message = this.i18n.translate(

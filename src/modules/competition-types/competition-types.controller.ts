@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -83,6 +82,7 @@ export class CompetitionTypesController {
 
   @Get(':id')
   @ApiResponse(CompetitionTypeDto, { type: 'read' })
+  @Serialize(CompetitionTypeDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const type = await this.typesService.findOne(id);
     const message = this.i18n.translate('competition-types.GET_ONE_MESSAGE', {
@@ -110,6 +110,7 @@ export class CompetitionTypesController {
 
   @Delete(':id')
   @ApiResponse(CompetitionTypeDto, { type: 'delete' })
+  @Serialize(CompetitionTypeDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const type = await this.typesService.remove(id);
     const message = this.i18n.translate('competition-types.DELETE_MESSAGE', {

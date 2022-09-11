@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -84,6 +83,7 @@ export class PlayerPositionsController {
 
   @Get(':id')
   @ApiResponse(PlayerPositionDto, { type: 'read' })
+  @Serialize(PlayerPositionDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const position = await this.positionsService.findOne(id);
     const message = this.i18n.translate('player-positions.GET_ONE_MESSAGE', {
@@ -114,6 +114,7 @@ export class PlayerPositionsController {
 
   @Delete(':id')
   @ApiResponse(PlayerPositionDto, { type: 'delete' })
+  @Serialize(PlayerPositionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const position = await this.positionsService.remove(id);
     const message = this.i18n.translate('player-positions.DELETE_MESSAGE', {
