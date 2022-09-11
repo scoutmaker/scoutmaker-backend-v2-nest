@@ -10,7 +10,6 @@ import {
   Min,
 } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
 import { FootEnum } from '../types';
 
 export class FindAllPlayersDto {
@@ -41,31 +40,31 @@ export class FindAllPlayersDto {
   footed?: FootEnum;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   countryIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   positionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   teamIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   competitionGroupIds?: number[];

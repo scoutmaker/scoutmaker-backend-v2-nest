@@ -9,41 +9,39 @@ import {
   Min,
 } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
-
 export class FindAllNotesDto {
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   playerIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   positionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   teamIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   matchIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   competitionGroupIds?: number[];

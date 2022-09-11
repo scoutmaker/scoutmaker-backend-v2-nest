@@ -7,8 +7,6 @@ import {
   IsString,
 } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
-
 export class FindAllTeamsDto {
   @IsOptional()
   @IsString()
@@ -19,25 +17,25 @@ export class FindAllTeamsDto {
   clubId?: number;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   regionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   countryIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   competitionIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   competitionGroupIds?: number[];

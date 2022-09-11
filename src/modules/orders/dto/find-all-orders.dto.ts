@@ -7,7 +7,6 @@ import {
   IsOptional,
 } from 'class-validator';
 
-import { mapStringToNumber } from '../../../utils/helpers';
 import { OrderStatusEnum } from '../types';
 
 export class FindAllOrdersDto {
@@ -16,19 +15,19 @@ export class FindAllOrdersDto {
   userId?: number;
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   playerIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   teamIds?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => mapStringToNumber(value))
+  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
   matchIds?: number[];

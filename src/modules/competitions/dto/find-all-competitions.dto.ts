@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import { GenderEnum } from '../types';
@@ -25,21 +24,17 @@ export class FindAllCompetitionsDto {
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
   countryId?: number;
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
   ageCategoryId?: number;
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
   typeId?: number;
 
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
   juniorLevelId?: number;
 }
