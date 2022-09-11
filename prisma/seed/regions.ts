@@ -1,6 +1,6 @@
 import { prisma } from './client';
 
-export async function generateRegions(countryId: number) {
+export async function generateRegions(countryId: string) {
   // Create Poland voivodeships
   const dolnoslaskiePromise = prisma.region.create({
     data: { name: 'Dolnośląskie', countryId },

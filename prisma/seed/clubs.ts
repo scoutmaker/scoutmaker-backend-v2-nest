@@ -1,12 +1,12 @@
 import { prisma } from './client';
 
 interface GenerateClubsArgs {
-  polandId: number;
-  adminId: number;
-  wielkopolskieId: number;
-  mazowieckieId: number;
-  dolnoslaskieId: number;
-  slaskieId: number;
+  polandId: string;
+  adminId: string;
+  wielkopolskieId: string;
+  mazowieckieId: string;
+  dolnoslaskieId: string;
+  slaskieId: string;
 }
 
 export async function generateClubs({
