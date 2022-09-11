@@ -65,6 +65,9 @@ export class ReportDto {
   id: string;
 
   @Expose()
+  docNumber: number;
+
+  @Expose()
   shirtNo?: number;
 
   @Expose()
@@ -166,6 +169,7 @@ export class ReportDto {
 
 export class ReportPaginatedDataDto extends PickType(ReportDto, [
   'id',
+  'docNumber',
   'player',
   'finalRating',
   'percentageRating',
@@ -189,6 +193,7 @@ export class ReportPaginatedDataDto extends PickType(ReportDto, [
 
 export class ReportBasicDataDto extends PickType(ReportDto, [
   'id',
+  'docNumber',
   'status',
   'player',
   'author',
@@ -196,5 +201,6 @@ export class ReportBasicDataDto extends PickType(ReportDto, [
 
 export class ReportSuperBasicDataDto extends PickType(ReportDto, [
   'id',
+  'docNumber',
   'createdAt',
 ]) {}

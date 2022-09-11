@@ -65,6 +65,9 @@ export class NoteDto {
   id: string;
 
   @Expose()
+  docNumber: number;
+
+  @Expose()
   shirtNo?: number;
 
   @Expose()
@@ -148,6 +151,7 @@ export class NotePaginatedDataDto extends OmitType(NoteDto, [
 
 export class NoteBasicDataDto extends PickType(NoteDto, [
   'id',
+  'docNumber',
   'player',
   'description',
   'rating',
