@@ -201,12 +201,13 @@ enum Gender {
 }
 
 model Competition {
-  id        String   @id @default(cuid())
-  name      String
-  level     Int?
-  gender    Gender   @default(MALE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  level            Int?
+  gender           Gender   @default(MALE)
+  transfermarktUrl String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relation fields
   country                   Country                                   @relation(fields: [countryId], references: [id])
@@ -230,10 +231,11 @@ model Competition {
 }
 
 model CompetitionGroup {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  transfermarktUrl String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relation fields
   competition              Competition                                    @relation(fields: [competitionId], references: [id])
