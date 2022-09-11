@@ -40,34 +40,34 @@ export class FindAllPlayersDto {
   footed?: FootEnum;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  countryIds?: number[];
+  countryIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  positionIds?: number[];
+  positionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  teamIds?: number[];
+  teamIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionIds?: number[];
+  competitionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionGroupIds?: number[];
+  competitionGroupIds?: string[];
 
   @IsOptional()
   @IsInt()

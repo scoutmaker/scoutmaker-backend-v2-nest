@@ -3,9 +3,9 @@ import { IsInt, IsOptional } from 'class-validator';
 export class FindAllUserInsiderNoteAceDto {
   @IsOptional()
   @IsInt()
-  userId?: number;
+  userId?: string;
 
   @IsOptional()
   @IsInt()
-  insiderNoteId?: number;
+  insiderNoteId?: string;
 }

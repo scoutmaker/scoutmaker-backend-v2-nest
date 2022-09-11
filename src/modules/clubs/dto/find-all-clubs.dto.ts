@@ -7,9 +7,9 @@ export class FindAllClubsDto {
 
   @IsOptional()
   @IsString()
-  regionId?: number;
+  regionId?: string;
 
   @IsOptional()
   @IsString()
-  countryId?: number;
+  countryId?: string;
 }

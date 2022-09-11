@@ -174,7 +174,7 @@ export class OrganizationSubscriptionsService {
   }
 
   async getFormattedForSingleOrganization(
-    organizationId?: number,
+    organizationId?: string,
   ): Promise<FormattedSubscription[] | null> {
     if (!organizationId) {
       return null;

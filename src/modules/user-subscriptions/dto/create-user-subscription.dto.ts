@@ -12,10 +12,10 @@ export class CreateUserSubscriptionDto {
 
   @IsArray()
   @IsInt({ each: true })
-  competitionIds: number[];
+  competitionIds: string[];
 
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  competitionGroupIds: number[];
+  competitionGroupIds: string[];
 }

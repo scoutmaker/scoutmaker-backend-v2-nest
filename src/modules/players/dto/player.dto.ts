@@ -39,7 +39,7 @@ export class PlayerDto {
   footed: Foot;
 
   @Expose()
-  lnpId?: number;
+  lnpId?: string;
 
   @Expose()
   lnpUrl?: string;
@@ -51,7 +51,7 @@ export class PlayerDto {
   minut90url?: string;
 
   @Expose()
-  transfermarktId?: number;
+  transfermarktId?: string;
 
   @Expose()
   transfermarktUrl?: string;

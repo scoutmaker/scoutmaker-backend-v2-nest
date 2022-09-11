@@ -58,7 +58,7 @@ export class TeamsService {
       competitionIds,
       competitionGroupIds,
     }: FindAllTeamsDto,
-    userId?: number,
+    userId?: string,
   ) {
     let sort: Prisma.TeamOrderByWithRelationInput;
 
@@ -147,7 +147,7 @@ export class TeamsService {
     return this.prisma.team.findMany();
   }
 
-  findOne(id: number, userId?: number) {
+  findOne(id: number, userId?: string) {
     return this.prisma.team.findUnique({
       where: { id },
       include: userId
@@ -161,7 +161,7 @@ export class TeamsService {
     });
   }
 
-  findOneBySlug(slug: string, userId?: number) {
+  findOneBySlug(slug: string, userId?: string) {
     return this.prisma.team.findUnique({
       where: { slug },
       include: userId

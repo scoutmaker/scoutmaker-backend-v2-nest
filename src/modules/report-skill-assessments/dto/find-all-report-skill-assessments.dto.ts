@@ -3,9 +3,9 @@ import { IsInt, IsOptional } from 'class-validator';
 export class FindAllReportSkillAssessmentsDto {
   @IsOptional()
   @IsInt()
-  playerId?: number;
+  playerId?: string;
 
   @IsOptional()
   @IsInt()
-  matchId?: number;
+  matchId?: string;
 }

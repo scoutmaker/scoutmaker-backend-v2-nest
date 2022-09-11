@@ -144,7 +144,7 @@ export class NotesService {
       playerBornBefore,
       isLiked,
     }: FindAllNotesDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
   ) {
     let sort: Prisma.NoteOrderByWithRelationInput;
@@ -265,7 +265,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: number, userId?: number) {
+  async findOne(id: number, userId?: string) {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {

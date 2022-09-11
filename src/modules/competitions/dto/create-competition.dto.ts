@@ -42,5 +42,5 @@ export class CreateCompetitionDto {
 
   @IsOptional()
   @IsInt()
-  juniorLevelId?: number;
+  juniorLevelId?: string;
 }

@@ -15,7 +15,7 @@ export class CreateTeamDto {
 
   @IsOptional()
   @IsInt()
-  groupId?: number;
+  groupId?: string;
 
   @IsOptional()
   @IsUrl()
@@ -28,7 +28,7 @@ export class CreateTeamDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  lnpId?: number;
+  lnpId?: string;
 
   @IsOptional()
   @IsBoolean()

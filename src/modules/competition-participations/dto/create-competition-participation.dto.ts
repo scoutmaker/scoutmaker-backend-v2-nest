@@ -12,5 +12,5 @@ export class CreateCompetitionParticipationDto {
 
   @IsOptional()
   @IsInt()
-  groupId?: number;
+  groupId?: string;
 }

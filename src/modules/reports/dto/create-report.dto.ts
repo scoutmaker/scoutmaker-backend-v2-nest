@@ -90,27 +90,27 @@ export class CreateReportDto {
 
   @IsOptional()
   @IsInt()
-  orderId?: number;
+  orderId?: string;
 
   @IsOptional()
   @IsInt()
-  positionPlayedId?: number;
+  positionPlayedId?: string;
 
   @IsOptional()
   @IsInt()
-  teamId?: number;
+  teamId?: string;
 
   @IsOptional()
   @IsInt()
-  competitionId?: number;
+  competitionId?: string;
 
   @IsOptional()
   @IsInt()
-  competitionGroupId?: number;
+  competitionGroupId?: string;
 
   @IsOptional()
   @IsInt()
-  matchId?: number;
+  matchId?: string;
 
   @IsArray()
   @ValidateNested({ each: true })

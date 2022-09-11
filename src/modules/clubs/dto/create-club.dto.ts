@@ -21,7 +21,7 @@ export class CreateClubDto {
 
   @IsOptional()
   @IsInt()
-  lnpId?: number;
+  lnpId?: string;
 
   @IsOptional()
   @IsString()

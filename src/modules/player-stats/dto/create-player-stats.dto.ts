@@ -37,5 +37,5 @@ export class CreatePlayerStatsDto {
 
   @IsOptional()
   @IsInt()
-  teamId?: number;
+  teamId?: string;
 }

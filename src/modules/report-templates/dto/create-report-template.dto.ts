@@ -24,5 +24,5 @@ export class CreateReportTemplateDto {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  skillAssessmentTemplateIds: number[];
+  skillAssessmentTemplateIds: string[];
 }

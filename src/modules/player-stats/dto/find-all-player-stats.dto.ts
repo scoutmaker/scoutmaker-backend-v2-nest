@@ -3,13 +3,13 @@ import { IsInt, IsOptional } from 'class-validator';
 export class FindAllPlayerStatsDto {
   @IsOptional()
   @IsInt()
-  playerId?: number;
+  playerId?: string;
 
   @IsOptional()
   @IsInt()
-  teamId?: number;
+  teamId?: string;
 
   @IsOptional()
   @IsInt()
-  matchId?: number;
+  matchId?: string;
 }

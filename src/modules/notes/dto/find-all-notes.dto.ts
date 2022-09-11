@@ -11,40 +11,40 @@ import {
 
 export class FindAllNotesDto {
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  playerIds?: number[];
+  playerIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  positionIds?: number[];
+  positionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  teamIds?: number[];
+  teamIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  matchIds?: number[];
+  matchIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionIds?: number[];
+  competitionIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  competitionGroupIds?: number[];
+  competitionGroupIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

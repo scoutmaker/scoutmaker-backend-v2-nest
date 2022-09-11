@@ -27,25 +27,25 @@ export class CreateNoteDto {
 
   @IsOptional()
   @IsInt()
-  playerId?: number;
+  playerId?: string;
 
   @IsOptional()
   @IsInt()
-  matchId?: number;
+  matchId?: string;
 
   @IsOptional()
   @IsInt()
-  positionPlayedId?: number;
+  positionPlayedId?: string;
 
   @IsOptional()
   @IsInt()
-  teamId?: number;
+  teamId?: string;
 
   @IsOptional()
   @IsInt()
-  competitionId?: number;
+  competitionId?: string;
 
   @IsOptional()
   @IsInt()
-  competitionGroupId?: number;
+  competitionGroupId?: string;
 }

@@ -29,7 +29,7 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  secondaryPositionIds?: number[];
+  secondaryPositionIds?: string[];
 
   @IsInt()
   teamId: number;
@@ -61,7 +61,7 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  lnpId?: number;
+  lnpId?: string;
 
   @IsOptional()
   @IsUrl()
@@ -79,7 +79,7 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  transfermarktId?: number;
+  transfermarktId?: string;
 
   @IsOptional()
   @IsUrl()

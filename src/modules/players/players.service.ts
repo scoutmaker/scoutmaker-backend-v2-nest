@@ -263,7 +263,7 @@ export class PlayersService {
     });
   }
 
-  async findOne(id: number, userId?: number) {
+  async findOne(id: number, userId?: string) {
     const redisKey = `player:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -289,7 +289,7 @@ export class PlayersService {
     return player;
   }
 
-  async findOneBySlug(slug: string, userId?: number) {
+  async findOneBySlug(slug: string, userId?: string) {
     const redisKey = `player:${slug}`;
 
     const cached = await this.redis.get(redisKey);

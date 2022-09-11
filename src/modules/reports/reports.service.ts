@@ -191,7 +191,7 @@ export class ReportsService {
       hasVideo,
       isLiked,
     }: FindAllReportsDto,
-    userId?: number,
+    userId?: string,
     accessFilters?: Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.ReportOrderByWithRelationInput;
@@ -288,7 +288,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: number, userId?: number) {
+  async findOne(id: number, userId?: string) {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {

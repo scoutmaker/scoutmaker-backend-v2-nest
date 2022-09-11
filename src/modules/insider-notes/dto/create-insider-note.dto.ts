@@ -18,13 +18,13 @@ export class CreateInsiderNoteDto {
 
   @IsOptional()
   @IsInt()
-  teamId?: number;
+  teamId?: string;
 
   @IsOptional()
   @IsInt()
-  competitionId?: number;
+  competitionId?: string;
 
   @IsOptional()
   @IsInt()
-  competitionGroupId?: number;
+  competitionGroupId?: string;
 }

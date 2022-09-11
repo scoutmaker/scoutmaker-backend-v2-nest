@@ -28,11 +28,11 @@ export class RegisterUserDto {
 
   @IsOptional()
   @IsInt()
-  clubId?: number;
+  clubId?: string;
 
   @IsOptional()
   @IsInt()
-  footballRoleId?: number;
+  footballRoleId?: string;
 
   @IsOptional()
   @IsPhoneNumber()
@@ -64,5 +64,5 @@ export class RegisterUserDto {
 
   @IsOptional()
   @IsInt()
-  regionId?: number;
+  regionId?: string;
 }

@@ -12,25 +12,25 @@ import { OrderStatusEnum } from '../types';
 export class FindAllOrdersDto {
   @IsOptional()
   @IsInt()
-  userId?: number;
+  userId?: string;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  playerIds?: number[];
+  playerIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  teamIds?: number[];
+  teamIds?: string[];
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'number' ? [value] : value))
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsInt({ each: true })
-  matchIds?: number[];
+  matchIds?: string[];
 
   @IsOptional()
   @IsEnum(OrderStatusEnum, {

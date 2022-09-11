@@ -15,7 +15,7 @@ export class ClubDto {
   slug: string;
 
   @Expose()
-  lnpId?: number;
+  lnpId?: string;
 
   @Expose()
   city?: string;
