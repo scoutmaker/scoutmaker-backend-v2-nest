@@ -1,6 +1,6 @@
-import { IsInt } from 'class-validator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class ToggleMembershipDto {
-  @IsInt()
+  @IsCuid()
   memberId: number;
 }

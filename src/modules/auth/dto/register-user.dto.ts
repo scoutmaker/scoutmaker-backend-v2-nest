@@ -1,6 +1,5 @@
 import {
   IsEmail,
-  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -11,6 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 import { MatchesProperty } from '../../../common/decorators/matches-property.decorator';
 import { PASSWORD_REGEXP } from '../../../utils/constants';
@@ -27,11 +27,11 @@ export class RegisterUserDto {
   lastName: string;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   clubId?: string;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   footballRoleId?: string;
 
   @IsOptional()
@@ -63,6 +63,6 @@ export class RegisterUserDto {
   activeRadius?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   regionId?: string;
 }

@@ -1,8 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateFollowPlayerDto {
-  @IsInt()
-  @Type(() => Number)
-  playerId: number;
+  @IsCuid()
+  playerId: string;
 }

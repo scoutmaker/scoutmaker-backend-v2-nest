@@ -1,11 +1,13 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
+
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class FindAllUserReportAceDto {
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   userId?: string;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   reportId?: string;
 }

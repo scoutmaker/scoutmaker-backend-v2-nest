@@ -1,16 +1,18 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
+
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateCompetitionParticipationDto {
-  @IsInt()
+  @IsCuid()
   teamId: number;
 
-  @IsInt()
+  @IsCuid()
   competitionId: number;
 
-  @IsInt()
+  @IsCuid()
   seasonId: number;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   groupId?: string;
 }

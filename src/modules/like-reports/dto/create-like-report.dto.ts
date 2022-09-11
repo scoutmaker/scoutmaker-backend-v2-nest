@@ -1,8 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateLikeReportDto {
-  @IsInt()
-  @Type(() => Number)
-  reportId: number;
+  @IsCuid()
+  reportId: string;
 }

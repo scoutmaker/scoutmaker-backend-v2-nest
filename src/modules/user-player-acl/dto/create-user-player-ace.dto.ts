@@ -1,12 +1,13 @@
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateUserPlayerAceDto {
-  @IsInt()
+  @IsCuid()
   userId: number;
 
-  @IsInt()
+  @IsCuid()
   playerId: number;
 
   @IsOptional()

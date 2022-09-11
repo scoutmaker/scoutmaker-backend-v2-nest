@@ -1,5 +1,7 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
+
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateInsiderNoteDto {
   @IsOptional()
@@ -13,18 +15,18 @@ export class CreateInsiderNoteDto {
   @Transform(({ value }) => value.trim())
   description?: string;
 
-  @IsInt()
+  @IsCuid()
   playerId: number;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   teamId?: string;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   competitionId?: string;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   competitionGroupId?: string;
 }

@@ -1,10 +1,12 @@
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+
 export class CreatePlayerStatsDto {
-  @IsInt()
+  @IsCuid()
   playerId: number;
 
-  @IsInt()
+  @IsCuid()
   matchId: number;
 
   @IsOptional()
@@ -36,6 +38,6 @@ export class CreatePlayerStatsDto {
   redCards?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsCuid()
   teamId?: string;
 }

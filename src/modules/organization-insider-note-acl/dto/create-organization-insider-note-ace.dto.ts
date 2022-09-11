@@ -1,12 +1,13 @@
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateOrganizationInsiderNoteAceDto {
-  @IsInt()
+  @IsCuid()
   organizationId: number;
 
-  @IsInt()
+  @IsCuid()
   insiderNoteId: number;
 
   @IsOptional()
