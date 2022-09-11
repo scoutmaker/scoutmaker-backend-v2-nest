@@ -11,6 +11,9 @@ export class CompetitionGroupDto {
   @Expose()
   name: string;
 
+  @Expose()
+  transfermarktUrl?: string;
+
   @Transform(({ value }) =>
     plainToInstance(CompetitionBasicDataDto, value, {
       excludeExtraneousValues: true,
