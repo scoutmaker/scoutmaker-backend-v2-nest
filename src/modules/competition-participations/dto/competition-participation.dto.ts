@@ -7,6 +7,9 @@ import { SeasonDto } from '../../seasons/dto/season.dto';
 import { TeamWithoutCompetitionsAndClubDto } from '../../teams/dto/team.dto';
 
 export class CompetitionParticipationDto {
+  @Expose()
+  id: string;
+
   @Transform(({ value }) =>
     plainToInstance(SeasonDto, value, { excludeExtraneousValues: true }),
   )
