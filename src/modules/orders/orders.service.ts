@@ -42,7 +42,7 @@ export class OrdersService {
     private readonly i18n: I18nService,
   ) {}
 
-  create(createOrderDto: CreateOrderDto, authorId: number) {
+  create(createOrderDto: CreateOrderDto, authorId: string) {
     const { matchId, playerId, ...rest } = createOrderDto;
 
     return this.prisma.order.create({
@@ -147,7 +147,7 @@ export class OrdersService {
     return this.prisma.order.findUnique({ where: { id }, include });
   }
 
-  async accept(id: number, userId: number, lang: string) {
+  async accept(id: number, userId: string, lang: string) {
     const order = await this.findOne(id);
 
     if (order.status !== 'OPEN') {
@@ -169,7 +169,7 @@ export class OrdersService {
     });
   }
 
-  async reject(id: number, userId: number, lang: string) {
+  async reject(id: number, userId: string, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },

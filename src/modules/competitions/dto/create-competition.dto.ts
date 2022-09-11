@@ -31,15 +31,15 @@ export class CreateCompetitionDto {
 
   @IsNotEmpty()
   @IsCuid()
-  countryId: number;
+  countryId: string;
 
   @IsNotEmpty()
   @IsCuid()
-  ageCategoryId: number;
+  ageCategoryId: string;
 
   @IsNotEmpty()
   @IsCuid()
-  typeId: number;
+  typeId: string;
 
   @IsOptional()
   @IsCuid()

@@ -160,7 +160,7 @@ export class UserSubscriptionsService {
   }
 
   async getFormattedForSingleUser(
-    userId: number,
+    userId: string,
   ): Promise<FormattedSubscription[]> {
     const redisKey = `user:${userId}:subscriptions`;
 

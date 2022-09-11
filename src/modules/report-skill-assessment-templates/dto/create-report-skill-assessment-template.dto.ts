@@ -14,5 +14,5 @@ export class CreateReportSkillAssessmentTemplateDto {
   hasScore: boolean;
 
   @IsCuid()
-  categoryId: number;
+  categoryId: string;
 }

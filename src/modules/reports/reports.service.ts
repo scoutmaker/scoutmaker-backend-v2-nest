@@ -87,7 +87,7 @@ export class ReportsService {
     );
   }
 
-  async create(createReportDto: CreateReportDto, authorId: number) {
+  async create(createReportDto: CreateReportDto, authorId: string) {
     const {
       templateId,
       playerId,
@@ -319,10 +319,10 @@ export class ReportsService {
       ...rest
     } = updateReportDto;
 
-    let metaPositionId: number;
-    let metaTeamId: number;
-    let metaCompetitionId: number;
-    let metaCompetitionGroupId: number | undefined;
+    let metaPositionId: string;
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string | undefined;
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {

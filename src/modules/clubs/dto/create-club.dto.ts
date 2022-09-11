@@ -14,10 +14,10 @@ export class CreateClubDto {
   name: string;
 
   @IsCuid()
-  regionId: number;
+  regionId: string;
 
   @IsCuid()
-  countryId: number;
+  countryId: string;
 
   @IsOptional()
   @IsCuid()

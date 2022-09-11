@@ -21,7 +21,7 @@ export class PlayerStatsService {
     private readonly playersService: PlayersService,
   ) {}
 
-  async create(createPlayerStatsDto: CreatePlayerStatsDto, authorId: number) {
+  async create(createPlayerStatsDto: CreatePlayerStatsDto, authorId: string) {
     const { playerId, matchId, teamId, ...rest } = createPlayerStatsDto;
 
     let metaTeamId = teamId;

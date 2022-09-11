@@ -5,10 +5,10 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateTeamAffiliationDto {
   @IsCuid()
-  playerId: number;
+  playerId: string;
 
   @IsCuid()
-  teamId: number;
+  teamId: string;
 
   @IsDate()
   @Transform(({ value }) => new Date(value))

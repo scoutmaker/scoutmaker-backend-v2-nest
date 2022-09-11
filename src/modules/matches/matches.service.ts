@@ -27,7 +27,7 @@ const { group, season, ...listInclude } = include;
 export class MatchesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createMatchDto: CreateMatchDto, authorId: number) {
+  create(createMatchDto: CreateMatchDto, authorId: string) {
     const {
       homeTeamId,
       awayTeamId,

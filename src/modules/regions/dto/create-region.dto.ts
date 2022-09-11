@@ -6,5 +6,5 @@ export class CreateRegionDto {
   name: string;
 
   @IsCuid()
-  countryId: number;
+  countryId: string;
 }

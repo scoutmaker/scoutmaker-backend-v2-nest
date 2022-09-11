@@ -4,13 +4,13 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CreateCompetitionParticipationDto {
   @IsCuid()
-  teamId: number;
+  teamId: string;
 
   @IsCuid()
-  competitionId: number;
+  competitionId: string;
 
   @IsCuid()
-  seasonId: number;
+  seasonId: string;
 
   @IsOptional()
   @IsCuid()

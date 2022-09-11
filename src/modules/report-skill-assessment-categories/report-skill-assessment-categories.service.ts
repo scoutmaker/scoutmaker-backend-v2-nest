@@ -14,7 +14,7 @@ export class ReportSkillAssessmentCategoriesService {
 
   create(
     createReportSkillAssessmentCategoryDto: CreateReportSkillAssessmentCategoryDto,
-    authorId: number,
+    authorId: string,
   ) {
     return this.prisma.reportSkillAssessmentCategory.create({
       data: {

@@ -22,7 +22,7 @@ export class ReportSkillAssessmentTemplatesService {
 
   create(
     createReportSkillAssessmentTemplateDto: CreateReportSkillAssessmentTemplateDto,
-    authorId: number,
+    authorId: string,
   ) {
     const { categoryId, ...rest } = createReportSkillAssessmentTemplateDto;
 

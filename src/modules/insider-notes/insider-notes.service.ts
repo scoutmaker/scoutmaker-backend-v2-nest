@@ -53,7 +53,7 @@ export class InsiderNotesService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: number) {
+  async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
     const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
       createInsiderNoteDto;
 
@@ -240,9 +240,9 @@ export class InsiderNotesService {
     const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
       updateInsiderNoteDto;
 
-    let metaTeamId: number;
-    let metaCompetitionId: number;
-    let metaCompetitionGroupId: number | undefined;
+    let metaTeamId: string;
+    let metaCompetitionId: string;
+    let metaCompetitionGroupId: string | undefined;
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {

@@ -12,14 +12,14 @@ const include = Prisma.validator<Prisma.MatchAttendanceInclude>()({
 export class MatchAttendancesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findOne(matchId: number, userId: number) {
+  findOne(matchId: string, userId: string) {
     return this.prisma.matchAttendance.findUnique({
       where: { matchId_userId: { matchId, userId } },
       include,
     });
   }
 
-  async goToMatch(matchId: number, userId: number) {
+  async goToMatch(matchId: string, userId: string) {
     const activeAttendance = await this.findActiveByUserId(userId);
 
     // Set current active attendance isActive flag to null
@@ -52,7 +52,7 @@ export class MatchAttendancesService {
     });
   }
 
-  leaveTheMatch(matchId: number, userId: number) {
+  leaveTheMatch(matchId: string, userId: string) {
     return this.prisma.matchAttendance.update({
       where: { matchId_userId: { matchId, userId } },
       data: { isActive: null },
@@ -60,7 +60,7 @@ export class MatchAttendancesService {
     });
   }
 
-  findActiveByUserId(userId: number) {
+  findActiveByUserId(userId: string) {
     return this.prisma.matchAttendance.findUnique({
       where: { userId_isActive: { userId, isActive: true } },
       include,

@@ -75,13 +75,13 @@ export class UserReportAclService {
     });
   }
 
-  findOneByUserAndReportId(userId: number, reportId: number) {
+  findOneByUserAndReportId(userId: string, reportId: string) {
     return this.prisma.userReportAccessControlEntry.findUnique({
       where: { userId_reportId: { userId, reportId } },
     });
   }
 
-  findOneByUserAndPlayerId(userId: number, playerId: number) {
+  findOneByUserAndPlayerId(userId: string, playerId: string) {
     return this.prisma.userReportAccessControlEntry.findFirst({
       where: {
         user: { id: userId },

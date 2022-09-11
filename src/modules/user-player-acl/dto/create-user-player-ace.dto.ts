@@ -5,10 +5,10 @@ import { AccessControlEntryPermissionLevelEnum } from '../../../types/common';
 
 export class CreateUserPlayerAceDto {
   @IsCuid()
-  userId: number;
+  userId: string;
 
   @IsCuid()
-  playerId: number;
+  playerId: string;
 
   @IsOptional()
   @IsEnum(AccessControlEntryPermissionLevelEnum, {

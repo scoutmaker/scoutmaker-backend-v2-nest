@@ -2,8 +2,8 @@ import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 
 export class CopySeasonToSeasonDto {
   @IsCuid()
-  fromSeasonId: number;
+  fromSeasonId: string;
 
   @IsCuid()
-  toSeasonId: number;
+  toSeasonId: string;
 }

@@ -66,7 +66,7 @@ export class PlayersService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createPlayerDto: CreatePlayerDto, authorId: number) {
+  async create(createPlayerDto: CreatePlayerDto, authorId: string) {
     const {
       countryId,
       primaryPositionId,
