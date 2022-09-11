@@ -42,7 +42,7 @@ export class InsiderNoteMetaDto {
 
 export class InsiderNoteDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   docNumber: number;

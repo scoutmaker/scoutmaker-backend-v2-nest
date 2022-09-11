@@ -15,7 +15,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class NoteMetaDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   @Transform(({ value }) =>

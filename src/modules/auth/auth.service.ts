@@ -38,7 +38,7 @@ export class AuthService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  getAndVerifyJwt(id: number, role: UserRole, organizationId: string) {
+  getAndVerifyJwt(id: string, role: UserRole, organizationId: string) {
     const token = jwt.sign(
       { id, role, organizationId },
       this.configService.get<string>('JWT_SECRET'),
@@ -140,7 +140,7 @@ export class AuthService {
   }
 
   async updatePassword(
-    id: number,
+    id: string,
     updatePasswordDto: UpdatePasswordDto,
     lang: string,
   ) {

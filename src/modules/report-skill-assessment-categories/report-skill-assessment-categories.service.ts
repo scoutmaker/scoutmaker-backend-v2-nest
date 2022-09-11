@@ -62,14 +62,14 @@ export class ReportSkillAssessmentCategoriesService {
     return this.prisma.reportSkillAssessmentCategory.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.reportSkillAssessmentCategory.findUnique({
       where: { id },
     });
   }
 
   update(
-    id: number,
+    id: string,
     updateReportSkillAssessmentCategoryDto: UpdateReportSkillAssessmentCategoryDto,
   ) {
     return this.prisma.reportSkillAssessmentCategory.update({
@@ -78,7 +78,7 @@ export class ReportSkillAssessmentCategoriesService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.reportSkillAssessmentCategory.delete({
       where: { id },
     });

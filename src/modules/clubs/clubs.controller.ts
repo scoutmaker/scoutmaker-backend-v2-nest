@@ -85,10 +85,7 @@ export class ClubsController {
   @Get(':id')
   @ApiResponse(ClubDto, { type: 'read' })
   @Serialize(ClubDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const club = await this.clubsService.findOne(id);
     const message = this.i18n.translate('clubs.GET_ONE_MESSAGE', {
       lang,
@@ -114,7 +111,7 @@ export class ClubsController {
   @Serialize(ClubDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateClubDto: UpdateClubDto,
   ) {
     const club = await this.clubsService.update(id, updateClubDto);
@@ -128,10 +125,7 @@ export class ClubsController {
   @Delete(':id')
   @ApiResponse(ClubDto, { type: 'delete' })
   @Serialize(ClubDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const club = await this.clubsService.remove(id);
     const message = this.i18n.translate('clubs.DELETE_MESSAGE', {
       lang,

@@ -6,7 +6,7 @@ import { ReportSuperBasicDataDto } from '../../reports/dto/report.dto';
 
 export class OrganizationReportAceDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Transform(({ value }) =>
     plainToInstance(OrganizationBasicDataDto, value, {

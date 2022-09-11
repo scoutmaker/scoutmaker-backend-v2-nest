@@ -84,10 +84,7 @@ export class AgenciesController {
   @Get(':id')
   @ApiResponse(AgencyDto, { type: 'read' })
   @Serialize(AgencyDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const agency = await this.agenciesService.findOne(id);
     const message = this.i18n.translate('agencies.GET_ONE_MESSAGE', {
       lang,
@@ -101,7 +98,7 @@ export class AgenciesController {
   @Serialize(AgencyDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateAgencyDto: UpdateAgencyDto,
   ) {
     const agency = await this.agenciesService.update(id, updateAgencyDto);
@@ -115,10 +112,7 @@ export class AgenciesController {
   @Delete(':id')
   @ApiResponse(AgencyDto, { type: 'delete' })
   @Serialize(AgencyDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const agency = await this.agenciesService.remove(id);
     const message = this.i18n.translate('agencies.DELETE_MESSAGE', {
       lang,

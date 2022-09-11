@@ -62,7 +62,7 @@ export class ReportMetaBasicDataDto extends PickType(ReportMetaDto, [
 
 export class ReportDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   shirtNo?: number;

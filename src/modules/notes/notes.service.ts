@@ -265,7 +265,7 @@ export class NotesService {
     });
   }
 
-  async findOne(id: number, userId?: string) {
+  async findOne(id: string, userId?: string) {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {
@@ -289,7 +289,7 @@ export class NotesService {
     return note;
   }
 
-  async update(id: number, updateNoteDto: UpdateNoteDto) {
+  async update(id: string, updateNoteDto: UpdateNoteDto) {
     const {
       rating,
       maxRatingScore,
@@ -381,7 +381,7 @@ export class NotesService {
     return updated;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.noteMeta.delete({ where: { noteId: id } }),
       this.prisma.userNoteAccessControlEntry.deleteMany({

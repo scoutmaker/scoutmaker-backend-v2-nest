@@ -85,10 +85,7 @@ export class UserInsiderNoteAclController {
   @Get(':id')
   @ApiResponse(UserInsiderNoteAceDto, { type: 'read' })
   @Serialize(UserInsiderNoteAceDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.findOne(id);
     const message = this.i18n.translate(
       'user-insider-note-acl.GET_ONE_MESSAGE',
@@ -108,7 +105,7 @@ export class UserInsiderNoteAclController {
   @Serialize(UserInsiderNoteAceDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateAceDto: UpdateUserInsiderNoteAceDto,
   ) {
     const accessControlEntry = await this.aclService.update(id, updateAceDto);
@@ -128,10 +125,7 @@ export class UserInsiderNoteAclController {
   @Delete(':id')
   @ApiResponse(UserInsiderNoteAceDto, { type: 'delete' })
   @Serialize(UserInsiderNoteAceDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const accessControlEntry = await this.aclService.remove(id);
     const message = this.i18n.translate(
       'user-insider-note-acl.DELETE_MESSAGE',

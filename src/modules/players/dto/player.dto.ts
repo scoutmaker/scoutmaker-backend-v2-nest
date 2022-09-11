@@ -14,7 +14,7 @@ class Count {
 
 export class PlayerDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   firstName: string;

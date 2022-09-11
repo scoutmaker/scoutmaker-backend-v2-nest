@@ -15,7 +15,7 @@ class OrderCount {
 
 export class OrderDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   status: OrderStatusEnum;

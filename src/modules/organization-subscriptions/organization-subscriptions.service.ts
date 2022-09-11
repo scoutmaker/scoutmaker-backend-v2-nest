@@ -112,7 +112,7 @@ export class OrganizationSubscriptionsService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.organizationSubscription.findUnique({
       where: { id },
       include,
@@ -120,7 +120,7 @@ export class OrganizationSubscriptionsService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateOrganizationSubscriptionDto: UpdateOrganizationSubscriptionDto,
   ) {
     const { startDate, endDate, competitionIds, competitionGroupIds } =
@@ -221,7 +221,7 @@ export class OrganizationSubscriptionsService {
     return formattedSubscriptions;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.prisma.competitionsOnOrganizationSubscriptions.deleteMany({
       where: { subscriptionId: id },
     });

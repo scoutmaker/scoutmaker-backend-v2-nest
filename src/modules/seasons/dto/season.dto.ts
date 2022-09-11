@@ -3,7 +3,7 @@ import { Expose } from 'class-transformer';
 
 export class SeasonDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;

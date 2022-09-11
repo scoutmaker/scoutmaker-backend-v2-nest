@@ -53,12 +53,12 @@ export class ReportBackgroundImagesService {
     return this.prisma.reportBackgroundImage.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.reportBackgroundImage.findUnique({ where: { id } });
   }
 
   update(
-    id: number,
+    id: string,
     updateReportBackgroundImageDto: UpdateReportBackgroundImageDto,
   ) {
     return this.prisma.reportBackgroundImage.update({
@@ -67,7 +67,7 @@ export class ReportBackgroundImagesService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.reportBackgroundImage.delete({ where: { id } });
   }
 }

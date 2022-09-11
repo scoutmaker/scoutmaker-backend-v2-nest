@@ -263,7 +263,7 @@ export class PlayersService {
     });
   }
 
-  async findOne(id: number, userId?: string) {
+  async findOne(id: string, userId?: string) {
     const redisKey = `player:${id}`;
 
     const cached = await this.redis.get(redisKey);
@@ -336,7 +336,7 @@ export class PlayersService {
     return slug;
   }
 
-  findOneWithCurrentTeamDetails(id: number) {
+  findOneWithCurrentTeamDetails(id: string) {
     return this.prisma.player.findUnique({
       where: { id },
       include: {
@@ -357,7 +357,7 @@ export class PlayersService {
     });
   }
 
-  async update(id: number, updatePlayerDto: UpdatePlayerDto) {
+  async update(id: string, updatePlayerDto: UpdatePlayerDto) {
     const { secondaryPositionIds, ...rest } = updatePlayerDto;
 
     // If user wants to update players secondary positions, first we need to delete all existing SecondaryPositionsOnPlayers records, then create new ones
@@ -386,7 +386,7 @@ export class PlayersService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.teamAffiliation.deleteMany({ where: { playerId: id } }),
       this.prisma.secondaryPositionsOnPlayers.deleteMany({

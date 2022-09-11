@@ -65,11 +65,11 @@ export class RegionsService {
     return this.prisma.region.findMany({ include });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.region.findUnique({ where: { id }, include });
   }
 
-  update(id: number, updateRegionDto: UpdateRegionDto) {
+  update(id: string, updateRegionDto: UpdateRegionDto) {
     return this.prisma.region.update({
       where: { id },
       data: updateRegionDto,
@@ -77,7 +77,7 @@ export class RegionsService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.region.delete({ where: { id } });
   }
 }

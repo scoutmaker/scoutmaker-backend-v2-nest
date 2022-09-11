@@ -6,7 +6,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class UserSubscriptionDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   startDate: Date;

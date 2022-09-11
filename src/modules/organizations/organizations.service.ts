@@ -93,11 +93,11 @@ export class OrganizationsService {
     return this.prisma.organization.findMany({ include });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.organization.findUnique({ where: { id }, include });
   }
 
-  update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+  update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
     return this.prisma.organization.update({
       where: { id },
       data: updateOrganizationDto,
@@ -105,7 +105,7 @@ export class OrganizationsService {
     });
   }
 
-  async addMember(id: number, { memberId }: ToggleMembershipDto, lang: string) {
+  async addMember(id: string, { memberId }: ToggleMembershipDto, lang: string) {
     const member = await this.prisma.user.findUnique({
       where: { id: memberId },
     });
@@ -136,7 +136,7 @@ export class OrganizationsService {
     });
   }
 
-  removeMember(id: number, { memberId }: ToggleMembershipDto) {
+  removeMember(id: string, { memberId }: ToggleMembershipDto) {
     return this.prisma.organization.update({
       where: { id },
       data: { members: { disconnect: { id: memberId } } },
@@ -144,7 +144,7 @@ export class OrganizationsService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.organization.delete({ where: { id }, include });
   }
 }

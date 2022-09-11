@@ -147,7 +147,7 @@ export class TeamsService {
     return this.prisma.team.findMany();
   }
 
-  findOne(id: number, userId?: string) {
+  findOne(id: string, userId?: string) {
     return this.prisma.team.findUnique({
       where: { id },
       include: userId
@@ -196,7 +196,7 @@ export class TeamsService {
     return slug;
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
+  update(id: string, updateTeamDto: UpdateTeamDto) {
     return this.prisma.team.update({
       where: { id },
       data: updateTeamDto,
@@ -204,7 +204,7 @@ export class TeamsService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.prisma.competitionParticipation.deleteMany({
       where: { teamId: id },
     });

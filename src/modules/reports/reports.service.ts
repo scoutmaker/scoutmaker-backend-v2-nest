@@ -288,7 +288,7 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: number, userId?: string) {
+  async findOne(id: string, userId?: string) {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {
@@ -307,7 +307,7 @@ export class ReportsService {
     return report;
   }
 
-  async update(id: number, updateReportDto: UpdateReportDto) {
+  async update(id: string, updateReportDto: UpdateReportDto) {
     const {
       skillAssessments,
       playerId,
@@ -431,7 +431,7 @@ export class ReportsService {
     return updatedReport;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await Promise.all([
       this.prisma.reportMeta.delete({ where: { reportId: id } }),
       this.prisma.userReportAccessControlEntry.deleteMany({

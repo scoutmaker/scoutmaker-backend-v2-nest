@@ -46,15 +46,15 @@ export class SeasonsService {
     return this.prisma.season.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.season.findUnique({ where: { id } });
   }
 
-  update(id: number, updateSeasonDto: UpdateSeasonDto) {
+  update(id: string, updateSeasonDto: UpdateSeasonDto) {
     return this.prisma.season.update({ where: { id }, data: updateSeasonDto });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.season.delete({ where: { id } });
   }
 
@@ -62,7 +62,7 @@ export class SeasonsService {
     return this.prisma.season.updateMany({ data: { isActive: null } });
   }
 
-  async toggleIsActive(id: number, { isActive }: ToggleIsActiveDto) {
+  async toggleIsActive(id: string, { isActive }: ToggleIsActiveDto) {
     if (isActive === true) {
       await this.disactivateAll();
     }

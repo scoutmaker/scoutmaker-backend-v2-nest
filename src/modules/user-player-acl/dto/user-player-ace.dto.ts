@@ -6,7 +6,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class UserPlayerAceDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Transform(({ value }) =>
     plainToInstance(UserBasicDataDto, value, {

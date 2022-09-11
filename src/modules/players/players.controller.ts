@@ -113,7 +113,7 @@ export class PlayersController {
   @Serialize(PlayerDto)
   async findOne(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const player = await this.playersService.findOne(id, user.id);
@@ -147,7 +147,7 @@ export class PlayersController {
   @Serialize(PlayerDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updatePlayerDto: UpdatePlayerDto,
   ) {
     const player = await this.playersService.update(id, updatePlayerDto);
@@ -162,10 +162,7 @@ export class PlayersController {
   @UseGuards(DeleteGuard)
   @ApiResponse(PlayerDto, { type: 'delete' })
   @Serialize(PlayerDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const player = await this.playersService.remove(id);
     const message = this.i18n.translate('players.DELETE_MESSAGE', {
       lang,

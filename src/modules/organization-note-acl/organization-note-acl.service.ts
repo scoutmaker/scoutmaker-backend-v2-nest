@@ -73,7 +73,7 @@ export class OrganizationNoteAclService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.organizationNoteAccessControlEntry.findUnique({
       where: { id },
       include,
@@ -97,7 +97,7 @@ export class OrganizationNoteAclService {
     });
   }
 
-  update(id: number, updateAceDto: UpdateOrganizationNoteAceDto) {
+  update(id: string, updateAceDto: UpdateOrganizationNoteAceDto) {
     return this.prisma.organizationNoteAccessControlEntry.update({
       where: { id },
       data: updateAceDto,
@@ -105,7 +105,7 @@ export class OrganizationNoteAclService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.organizationNoteAccessControlEntry.delete({
       where: { id },
       include,

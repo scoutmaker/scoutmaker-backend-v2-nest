@@ -6,7 +6,7 @@ import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 
 export class OrganizationPlayerAceDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Transform(({ value }) =>
     plainToInstance(OrganizationBasicDataDto, value, {

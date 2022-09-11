@@ -113,10 +113,7 @@ export class CountriesController {
   @Get(':id')
   @ApiResponse(CountryDto, { type: 'read' })
   @Serialize(CountryDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const country = await this.countriesService.findOne(id);
     const message = this.i18n.translate('countries.GET_ONE_MESSAGE', {
       lang,
@@ -130,7 +127,7 @@ export class CountriesController {
   @Serialize(CountryDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateCountryDto: UpdateCountryDto,
   ) {
     const country = await this.countriesService.update(id, updateCountryDto);
@@ -144,10 +141,7 @@ export class CountriesController {
   @Delete(':id')
   @ApiResponse(CountryDto, { type: 'delete' })
   @Serialize(CountryDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const country = await this.countriesService.remove(id);
     const message = this.i18n.translate('countries.DELETE_MESSAGE', {
       lang,

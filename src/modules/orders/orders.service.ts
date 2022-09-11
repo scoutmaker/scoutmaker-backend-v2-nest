@@ -143,11 +143,11 @@ export class OrdersService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.order.findUnique({ where: { id }, include });
   }
 
-  async accept(id: number, userId: string, lang: string) {
+  async accept(id: string, userId: string, lang: string) {
     const order = await this.findOne(id);
 
     if (order.status !== 'OPEN') {
@@ -169,7 +169,7 @@ export class OrdersService {
     });
   }
 
-  async reject(id: number, userId: string, lang: string) {
+  async reject(id: string, userId: string, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },
@@ -213,7 +213,7 @@ export class OrdersService {
     });
   }
 
-  async close(id: number, user: CurrentUserDto, lang: string) {
+  async close(id: string, user: CurrentUserDto, lang: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
       include: { ...include, reports: true },
@@ -237,7 +237,7 @@ export class OrdersService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.order.delete({ where: { id }, include });
   }
 }

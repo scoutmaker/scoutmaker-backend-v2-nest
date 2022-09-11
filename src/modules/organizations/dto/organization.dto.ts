@@ -5,7 +5,7 @@ import { UserBasicDataDto } from '../../users/dto/user.dto';
 
 export class OrganizationDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;

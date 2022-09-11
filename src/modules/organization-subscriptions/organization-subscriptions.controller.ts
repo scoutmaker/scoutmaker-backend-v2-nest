@@ -90,10 +90,7 @@ export class OrganizationSubscriptionsController {
   @Get(':id')
   @ApiResponse(OrganizationSubscriptionDto, { type: 'read' })
   @Serialize(OrganizationSubscriptionDto)
-  async findOne(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.organizationSubscriptionsService.findOne(
       id,
     );
@@ -114,7 +111,7 @@ export class OrganizationSubscriptionsController {
   @Serialize(OrganizationSubscriptionDto)
   async update(
     @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body()
     updateOrganizationSubscriptionDto: UpdateOrganizationSubscriptionDto,
   ) {
@@ -137,10 +134,7 @@ export class OrganizationSubscriptionsController {
   @Delete(':id')
   @ApiResponse(OrganizationSubscriptionDto, { type: 'read' })
   @Serialize(OrganizationSubscriptionDto)
-  async remove(
-    @I18nLang() lang: string,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const subscription = await this.organizationSubscriptionsService.remove(id);
     const message = this.i18n.translate(
       'organization-subscriptions.DELETE_MESSAGE',

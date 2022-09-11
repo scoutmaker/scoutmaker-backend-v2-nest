@@ -6,7 +6,7 @@ import { RegionWithoutCountryDto } from '../../regions/dto/region-without-countr
 
 export class ClubDto {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;

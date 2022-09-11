@@ -47,18 +47,18 @@ export class CompetitionTypesService {
     return this.prisma.competitionType.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.competitionType.findUnique({ where: { id } });
   }
 
-  update(id: number, updateCompetitionTypeDto: UpdateCompetitionTypeDto) {
+  update(id: string, updateCompetitionTypeDto: UpdateCompetitionTypeDto) {
     return this.prisma.competitionType.update({
       where: { id },
       data: updateCompetitionTypeDto,
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.competitionType.delete({ where: { id } });
   }
 }
