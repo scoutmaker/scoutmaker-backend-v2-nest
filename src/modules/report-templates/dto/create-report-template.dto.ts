@@ -7,6 +7,7 @@ import {
   Min,
 } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateReportTemplateDto {
@@ -23,6 +24,6 @@ export class CreateReportTemplateDto {
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   skillAssessmentTemplateIds: string[];
 }

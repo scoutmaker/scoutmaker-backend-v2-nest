@@ -10,6 +10,7 @@ import {
   Min,
 } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { FootEnum } from '../types';
 
 export class FindAllPlayersDto {
@@ -42,31 +43,31 @@ export class FindAllPlayersDto {
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   countryIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   positionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   teamIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   competitionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   competitionGroupIds?: string[];
 
   @IsOptional()

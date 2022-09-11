@@ -7,6 +7,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
+import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { OrderStatusEnum } from '../types';
 
 export class FindAllOrdersDto {
@@ -17,19 +18,19 @@ export class FindAllOrdersDto {
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   playerIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   teamIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsInt({ each: true })
+  @IsCuid({ each: true })
   matchIds?: string[];
 
   @IsOptional()
