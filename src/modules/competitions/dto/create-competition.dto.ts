@@ -3,11 +3,11 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
   Max,
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 import { GenderEnum } from '../types';
 
@@ -30,18 +30,18 @@ export class CreateCompetitionDto {
   gender?: GenderEnum;
 
   @IsNotEmpty()
-  @IsCuid()
+  @IsString()
   countryId: string;
 
   @IsNotEmpty()
-  @IsCuid()
+  @IsString()
   ageCategoryId: string;
 
   @IsNotEmpty()
-  @IsCuid()
+  @IsString()
   typeId: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   juniorLevelId?: string;
 }

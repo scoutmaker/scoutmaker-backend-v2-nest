@@ -1,9 +1,7 @@
-import { IsArray, IsDateString, IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrganizationSubscriptionDto {
-  @IsCuid()
+  @IsString()
   organizationId: string;
 
   @IsDateString()
@@ -13,11 +11,11 @@ export class CreateOrganizationSubscriptionDto {
   endDate: string;
 
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionIds: string[];
 
   @IsOptional()
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionGroupIds: string[];
 }

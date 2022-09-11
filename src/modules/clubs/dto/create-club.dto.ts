@@ -6,21 +6,20 @@ import {
   IsUrl,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateClubDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsCuid()
+  @IsString()
   regionId: string;
 
-  @IsCuid()
+  @IsString()
   countryId: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   lnpId?: string;
 
   @IsOptional()

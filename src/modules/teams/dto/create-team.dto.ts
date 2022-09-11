@@ -1,21 +1,20 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, IsUrl } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateTeamDto {
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsCuid()
+  @IsString()
   clubId: string;
 
-  @IsCuid()
+  @IsString()
   competitionId: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   groupId?: string;
 
   @IsOptional()

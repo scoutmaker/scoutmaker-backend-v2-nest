@@ -10,7 +10,6 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 import { FootEnum } from '../types';
 
@@ -21,18 +20,18 @@ export class CreatePlayerDto {
   @IsRequiredStringWithMaxLength(30)
   lastName: string;
 
-  @IsCuid()
+  @IsString()
   countryId: string;
 
-  @IsCuid()
+  @IsString()
   primaryPositionId: string;
 
   @IsOptional()
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   secondaryPositionIds?: string[];
 
-  @IsCuid()
+  @IsString()
   teamId: string;
 
   @IsInt()

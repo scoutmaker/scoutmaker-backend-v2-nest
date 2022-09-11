@@ -1,8 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
-
 export class FindAllOrganizationSubscriptionsDto {
   @IsOptional()
   @IsString()
@@ -11,12 +9,12 @@ export class FindAllOrganizationSubscriptionsDto {
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionGroupIds?: string[];
 }

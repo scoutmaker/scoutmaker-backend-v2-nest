@@ -1,9 +1,9 @@
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsString } from 'class-validator';
 
 export class CopySeasonToSeasonDto {
-  @IsCuid()
+  @IsString()
   fromSeasonId: string;
 
-  @IsCuid()
+  @IsString()
   toSeasonId: string;
 }

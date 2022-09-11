@@ -6,8 +6,6 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
-
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
@@ -18,11 +16,11 @@ export class UpdateUserDto {
   lastName?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   clubId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   footballRoleId?: string;
 
   @IsOptional()
@@ -39,6 +37,6 @@ export class UpdateUserDto {
   activeRadius?: number;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   regionId?: string;
 }

@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { GenderEnum } from '../types';
 
 export class FindAllCompetitionsDto {
@@ -25,18 +24,18 @@ export class FindAllCompetitionsDto {
   gender?: GenderEnum;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   countryId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   ageCategoryId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   typeId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   juniorLevelId?: string;
 }

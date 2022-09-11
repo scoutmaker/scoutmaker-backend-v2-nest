@@ -1,12 +1,12 @@
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsString } from 'class-validator';
 
 export class FindUniqueCompetitionParticipationDto {
-  @IsCuid()
+  @IsString()
   teamId: string;
 
-  @IsCuid()
+  @IsString()
   competitionId: string;
 
-  @IsCuid()
+  @IsString()
   seasonId: string;
 }

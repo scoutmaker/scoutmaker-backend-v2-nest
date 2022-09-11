@@ -1,8 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
-
 export class CreateNoteDto {
   @IsOptional()
   @IsInt()
@@ -28,26 +26,26 @@ export class CreateNoteDto {
   rating?: number;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   playerId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   matchId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   positionPlayedId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   teamId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   competitionId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   competitionGroupId?: string;
 }
