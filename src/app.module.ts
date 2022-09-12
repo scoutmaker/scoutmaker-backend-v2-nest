@@ -1,6 +1,6 @@
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import {
   AcceptLanguageResolver,
@@ -87,14 +87,10 @@ import { UsersModule } from './modules/users/users.module';
         new CookieResolver(['lang', 'locale', 'l']),
       ],
     }),
-    RedisModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        config: {
-          url: configService.get('REDIS_URL'),
-          tls: { rejectUnauthorized: false },
-        },
-      }),
-      inject: [ConfigService],
+    RedisModule.forRoot({
+      config: {
+        url: process.env.REDIS_URL,
+      },
     }),
     EventEmitterModule.forRoot(),
     PrismaModule,
