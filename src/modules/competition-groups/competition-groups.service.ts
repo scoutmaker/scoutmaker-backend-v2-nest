@@ -26,9 +26,12 @@ export class CompetitionGroupsService {
     return this.prisma.competitionGroup.create({
       data: {
         ...rest,
-        regions: {
-          createMany: { data: regionIds.map((id) => ({ regionId: id })) },
-        },
+        regions:
+          regionIds && regionIds.length > 0
+            ? {
+                createMany: { data: regionIds.map((id) => ({ regionId: id })) },
+              }
+            : undefined,
       },
       include,
     });

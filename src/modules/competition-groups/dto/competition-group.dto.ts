@@ -30,7 +30,7 @@ export class CompetitionGroupDto {
     ),
   )
   @Expose()
-  regions: RegionWithoutCountryDto[];
+  regions?: RegionWithoutCountryDto[];
 }
 
 export class CompetitionGroupBasicDataDto extends PickType(
