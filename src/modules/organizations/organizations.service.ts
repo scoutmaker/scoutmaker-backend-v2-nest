@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Organization, Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
@@ -10,6 +11,12 @@ import { OrganizationsPaginationOptionsDto } from './dto/organizations-paginatio
 import { ToggleMembershipDto } from './dto/toggle-membership.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { getUserNamesString } from './helpers';
+
+interface CsvInput {
+  id: number;
+  name: string;
+  memberIds: string;
+}
 
 const include = Prisma.validator<Prisma.OrganizationInclude>()({
   members: true,
@@ -61,6 +68,40 @@ export class OrganizationsService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File, lang: string) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateOrganizationDto();
+
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.memberIds = item.memberIds.split(',');
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Organization[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance, lang);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
