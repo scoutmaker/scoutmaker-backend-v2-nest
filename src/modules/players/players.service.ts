@@ -5,6 +5,7 @@ import Redis from 'ioredis';
 import slugify from 'slugify';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -15,6 +16,35 @@ import { CreatePlayerDto } from './dto/create-player.dto';
 import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { FootEnum } from './types';
+
+type CsvFooted = 'R' | 'L' | 'both';
+interface CsvInput {
+  id: number;
+  firstName: string;
+  lastName: string;
+  yearOfBirth: number;
+  height?: number;
+  weight?: number;
+  footed: 'R' | 'L' | 'both';
+  lnpId?: number;
+  lnpUrl?: string;
+  minut90id?: string;
+  minut90url?: string;
+  transfermarktId?: string;
+  transfermarktUrl?: string;
+  isPublic?: boolean;
+  scoutmakerv1Id?: string;
+  countryId: number;
+  primaryPositionId: number;
+  authorId: number;
+}
+
+const footedMap: Record<CsvFooted, FootEnum> = {
+  R: FootEnum.RIGHT,
+  L: FootEnum.LEFT,
+  both: FootEnum.BOTH,
+};
 
 const include: Prisma.PlayerInclude = {
   country: true,
@@ -98,6 +128,60 @@ export class PlayersService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreatePlayerDto();
+      instance.id = item.id?.toString();
+      instance.firstName = item.firstName;
+      instance.lastName = item.lastName;
+      instance.yearOfBirth = item.yearOfBirth;
+      instance.height = item.height;
+      instance.weight = item.weight;
+      instance.footed = footedMap[item.footed];
+      instance.lnpId = item.lnpId?.toString();
+      instance.lnpUrl = item.lnpUrl;
+      instance.minut90id = item.minut90id;
+      instance.minut90url = item.minut90url;
+      instance.transfermarktId = item.transfermarktId;
+      instance.transfermarktUrl = item.transfermarktUrl;
+      instance.isPublic = item.isPublic;
+      instance.scoutmakerv1Id = item.scoutmakerv1Id;
+      instance.countryId = item.countryId?.toString();
+      instance.primaryPositionId = item.primaryPositionId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Player[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({
+          index,
+          name: `${instance.firstName} ${instance.lastName}`,
+          error,
+        });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   private generateWhereClause({
