@@ -19,10 +19,10 @@ export class CreatePlayerDto {
   @IsString()
   id?: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   firstName: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   lastName: string;
 
   @IsString()
@@ -36,8 +36,9 @@ export class CreatePlayerDto {
   @IsString({ each: true })
   secondaryPositionIds?: string[];
 
+  @IsOptional()
   @IsString()
-  teamId: string;
+  teamId?: string;
 
   @IsInt()
   @Min(1950)
