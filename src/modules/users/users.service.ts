@@ -68,11 +68,15 @@ export class UsersService {
     const instances = result.data.map((item) => {
       const instance = new CreateUserDto();
       instance.id = item.id?.toString();
-      instance.role = item.role?.toUpperCase() as UserRoleEnum;
+      instance.role =
+        item.role === 'playmaker-scout'
+          ? UserRoleEnum.PLAYMAKER_SCOUT
+          : (item.role?.toUpperCase() as UserRoleEnum);
       instance.status = item.status?.toUpperCase() as AccountStatusEnum;
+      instance.email = item.email;
       instance.firstName = item.firstName;
       instance.lastName = item.lastName;
-      instance.phone = item.phone;
+      instance.phone = item.phone?.toString();
       instance.city = item.city;
       instance.password = `${item.lastName.toLowerCase()}@scoutmaker2022`;
       instance.activeRadius = item.activeRadius;

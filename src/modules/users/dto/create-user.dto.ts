@@ -44,7 +44,6 @@ export class CreateUserDto {
   lastName: string;
 
   @IsOptional()
-  @IsPhoneNumber()
   phone?: string;
 
   @IsOptional()
