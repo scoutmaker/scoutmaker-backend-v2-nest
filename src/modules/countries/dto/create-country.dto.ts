@@ -13,7 +13,7 @@ export class CreateCountryDto {
   id?: string;
 
   @IsNotEmpty()
-  @MaxLength(30)
+  @MaxLength(50)
   @Transform(({ value }) => value.trim())
   name: string;
 

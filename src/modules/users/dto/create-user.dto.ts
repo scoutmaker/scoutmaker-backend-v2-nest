@@ -1,20 +1,38 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsString,
-  Matches,
   Min,
-  MinLength,
 } from 'class-validator';
 
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
-import { MatchesProperty } from '../../../common/decorators/matches-property.decorator';
-import { PASSWORD_REGEXP } from '../../../utils/constants';
+import { AccountStatusEnum, UserRoleEnum } from '../types';
 
-export class RegisterUserDto {
+export class CreateUserDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsEnum(UserRoleEnum, {
+    message: `Role must be a valid enum value. Available values: ${Object.keys(
+      UserRoleEnum,
+    ).join(', ')}`,
+  })
+  role?: UserRoleEnum;
+
+  @IsOptional()
+  @IsEnum(AccountStatusEnum, {
+    message: `Account status must be a valid enum value. Available values: ${Object.keys(
+      UserRoleEnum,
+    ).join(', ')}`,
+  })
+  status?: AccountStatusEnum;
+
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -26,14 +44,6 @@ export class RegisterUserDto {
   lastName: string;
 
   @IsOptional()
-  @IsString()
-  clubId?: string;
-
-  @IsOptional()
-  @IsString()
-  footballRoleId?: string;
-
-  @IsOptional()
   @IsPhoneNumber()
   phone?: string;
 
@@ -42,19 +52,7 @@ export class RegisterUserDto {
   city?: string;
 
   @IsString()
-  @MinLength(6)
-  @Matches(PASSWORD_REGEXP, {
-    message:
-      'Password must contain at least 1 lowercase letter, 1 uppercase letter and 1 digit',
-  })
   password: string;
-
-  @IsString()
-  @MinLength(6)
-  @MatchesProperty(RegisterUserDto, (s) => s.password, {
-    message: 'Passwords do not match',
-  })
-  passwordConfirm: string;
 
   @IsOptional()
   @IsNumber()
@@ -63,5 +61,13 @@ export class RegisterUserDto {
 
   @IsOptional()
   @IsString()
+  scoutmakerv1Id?: string;
+
+  @IsOptional()
+  @IsString()
   regionId?: string;
+
+  @IsOptional()
+  @IsString()
+  footballRoleId?: string;
 }

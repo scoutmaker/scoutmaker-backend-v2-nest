@@ -58,7 +58,7 @@ export class ClubsService {
 
     const instances = result.data.map((item) => {
       const instance = new CreateClubDto();
-      instance.id = item.id.toString();
+      instance.id = item.id?.toString();
       instance.name = item.name;
       instance.lnpId = item.lnpId;
       instance.city = item.city;
@@ -69,8 +69,8 @@ export class ClubsService {
       instance.facebook = item.facebook;
       instance.instagram = item.instagram;
       instance.isPublic = item.isPublic;
-      instance.countryId = item.countryId.toString();
-      instance.regionId = item.regionId.toString();
+      instance.countryId = item.countryId?.toString();
+      instance.regionId = item.regionId?.toString();
 
       return instance;
     });

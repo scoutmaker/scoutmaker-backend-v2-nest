@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, UserRole } from '@prisma/client';
+import { Prisma, User, UserRole } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
 import { FindAllUsersDto } from './dto/find-all-users.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersPaginationOptionsDto } from './dto/users-pagination-options.dto';
+import { AccountStatusEnum, UserRoleEnum } from './types';
 
 const include: Prisma.UserInclude = {
   region: { include: { country: true } },
@@ -25,9 +28,81 @@ const include: Prisma.UserInclude = {
   },
 };
 
+interface CsvInput {
+  id: number | string;
+  role: string;
+  status: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  city: string;
+  activeRadius: number;
+  scoutmakerv1Id?: string;
+  regionId?: number | string;
+  footballRoleId?: number | string;
+  clubId?: number | string;
+}
+
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async create(createUserDto: CreateUserDto) {
+    const { footballRoleId, regionId, ...rest } = createUserDto;
+
+    return this.prisma.user.create({
+      data: {
+        ...rest,
+        region: regionId ? { connect: { id: regionId } } : undefined,
+        footballRole: footballRoleId
+          ? { connect: { id: footballRoleId } }
+          : undefined,
+      },
+    });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateUserDto();
+      instance.id = item.id?.toString();
+      instance.role = item.role?.toUpperCase() as UserRoleEnum;
+      instance.status = item.status?.toUpperCase() as AccountStatusEnum;
+      instance.firstName = item.firstName;
+      instance.lastName = item.lastName;
+      instance.phone = item.phone;
+      instance.city = item.city;
+      instance.password = `${item.lastName.toLowerCase()}@scoutmaker2022`;
+      instance.activeRadius = item.activeRadius;
+      instance.scoutmakerv1Id = item.scoutmakerv1Id;
+      instance.regionId = item.regionId?.toString();
+      instance.footballRoleId = item.footballRoleId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: User[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({
+          index,
+          name: `${instance.firstName}  ${instance.lastName}`,
+          error,
+        });
+      }
+    }
+
+    return { createdDocuments, errors };
+  }
 
   async findAllWithPagination(
     { limit, page, sortBy, sortingOrder }: UsersPaginationOptionsDto,

@@ -3,12 +3,21 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
+  Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiCookieAuth,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -19,6 +28,7 @@ import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { ChangeRoleDto } from './dto/change-user-role.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { FindAllUsersDto } from './dto/find-all-users.dto';
 import { UserBasicDataDto, UserDto } from './dto/user.dto';
 import { UsersPaginationOptionsDto } from './dto/users-pagination-options.dto';
@@ -33,6 +43,43 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly i18n: I18nService,
   ) {}
+
+  @Post()
+  @ApiResponse(UserDto, { type: 'create' })
+  @Serialize(UserDto)
+  async create(@I18nLang() lang: string, @Body() createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+    const message = this.i18n.translate('users.CREATE_MESSAGE', {
+      lang,
+      args: { name: user.lastName },
+    });
+    return formatSuccessResponse(message, user);
+  }
+
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdDocuments, errors } =
+      await this.usersService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      createdCount: createdDocuments.length,
+      createdDocuments,
+      errors,
+    });
+  }
 
   @Get()
   @ApiPaginatedResponse(UserDto)
