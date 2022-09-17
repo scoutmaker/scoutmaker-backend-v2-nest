@@ -1,5 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import {
+  BadRequestException,
+  Injectable,
+  ValidationError,
+} from '@nestjs/common';
+import { Prisma, Region } from '@prisma/client';
+import { validate } from 'class-validator';
+import { parse } from 'papaparse';
 
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,6 +16,12 @@ import { UpdateRegionDto } from './dto/update-region.dto';
 
 const include: Prisma.RegionInclude = { country: true };
 
+interface CsvInput {
+  id: number;
+  name: string;
+  countryId: number;
+}
+
 @Injectable()
 export class RegionsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -19,6 +31,49 @@ export class RegionsService {
       data: createRegionDto,
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parse<CsvInput>(file.buffer.toString(), {
+      header: true,
+      dynamicTyping: true,
+    });
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateRegionDto();
+      instance.id = item.id.toString();
+      instance.name = item.name;
+      instance.countryId = item.countryId.toString();
+
+      return instance;
+    });
+
+    const totalValidationErrors: ValidationError[] = [];
+
+    for (const instance of instances) {
+      const errors = await validate(instance);
+      if (errors.length > 0) {
+        totalValidationErrors.push(...errors);
+      }
+    }
+
+    if (totalValidationErrors.length !== 0) {
+      throw new BadRequestException(totalValidationErrors, 'Bad CSV content');
+    }
+
+    const createdDocuments: Region[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return { createdDocuments, errors };
   }
 
   async findAll(
