@@ -11,6 +11,7 @@ import { FindAllCountriesDto } from './dto/find-all-countries.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 
 interface CsvInput {
+  id: number;
   name: string;
   code: string;
   isEuMember: boolean;
@@ -32,6 +33,7 @@ export class CountriesService {
 
     const instances = result.data.map((item) => {
       const instance = new CreateCountryDto();
+      instance.id = item.id.toString();
       instance.name = item.name;
       instance.code = item.code;
       instance.isEuMember = item.isEuMember;

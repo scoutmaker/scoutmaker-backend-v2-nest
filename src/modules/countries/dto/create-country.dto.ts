@@ -18,7 +18,7 @@ export class CreateCountryDto {
   name: string;
 
   @IsNotEmpty()
-  @MaxLength(2)
+  @MaxLength(3)
   @Transform(({ value }) => value.trim().toLowerCase())
   code: string;
 
