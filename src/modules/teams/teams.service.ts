@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Team } from '@prisma/client';
 import slugify from 'slugify';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -12,6 +13,16 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { FindAllTeamsDto } from './dto/find-all-teams.dto';
 import { TeamsPaginationOptionsDto } from './dto/teams-pagination-options.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+
+interface CsvInput {
+  id: number;
+  name: string;
+  transfermarktUrl?: string;
+  isPublic: boolean;
+  scoutmakerv1Id?: string;
+  clubId: number;
+  authorId: number;
+}
 
 const include: Prisma.TeamInclude = {
   club: true,
@@ -36,15 +47,56 @@ export class TeamsService {
         club: { connect: { id: clubId } },
         author: { connect: { id: authorId } },
         competitions: {
-          create: {
-            competition: { connect: { id: competitionId } },
-            group: groupId ? { connect: { id: groupId } } : undefined,
-            season: { connect: { isActive: true } },
-          },
+          create: competitionId
+            ? {
+                competition: { connect: { id: competitionId } },
+                group: groupId ? { connect: { id: groupId } } : undefined,
+                season: { connect: { isActive: true } },
+              }
+            : undefined,
         },
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateTeamDto();
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.transfermarktUrl = item.transfermarktUrl;
+      instance.isPublic = item.isPublic;
+      instance.scoutmakerv1Id = item.scoutmakerv1Id;
+      instance.clubId = item.clubId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Team[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId?.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
