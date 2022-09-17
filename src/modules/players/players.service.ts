@@ -24,8 +24,8 @@ interface CsvInput {
   firstName: string;
   lastName: string;
   yearOfBirth: number;
-  height?: number;
-  weight?: number;
+  height?: number | string;
+  weight?: number | string;
   footed: 'R' | 'L' | 'both';
   lnpId?: number;
   lnpUrl?: string;
@@ -123,7 +123,9 @@ export class PlayersService {
                 },
               }
             : undefined,
-        teams: { create: { teamId, startDate: new Date(), endDate: null } },
+        teams: teamId
+          ? { create: { teamId, startDate: new Date(), endDate: null } }
+          : undefined,
         author: { connect: { id: authorId } },
       },
       include,
@@ -139,8 +141,10 @@ export class PlayersService {
       instance.firstName = item.firstName;
       instance.lastName = item.lastName;
       instance.yearOfBirth = item.yearOfBirth;
-      instance.height = item.height;
-      instance.weight = item.weight;
+      instance.height =
+        typeof item.height === 'string' ? 170 : item.height || 170;
+      instance.weight =
+        typeof item.weight === 'string' ? 70 : item.weight || 70;
       instance.footed = footedMap[item.footed];
       instance.lnpId = item.lnpId?.toString();
       instance.lnpUrl = item.lnpUrl;
@@ -148,7 +152,7 @@ export class PlayersService {
       instance.minut90url = item.minut90url;
       instance.transfermarktId = item.transfermarktId;
       instance.transfermarktUrl = item.transfermarktUrl;
-      instance.isPublic = item.isPublic;
+      instance.isPublic = item.isPublic || false;
       instance.scoutmakerv1Id = item.scoutmakerv1Id;
       instance.countryId = item.countryId?.toString();
       instance.primaryPositionId = item.primaryPositionId?.toString();
