@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Match, Prisma } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -11,6 +12,20 @@ import { CreateMatchDto } from './dto/create-match.dto';
 import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
+
+interface CsvInput {
+  id: number;
+  date: string;
+  homeGoals?: number;
+  awayGoals?: number;
+  videoUrl?: string;
+  homeTeamId: number;
+  awayTeamId: number;
+  competitionId: number;
+  groupId?: number;
+  seasonId: number;
+  authorId: number;
+}
 
 const include = Prisma.validator<Prisma.MatchInclude>()({
   homeTeam: true,
@@ -49,6 +64,50 @@ export class MatchesService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateMatchDto();
+
+      instance.id = item.id?.toString();
+      instance.date = item.date;
+      instance.homeGoals = item.homeGoals;
+      instance.awayGoals = item.awayGoals;
+      instance.videoUrl = item.videoUrl;
+      instance.homeTeamId = item.homeTeamId?.toString();
+      instance.awayTeamId = item.awayTeamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.groupId = item.groupId?.toString();
+      instance.seasonId = item.seasonId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Match[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   private generateWhereClause({

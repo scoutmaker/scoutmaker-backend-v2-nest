@@ -4,6 +4,7 @@ import { Note, Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculatePercentageRating,
   calculateSkip,
@@ -16,6 +17,21 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+
+interface CsvInput {
+  id: number;
+  shirtNo?: number;
+  description?: string;
+  maxRatingScore?: number;
+  rating?: number;
+  playerId?: number;
+  matchId?: number;
+  positionPlayedId?: number;
+  teamId?: number;
+  competitionId?: number;
+  competitionGroupId?: number;
+  authorId: number;
+}
 
 const include: Prisma.NoteInclude = {
   player: { include: { country: true, primaryPosition: true } },
@@ -127,6 +143,50 @@ export class NotesService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateNoteDto();
+      instance.id = item.id?.toString();
+      instance.shirtNo = item.shirtNo;
+      instance.description = item.description;
+      instance.maxRatingScore = item.maxRatingScore;
+      instance.rating = item.rating;
+      instance.playerId = item.playerId?.toString();
+      instance.matchId = item.matchId?.toString();
+      instance.positionPlayedId = item.positionPlayedId?.toString();
+      instance.teamId = item.teamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.competitionGroupId = item.competitionGroupId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Note[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
