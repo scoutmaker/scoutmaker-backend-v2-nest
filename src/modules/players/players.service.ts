@@ -23,7 +23,7 @@ interface CsvInput {
   id: number;
   firstName: string;
   lastName: string;
-  yearOfBirth: number;
+  yearOfBirth: number | string;
   height?: number | string;
   weight?: number | string;
   footed: 'R' | 'L' | 'both';
@@ -140,7 +140,8 @@ export class PlayersService {
       instance.id = item.id?.toString();
       instance.firstName = item.firstName;
       instance.lastName = item.lastName;
-      instance.yearOfBirth = item.yearOfBirth;
+      instance.yearOfBirth =
+        typeof item.yearOfBirth === 'string' ? 2000 : item.yearOfBirth || 2000;
       instance.height =
         typeof item.height === 'string' ? 170 : item.height || 170;
       instance.weight =
