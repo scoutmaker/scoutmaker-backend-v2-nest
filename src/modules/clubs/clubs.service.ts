@@ -92,7 +92,11 @@ export class ClubsService {
       }
     }
 
-    return { createdDocuments, errors };
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(

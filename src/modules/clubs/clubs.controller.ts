@@ -79,11 +79,11 @@ export class ClubsController {
     },
   })
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const { createdDocuments, errors } =
+    const { createdCount, csvRowsCount, errors } =
       await this.clubsService.createManyFromCsv(file);
     return formatSuccessResponse('Success!', {
-      createdCount: createdDocuments.length,
-      createdDocuments,
+      csvRowsCount,
+      createdCount,
       errors,
     });
   }

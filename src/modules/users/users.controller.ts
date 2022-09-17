@@ -57,7 +57,6 @@ export class UsersController {
   }
 
   @Post('upload')
-  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @ApiBody({
