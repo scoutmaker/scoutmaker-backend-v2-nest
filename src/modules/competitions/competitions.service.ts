@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CompetitionType, Prisma } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -10,6 +11,7 @@ import {
 import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { FindAllCompetitionsDto } from './dto/find-all-competitions.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
+import { GenderEnum } from './types';
 
 const include: Prisma.CompetitionInclude = {
   country: true,
@@ -19,6 +21,18 @@ const include: Prisma.CompetitionInclude = {
 };
 
 const { ageCategory, type, juniorLevel, ...listInclude } = include;
+
+interface CsvInput {
+  id: number;
+  name: string;
+  gender: GenderEnum;
+  level: number;
+  transfermarktUrl?: string;
+  countryId: string;
+  ageCategoryId: string;
+  typeId: number;
+  juniorLevelId: number;
+}
 
 @Injectable()
 export class CompetitionsService {
@@ -40,6 +54,44 @@ export class CompetitionsService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateCompetitionDto();
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.level = item.level;
+      instance.gender = item.gender;
+      instance.transfermarktUrl = item.transfermarktUrl;
+      instance.countryId = item.countryId?.toString();
+      instance.typeId = item.typeId?.toString();
+      instance.juniorLevelId = item.juniorLevelId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: CompetitionType[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
