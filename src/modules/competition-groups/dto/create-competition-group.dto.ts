@@ -17,7 +17,8 @@ export class CreateCompetitionGroupDto {
   @IsUrl()
   transfermarktUrl?: string;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  regionIds: string[];
+  regionIds?: string[];
 }

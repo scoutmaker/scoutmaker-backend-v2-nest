@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CompetitionType, Prisma } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -17,6 +18,14 @@ const include: Prisma.CompetitionGroupInclude = {
   regions: { include: { region: true } },
 };
 
+interface CsvInput {
+  id: number;
+  name: string;
+  transfermarktUrl?: string;
+  competitionId: number;
+  regionIds?: string;
+}
+
 @Injectable()
 export class CompetitionGroupsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -26,12 +35,51 @@ export class CompetitionGroupsService {
     return this.prisma.competitionGroup.create({
       data: {
         ...rest,
-        regions: {
-          createMany: { data: regionIds.map((id) => ({ regionId: id })) },
-        },
+        regions:
+          regionIds && regionIds.length > 0
+            ? {
+                createMany: { data: regionIds.map((id) => ({ regionId: id })) },
+              }
+            : undefined,
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateCompetitionGroupDto();
+
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.transfermarktUrl = item.transfermarktUrl;
+      instance.competitionId = item.competitionId?.toString();
+      instance.regionIds = item.regionIds?.split(',');
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: CompetitionType[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(

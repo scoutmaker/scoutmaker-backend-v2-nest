@@ -1,5 +1,9 @@
-import { Transform } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
@@ -12,12 +16,10 @@ export class CreateSeasonDto {
   name: string;
 
   @IsNotEmpty()
-  @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @IsDateString()
   startDate: string;
 
   @IsNotEmpty()
-  @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @IsDateString()
   endDate: string;
 }
