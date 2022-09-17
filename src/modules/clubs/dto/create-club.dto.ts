@@ -13,7 +13,7 @@ export class CreateClubDto {
   @IsString()
   id?: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   name: string;
 
   @IsOptional()
