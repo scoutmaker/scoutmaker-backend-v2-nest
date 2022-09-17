@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserFootballRole } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserFootballRoleDto } from './dto/create-user-football-role.dto';
 import { FindAllUserFootballRolesDto } from './dto/find-all-user-football-roles.dto';
 import { UpdateUserFootballRoleDto } from './dto/update-user-football-role.dto';
 import { UserFootballRolesPaginationOptionsDto } from './dto/user-football-roles-pagination-options.dto';
+
+interface CsvInput {
+  id: number;
+  name: string;
+}
 
 @Injectable()
 export class UserFootballRolesService {
@@ -16,6 +22,34 @@ export class UserFootballRolesService {
     return this.prisma.userFootballRole.create({
       data: createUserFootballRoleDto,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateUserFootballRoleDto();
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: UserFootballRole[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return { createdDocuments, errors };
   }
 
   async findAll(
