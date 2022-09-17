@@ -67,6 +67,7 @@ export class CompetitionsService {
       instance.gender = item.gender;
       instance.transfermarktUrl = item.transfermarktUrl;
       instance.countryId = item.countryId?.toString();
+      instance.ageCategoryId = item.ageCategoryId?.toString();
       instance.typeId = item.typeId?.toString();
       instance.juniorLevelId = item.juniorLevelId?.toString();
 

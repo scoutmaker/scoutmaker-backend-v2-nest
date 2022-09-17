@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { CompetitionParticipation, Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CompetitionParticipationsPaginationOptionsDto } from './dto/competition-participations-pagination-options.dto';
@@ -15,6 +16,13 @@ const include: Prisma.CompetitionParticipationInclude = {
   group: true,
   season: true,
 };
+
+interface CsvInput {
+  teamId: number;
+  competitionId: number;
+  seasonId: number;
+  groupId?: number;
+}
 @Injectable()
 export class CompetitionParticipationsService {
   constructor(
@@ -27,6 +35,41 @@ export class CompetitionParticipationsService {
       data: createCompetitionParticipationDto,
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateCompetitionParticipationDto();
+
+      instance.teamId = item.teamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.seasonId = item.seasonId?.toString();
+      instance.groupId = item.groupId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: CompetitionParticipation[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
