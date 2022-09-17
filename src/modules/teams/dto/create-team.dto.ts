@@ -8,14 +8,15 @@ export class CreateTeamDto {
   @IsString()
   id?: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   name: string;
 
   @IsString()
   clubId: string;
 
+  @IsOptional()
   @IsString()
-  competitionId: string;
+  competitionId?: string;
 
   @IsOptional()
   @IsString()
@@ -28,6 +29,10 @@ export class CreateTeamDto {
   @IsOptional()
   @IsUrl()
   transfermarktUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  scoutmakerv1Id?: string;
 
   @IsOptional()
   @IsString()
