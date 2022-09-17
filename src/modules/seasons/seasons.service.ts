@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Season } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSeasonDto } from './dto/create-season.dto';
@@ -9,12 +10,61 @@ import { SeasonsPaginationOptionsDto } from './dto/seasons-pagination-options.dt
 import { ToggleIsActiveDto } from './dto/toggle-is-active.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
 
+interface CsvInput {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
 @Injectable()
 export class SeasonsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createSeasonDto: CreateSeasonDto) {
-    return this.prisma.season.create({ data: createSeasonDto });
+    const { endDate, startDate, ...rest } = createSeasonDto;
+
+    return this.prisma.season.create({
+      data: {
+        ...rest,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      },
+    });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateSeasonDto();
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.startDate = item.startDate;
+      instance.endDate = item.endDate;
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Season[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
