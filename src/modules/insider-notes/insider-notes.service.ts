@@ -12,6 +12,7 @@ import {
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -23,6 +24,17 @@ import { CreateInsiderNoteDto } from './dto/create-insider-note.dto';
 import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
+
+interface CsvInput {
+  id: number;
+  informant?: string;
+  description?: string;
+  playerId: number;
+  teamId?: number;
+  competitionId?: number;
+  competitionGroupId?: number;
+  authorId: string;
+}
 
 const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { primaryPosition: true } },
@@ -84,6 +96,47 @@ export class InsiderNotesService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateInsiderNoteDto();
+
+      instance.id = item.id?.toString();
+      instance.informant = item.informant;
+      instance.description = item.description;
+      instance.playerId = item.playerId?.toString();
+      instance.teamId = item.teamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.competitionGroupId = item.competitionGroupId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: InsiderNote[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, id: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
