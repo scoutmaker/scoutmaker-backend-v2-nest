@@ -37,7 +37,7 @@ import { UpdateCompetitionDto } from './dto/update-competition.dto';
 
 @Controller('competitions')
 @ApiTags('competitions')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+@UseGuards(AuthGuard)
 @ApiCookieAuth()
 export class CompetitionsController {
   constructor(
@@ -46,6 +46,7 @@ export class CompetitionsController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'create' })
   @Serialize(CompetitionDto)
   async create(
@@ -131,6 +132,7 @@ export class CompetitionsController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'update' })
   @Serialize(CompetitionDto)
   async update(
@@ -150,6 +152,7 @@ export class CompetitionsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'delete' })
   @Serialize(CompetitionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
