@@ -21,7 +21,7 @@ export class RoleGuard implements CanActivate {
 
     if (!this.roles.includes(role)) {
       throw new ForbiddenException(
-        `User role ${role} is not authorized to access this route`,
+        `User role ${role} is not authorized to access route ${request.route?.path}`,
       );
     }
 
