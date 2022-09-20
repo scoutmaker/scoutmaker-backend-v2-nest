@@ -190,6 +190,7 @@ export class ReportsService {
       playerBornBefore,
       hasVideo,
       isLiked,
+      userId: userIdFindParam,
     }: FindAllReportsDto,
     userId?: string,
     accessFilters?: Prisma.ReportWhereInput,
@@ -224,6 +225,7 @@ export class ReportsService {
           },
           likes: isLiked ? { some: { userId } } : undefined,
           videoUrl: hasVideo ? { not: null } : undefined,
+          authorId: userIdFindParam,
           AND: [
             {
               meta: isIdsArrayFilterDefined(competitionIds)

@@ -203,6 +203,7 @@ export class NotesService {
       playerBornAfter,
       playerBornBefore,
       isLiked,
+      userId: userIdFindParam,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -244,6 +245,7 @@ export class NotesService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          authorId: userIdFindParam,
           AND: [
             {
               meta: isIdsArrayFilterDefined(competitionIds)
