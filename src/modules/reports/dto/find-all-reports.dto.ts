@@ -83,4 +83,8 @@ export class FindAllReportsDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;
+
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }
