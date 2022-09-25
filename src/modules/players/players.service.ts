@@ -208,6 +208,18 @@ export class PlayersService {
       teamIds,
     } = query;
 
+    const slugfiedQueryString = name
+      ? slugify(name, {
+          lower: true,
+        })
+      : undefined;
+
+    const slugifiedReversedQueryString = name
+      ? slugify(name.split(' ').reverse().join(' '), {
+          lower: true,
+        })
+      : undefined;
+
     return {
       AND: [
         accessFilters,
@@ -226,6 +238,18 @@ export class PlayersService {
               OR: [
                 { firstName: { contains: name, mode: 'insensitive' } },
                 { lastName: { contains: name, mode: 'insensitive' } },
+                {
+                  slug: {
+                    contains: slugifiedReversedQueryString,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  slug: {
+                    contains: slugfiedQueryString,
+                    mode: 'insensitive',
+                  },
+                },
               ],
             },
             {
