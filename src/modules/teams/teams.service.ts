@@ -132,8 +132,19 @@ export class TeamsService {
         break;
     }
 
+    const slugifiedQueryString = name
+      ? slugify(name, { lower: true })
+      : undefined;
+
     const where: Prisma.TeamWhereInput = {
-      name: { contains: name, mode: 'insensitive' },
+      OR: name
+        ? [
+            {
+              name: { contains: name, mode: 'insensitive' },
+            },
+            { slug: { contains: slugifiedQueryString, mode: 'insensitive' } },
+          ]
+        : undefined,
       clubId,
       likes: isLiked ? { some: { userId } } : undefined,
       AND: [
