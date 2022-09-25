@@ -119,7 +119,7 @@ export class ClubsService {
     }
 
     const where: Prisma.ClubWhereInput = {
-      name,
+      name: { contains: name, mode: 'insensitive' },
       regionId,
       countryId,
     };
