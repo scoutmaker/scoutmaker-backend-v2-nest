@@ -30,7 +30,7 @@ export class OrganizationSubscriptionDto {
     ),
   )
   @Expose()
-  competitions: CompetitionBasicDataDto;
+  competitions: CompetitionBasicDataDto[];
 
   @Transform(({ value }) =>
     value.map((item) =>
@@ -40,5 +40,5 @@ export class OrganizationSubscriptionDto {
     ),
   )
   @Expose()
-  competitionGroups: CompetitionGroupBasicDataDto;
+  competitionGroups: CompetitionGroupBasicDataDto[];
 }
