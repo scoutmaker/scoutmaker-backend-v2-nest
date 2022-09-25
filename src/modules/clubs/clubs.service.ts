@@ -118,8 +118,19 @@ export class ClubsService {
         break;
     }
 
+    const slugifiedQueryString = name
+      ? slugify(name, { lower: true })
+      : undefined;
+
     const where: Prisma.ClubWhereInput = {
-      name: { contains: name, mode: 'insensitive' },
+      OR: name
+        ? [
+            {
+              name: { contains: name, mode: 'insensitive' },
+            },
+            { slug: { contains: slugifiedQueryString, mode: 'insensitive' } },
+          ]
+        : undefined,
       regionId,
       countryId,
     };
