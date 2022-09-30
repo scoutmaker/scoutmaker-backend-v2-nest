@@ -107,6 +107,11 @@ export class AccessFiltersInterceptor implements NestInterceptor {
         ? { author: { role: 'PLAYMAKER_SCOUT' } }
         : {};
 
+    const scoutingManagerExtraAccess: Prisma.PlayerWhereInput =
+      user.role === 'PLAYMAKER_SCOUT_MANAGER'
+        ? { author: { role: { not: 'SCOUT' } } }
+        : {};
+
     const organizationPlayerAccess: Prisma.PlayerWhereInput =
       user.organizationId
         ? {
@@ -201,6 +206,7 @@ export class AccessFiltersInterceptor implements NestInterceptor {
         {
           ...playmakerScoutExtraAccess,
         },
+        { ...scoutingManagerExtraAccess },
       ],
     };
 

@@ -9,6 +9,7 @@ import { isWithinInterval } from 'date-fns';
 import { Request } from 'express';
 import { I18nService } from 'nestjs-i18n';
 
+import { privilegedRoles } from '../../../utils/constants';
 import { OrganizationReportAclService } from '../../organization-report-acl/organization-report-acl.service';
 import { OrganizationSubscriptionsService } from '../../organization-subscriptions/organization-subscriptions.service';
 import { UserReportAclService } from '../../user-report-acl/user-report-acl.service';
@@ -43,6 +44,14 @@ export class ReadGuard implements CanActivate {
     if (
       user.role === 'PLAYMAKER_SCOUT' &&
       report.author.role === 'PLAYMAKER_SCOUT'
+    ) {
+      return true;
+    }
+
+    // If user is a scout-manager, they can read all reports created by all other users except for SCOUT
+    if (
+      user.role === 'PLAYMAKER_SCOUT_MANAGER' &&
+      privilegedRoles.includes(report.author.role)
     ) {
       return true;
     }

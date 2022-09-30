@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -30,7 +29,10 @@ import { OrdersService } from './orders.service';
 
 @Controller('orders')
 @ApiTags('orders')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN', 'PLAYMAKER_SCOUT']))
+@UseGuards(
+  AuthGuard,
+  new RoleGuard(['ADMIN', 'PLAYMAKER_SCOUT', 'PLAYMAKER_SCOUT_MANAGER']),
+)
 @ApiCookieAuth()
 export class OrdersController {
   constructor(

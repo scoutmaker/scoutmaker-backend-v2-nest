@@ -9,6 +9,7 @@ import { isWithinInterval } from 'date-fns';
 import { Request } from 'express';
 import { I18nService } from 'nestjs-i18n';
 
+import { privilegedRoles } from '../../../utils/constants';
 import { OrganizationInsiderNoteAclService } from '../../organization-insider-note-acl/organization-insider-note-acl.service';
 import { OrganizationSubscriptionsService } from '../../organization-subscriptions/organization-subscriptions.service';
 import { UserInsiderNoteAclService } from '../../user-insider-note-acl/user-insider-note-acl.service';
@@ -45,6 +46,14 @@ export class ReadGuard implements CanActivate {
     if (
       user.role === 'PLAYMAKER_SCOUT' &&
       insiderNote.author.role === 'PLAYMAKER_SCOUT'
+    ) {
+      return true;
+    }
+
+    // If user is a scout-manager, they can read all notes created by all other users except for SCOUT
+    if (
+      user.role === 'PLAYMAKER_SCOUT_MANAGER' &&
+      privilegedRoles.includes(insiderNote.author.role)
     ) {
       return true;
     }
