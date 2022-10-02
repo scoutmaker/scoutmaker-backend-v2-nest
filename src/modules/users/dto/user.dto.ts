@@ -68,4 +68,5 @@ export class UserBasicDataDto extends PickType(UserDto, [
   'id',
   'firstName',
   'lastName',
+  'email',
 ]) {}
