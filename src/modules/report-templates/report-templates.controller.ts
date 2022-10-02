@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -23,7 +22,10 @@ import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportTemplateDto } from './dto/create-report-template.dto';
 import { FindAllReportTemplatesDto } from './dto/find-all-report-templates.dto';
-import { ReportTemplateDto } from './dto/report-template.dto';
+import {
+  ReportTemplateBasicDataDto,
+  ReportTemplateDto,
+} from './dto/report-template.dto';
 import { ReportTemplatesPaginationOptionsDto } from './dto/report-templates-pagination-options.dto';
 import { UpdateReportTemplateDto } from './dto/update-report-template.dto';
 import { ReportTemplatesService } from './report-templates.service';
@@ -79,8 +81,8 @@ export class ReportTemplatesController {
   }
 
   @Get('list')
-  @ApiResponse(ReportTemplateDto, { type: 'read' })
-  @Serialize(ReportTemplateDto)
+  @ApiResponse(ReportTemplateBasicDataDto, { type: 'read' })
+  @Serialize(ReportTemplateBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const templates = await this.reportTemplatesService.getList();
     const message = this.i18n.translate('report-templates.GET_LIST_MESSAGE', {

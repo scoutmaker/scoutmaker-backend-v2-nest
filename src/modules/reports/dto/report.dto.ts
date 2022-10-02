@@ -67,6 +67,9 @@ export class ReportDto {
   docNumber: number;
 
   @Expose()
+  maxRatingScore: number;
+
+  @Expose()
   shirtNo?: number;
 
   @Expose()
