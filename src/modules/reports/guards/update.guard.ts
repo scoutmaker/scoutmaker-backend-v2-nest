@@ -34,14 +34,6 @@ export class UpdateGuard implements CanActivate {
     // If user is not an admin, we have to fetch the report to determine if they can update it
     const note = await this.reportsService.findOne(request.params.id);
 
-    // If user is a playmaker-scout, they can update all reports created by other playmaker-scouts
-    if (
-      user.role === 'PLAYMAKER_SCOUT' &&
-      note.author.role === 'PLAYMAKER_SCOUT'
-    ) {
-      return true;
-    }
-
     // Users can update their own reports
     if (user.id === note.author.id) {
       return true;

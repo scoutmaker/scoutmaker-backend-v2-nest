@@ -15,3 +15,8 @@ export const privilegedRoles: UserRole[] = [
   'PLAYMAKER_SCOUT',
   'PLAYMAKER_SCOUT_MANAGER',
 ];
+
+export const playmakerRoles: UserRole[] = [
+  'PLAYMAKER_SCOUT',
+  'PLAYMAKER_SCOUT_MANAGER',
+];

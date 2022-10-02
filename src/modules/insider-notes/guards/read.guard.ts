@@ -42,14 +42,6 @@ export class ReadGuard implements CanActivate {
       request.params.id,
     );
 
-    // If user is a playmaker-scout, they can read all notes created by other playmaker-scouts
-    if (
-      user.role === 'PLAYMAKER_SCOUT' &&
-      insiderNote.author.role === 'PLAYMAKER_SCOUT'
-    ) {
-      return true;
-    }
-
     // If user is a scout-manager, they can read all notes created by all other users except for SCOUT
     if (
       user.role === 'PLAYMAKER_SCOUT_MANAGER' &&

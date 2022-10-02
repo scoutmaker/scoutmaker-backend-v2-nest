@@ -36,14 +36,6 @@ export class UpdateGuard implements CanActivate {
       request.params.id,
     );
 
-    // If user is a playmaker-scout, they can update all notes created by other playmaker-scouts
-    if (
-      user.role === 'PLAYMAKER_SCOUT' &&
-      insiderNote.author.role === 'PLAYMAKER_SCOUT'
-    ) {
-      return true;
-    }
-
     // Users can update their own notes
     if (user.id === insiderNote.author.id) {
       return true;

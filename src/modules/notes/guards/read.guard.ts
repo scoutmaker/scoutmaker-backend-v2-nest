@@ -40,14 +40,6 @@ export class ReadGuard implements CanActivate {
     // If user is not an admin, we have to fetch the note to determine if they can read it
     const note = await this.notesService.findOne(request.params.id);
 
-    // If user is a playmaker-scout, they can read all notes created by other playmaker-scouts
-    if (
-      user.role === 'PLAYMAKER_SCOUT' &&
-      note.author.role === 'PLAYMAKER_SCOUT'
-    ) {
-      return true;
-    }
-
     // If user is a scout-manager, they can read all notes created by all other users except for SCOUT
     if (
       user.role === 'PLAYMAKER_SCOUT_MANAGER' &&
