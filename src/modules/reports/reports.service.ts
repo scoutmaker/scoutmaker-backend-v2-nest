@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable } from '@nestjs/common';
-import { Prisma, Report, ReportTemplate } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Prisma, Report } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
@@ -20,7 +20,6 @@ import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dt
 import { UpdateReportDto } from './dto/update-report.dto';
 
 const include: Prisma.ReportInclude = {
-  template: true,
   player: {
     include: {
       country: true,
@@ -40,7 +39,6 @@ const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
 });
 
 const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
-  template: true,
   player: {
     include: {
       country: true,
@@ -71,7 +69,7 @@ export class ReportsService {
   ) {}
 
   private getCacheKey(id: string) {
-    return `note:${id}`;
+    return `report:${id}`;
   }
 
   private getOneFromCache(id: string) {
@@ -102,12 +100,18 @@ export class ReportsService {
       ...rest
     } = createReportDto;
 
+    const template = await this.templatesService.findOne(templateId);
+
+    if (!template) {
+      throw new BadRequestException(
+        `Unable to find report template with the id of ${templateId}`,
+      );
+    }
+
     let percentageRating: number;
-    let template: ReportTemplate;
 
     // Calculate percentage rating
     if (finalRating) {
-      template = await this.templatesService.findOne(templateId);
       percentageRating = calculatePercentageRating(
         finalRating,
         template.maxRatingScore,
@@ -142,7 +146,7 @@ export class ReportsService {
         finalRating,
         percentageRating,
         avgRating,
-        template: { connect: { id: templateId } },
+        maxRatingScore: template.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
@@ -413,13 +417,11 @@ export class ReportsService {
 
     // Calculate percentage rating
     let percentageRating: number;
-    let template: ReportTemplate;
 
     if (finalRating) {
-      template = await this.templatesService.findOne(updatedReport.templateId);
       percentageRating = calculatePercentageRating(
         finalRating,
-        template.maxRatingScore,
+        updatedReport.maxRatingScore,
       );
 
       updatedReport = await this.prisma.report.update({
