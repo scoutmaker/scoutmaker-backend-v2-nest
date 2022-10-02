@@ -1,5 +1,5 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma, Report } from '@prisma/client';
 import Redis from 'ioredis';
 
@@ -102,12 +102,6 @@ export class ReportsService {
 
     const template = await this.templatesService.findOne(templateId);
 
-    if (!template) {
-      throw new BadRequestException(
-        `Unable to find report template with the id of ${templateId}`,
-      );
-    }
-
     let percentageRating: number;
 
     // Calculate percentage rating
@@ -131,11 +125,11 @@ export class ReportsService {
     );
 
     const metaPositionId = positionPlayedId || player.primaryPositionId;
-    const metaTeamId = teamId || player.teams[0].teamId;
+    const metaTeamId = teamId || player.teams[0]?.teamId;
     const metaCompetitionId =
-      competitionId || player.teams[0].team.competitions[0].competitionId;
+      competitionId || player.teams[0]?.team.competitions[0].competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0].team.competitions[0].groupId;
+      competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
@@ -167,8 +161,10 @@ export class ReportsService {
         meta: {
           create: {
             position: { connect: { id: metaPositionId } },
-            team: { connect: { id: metaTeamId } },
-            competition: { connect: { id: metaCompetitionId } },
+            team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+            competition: metaCompetitionId
+              ? { connect: { id: metaCompetitionId } }
+              : undefined,
             competitionGroup: metaCompetitionGroupId
               ? { connect: { id: metaCompetitionGroupId } }
               : undefined,
@@ -337,11 +333,11 @@ export class ReportsService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0].teamId;
+      metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0].competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
       await this.prisma.reportMeta.update({
         where: { reportId: id },
