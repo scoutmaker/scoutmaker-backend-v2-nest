@@ -134,7 +134,7 @@ export class CompetitionGroupsService {
     const { regionIds, ...rest } = updateCompetitionGroupDto;
 
     // If user wants to update group regions, first we need to delete all existing RegionsOnCompetitionGroups records
-    if (regionIds && regionIds.length !== 0) {
+    if (regionIds) {
       await this.prisma.regionsOnCompetitionGroups.deleteMany({
         where: { groupId: id },
       });
@@ -145,9 +145,10 @@ export class CompetitionGroupsService {
       data: {
         ...rest,
         regions: {
-          createMany: regionIds
-            ? { data: regionIds.map((id) => ({ regionId: id })) }
-            : undefined,
+          createMany:
+            regionIds && regionIds.length > 0
+              ? { data: regionIds.map((id) => ({ regionId: id })) }
+              : undefined,
         },
       },
       include,
