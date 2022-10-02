@@ -557,7 +557,6 @@ model ReportTemplate {
   author                   User                                        @relation(fields: [authorId], references: [id])
   authorId                 String
   skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
-  reports                  Report[]
 }
 
 model SkillAssessmentTemplatesOnReportTemplates {
@@ -604,6 +603,7 @@ model Report {
   redCards         Int?
   videoUrl         String?
   videoDescription String?
+  maxRatingScore   Int
   finalRating      Int?
   summary          String?
   avgRating        Float?
@@ -616,8 +616,6 @@ model Report {
   // Relation fields
   author                        User                                   @relation(fields: [authorId], references: [id])
   authorId                      String
-  template                      ReportTemplate                         @relation(fields: [templateId], references: [id])
-  templateId                    String
   player                        Player                                 @relation(fields: [playerId], references: [id])
   playerId                      String
   match                         Match?                                 @relation(fields: [matchId], references: [id])
