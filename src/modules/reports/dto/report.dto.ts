@@ -9,7 +9,6 @@ import { MatchBasicDataDto } from '../../matches/dto/match.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { ReportSkillAssessmentBasicDataDto } from '../../report-skill-assessments/dto/report-skill-assessment.dto';
-import { ReportTemplateBasicDataDto } from '../../report-templates/dto/report-template.dto';
 import { TeamBasicDataDto } from '../../teams/dto/team.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
@@ -109,14 +108,6 @@ export class ReportDto {
 
   @Expose()
   createdAt: Date;
-
-  @Transform(({ value }) =>
-    plainToInstance(ReportTemplateBasicDataDto, value, {
-      excludeExtraneousValues: true,
-    }),
-  )
-  @Expose()
-  template: ReportTemplateBasicDataDto;
 
   @Transform(({ value }) =>
     plainToInstance(PlayerSuperBasicDataDto, value, {

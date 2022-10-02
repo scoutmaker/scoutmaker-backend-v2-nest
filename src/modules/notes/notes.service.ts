@@ -112,11 +112,11 @@ export class NotesService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0].teamId;
+      metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0].competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
     }
 
     return this.prisma.note.create({
@@ -132,8 +132,10 @@ export class NotesService {
           ? {
               create: {
                 position: { connect: { id: metaPositionId } },
-                team: { connect: { id: metaTeamId } },
-                competition: { connect: { id: metaCompetitionId } },
+                team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+                competition: metaCompetitionId
+                  ? { connect: { id: metaCompetitionId } }
+                  : undefined,
                 competitionGroup: metaCompetitionGroupId
                   ? { connect: { id: metaCompetitionGroupId } }
                   : undefined,
@@ -390,8 +392,11 @@ export class NotesService {
         playerId,
       );
 
+      const metaTeamId = teamId || player.teams[0]?.teamId;
+      const metaCompetitionId =
+        competitionId || player.teams[0].team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
       await this.prisma.noteMeta.create({
         data: {
@@ -399,14 +404,14 @@ export class NotesService {
           position: {
             connect: { id: positionPlayedId || player.primaryPositionId },
           },
-          team: { connect: { id: teamId || player.teams[0].teamId } },
-          competition: {
-            connect: {
-              id:
-                competitionId ||
-                player.teams[0].team.competitions[0].competitionId,
-            },
-          },
+          team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+          competition: metaCompetitionId
+            ? {
+                connect: {
+                  id: metaCompetitionId,
+                },
+              }
+            : undefined,
           competitionGroup: metaCompetitionGroupId
             ? { connect: { id: metaCompetitionGroupId } }
             : undefined,

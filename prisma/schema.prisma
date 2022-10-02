@@ -468,12 +468,12 @@ model NoteMeta {
   // Relation fields
   note               Note              @relation(fields: [noteId], references: [id])
   noteId             String            @unique
-  position           PlayerPosition    @relation(fields: [positionId], references: [id])
-  positionId         String
-  team               Team              @relation(fields: [teamId], references: [id])
-  teamId             String
-  competition        Competition       @relation(fields: [competitionId], references: [id])
-  competitionId      String
+  position           PlayerPosition?   @relation(fields: [positionId], references: [id])
+  positionId         String?
+  team               Team?             @relation(fields: [teamId], references: [id])
+  teamId             String?
+  competition        Competition?      @relation(fields: [competitionId], references: [id])
+  competitionId      String?
   competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
   competitionGroupId String?
 }
@@ -505,10 +505,10 @@ model InsiderNoteMeta {
   // Relation fields
   insiderNote        InsiderNote       @relation(fields: [insiderNoteId], references: [id])
   insiderNoteId      String            @unique
-  team               Team              @relation(fields: [teamId], references: [id])
-  teamId             String
-  competition        Competition       @relation(fields: [competitionId], references: [id])
-  competitionId      String
+  team               Team?             @relation(fields: [teamId], references: [id])
+  teamId             String?
+  competition        Competition?      @relation(fields: [competitionId], references: [id])
+  competitionId      String?
   competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
   competitionGroupId String?
 }
@@ -557,7 +557,6 @@ model ReportTemplate {
   author                   User                                        @relation(fields: [authorId], references: [id])
   authorId                 String
   skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
-  reports                  Report[]
 }
 
 model SkillAssessmentTemplatesOnReportTemplates {
@@ -604,6 +603,7 @@ model Report {
   redCards         Int?
   videoUrl         String?
   videoDescription String?
+  maxRatingScore   Int
   finalRating      Int?
   summary          String?
   avgRating        Float?
@@ -616,8 +616,6 @@ model Report {
   // Relation fields
   author                        User                                   @relation(fields: [authorId], references: [id])
   authorId                      String
-  template                      ReportTemplate                         @relation(fields: [templateId], references: [id])
-  templateId                    String
   player                        Player                                 @relation(fields: [playerId], references: [id])
   playerId                      String
   match                         Match?                                 @relation(fields: [matchId], references: [id])
@@ -639,12 +637,12 @@ model ReportMeta {
   // Relation fields
   report             Report            @relation(fields: [reportId], references: [id])
   reportId           String            @unique
-  position           PlayerPosition    @relation(fields: [positionId], references: [id])
-  positionId         String
-  team               Team              @relation(fields: [teamId], references: [id])
-  teamId             String
-  competition        Competition       @relation(fields: [competitionId], references: [id])
-  competitionId      String
+  position           PlayerPosition?   @relation(fields: [positionId], references: [id])
+  positionId         String?
+  team               Team?             @relation(fields: [teamId], references: [id])
+  teamId             String?
+  competition        Competition?      @relation(fields: [competitionId], references: [id])
+  competitionId      String?
   competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
   competitionGroupId String?
 }
@@ -818,8 +816,8 @@ model PlayerStatsMeta {
   // Relation fields
   stats   PlayerStats @relation(fields: [statsId], references: [id])
   statsId String      @unique
-  team    Team        @relation(fields: [teamId], references: [id])
-  teamId  String
+  team    Team?       @relation(fields: [teamId], references: [id])
+  teamId  String?
 }
 
 model ReportBackgroundImage {

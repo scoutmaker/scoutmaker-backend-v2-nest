@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Report, ReportTemplate } from '@prisma/client';
+import { Prisma, Report } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
@@ -20,7 +20,6 @@ import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dt
 import { UpdateReportDto } from './dto/update-report.dto';
 
 const include: Prisma.ReportInclude = {
-  template: true,
   player: {
     include: {
       country: true,
@@ -40,7 +39,6 @@ const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
 });
 
 const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
-  template: true,
   player: {
     include: {
       country: true,
@@ -71,7 +69,7 @@ export class ReportsService {
   ) {}
 
   private getCacheKey(id: string) {
-    return `note:${id}`;
+    return `report:${id}`;
   }
 
   private getOneFromCache(id: string) {
@@ -102,12 +100,12 @@ export class ReportsService {
       ...rest
     } = createReportDto;
 
+    const template = await this.templatesService.findOne(templateId);
+
     let percentageRating: number;
-    let template: ReportTemplate;
 
     // Calculate percentage rating
     if (finalRating) {
-      template = await this.templatesService.findOne(templateId);
       percentageRating = calculatePercentageRating(
         finalRating,
         template.maxRatingScore,
@@ -127,11 +125,11 @@ export class ReportsService {
     );
 
     const metaPositionId = positionPlayedId || player.primaryPositionId;
-    const metaTeamId = teamId || player.teams[0].teamId;
+    const metaTeamId = teamId || player.teams[0]?.teamId;
     const metaCompetitionId =
-      competitionId || player.teams[0].team.competitions[0].competitionId;
+      competitionId || player.teams[0]?.team.competitions[0].competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0].team.competitions[0].groupId;
+      competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
@@ -142,7 +140,7 @@ export class ReportsService {
         finalRating,
         percentageRating,
         avgRating,
-        template: { connect: { id: templateId } },
+        maxRatingScore: template.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
@@ -163,8 +161,10 @@ export class ReportsService {
         meta: {
           create: {
             position: { connect: { id: metaPositionId } },
-            team: { connect: { id: metaTeamId } },
-            competition: { connect: { id: metaCompetitionId } },
+            team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+            competition: metaCompetitionId
+              ? { connect: { id: metaCompetitionId } }
+              : undefined,
             competitionGroup: metaCompetitionGroupId
               ? { connect: { id: metaCompetitionGroupId } }
               : undefined,
@@ -333,11 +333,11 @@ export class ReportsService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0].teamId;
+      metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0].competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
       await this.prisma.reportMeta.update({
         where: { reportId: id },
@@ -413,13 +413,11 @@ export class ReportsService {
 
     // Calculate percentage rating
     let percentageRating: number;
-    let template: ReportTemplate;
 
     if (finalRating) {
-      template = await this.templatesService.findOne(updatedReport.templateId);
       percentageRating = calculatePercentageRating(
         finalRating,
-        template.maxRatingScore,
+        updatedReport.maxRatingScore,
       );
 
       updatedReport = await this.prisma.report.update({
