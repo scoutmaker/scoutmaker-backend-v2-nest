@@ -14,7 +14,7 @@ import { isAfter, isBefore } from 'date-fns';
 import { Request } from 'express';
 import { I18nService } from 'nestjs-i18n';
 
-import { privilegedRoles } from '../../../utils/constants';
+import { playmakerRoles, privilegedRoles } from '../../../utils/constants';
 import { OrganizationInsiderNoteAclService } from '../../organization-insider-note-acl/organization-insider-note-acl.service';
 import { OrganizationNoteAclService } from '../../organization-note-acl/organization-note-acl.service';
 import { OrganizationPlayerAclService } from '../../organization-player-acl/organization-player-acl.service';
@@ -57,17 +57,9 @@ export class ReadGuard implements CanActivate {
     // If user is not an admin, we have to fetch the player to determine if they can read it
     const player = await this.playersService.findOne(request.params.id);
 
-    // If user is a playmaker-scout, they can read all players data created by other playmaker-scouts
+    // If user is a playmaker-scout or scout-manager, they can read all players created by all other users except for SCOUT
     if (
-      user.role === 'PLAYMAKER_SCOUT' &&
-      player.author.role === 'PLAYMAKER_SCOUT'
-    ) {
-      return true;
-    }
-
-    // If user is a scout-manager, they can read all players created by all other users except for SCOUT
-    if (
-      user.role === 'PLAYMAKER_SCOUT_MANAGER' &&
+      playmakerRoles.includes(user.role) &&
       privilegedRoles.includes(player.author.role)
     ) {
       return true;
