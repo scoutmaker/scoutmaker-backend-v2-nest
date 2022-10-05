@@ -1,5 +1,4 @@
-import { Transform } from 'class-transformer';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateTeamAffiliationDto {
   @IsOptional()
@@ -12,12 +11,10 @@ export class CreateTeamAffiliationDto {
   @IsString()
   teamId: string;
 
-  @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @IsDateString()
   startDate: string;
 
   @IsOptional()
-  @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @IsDateString()
   endDate?: string;
 }
