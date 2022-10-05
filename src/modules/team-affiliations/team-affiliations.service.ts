@@ -1,12 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, TeamAffiliation } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
 import { FindAllTeamAffiliationsDto } from './dto/find-all-team-affiliations.dto';
 import { TeamAffiliationsPaginationOptionsDto } from './dto/team-affiliations-pagination-options.dto';
 import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';
+
+interface CsvInput {
+  id: number;
+  startDate: string;
+  endDate: string;
+  playerId: number;
+  teamId: number;
+}
 
 const include = Prisma.validator<Prisma.TeamAffiliationInclude>()({
   player: {
@@ -31,15 +40,61 @@ const include = Prisma.validator<Prisma.TeamAffiliationInclude>()({
 export class TeamAffiliationsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create({ playerId, teamId, ...rest }: CreateTeamAffiliationDto) {
+  create({
+    playerId,
+    teamId,
+    startDate,
+    endDate,
+    ...rest
+  }: CreateTeamAffiliationDto) {
     return this.prisma.teamAffiliation.create({
       data: {
         player: { connect: { id: playerId } },
         team: { connect: { id: teamId } },
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : undefined,
         ...rest,
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateTeamAffiliationDto();
+
+      instance.id = item.id?.toString();
+      instance.startDate = item.startDate;
+      instance.endDate = item.endDate;
+      instance.playerId = item.playerId?.toString();
+      instance.teamId = item.teamId?.toString();
+
+      console.log(instance);
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: TeamAffiliation[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(instance);
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
@@ -89,10 +144,13 @@ export class TeamAffiliationsService {
     return this.prisma.teamAffiliation.findUnique({ where: { id }, include });
   }
 
-  update(id: string, updateTeamAffiliationDto: UpdateTeamAffiliationDto) {
+  update(id: string, { endDate, startDate }: UpdateTeamAffiliationDto) {
     return this.prisma.teamAffiliation.update({
       where: { id },
-      data: updateTeamAffiliationDto,
+      data: {
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
+      },
       include,
     });
   }
