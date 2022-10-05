@@ -1,9 +1,10 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Report } from '@prisma/client';
+import { Prisma, Report, ReportTemplate } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateAvg,
   calculatePercentageRating,
@@ -18,6 +19,30 @@ import { CreateReportDto } from './dto/create-report.dto';
 import { FindAllReportsDto } from './dto/find-all-reports.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
+
+interface CsvInput {
+  id: number;
+  shirtNo?: number;
+  minutesPlayed?: number;
+  goals?: number;
+  assists?: number;
+  yellowCards?: number;
+  redCards?: number;
+  videoUrl?: string;
+  videoDescription?: string;
+  finalRating: number;
+  summary: string;
+  playerId: number;
+  orderId?: number;
+  positionPlayedId?: number;
+  teamId?: number;
+  competitionId?: number;
+  competitionGroupId?: number;
+  matchId?: number;
+  authorId: number;
+  skillAssessments: string;
+  maxRatingScore: number;
+}
 
 const include: Prisma.ReportInclude = {
   player: {
@@ -97,10 +122,15 @@ export class ReportsService {
       orderId,
       skillAssessments,
       finalRating,
+      maxRatingScore,
       ...rest
     } = createReportDto;
 
-    const template = await this.templatesService.findOne(templateId);
+    let template: ReportTemplate;
+
+    if (templateId) {
+      template = await this.templatesService.findOne(templateId);
+    }
 
     let percentageRating: number;
 
@@ -108,7 +138,7 @@ export class ReportsService {
     if (finalRating) {
       percentageRating = calculatePercentageRating(
         finalRating,
-        template.maxRatingScore,
+        maxRatingScore || template?.maxRatingScore,
       );
     }
 
@@ -140,7 +170,7 @@ export class ReportsService {
         finalRating,
         percentageRating,
         avgRating,
-        maxRatingScore: template.maxRatingScore,
+        maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
@@ -173,6 +203,68 @@ export class ReportsService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateReportDto();
+
+      const parsedAssessments = JSON.parse(item.skillAssessments).map(
+        (item) => ({
+          ...item,
+          rating: item.rating === 'null' ? null : parseInt(item.rating),
+          description: item.description === 'null' ? null : item.description,
+        }),
+      );
+
+      instance.id = item.id?.toString();
+      instance.shirtNo = item.shirtNo;
+      instance.minutesPlayed = item.minutesPlayed;
+      instance.goals = item.goals;
+      instance.assists = item.assists;
+      instance.yellowCards = item.yellowCards;
+      instance.redCards = item.redCards;
+      instance.videoUrl = item.videoUrl;
+      instance.videoDescription = item.videoDescription;
+      instance.finalRating = item.finalRating;
+      instance.summary = item.summary;
+      instance.playerId = item.playerId.toString();
+      instance.orderId = item.orderId?.toString();
+      instance.positionPlayedId = item.positionPlayedId?.toString();
+      instance.teamId = item.teamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.competitionGroupId = item.competitionGroupId?.toString();
+      instance.matchId = item.matchId?.toString();
+      instance.maxRatingScore = item.maxRatingScore;
+      instance.skillAssessments = parsedAssessments;
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Report[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId?.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
