@@ -7,10 +7,14 @@ export class CreateReportSkillAssessmentTemplateDto {
   @IsString()
   id?: string;
 
+  @IsOptional()
+  @IsString()
+  scoutmakerv1Id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsRequiredStringWithMaxLength(6)
+  @IsRequiredStringWithMaxLength(10)
   shortName: string;
 
   @IsBoolean()
