@@ -67,7 +67,7 @@ export class OrganizationsService {
 
       instance.id = item.id?.toString();
       instance.name = item.name;
-      instance.memberIds = item.memberIds.split(',');
+      instance.memberIds = item.memberIds.toString().split(',');
 
       return instance;
     });
