@@ -86,8 +86,13 @@ export class CreateReportDto {
   @Transform(({ value }) => value.trim())
   summary?: string;
 
+  @IsOptional()
   @IsString()
-  templateId: string;
+  templateId?: string;
+
+  @IsOptional()
+  @IsInt()
+  maxRatingScore?: number;
 
   @IsString()
   playerId: string;

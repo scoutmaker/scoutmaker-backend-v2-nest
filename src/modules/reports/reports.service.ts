@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Report } from '@prisma/client';
+import { Prisma, Report, ReportTemplate } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
@@ -41,6 +41,7 @@ interface CsvInput {
   matchId?: number;
   authorId: number;
   skillAssessments: string;
+  maxRatingScore: number;
 }
 
 const include: Prisma.ReportInclude = {
@@ -121,10 +122,15 @@ export class ReportsService {
       orderId,
       skillAssessments,
       finalRating,
+      maxRatingScore,
       ...rest
     } = createReportDto;
 
-    const template = await this.templatesService.findOne(templateId);
+    let template: ReportTemplate;
+
+    if (templateId) {
+      template = await this.templatesService.findOne(templateId);
+    }
 
     let percentageRating: number;
 
@@ -132,7 +138,7 @@ export class ReportsService {
     if (finalRating) {
       percentageRating = calculatePercentageRating(
         finalRating,
-        template.maxRatingScore,
+        maxRatingScore || template?.maxRatingScore,
       );
     }
 
@@ -164,7 +170,7 @@ export class ReportsService {
         finalRating,
         percentageRating,
         avgRating,
-        maxRatingScore: template.maxRatingScore,
+        maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
@@ -208,7 +214,7 @@ export class ReportsService {
       const parsedAssessments = JSON.parse(item.skillAssessments).map(
         (item) => ({
           ...item,
-          rating: parseInt(item.rating),
+          rating: item.rating === 'null' ? null : parseInt(item.rating),
           description: item.description === 'null' ? null : item.description,
         }),
       );
@@ -231,6 +237,7 @@ export class ReportsService {
       instance.competitionId = item.competitionId?.toString();
       instance.competitionGroupId = item.competitionGroupId?.toString();
       instance.matchId = item.matchId?.toString();
+      instance.maxRatingScore = item.maxRatingScore;
       instance.skillAssessments = parsedAssessments;
 
       return instance;
