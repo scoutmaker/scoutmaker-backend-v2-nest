@@ -15,6 +15,10 @@ export class CreateReportTemplateDto {
   @IsString()
   id?: string;
 
+  @IsOptional()
+  @IsString()
+  scoutmakerv1Id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   name: string;
 

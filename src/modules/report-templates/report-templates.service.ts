@@ -1,12 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, ReportTemplate } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReportTemplateDto } from './dto/create-report-template.dto';
 import { FindAllReportTemplatesDto } from './dto/find-all-report-templates.dto';
 import { ReportTemplatesPaginationOptionsDto } from './dto/report-templates-pagination-options.dto';
 import { UpdateReportTemplateDto } from './dto/update-report-template.dto';
+
+interface CsvInput {
+  id: number;
+  name: string;
+  maxRatingScore: number;
+  isPublic: boolean;
+  scoutmakerv1Id: string;
+  authorId: number;
+  skillList: string;
+}
 
 const include: Prisma.ReportTemplateInclude = {
   skillAssessmentTemplates: {
@@ -38,6 +49,46 @@ export class ReportTemplatesService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateReportTemplateDto();
+
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.maxRatingScore = item.maxRatingScore;
+      instance.isPublic = item.isPublic;
+      instance.scoutmakerv1Id = item.scoutmakerv1Id;
+      instance.skillAssessmentTemplateIds = item.skillList.split(',');
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: ReportTemplate[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId?.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
