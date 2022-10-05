@@ -71,8 +71,6 @@ export class TeamAffiliationsService {
       instance.playerId = item.playerId?.toString();
       instance.teamId = item.teamId?.toString();
 
-      console.log(instance);
-
       return instance;
     });
 
