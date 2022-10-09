@@ -1,17 +1,15 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+
+import { OptionalStringArray } from '../../../common/decorators/string-array-filter.decorator';
 
 export class FindAllCompetitionGroupsDto {
   @IsOptional()
   @IsString()
   name?: string;
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @OptionalStringArray()
   competitionIds?: string[];
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @OptionalStringArray()
   regionIds?: string[];
 }
