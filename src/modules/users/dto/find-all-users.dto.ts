@@ -1,5 +1,6 @@
-import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
+import { IsOptionalStringArray } from '../../../common/decorators/string-array-filter.decorator';
 import { UserRoleEnum } from '../types';
 
 export class FindAllUsersDto {
@@ -15,18 +16,12 @@ export class FindAllUsersDto {
   })
   role?: UserRoleEnum;
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   regionIds?: string[];
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   clubIds?: string[];
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   footballRoleIds?: string[];
 }
