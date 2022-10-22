@@ -35,7 +35,11 @@ import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FindAllReportsDto } from './dto/find-all-reports.dto';
-import { ReportDto, ReportPaginatedDataDto } from './dto/report.dto';
+import {
+  ReportBasicDataDto,
+  ReportDto,
+  ReportPaginatedDataDto,
+} from './dto/report.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { DeleteGuard } from './guards/delete.guard';
@@ -117,6 +121,17 @@ export class ReportsController {
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
     return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
+  @ApiResponse(ReportBasicDataDto, { type: 'read' })
+  @Serialize(ReportBasicDataDto)
+  async getList(@I18nLang() lang: string) {
+    const templates = await this.reportsService.getList();
+    const message = this.i18n.translate('reports.GET_LIST_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, templates);
   }
 
   @Get(':id')

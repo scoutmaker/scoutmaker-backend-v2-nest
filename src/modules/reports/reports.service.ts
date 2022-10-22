@@ -536,4 +536,8 @@ export class ReportsService {
 
     return this.prisma.report.delete({ where: { id }, include });
   }
+
+  getList() {
+    return this.prisma.report.findMany({ include });
+  }
 }

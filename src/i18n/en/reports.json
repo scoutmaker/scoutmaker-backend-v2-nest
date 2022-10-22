@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Successfully created new report no. ${docNumber}",
   "GET_ALL_MESSAGE": "Successfully fetched all reports data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all reports list",
   "GET_ONE_MESSAGE": "Successfully fetched report no. ${docNumber}",
   "UPDATE_MESSAGE": "Successfully updated report no. ${docNumber}",
   "DELETE_MESSAGE": "Successfully deleted report no. ${docNumber}",
