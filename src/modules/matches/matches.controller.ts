@@ -35,6 +35,8 @@ import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchBasicDataDto, MatchDto } from './dto/match.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { MatchesService } from './matches.service';
 
 @Controller('matches')
@@ -138,6 +140,7 @@ export class MatchesController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(MatchDto, { type: 'update' })
   @Serialize(MatchDto)
   async update(
@@ -157,6 +160,7 @@ export class MatchesController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(MatchDto, { type: 'delete' })
   @Serialize(MatchDto)
   async remove(
