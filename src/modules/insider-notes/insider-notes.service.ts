@@ -254,7 +254,10 @@ export class InsiderNotesService {
   }
 
   getList(accessFilters?: Prisma.InsiderNoteWhereInput) {
-    return this.prisma.insiderNote.findMany({ where: accessFilters, include });
+    return this.prisma.insiderNote.findMany({
+      where: accessFilters || undefined,
+      include,
+    });
   }
 
   async findOne(
