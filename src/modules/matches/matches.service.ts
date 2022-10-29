@@ -33,6 +33,7 @@ const include = Prisma.validator<Prisma.MatchInclude>()({
   competition: true,
   group: true,
   season: true,
+  author: true,
   _count: { select: { notes: true, reports: true } },
 });
 
