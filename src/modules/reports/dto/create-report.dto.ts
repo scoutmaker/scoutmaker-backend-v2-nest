@@ -19,7 +19,7 @@ class CreateReportSkillAssessmentDto {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim())
+  @Transform(({ value }) => value?.trim() || value)
   description?: string;
 
   @IsString()
