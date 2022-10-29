@@ -61,7 +61,7 @@ export class OrganizationPlayerAclService {
         include,
       });
 
-    const total = await this.prisma.userPlayerAccessControlEntry.count({
+    const total = await this.prisma.organizationPlayerAccessControlEntry.count({
       where,
     });
 
