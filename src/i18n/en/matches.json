@@ -4,5 +4,7 @@
   "GET_LIST_MESSAGE": "Successfully fetched all matches list",
   "GET_ONE_MESSAGE": "Successfully fetched match data - {homeTeamName} vs. {awayTeamName}",
   "UPDATE_MESSAGE": "Successfully updated match data - {homeTeamName} vs. {awayTeamName}",
-  "DELETE_MESSAGE": "Successfully deleted match data - {homeTeamName} vs. {awayTeamName}"
+  "DELETE_MESSAGE": "Successfully deleted match data - {homeTeamName} vs. {awayTeamName}",
+  "UPDATE_ACCESS_ERROR": "You are not authorized to update match data - {homeTeamName} vs. {awayTeamName}",
+  "DELETE_ACCESS_ERROR": "You are not authorized to delete match data - {homeTeamName} vs. {awayTeamName}"
 }
