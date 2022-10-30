@@ -525,20 +525,6 @@ export class ReportsService {
   }
 
   async remove(id: string) {
-    await Promise.all([
-      deleteIfExists(() =>
-        this.prisma.reportMeta.delete({ where: { reportId: id } }),
-      ),
-      this.prisma.userReportAccessControlEntry.deleteMany({
-        where: { reportId: id },
-      }),
-      this.prisma.organizationReportAccessControlEntry.deleteMany({
-        where: { reportId: id },
-      }),
-      this.prisma.likeReport.deleteMany({ where: { reportId: id } }),
-      this.prisma.reportSkillAssessment.deleteMany({ where: { reportId: id } }),
-    ]);
-
     return this.prisma.report.delete({ where: { id }, include });
   }
 }

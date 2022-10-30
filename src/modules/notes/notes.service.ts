@@ -450,22 +450,6 @@ export class NotesService {
   }
 
   async remove(id: string) {
-    await Promise.all([
-      deleteIfExists(() =>
-        this.prisma.noteMeta.delete({ where: { noteId: id } }),
-      ),
-      this.prisma.userNoteAccessControlEntry.deleteMany({
-        where: { noteId: id },
-      }),
-      this.prisma.organizationNoteAccessControlEntry.deleteMany({
-        where: { noteId: id },
-      }),
-      this.prisma.likeNote.deleteMany({
-        where: {
-          noteId: id,
-        },
-      }),
-    ]);
     return this.prisma.note.delete({ where: { id }, include });
   }
 }
