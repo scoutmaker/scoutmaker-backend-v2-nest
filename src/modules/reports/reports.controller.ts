@@ -124,14 +124,24 @@ export class ReportsController {
   }
 
   @Get('list')
+  @UseInterceptors(DocumentAccessFiltersInterceptor)
   @ApiResponse(ReportBasicDataDto, { type: 'read' })
   @Serialize(ReportBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const templates = await this.reportsService.getList();
+  async getList(
+    @I18nLang() lang: string,
+    @Query() query: FindAllReportsDto,
+    @CurrentUser() user: CurrentUserDto,
+    @AccessFilters() accessFilters: Prisma.ReportWhereInput,
+  ) {
+    const reports = await this.reportsService.getList(
+      query,
+      user.id,
+      accessFilters,
+    );
     const message = this.i18n.translate('reports.GET_LIST_MESSAGE', {
       lang,
     });
-    return formatSuccessResponse(message, templates);
+    return formatSuccessResponse(message, reports);
   }
 
   @Get(':id')
