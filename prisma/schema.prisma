@@ -466,7 +466,7 @@ model NoteMeta {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  note               Note              @relation(fields: [noteId], references: [id])
+  note               Note              @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId             String            @unique
   position           PlayerPosition?   @relation(fields: [positionId], references: [id])
   positionId         String?
@@ -583,7 +583,7 @@ model ReportSkillAssessment {
   // Relation fields
   template   ReportSkillAssessmentTemplate @relation(fields: [templateId], references: [id])
   templateId String
-  report     Report                        @relation(fields: [reportId], references: [id])
+  report     Report                        @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId   String
 }
 
@@ -635,7 +635,7 @@ model ReportMeta {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  report             Report            @relation(fields: [reportId], references: [id])
+  report             Report            @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId           String            @unique
   position           PlayerPosition?   @relation(fields: [positionId], references: [id])
   positionId         String?
@@ -960,7 +960,7 @@ model UserReportAccessControlEntry {
   // Relation Fields
   user     User   @relation(fields: [userId], references: [id])
   userId   String
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId String
 
   @@unique([userId, reportId])
@@ -976,7 +976,7 @@ model OrganizationReportAccessControlEntry {
   // Relation Fields
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
-  report         Report       @relation(fields: [reportId], references: [id])
+  report         Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId       String
 
   @@unique([organizationId, reportId])
@@ -992,7 +992,7 @@ model UserNoteAccessControlEntry {
   // Relation Fields
   user   User   @relation(fields: [userId], references: [id])
   userId String
-  note   Note   @relation(fields: [noteId], references: [id])
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId String
 
   @@unique([userId, noteId])
@@ -1008,7 +1008,7 @@ model OrganizationNoteAccessControlEntry {
   // Relation Fields
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
-  note           Note         @relation(fields: [noteId], references: [id])
+  note           Note         @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId         String
 
   @@unique([organizationId, noteId])
@@ -1067,7 +1067,7 @@ model LikeReport {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId String
   user     User   @relation(fields: [userId], references: [id])
   userId   String
@@ -1081,7 +1081,7 @@ model LikeNote {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  note   Note   @relation(fields: [noteId], references: [id])
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId String
   user   User   @relation(fields: [userId], references: [id])
   userId String

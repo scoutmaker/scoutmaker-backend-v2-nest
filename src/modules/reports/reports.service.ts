@@ -5,6 +5,7 @@ import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
+import { deleteIfExists } from '../../utils/deleteIfExists';
 import {
   calculateAvg,
   calculatePercentageRating,
@@ -524,16 +525,6 @@ export class ReportsService {
   }
 
   async remove(id: string) {
-    await Promise.all([
-      this.prisma.reportMeta.delete({ where: { reportId: id } }),
-      this.prisma.userReportAccessControlEntry.deleteMany({
-        where: { reportId: id },
-      }),
-      this.prisma.organizationReportAccessControlEntry.deleteMany({
-        where: { reportId: id },
-      }),
-    ]);
-
     return this.prisma.report.delete({ where: { id }, include });
   }
 }
