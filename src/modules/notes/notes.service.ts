@@ -5,7 +5,6 @@ import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
-import { deleteIfExists } from '../../utils/deleteIfExists';
 import {
   calculatePercentageRating,
   calculateSkip,
