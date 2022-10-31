@@ -85,6 +85,23 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
   },
 });
 
+const listInclude: Prisma.ReportInclude = {
+  player: {
+    include: {
+      country: true,
+      primaryPosition: true,
+      teams: { include: { team: true } },
+    },
+  },
+  author: true,
+};
+
+interface IGenerateWhereClauseArgs {
+  query: FindAllReportsDto;
+  accessFilters?: Prisma.ReportWhereInput;
+  userId?: string;
+}
+
 @Injectable()
 export class ReportsService {
   constructor(
@@ -268,9 +285,12 @@ export class ReportsService {
     };
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: ReportsPaginationOptionsDto,
-    {
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.ReportWhereInput {
+    const {
       playerIds,
       positionIds,
       matchIds,
@@ -284,25 +304,9 @@ export class ReportsService {
       hasVideo,
       isLiked,
       userId: userIdFindParam,
-    }: FindAllReportsDto,
-    userId?: string,
-    accessFilters?: Prisma.ReportWhereInput,
-  ) {
-    let sort: Prisma.ReportOrderByWithRelationInput;
+    } = query;
 
-    switch (sortBy) {
-      case 'player':
-      case 'author':
-        sort = { [sortBy]: { lastName: sortingOrder } };
-        break;
-      case 'positionPlayed':
-        sort = { meta: { position: { name: sortingOrder } } };
-      default:
-        sort = { [sortBy]: sortingOrder };
-        break;
-    }
-
-    const where: Prisma.ReportWhereInput = {
+    return {
       AND: [
         { ...accessFilters },
         {
@@ -362,6 +366,29 @@ export class ReportsService {
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: ReportsPaginationOptionsDto,
+    query: FindAllReportsDto,
+    userId?: string,
+    accessFilters?: Prisma.ReportWhereInput,
+  ) {
+    let sort: Prisma.ReportOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'player':
+      case 'author':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      case 'positionPlayed':
+        sort = { meta: { position: { name: sortingOrder } } };
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, accessFilters, userId });
 
     const reports = await this.prisma.report.findMany({
       where,
@@ -526,5 +553,15 @@ export class ReportsService {
 
   async remove(id: string) {
     return this.prisma.report.delete({ where: { id }, include });
+  }
+
+  getList(
+    query: FindAllReportsDto,
+    userId?: string,
+    accessFilters?: Prisma.ReportWhereInput,
+  ) {
+    const where = this.generateWhereClause({ query, userId, accessFilters });
+
+    return this.prisma.report.findMany({ where, include: listInclude });
   }
 }
