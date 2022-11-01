@@ -33,7 +33,11 @@ export class UpdateGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the players data to determine if they can update it
-    const player = await this.playersService.findOne(request.params.id);
+    let player;
+    if (request.params.id)
+      player = await this.playersService.findOne(request.params.id);
+    else if (request.params.slug)
+      player = await this.playersService.findOneBySlug(request.params.slug);
 
     // If user is a playmaker-scout or scout-manager, they can update all players data created by all other users except for SCOUT
     if (
