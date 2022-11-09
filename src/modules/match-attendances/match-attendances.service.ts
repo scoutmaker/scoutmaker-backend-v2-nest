@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { ObservationType, Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -19,7 +19,11 @@ export class MatchAttendancesService {
     });
   }
 
-  async goToMatch(matchId: string, userId: string) {
+  async goToMatch(
+    matchId: string,
+    userId: string,
+    observationType: ObservationType,
+  ) {
     const activeAttendance = await this.findActiveByUserId(userId);
 
     // Set current active attendance isActive flag to null
@@ -36,7 +40,7 @@ export class MatchAttendancesService {
     if (attendance) {
       return this.prisma.matchAttendance.update({
         where: { matchId_userId: { matchId, userId } },
-        data: { isActive: true },
+        data: { isActive: true, observationType },
         include,
       });
     }
@@ -47,6 +51,7 @@ export class MatchAttendancesService {
         match: { connect: { id: matchId } },
         user: { connect: { id: userId } },
         isActive: true,
+        observationType,
       },
       include,
     });

@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { ReportStatus } from '@prisma/client';
+import { ObservationType, ReportStatus } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CompetitionGroupBasicDataDto } from '../../competition-groups/dto/competition-group.dto';
@@ -152,6 +152,10 @@ export class ReportDto {
   @Expose()
   likes: LikeReportBasicDataDto[];
 
+  @Expose()
+  @ApiProperty({ enum: ObservationType })
+  observationType: ObservationType;
+
   @Transform(({ value }) =>
     plainToInstance(ReportMetaDto, value, {
       excludeExtraneousValues: true,
@@ -175,6 +179,7 @@ export class ReportPaginatedDataDto extends PickType(ReportDto, [
   'match',
   'videoDescription',
   'summary',
+  'observationType',
 ]) {
   @Transform(({ value }) =>
     plainToInstance(ReportMetaBasicDataDto, value, {
@@ -191,6 +196,7 @@ export class ReportBasicDataDto extends PickType(ReportDto, [
   'status',
   'player',
   'author',
+  'observationType',
 ]) {}
 
 export class ReportSuperBasicDataDto extends PickType(ReportDto, [

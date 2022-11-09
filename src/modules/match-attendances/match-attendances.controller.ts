@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
@@ -8,7 +16,8 @@ import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { GoToMatchDto } from './dto/go-to-match.dto';
+import { GoToMatchBodyDto } from './dto/go-to-match-body.dto';
+import { GoToMatchParamsDto } from './dto/go-to-match-params.dto';
 import { MatchAttendanceDto } from './dto/match-attendance.dto';
 import { MatchAttendancesService } from './match-attendances.service';
 
@@ -26,13 +35,15 @@ export class MatchAttendancesController {
   @Post(':matchId')
   @ApiResponse(MatchAttendanceDto, { type: 'create' })
   async goToMatch(
-    @Param() { matchId }: GoToMatchDto,
+    @Param() { matchId }: GoToMatchParamsDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
+    @Body() { observationType }: GoToMatchBodyDto,
   ) {
     const attendance = await this.matchAttendancesService.goToMatch(
       matchId,
       user.id,
+      observationType,
     );
     const message = this.i18n.translate(
       'match-attendances.GO_TO_MATCH_MESSAGE',
@@ -83,7 +94,7 @@ export class MatchAttendancesController {
   @Patch(':matchId')
   @ApiResponse(MatchAttendanceDto, { type: 'update' })
   async leaveTheMatch(
-    @Param() { matchId }: GoToMatchDto,
+    @Param() { matchId }: GoToMatchParamsDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
   ) {

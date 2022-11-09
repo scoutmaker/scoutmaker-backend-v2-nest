@@ -1,4 +1,5 @@
-import { OmitType, PickType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { ObservationType } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CompetitionGroupBasicDataDto } from '../../competition-groups/dto/competition-group.dto';
@@ -118,6 +119,10 @@ export class NoteDto {
   @Expose()
   likes: LikeNoteBasicDataDto[];
 
+  @Expose()
+  @ApiProperty({ enum: ObservationType })
+  observationType: ObservationType;
+
   @Transform(({ value }) =>
     plainToInstance(NoteMetaDto, value, {
       excludeExtraneousValues: true,
@@ -157,6 +162,7 @@ export class NoteBasicDataDto extends PickType(NoteDto, [
   'rating',
   'createdAt',
   'shirtNo',
+  'observationType',
 ]) {}
 
 export class NoteSuperBasicDataDto extends PickType(NoteDto, [

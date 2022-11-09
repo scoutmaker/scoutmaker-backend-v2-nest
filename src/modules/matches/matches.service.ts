@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Match, Prisma } from '@prisma/client';
+import { Match, Note, ObservationType, Prisma, Report } from '@prisma/client';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
@@ -27,6 +27,8 @@ interface CsvInput {
   authorId: number;
 }
 
+type ObservationTypeOnly = { observationType: ObservationType }[];
+
 const include = Prisma.validator<Prisma.MatchInclude>()({
   homeTeam: true,
   awayTeam: true,
@@ -35,6 +37,12 @@ const include = Prisma.validator<Prisma.MatchInclude>()({
   season: true,
   author: true,
   _count: { select: { notes: true, reports: true } },
+});
+
+const observationTypeInclude = Prisma.validator<Prisma.MatchInclude>()({
+  ...include,
+  notes: { select: { observationType: true } },
+  reports: { select: { observationType: true } },
 });
 
 const { group, season, ...listInclude } = include;
@@ -139,6 +147,28 @@ export class MatchesService {
     };
   }
 
+  private fillObservationType(
+    match: Match & { notes: ObservationTypeOnly; reports: ObservationTypeOnly },
+  ) {
+    if (!match.notes.length && !match.reports.length) {
+      match['observationType'] = null;
+      return;
+    }
+
+    const isVideo =
+      match.notes.some((note) => note.observationType === 'VIDEO') ||
+      match.reports.some((report) => report.observationType === 'VIDEO');
+
+    const isLive =
+      match.notes.some((note) => note.observationType === 'LIVE') ||
+      match.reports.some((report) => report.observationType === 'LIVE');
+
+    if (isVideo && isLive) match['observationType'] = 'BOTH';
+    else if (isLive) match['observationType'] = 'LIVE';
+    else if (isVideo) match['observationType'] = 'VIDEO';
+    else match['observationType'] = null;
+  }
+
   async findAll(
     { limit, page, sortBy, sortingOrder }: MatchesPaginationOptionsDto,
     query: FindAllMatchesDto,
@@ -188,8 +218,10 @@ export class MatchesService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: observationTypeInclude,
     });
+
+    matches.forEach(this.fillObservationType);
 
     const total = await this.prisma.match.count({ where });
 
@@ -208,8 +240,13 @@ export class MatchesService {
     });
   }
 
-  findOne(id: string) {
-    return this.prisma.match.findUnique({ where: { id }, include });
+  async findOne(id: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id },
+      include: observationTypeInclude,
+    });
+    this.fillObservationType(match);
+    return match;
   }
 
   update(id: string, updateMatchDto: UpdateMatchDto) {

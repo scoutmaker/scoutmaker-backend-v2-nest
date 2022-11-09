@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class GoToMatchDto {
+export class GoToMatchParamsDto {
   @IsString()
   matchId: string;
 }

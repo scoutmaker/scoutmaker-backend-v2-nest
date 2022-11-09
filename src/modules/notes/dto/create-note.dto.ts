@@ -1,5 +1,7 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+
+import { ObservationTypeEnum } from '../../../types/common';
 
 export class CreateNoteDto {
   @IsOptional()
@@ -52,4 +54,11 @@ export class CreateNoteDto {
   @IsOptional()
   @IsString()
   competitionGroupId?: string;
+
+  @IsEnum(ObservationTypeEnum, {
+    message: `Observation type must be a valid enum value. Available values: ${Object.keys(
+      ObservationTypeEnum,
+    ).join(', ')}`,
+  })
+  observationType: ObservationTypeEnum;
 }

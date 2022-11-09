@@ -1,6 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -9,6 +10,8 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+
+import { ObservationTypeEnum } from '../../../types/common';
 
 class CreateReportSkillAssessmentDto {
   @IsOptional()
@@ -125,4 +128,11 @@ export class CreateReportDto {
   @ValidateNested({ each: true })
   @Type(() => CreateReportSkillAssessmentDto)
   skillAssessments?: CreateReportSkillAssessmentDto[];
+
+  @IsEnum(ObservationTypeEnum, {
+    message: `Observation type must be a valid enum value. Available values: ${Object.keys(
+      ObservationTypeEnum,
+    ).join(', ')}`,
+  })
+  observationType: ObservationTypeEnum;
 }
