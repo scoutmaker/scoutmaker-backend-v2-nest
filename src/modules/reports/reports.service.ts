@@ -303,6 +303,8 @@ export class ReportsService {
       hasVideo,
       isLiked,
       userId: userIdFindParam,
+      likedPlayers,
+      likedTeams,
     } = query;
 
     return {
@@ -360,6 +362,20 @@ export class ReportsService {
               player: {
                 yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
               },
+            },
+            {
+              player: likedPlayers
+                ? { likes: { some: { userId } } }
+                : undefined,
+            },
+            {
+              OR: likedTeams
+                ? [
+                    { match: { homeTeam: { likes: { some: { userId } } } } },
+                    { match: { awayTeam: { likes: { some: { userId } } } } },
+                    { meta: { team: { likes: { some: { userId } } } } },
+                  ]
+                : undefined,
             },
           ],
         },
