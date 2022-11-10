@@ -208,6 +208,7 @@ export class PlayersService {
       teamIds,
       hasNote,
       hasReport,
+      hasAnyObservation,
     } = query;
 
     const slugfiedQueryString = name
@@ -305,6 +306,11 @@ export class PlayersService {
                       },
                     },
                   }
+                : undefined,
+            },
+            {
+              OR: hasAnyObservation
+                ? [{ notes: { some: {} } }, { reports: { some: {} } }]
                 : undefined,
             },
           ],
