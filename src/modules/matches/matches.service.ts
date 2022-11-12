@@ -39,6 +39,11 @@ const include = Prisma.validator<Prisma.MatchInclude>()({
 
 const { group, season, ...listInclude } = include;
 
+interface IGenerateWhereClauseArgs {
+  query: FindAllMatchesDto;
+  accessFilters?: Prisma.MatchWhereInput;
+}
+
 @Injectable()
 export class MatchesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -112,36 +117,41 @@ export class MatchesService {
   }
 
   private generateWhereClause({
-    competitionIds,
-    groupIds,
-    hasVideo,
-    seasonId,
-    orderId,
-    teamId,
-  }: FindAllMatchesDto): Prisma.MatchWhereInput {
+    query,
+    accessFilters,
+  }: IGenerateWhereClauseArgs): Prisma.MatchWhereInput {
+    const { competitionIds, groupIds, hasVideo, seasonId, orderId, teamId } =
+      query;
     return {
-      competition: isIdsArrayFilterDefined(competitionIds)
-        ? { id: { in: competitionIds } }
-        : undefined,
-      group: isIdsArrayFilterDefined(groupIds)
-        ? { id: { in: groupIds } }
-        : undefined,
-      seasonId,
-      orders: orderId ? { some: { id: orderId } } : undefined,
-      videoUrl: hasVideo ? { not: null } : undefined,
-      AND: teamId
-        ? [
-            {
-              OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
-            },
-          ]
-        : undefined,
+      AND: [
+        accessFilters,
+        {
+          competition: isIdsArrayFilterDefined(competitionIds)
+            ? { id: { in: competitionIds } }
+            : undefined,
+          group: isIdsArrayFilterDefined(groupIds)
+            ? { id: { in: groupIds } }
+            : undefined,
+          seasonId,
+          orders: orderId ? { some: { id: orderId } } : undefined,
+          videoUrl: hasVideo ? { not: null } : undefined,
+          AND: teamId
+            ? [
+                {
+                  OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
+                },
+              ]
+            : undefined,
+        },
+      ],
     };
   }
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: MatchesPaginationOptionsDto,
     query: FindAllMatchesDto,
+    accessFilters?: Prisma.MatchWhereInput,
+    observationsAccessFilters?: Prisma.NoteWhereInput | Prisma.ReportWhereInput,
   ) {
     let sort: Prisma.MatchOrderByWithRelationInput;
 
@@ -181,14 +191,28 @@ export class MatchesService {
         break;
     }
 
-    const where = this.generateWhereClause(query);
+    const where = this.generateWhereClause({ query, accessFilters });
+
+    const includeMatches: Prisma.MatchInclude = { ...include };
+    if (observationsAccessFilters) {
+      includeMatches._count = {
+        select: {
+          notes: {
+            where: observationsAccessFilters,
+          },
+          reports: {
+            where: observationsAccessFilters,
+          },
+        },
+      };
+    }
 
     const matches = await this.prisma.match.findMany({
       where,
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: includeMatches,
     });
 
     const total = await this.prisma.match.count({ where });
@@ -201,9 +225,9 @@ export class MatchesService {
     });
   }
 
-  getList(query: FindAllMatchesDto) {
+  getList(query: FindAllMatchesDto, accessFilters?: Prisma.MatchWhereInput) {
     return this.prisma.match.findMany({
-      where: this.generateWhereClause(query),
+      where: this.generateWhereClause({ query, accessFilters }),
       include: listInclude,
     });
   }

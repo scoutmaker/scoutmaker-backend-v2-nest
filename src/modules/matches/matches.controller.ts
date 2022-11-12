@@ -19,12 +19,15 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
+import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
@@ -37,6 +40,8 @@ import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dt
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { DeleteGuard } from './guards/delete.guard';
 import { UpdateGuard } from './guards/update.guard';
+import { MatchesAccessFilters } from './interceptors/access-filters.decorator';
+import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 import { MatchesService } from './matches.service';
 
 @Controller('matches')
@@ -94,15 +99,24 @@ export class MatchesController {
   }
 
   @Get()
+  @UseInterceptors(AccessFiltersInterceptor, DocumentAccessFiltersInterceptor)
   @ApiPaginatedResponse(MatchDto)
   @ApiQuery({ type: MatchesPaginationOptionsDto })
   @Serialize(MatchDto, 'docs')
   async findAll(
     @I18nLang() lang: string,
     @PaginationOptions() paginationOptions: MatchesPaginationOptionsDto,
+    @MatchesAccessFilters() accessFilters: Prisma.MatchWhereInput,
+    @AccessFilters()
+    observationsFilters: Prisma.NoteWhereInput | Prisma.ReportWhereInput,
     @Query() query: FindAllMatchesDto,
   ) {
-    const data = await this.matchesService.findAll(paginationOptions, query);
+    const data = await this.matchesService.findAll(
+      paginationOptions,
+      query,
+      accessFilters,
+      observationsFilters,
+    );
     const message = this.i18n.translate('matches.GET_ALL_MESSAGE', {
       lang,
       args: {
@@ -114,10 +128,15 @@ export class MatchesController {
   }
 
   @Get('list')
+  @UseInterceptors(AccessFiltersInterceptor)
   @ApiResponse(MatchBasicDataDto, { type: 'read' })
   @Serialize(MatchBasicDataDto)
-  async getList(@I18nLang() lang: string, @Query() query: FindAllMatchesDto) {
-    const matches = await this.matchesService.getList(query);
+  async getList(
+    @I18nLang() lang: string,
+    @Query() query: FindAllMatchesDto,
+    @MatchesAccessFilters() accessFilters: Prisma.MatchWhereInput,
+  ) {
+    const matches = await this.matchesService.getList(query, accessFilters);
     const message = this.i18n.translate('matches.GET_LIST_MESSAGE', {
       lang,
     });
