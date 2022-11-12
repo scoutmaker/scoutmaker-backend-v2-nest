@@ -80,7 +80,7 @@ export class AccessFiltersInterceptor implements NestInterceptor {
       organizationSubscriptions,
     );
 
-    const playmakerExtraAccess: Prisma.PlayerWhereInput =
+    const playmakerExtraAccess: Prisma.MatchWhereInput =
       user.role === 'PLAYMAKER_SCOUT_MANAGER'
         ? { author: { role: { not: 'SCOUT' } } }
         : {};
