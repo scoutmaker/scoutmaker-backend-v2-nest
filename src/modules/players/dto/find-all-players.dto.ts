@@ -77,4 +77,19 @@ export class FindAllPlayersDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasNote?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasReport?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasAnyObservation?: boolean;
 }
