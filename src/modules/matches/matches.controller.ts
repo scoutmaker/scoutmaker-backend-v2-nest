@@ -39,6 +39,7 @@ import { MatchBasicDataDto, MatchDto } from './dto/match.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { DeleteGuard } from './guards/delete.guard';
+import { ReadGuard } from './guards/read.guard';
 import { UpdateGuard } from './guards/update.guard';
 import { MatchesAccessFilters } from './interceptors/access-filters.decorator';
 import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
@@ -144,6 +145,7 @@ export class MatchesController {
   }
 
   @Get(':id')
+  @UseGuards(ReadGuard)
   @ApiResponse(MatchDto, { type: 'read' })
   @Serialize(MatchDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
