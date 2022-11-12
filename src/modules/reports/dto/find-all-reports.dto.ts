@@ -91,10 +91,10 @@ export class FindAllReportsDto {
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
-  likedTeams?: boolean;
+  onlyLikedTeams?: boolean;
 
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
-  likedPlayers?: boolean;
+  onlyLikedPlayers?: boolean;
 }

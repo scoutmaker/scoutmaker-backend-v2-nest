@@ -303,8 +303,8 @@ export class ReportsService {
       hasVideo,
       isLiked,
       userId: userIdFindParam,
-      likedPlayers,
-      likedTeams,
+      onlyLikedPlayers,
+      onlyLikedTeams,
     } = query;
 
     return {
@@ -364,17 +364,13 @@ export class ReportsService {
               },
             },
             {
-              player: likedPlayers
+              player: onlyLikedPlayers
                 ? { likes: { some: { userId } } }
                 : undefined,
             },
             {
-              OR: likedTeams
-                ? [
-                    { match: { homeTeam: { likes: { some: { userId } } } } },
-                    { match: { awayTeam: { likes: { some: { userId } } } } },
-                    { meta: { team: { likes: { some: { userId } } } } },
-                  ]
+              meta: onlyLikedTeams
+                ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
           ],

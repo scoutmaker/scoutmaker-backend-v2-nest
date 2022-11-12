@@ -206,8 +206,8 @@ export class NotesService {
       playerBornBefore,
       isLiked,
       userId: userIdFindParam,
-      likedPlayers,
-      likedTeams,
+      onlyLikedPlayers,
+      onlyLikedTeams,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -290,17 +290,13 @@ export class NotesService {
               },
             },
             {
-              player: likedPlayers
+              player: onlyLikedPlayers
                 ? { likes: { some: { userId } } }
                 : undefined,
             },
             {
-              OR: likedTeams
-                ? [
-                    { match: { homeTeam: { likes: { some: { userId } } } } },
-                    { match: { awayTeam: { likes: { some: { userId } } } } },
-                    { meta: { team: { likes: { some: { userId } } } } },
-                  ]
+              meta: onlyLikedTeams
+                ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
           ],
