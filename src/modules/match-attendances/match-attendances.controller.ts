@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags, PickType } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -16,10 +16,12 @@ import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { GoToMatchBodyDto } from './dto/go-to-match-body.dto';
-import { GoToMatchParamsDto } from './dto/go-to-match-params.dto';
+import { CreateMatchAttendanceDto } from './dto/create-match-attendance.dto';
 import { MatchAttendanceDto } from './dto/match-attendance.dto';
 import { MatchAttendancesService } from './match-attendances.service';
+
+class ParamsDto extends PickType(CreateMatchAttendanceDto, ['matchId']) {}
+class BodyDto extends PickType(CreateMatchAttendanceDto, ['observationType']) {}
 
 @Controller('match-attendances')
 @ApiTags('match attendances')
@@ -35,10 +37,10 @@ export class MatchAttendancesController {
   @Post(':matchId')
   @ApiResponse(MatchAttendanceDto, { type: 'create' })
   async goToMatch(
-    @Param() { matchId }: GoToMatchParamsDto,
+    @Param() { matchId }: ParamsDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
-    @Body() { observationType }: GoToMatchBodyDto,
+    @Body() { observationType }: BodyDto,
   ) {
     const attendance = await this.matchAttendancesService.goToMatch(
       matchId,
@@ -94,7 +96,7 @@ export class MatchAttendancesController {
   @Patch(':matchId')
   @ApiResponse(MatchAttendanceDto, { type: 'update' })
   async leaveTheMatch(
-    @Param() { matchId }: GoToMatchParamsDto,
+    @Param() { matchId }: ParamsDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
   ) {
