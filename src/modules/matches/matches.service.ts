@@ -147,12 +147,12 @@ export class MatchesService {
     };
   }
 
-  private fillObservationType(
-    match: Match & { notes: ObservationTypeOnly; reports: ObservationTypeOnly },
+  private fillObservationType<T>(
+    match: T &
+      Match & { notes: ObservationTypeOnly; reports: ObservationTypeOnly },
   ) {
     if (!match.notes.length && !match.reports.length) {
-      match['observationType'] = null;
-      return;
+      return { ...match, observationType: null };
     }
 
     const isVideo =
@@ -163,10 +163,12 @@ export class MatchesService {
       match.notes.some((note) => note.observationType === 'LIVE') ||
       match.reports.some((report) => report.observationType === 'LIVE');
 
-    if (isVideo && isLive) match['observationType'] = 'BOTH';
-    else if (isLive) match['observationType'] = 'LIVE';
-    else if (isVideo) match['observationType'] = 'VIDEO';
-    else match['observationType'] = null;
+    let observationType: ObservationType | 'BOTH' = null;
+    if (isVideo && isLive) observationType = 'BOTH';
+    else if (isLive) observationType = 'LIVE';
+    else if (isVideo) observationType = 'VIDEO';
+
+    return { ...match, observationType };
   }
 
   async findAll(
@@ -220,13 +222,11 @@ export class MatchesService {
       orderBy: sort,
       include: observationTypeInclude,
     });
-
-    matches.forEach(this.fillObservationType);
-
     const total = await this.prisma.match.count({ where });
 
+    const finalMatches = matches.map(this.fillObservationType);
     return formatPaginatedResponse({
-      docs: matches,
+      docs: finalMatches,
       totalDocs: total,
       limit,
       page,
@@ -245,8 +245,7 @@ export class MatchesService {
       where: { id },
       include: observationTypeInclude,
     });
-    this.fillObservationType(match);
-    return match;
+    return this.fillObservationType(match);
   }
 
   update(id: string, updateMatchDto: UpdateMatchDto) {
