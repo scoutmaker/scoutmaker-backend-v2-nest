@@ -129,10 +129,11 @@ export class CreateReportDto {
   @Type(() => CreateReportSkillAssessmentDto)
   skillAssessments?: CreateReportSkillAssessmentDto[];
 
+  @IsOptional()
   @IsEnum(ObservationTypeEnum, {
     message: `Observation type must be a valid enum value. Available values: ${Object.keys(
       ObservationTypeEnum,
     ).join(', ')}`,
   })
-  observationType: ObservationTypeEnum;
+  observationType?: ObservationTypeEnum;
 }
