@@ -31,6 +31,13 @@ const include: Prisma.TeamInclude = {
     include: { competition: true, group: true, season: true },
   },
 };
+
+interface IGenerateWhereClauseArgs {
+  query: FindAllTeamsDto;
+  accessFilters?: Prisma.TeamWhereInput;
+  userId?: string;
+}
+
 @Injectable()
 export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -99,9 +106,12 @@ export class TeamsService {
     };
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
-    {
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.TeamWhereInput {
+    const {
       name,
       clubId,
       regionIds,
@@ -109,34 +119,13 @@ export class TeamsService {
       isLiked,
       competitionIds,
       competitionGroupIds,
-    }: FindAllTeamsDto,
-    userId?: string,
-  ) {
-    let sort: Prisma.TeamOrderByWithRelationInput;
-
-    switch (sortBy) {
-      case 'name':
-        sort = { name: sortingOrder };
-        break;
-      case 'clubId':
-        sort = { club: { name: sortingOrder } };
-        break;
-      case 'regionId':
-        sort = { club: { region: { name: sortingOrder } } };
-        break;
-      case 'countryId':
-        sort = { club: { country: { name: sortingOrder } } };
-        break;
-      default:
-        sort = undefined;
-        break;
-    }
+    } = query;
 
     const slugifiedQueryString = name
       ? slugify(name, { lower: true })
       : undefined;
 
-    const where: Prisma.TeamWhereInput = {
+    return {
       OR: name
         ? [
             {
@@ -180,6 +169,34 @@ export class TeamsService {
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
+    query: FindAllTeamsDto,
+    userId?: string,
+  ) {
+    let sort: Prisma.TeamOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'name':
+        sort = { name: sortingOrder };
+        break;
+      case 'clubId':
+        sort = { club: { name: sortingOrder } };
+        break;
+      case 'regionId':
+        sort = { club: { region: { name: sortingOrder } } };
+        break;
+      case 'countryId':
+        sort = { club: { country: { name: sortingOrder } } };
+        break;
+      default:
+        sort = undefined;
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, userId });
 
     const teams = await this.prisma.team.findMany({
       where,
@@ -206,8 +223,14 @@ export class TeamsService {
     });
   }
 
-  getList() {
-    return this.prisma.team.findMany();
+  getList(
+    query: FindAllTeamsDto,
+    userId?: string,
+    accessFilters?: Prisma.TeamWhereInput,
+  ) {
+    const where = this.generateWhereClause({ query, userId, accessFilters });
+
+    return this.prisma.team.findMany({ where });
   }
 
   findOne(id: string, userId?: string) {
