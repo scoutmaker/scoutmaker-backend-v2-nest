@@ -285,9 +285,15 @@ export class NotesService {
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player:
+                playerBornAfter || playerBornBefore
+                  ? {
+                      yearOfBirth: {
+                        gte: playerBornAfter,
+                        lte: playerBornBefore,
+                      },
+                    }
+                  : undefined,
             },
             {
               player: onlyLikedPlayers
