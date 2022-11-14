@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Match, Note, ObservationType, Prisma, Report } from '@prisma/client';
+import { Match, ObservationType, Prisma } from '@prisma/client';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
