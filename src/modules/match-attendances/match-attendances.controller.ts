@@ -1,13 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiCookieAuth, ApiTags, PickType } from '@nestjs/swagger';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -20,9 +12,6 @@ import { CreateMatchAttendanceDto } from './dto/create-match-attendance.dto';
 import { MatchAttendanceDto } from './dto/match-attendance.dto';
 import { MatchAttendancesService } from './match-attendances.service';
 
-class ParamsDto extends PickType(CreateMatchAttendanceDto, ['matchId']) {}
-class BodyDto extends PickType(CreateMatchAttendanceDto, ['observationType']) {}
-
 @Controller('match-attendances')
 @ApiTags('match attendances')
 @UseGuards(AuthGuard)
@@ -34,13 +23,12 @@ export class MatchAttendancesController {
     private readonly i18n: I18nService,
   ) {}
 
-  @Post(':matchId')
+  @Post()
   @ApiResponse(MatchAttendanceDto, { type: 'create' })
   async goToMatch(
-    @Param() { matchId }: ParamsDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
-    @Body() { observationType }: BodyDto,
+    @Body() { observationType, matchId }: CreateMatchAttendanceDto,
   ) {
     const attendance = await this.matchAttendancesService.goToMatch(
       matchId,
@@ -93,15 +81,13 @@ export class MatchAttendancesController {
     return formatSuccessResponse(message, attendance);
   }
 
-  @Patch(':matchId')
+  @Patch()
   @ApiResponse(MatchAttendanceDto, { type: 'update' })
   async leaveTheMatch(
-    @Param() { matchId }: ParamsDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
   ) {
     const attendance = await this.matchAttendancesService.leaveTheMatch(
-      matchId,
       user.id,
     );
 

@@ -57,9 +57,9 @@ export class MatchAttendancesService {
     });
   }
 
-  leaveTheMatch(matchId: string, userId: string) {
+  leaveTheMatch(userId: string) {
     return this.prisma.matchAttendance.update({
-      where: { matchId_userId: { matchId, userId } },
+      where: { userId_isActive: { userId, isActive: true } },
       data: { isActive: null },
       include,
     });
