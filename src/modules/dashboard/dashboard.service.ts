@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { FormattedSubscription } from '../../types/formatted-subscription';
+import { CompetitionBasicDataDto } from '../competitions/dto/competition.dto';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
@@ -326,7 +327,11 @@ export class DashboardService {
       include: {
         player: true,
         match: {
-          include: { homeTeam: true, awayTeam: true, competition: true },
+          include: {
+            homeTeam: true,
+            awayTeam: true,
+            competition: { include: { country: true } },
+          },
         },
       },
     });
@@ -337,8 +342,8 @@ export class DashboardService {
     data.observedMatches = matches;
 
     // what to do, in other modules types are not fully the same - if you see this I forgot to ask
-    data.topNotes = topNotes as any;
-    data.topReports = topReports as any;
+    data.topNotes = topNotes;
+    data.topReports = topReports;
 
     return data;
   }

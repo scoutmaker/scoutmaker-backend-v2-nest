@@ -1,8 +1,11 @@
 import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
-import { NoteBasicDataDto } from '../../notes/dto/note.dto';
-import { PlayerDto } from '../../players/dto/player.dto';
+import { NoteDto } from '../../notes/dto/note.dto';
+import {
+  PlayerDto,
+  PlayerSuperBasicDataDto,
+} from '../../players/dto/player.dto';
 import { ReportDto } from '../../reports/dto/report.dto';
 
 class organizationInfo {
@@ -13,9 +16,9 @@ class organizationInfo {
 class DashboardReportDataDto extends PickType(ReportDto, [
   'id',
   'player',
-  'match',
   'createdAt',
   'finalRating',
+  'match',
 ]) {}
 
 class DashboardPlayerDataDto extends PickType(PlayerDto, [
@@ -24,6 +27,17 @@ class DashboardPlayerDataDto extends PickType(PlayerDto, [
   'lastName',
 ]) {
   averageRating: number;
+}
+
+class DashboardNoteDataDto extends PickType(NoteDto, [
+  'id',
+  'docNumber',
+  'description',
+  'rating',
+  'createdAt',
+  'shirtNo',
+]) {
+  player?: PlayerSuperBasicDataDto;
 }
 
 export class DashboardDataDto {
@@ -55,12 +69,12 @@ export class DashboardDataDto {
   observerdPlayers?: number;
 
   @Transform(({ value }) =>
-    plainToInstance(NoteBasicDataDto, value, {
+    plainToInstance(DashboardNoteDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  topNotes?: NoteBasicDataDto[];
+  topNotes?: DashboardNoteDataDto[];
 
   @Transform(({ value }) =>
     plainToInstance(DashboardReportDataDto, value, {
