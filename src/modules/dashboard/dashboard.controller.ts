@@ -9,7 +9,7 @@ import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { DashboardService } from './dashboard.service';
-import { DashboardDataDto } from './dto/dashboard.dto';
+import { DashboardDto } from './dto/dashboard.dto';
 
 @Controller('dashboard')
 @ApiTags('dashboard')
@@ -22,8 +22,8 @@ export class DashboardController {
   ) {}
 
   @Get()
-  @ApiResponse(DashboardDataDto, { type: 'read' })
-  @Serialize(DashboardDataDto)
+  @ApiResponse(DashboardDto, { type: 'read' })
+  @Serialize(DashboardDto)
   async getData(@CurrentUser() user: CurrentUserDto, @I18nLang() lang: string) {
     const data = await this.dashboardService.getData(user);
 
