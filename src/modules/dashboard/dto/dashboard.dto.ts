@@ -2,18 +2,15 @@ import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { NoteDto } from '../../notes/dto/note.dto';
-import {
-  PlayerDto,
-  PlayerSuperBasicDataDto,
-} from '../../players/dto/player.dto';
+import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { ReportDto } from '../../reports/dto/report.dto';
 
-class organizationInfo {
+class OrganizationInfoDto {
   name: string;
   sharedInfo: number;
 }
 
-class DashboardReportDataDto extends PickType(ReportDto, [
+class DashboardReportDto extends PickType(ReportDto, [
   'id',
   'player',
   'createdAt',
@@ -21,15 +18,11 @@ class DashboardReportDataDto extends PickType(ReportDto, [
   'match',
 ]) {}
 
-class DashboardPlayerDataDto extends PickType(PlayerDto, [
-  'id',
-  'firstName',
-  'lastName',
-]) {
+class DashboardPlayerDto extends PlayerSuperBasicDataDto {
   averageRating: number;
 }
 
-class DashboardNoteDataDto extends PickType(NoteDto, [
+class DashboardNoteDto extends PickType(NoteDto, [
   'id',
   'docNumber',
   'description',
@@ -40,7 +33,7 @@ class DashboardNoteDataDto extends PickType(NoteDto, [
   player?: PlayerSuperBasicDataDto;
 }
 
-export class DashboardDataDto {
+export class DashboardDto {
   @Expose()
   reports?: number;
 
@@ -60,7 +53,7 @@ export class DashboardDataDto {
   observedMatchesRatio?: number;
 
   @Expose()
-  organizations?: organizationInfo[];
+  organizations?: OrganizationInfoDto[];
 
   @Expose()
   scouts?: number;
@@ -69,26 +62,26 @@ export class DashboardDataDto {
   observerdPlayers?: number;
 
   @Transform(({ value }) =>
-    plainToInstance(DashboardNoteDataDto, value, {
+    plainToInstance(DashboardNoteDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  topNotes?: DashboardNoteDataDto[];
+  topNotes?: DashboardNoteDto[];
 
   @Transform(({ value }) =>
-    plainToInstance(DashboardReportDataDto, value, {
+    plainToInstance(DashboardReportDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  topReports?: DashboardReportDataDto[];
+  topReports?: DashboardReportDto[];
 
   @Transform(({ value }) =>
-    plainToInstance(DashboardPlayerDataDto, value, {
+    plainToInstance(DashboardPlayerDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  topPlayers?: DashboardPlayerDataDto[];
+  topPlayers?: DashboardPlayerDto[];
 }
