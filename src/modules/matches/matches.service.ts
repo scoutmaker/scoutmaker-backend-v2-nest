@@ -147,10 +147,9 @@ export class MatchesService {
     };
   }
 
-  private fillObservationType<T>(
-    match: T &
-      Match & { notes: ObservationTypeOnly; reports: ObservationTypeOnly },
-  ) {
+  private fillObservationType<
+    T extends { notes: ObservationTypeOnly; reports: ObservationTypeOnly },
+  >(match: T): T & { observationType: ObservationType | 'BOTH' } {
     if (!match.notes.length && !match.reports.length) {
       return { ...match, observationType: null };
     }
