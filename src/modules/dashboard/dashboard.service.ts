@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { FormattedSubscription } from '../../types/formatted-subscription';
-import { CompetitionBasicDataDto } from '../competitions/dto/competition.dto';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { DashboardDataDto } from './dto/dashboard.dto';
+import { DashboardDto } from './dto/dashboard.dto';
 
 @Injectable()
 export class DashboardService {
@@ -21,7 +20,7 @@ export class DashboardService {
 
   // PM-ScoutManager | ADMIN
   private async getPriviledgedData(user: CurrentUserDto) {
-    const data: DashboardDataDto = {};
+    const data: DashboardDto = {};
 
     const today = new Date();
     const monthAgoDate = new Date(
@@ -262,12 +261,13 @@ export class DashboardService {
   }
 
   private async getScoutOrganizationData(user: CurrentUserDto) {
-    const data: DashboardDataDto = {};
+    const data: DashboardDto = {};
     const organizationSubscriptions =
       await this.organizationSubscriptionsService.getFormattedForSingleOrganization(
         user.organizationId,
       );
 
+    // get subscriptions filters
     const observationsSubscribed = this.transformObservationSubscriptions(
       organizationSubscriptions,
     );
@@ -278,7 +278,8 @@ export class DashboardService {
       organizationSubscriptions,
     );
 
-    const scouts = await this.prisma.user.count({
+    // get data
+    const scoutsPromise = this.prisma.user.count({
       where: {
         OR: [
           {
@@ -295,7 +296,7 @@ export class DashboardService {
       },
     });
 
-    const players = await this.prisma.player.count({
+    const playersPromise = this.prisma.player.count({
       where: {
         AND: [
           { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
@@ -304,11 +305,16 @@ export class DashboardService {
       },
     });
 
-    const matches = await this.prisma.match.count({
-      where: matchesSubscribed,
+    const matchesPromise = this.prisma.match.count({
+      where: {
+        AND: [
+          { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
+          matchesSubscribed,
+        ],
+      },
     });
 
-    const topNotes = await this.prisma.note.findMany({
+    const topNotesPromise = this.prisma.note.findMany({
       where: { AND: [{ rating: { in: [3, 4] } }, observationsSubscribed] },
       orderBy: { createdAt: 'desc' },
       take: 5,
@@ -320,7 +326,7 @@ export class DashboardService {
       },
     });
 
-    const topReports = await this.prisma.report.findMany({
+    const topReportsPromise = this.prisma.report.findMany({
       where: { AND: [{ finalRating: { in: [3, 4] } }, observationsSubscribed] },
       orderBy: { createdAt: 'desc' },
       take: 5,
@@ -336,12 +342,19 @@ export class DashboardService {
       },
     });
 
+    const [scouts, players, matches, topNotes, topReports] = await Promise.all([
+      scoutsPromise,
+      playersPromise,
+      matchesPromise,
+      topNotesPromise,
+      topReportsPromise,
+    ]);
+
     // include data
     data.scouts = scouts;
     data.observerdPlayers = players;
     data.observedMatches = matches;
 
-    // what to do, in other modules types are not fully the same - if you see this I forgot to ask
     data.topNotes = topNotes;
     data.topReports = topReports;
 
