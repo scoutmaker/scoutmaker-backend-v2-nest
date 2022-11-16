@@ -276,12 +276,8 @@ export class NotesService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
