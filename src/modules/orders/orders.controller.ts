@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -33,7 +33,7 @@ import { OrdersService } from './orders.service';
   AuthGuard,
   new RoleGuard(['ADMIN', 'PLAYMAKER_SCOUT', 'PLAYMAKER_SCOUT_MANAGER']),
 )
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,

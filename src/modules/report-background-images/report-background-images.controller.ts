@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -28,7 +28,7 @@ import { ReportBackgroundImagesService } from './report-background-images.servic
 @Controller('report-background-images')
 @ApiTags('report background images')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class ReportBackgroundImagesController {
   constructor(
     private readonly reportBackgroundImagesService: ReportBackgroundImagesService,

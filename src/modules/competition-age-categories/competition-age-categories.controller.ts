@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,7 +38,7 @@ import { UpdateCompetitionAgeCategoryDto } from './dto/update-competition-age-ca
 @Controller('competition-age-categories')
 @ApiTags('competition age categories')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class CompetitionAgeCategoriesController {
   constructor(
     private readonly ageCategoriesService: CompetitionAgeCategoriesService,

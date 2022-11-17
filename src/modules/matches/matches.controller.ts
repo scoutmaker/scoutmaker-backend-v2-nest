@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -42,7 +42,7 @@ import { MatchesService } from './matches.service';
 @Controller('matches')
 @ApiTags('matches')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class MatchesController {
   constructor(
     private readonly matchesService: MatchesService,

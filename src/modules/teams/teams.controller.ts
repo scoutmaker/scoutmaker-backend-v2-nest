@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -40,7 +40,7 @@ import { TeamsService } from './teams.service';
 @Controller('teams')
 @ApiTags('teams')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class TeamsController {
   constructor(
     private readonly teamsService: TeamsService,
