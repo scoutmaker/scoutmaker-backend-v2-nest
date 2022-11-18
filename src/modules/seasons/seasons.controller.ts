@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -39,7 +39,7 @@ import { SeasonsService } from './seasons.service';
 @Controller('seasons')
 @ApiTags('seasons')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class SeasonsController {
   constructor(
     private readonly seasonsService: SeasonsService,

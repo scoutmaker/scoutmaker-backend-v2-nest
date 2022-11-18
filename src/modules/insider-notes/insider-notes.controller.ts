@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -49,7 +49,7 @@ import { InsiderNotesService } from './insider-notes.service';
 @Controller('insider-notes')
 @ApiTags('insider notes')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class InsiderNotesController {
   constructor(
     private readonly insiderNotesService: InsiderNotesService,

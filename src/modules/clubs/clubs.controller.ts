@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -40,7 +40,7 @@ import { UpdateClubDto } from './dto/update-club.dto';
 @Controller('clubs')
 @ApiTags('clubs')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class ClubsController {
   constructor(
     private readonly clubsService: ClubsService,
