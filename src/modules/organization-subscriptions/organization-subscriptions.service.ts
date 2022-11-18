@@ -27,6 +27,14 @@ export class OrganizationSubscriptionsService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
+  private getFormattedRedisKey(organizationId: string) {
+    return `organization:${organizationId}:subscriptions`;
+  }
+
+  private async deleteFormattedFromCache(organizationId: string) {
+    await this.redis.del(this.getFormattedRedisKey(organizationId));
+  }
+
   create(createOrganizationSubscriptionDto: CreateOrganizationSubscriptionDto) {
     const {
       competitionIds,
@@ -35,6 +43,8 @@ export class OrganizationSubscriptionsService {
       startDate,
       endDate,
     } = createOrganizationSubscriptionDto;
+
+    this.deleteFormattedFromCache(organizationId);
 
     return this.prisma.organizationSubscription.create({
       data: {
@@ -123,8 +133,15 @@ export class OrganizationSubscriptionsService {
     id: string,
     updateOrganizationSubscriptionDto: UpdateOrganizationSubscriptionDto,
   ) {
-    const { startDate, endDate, competitionIds, competitionGroupIds } =
-      updateOrganizationSubscriptionDto;
+    const {
+      startDate,
+      endDate,
+      competitionIds,
+      competitionGroupIds,
+      organizationId,
+    } = updateOrganizationSubscriptionDto;
+
+    this.deleteFormattedFromCache(organizationId);
 
     const shouldUpdateCompetitions =
       competitionIds && competitionIds.length > 0;
@@ -180,8 +197,7 @@ export class OrganizationSubscriptionsService {
       return null;
     }
 
-    const redisKey = `organization:${organizationId}:subscriptions`;
-
+    const redisKey = this.getFormattedRedisKey(organizationId);
     const cachedSubscriptions = await this.redis.get(redisKey);
 
     if (cachedSubscriptions) {
@@ -228,9 +244,14 @@ export class OrganizationSubscriptionsService {
     await this.prisma.competitionGroupsOnOrganizationSubscriptions.deleteMany({
       where: { subscriptionId: id },
     });
-    return this.prisma.organizationSubscription.delete({
-      where: { id },
-      include,
-    });
+
+    const deletedSubscription =
+      await this.prisma.organizationSubscription.delete({
+        where: { id },
+        include,
+      });
+
+    await this.deleteFormattedFromCache(deletedSubscription.organizationId);
+    return deletedSubscription;
   }
 }
