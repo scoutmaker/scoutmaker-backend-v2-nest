@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -39,7 +39,7 @@ import { OrganizationsService } from './organizations.service';
 @Controller('organizations')
 @ApiTags('organizations')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class OrganizationsController {
   constructor(
     private readonly organizationsService: OrganizationsService,

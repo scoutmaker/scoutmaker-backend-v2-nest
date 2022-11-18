@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -40,7 +40,7 @@ import { ReportSkillAssessmentCategoriesService } from './report-skill-assessmen
 @Controller('report-skill-assessment-categories')
 @ApiTags('report skill assessment categories')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class ReportSkillAssessmentCategoriesController {
   constructor(
     private readonly categoriesService: ReportSkillAssessmentCategoriesService,

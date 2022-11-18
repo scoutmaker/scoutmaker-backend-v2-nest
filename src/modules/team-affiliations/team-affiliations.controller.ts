@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,7 +38,7 @@ import { TeamAffiliationsService } from './team-affiliations.service';
 @Controller('team-affiliations')
 @ApiTags('team affiliations')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class TeamAffiliationsController {
   constructor(
     private readonly teamAffiliationsService: TeamAffiliationsService,

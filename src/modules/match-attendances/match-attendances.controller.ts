@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -15,7 +15,7 @@ import { MatchAttendancesService } from './match-attendances.service';
 @Controller('match-attendances')
 @ApiTags('match attendances')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 @Serialize(MatchAttendanceDto)
 export class MatchAttendancesController {
   constructor(

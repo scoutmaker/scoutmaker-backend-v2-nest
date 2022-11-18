@@ -1,5 +1,5 @@
 import { Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -15,7 +15,7 @@ import { FollowScoutsService } from './follow-scouts.service';
 @Controller('follow-scouts')
 @ApiTags('follow scouts')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 @Serialize(FollowScoutDto)
 export class FollowScoutsController {
   constructor(
