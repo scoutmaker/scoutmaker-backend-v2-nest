@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 
-import { FormattedSubscription } from '../../types/formatted-subscription';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { DashboardDto } from './dto/dashboard.dto';
+import {
+  transformMatchSubscriptions,
+  transformObservationSubscriptions,
+  transformPlayerSubscriptions,
+} from './transform-subscriptions';
 
 @Injectable()
 export class DashboardService {
@@ -14,29 +18,41 @@ export class DashboardService {
     private readonly organizationSubscriptionsService: OrganizationSubscriptionsService,
   ) {}
 
-  private getPrecentage(x, total) {
-    return +((x / total) * 100).toFixed();
+  private getPrecentage(value, total) {
+    if (!value && !total) return 0;
+    return +((value / total) * 100).toFixed();
   }
 
-  // PM-ScoutManager | ADMIN
-  private async getPriviledgedData(user: CurrentUserDto) {
-    const data: DashboardDto = {};
+  // PM-ScoutManager | ADMIN | 'SCOUT'
+  private async getScoutData(user: CurrentUserDto) {
+    const data: DashboardDto = { user };
 
     const today = new Date();
     const monthAgoDate = new Date(
       new Date().setDate(today.getDate() - 30),
     ).toISOString();
 
+    const rolesScope: UserRole[] =
+      user.role === 'SCOUT'
+        ? ['SCOUT']
+        : ['PLAYMAKER_SCOUT', 'ADMIN', 'PLAYMAKER_SCOUT_MANAGER'];
+
     const lastObservationsWhere:
       | Prisma.NoteWhereInput
-      | Prisma.ReportWhereInput
-      | Prisma.MatchWhereInput = {
+      | Prisma.ReportWhereInput = {
       createdAt: { gte: monthAgoDate },
       author: {
         role: {
-          in: ['PLAYMAKER_SCOUT', 'ADMIN', 'PLAYMAKER_SCOUT_MANAGER'],
+          in: rolesScope,
         },
       },
+    };
+
+    const lastUserObserevationsWhere:
+      | Prisma.NoteWhereInput
+      | Prisma.ReportWhereInput = {
+      createdAt: { gte: monthAgoDate },
+      authorId: user.id,
     };
 
     // reports
@@ -62,7 +78,7 @@ export class DashboardService {
     });
 
     // matches
-    const observedMatchesPromise = this.prisma.match.count({
+    const userMatchesPromise = this.prisma.match.count({
       where: {
         OR: [
           { notes: { some: { authorId: user.id } } },
@@ -70,25 +86,34 @@ export class DashboardService {
         ],
       },
     });
-    const lastObservedMatchesPromise = this.prisma.match.count({
+
+    const lastUserMatchesPromise = this.prisma.match.count({
       where: {
-        createdAt: { gte: monthAgoDate },
         OR: [
-          { notes: { some: { authorId: user.id } } },
-          { reports: { some: { authorId: user.id } } },
+          {
+            notes: { some: lastUserObserevationsWhere },
+          },
+          {
+            reports: { some: lastUserObserevationsWhere },
+          },
         ],
       },
     });
-    const lastAddedMatchesPromise = this.prisma.match.count({
-      where: lastObservationsWhere,
+    const lastMatchesPromise = this.prisma.match.count({
+      where: {
+        OR: [
+          { notes: { some: lastObservationsWhere } },
+          { reports: { some: lastObservationsWhere } },
+        ],
+      },
     });
 
     const [
       userReports,
       userNotes,
-      observedMatches,
-      lastObservedMatches,
-      lastAddedMatches,
+      userMatches,
+      lastUserMatches,
+      lastMatches,
       lastReports,
       lastNotes,
       lastUserReports,
@@ -96,9 +121,9 @@ export class DashboardService {
     ] = await Promise.all([
       userReportsPromise,
       userNotesPromise,
-      observedMatchesPromise,
-      lastObservedMatchesPromise,
-      lastAddedMatchesPromise,
+      userMatchesPromise,
+      lastUserMatchesPromise,
+      lastMatchesPromise,
       lastReportsPromise,
       lastNotesPromise,
       lastUserReportsPromise,
@@ -112,10 +137,10 @@ export class DashboardService {
     data.notes = userNotes;
     data.notesRatio = this.getPrecentage(lastUserNotes, lastNotes);
 
-    data.observedMatches = observedMatches;
+    data.observedMatches = userMatches;
     data.observedMatchesRatio = this.getPrecentage(
-      lastObservedMatches,
-      lastAddedMatches,
+      lastUserMatches,
+      lastMatches,
     );
 
     return data;
@@ -123,8 +148,8 @@ export class DashboardService {
 
   // PlayMaker-Scout
   private async getPMData(user: CurrentUserDto) {
-    const [data, organizations] = await Promise.all([
-      this.getPriviledgedData(user),
+    const [data, sharedAclOrganizations] = await Promise.all([
+      this.getScoutData(user),
       this.prisma.organization.findMany({
         where: {
           OR: [
@@ -138,143 +163,51 @@ export class DashboardService {
             },
           ],
         },
+        include: {
+          noteAccessControlList: {
+            include: { note: true },
+            where: { note: { authorId: user.id } },
+          },
+          reportAccessControlList: {
+            include: { report: true },
+            where: { report: { authorId: user.id } },
+          },
+        },
       }),
     ]);
 
-    const organizationIds = organizations.map((o) => o.id);
-    const observationsWhere: Prisma.NoteWhereInput | Prisma.ReportWhereInput = {
-      organizationAccessControlList: {
-        some: { organizationId: { in: organizationIds } },
-      },
-    };
+    // Is missing matches shared with subscriptions
+    data.organizations = sharedAclOrganizations.map((org) => {
+      const observedMatchIds = new Set<string>();
 
-    const matches = await this.prisma.match.findMany({
-      where: {
-        OR: [
-          { notes: { some: observationsWhere } },
-          { reports: { some: observationsWhere } },
-        ],
-      },
-      include: {
-        notes: {
-          where: observationsWhere,
-          include: { organizationAccessControlList: true },
-        },
-        reports: {
-          where: observationsWhere,
-          include: { organizationAccessControlList: true },
-        },
-      },
-    });
-
-    data.organizations = organizations.map((o) => {
-      const sharedMatches = matches.filter(
-        (m) =>
-          m.notes.some((n) =>
-            n.organizationAccessControlList.some(
-              (acl) => acl.organizationId === o.id,
-            ),
-          ) ||
-          m.reports.some((r) =>
-            r.organizationAccessControlList.some(
-              (acl) => acl.organizationId === o.id,
-            ),
-          ),
-      );
-
-      return { name: o.name, sharedInfo: sharedMatches.length };
+      org.noteAccessControlList.forEach((noteAce) => {
+        if (noteAce.note.matchId) observedMatchIds.add(noteAce.note.matchId);
+      });
+      org.reportAccessControlList.forEach((reportAce) => {
+        if (reportAce.report.matchId)
+          observedMatchIds.add(reportAce.report.matchId);
+      });
+      return { name: org.name, sharedInfo: observedMatchIds.size };
     });
 
     return data;
   }
 
-  private transformObservationSubscriptions(
-    subscriptions: FormattedSubscription[],
-  ): Prisma.NoteWhereInput | Prisma.ReportWhereInput {
-    return {
-      OR: subscriptions.map(
-        ({ competitions, startDate, competitionGroups, endDate }) => ({
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-          meta: {
-            OR: [
-              { competitionId: { in: competitions } },
-              { competitionGroupId: { in: competitionGroups } },
-            ],
-          },
-        }),
-      ),
-    };
-  }
-
-  private transformPlayerSubscriptions(
-    subscriptions: FormattedSubscription[],
-  ): Prisma.PlayerWhereInput {
-    return {
-      OR: subscriptions.map(
-        ({ competitionGroups, competitions, endDate, startDate }) => ({
-          teams: {
-            some: {
-              startDate: { lte: endDate },
-              endDate: { gte: startDate },
-              team: {
-                competitions: {
-                  some: {
-                    OR: [
-                      { competitionId: { in: competitions } },
-                      { groupId: { in: competitionGroups } },
-                    ],
-                    season: {
-                      startDate: { lte: endDate },
-                      endDate: { gte: startDate },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        }),
-      ),
-    };
-  }
-
-  private transformMatchSubscriptions(
-    subscriptions: FormattedSubscription[],
-  ): Prisma.MatchWhereInput {
-    return {
-      OR: subscriptions.map(
-        ({ competitionGroups, competitions, endDate, startDate }) => ({
-          OR: [
-            { competitionId: { in: competitions } },
-            { groupId: { in: competitionGroups } },
-          ],
-          date: { gte: startDate, lte: endDate },
-          season: {
-            startDate: { lte: endDate },
-            endDate: { gte: startDate },
-          },
-        }),
-      ),
-    };
-  }
-
   private async getScoutOrganizationData(user: CurrentUserDto) {
-    const data: DashboardDto = {};
+    const data: DashboardDto = { user };
     const organizationSubscriptions =
       await this.organizationSubscriptionsService.getFormattedForSingleOrganization(
         user.organizationId,
       );
 
     // get subscriptions filters
-    const observationsSubscribed = this.transformObservationSubscriptions(
+    const observationsSubscribed = transformObservationSubscriptions(
       organizationSubscriptions,
     );
-    const playersSubscribed = this.transformPlayerSubscriptions(
+    const playersSubscribed = transformPlayerSubscriptions(
       organizationSubscriptions,
     );
-    const matchesSubscribed = this.transformMatchSubscriptions(
+    const matchesSubscribed = transformMatchSubscriptions(
       organizationSubscriptions,
     );
 
@@ -315,19 +248,27 @@ export class DashboardService {
     });
 
     const topNotesPromise = this.prisma.note.findMany({
-      where: { AND: [{ rating: { in: [3, 4] } }, observationsSubscribed] },
+      where: {
+        AND: [{ percentageRating: { gte: 75 } }, observationsSubscribed],
+      },
       orderBy: { createdAt: 'desc' },
       take: 5,
       include: {
         player: true,
         match: {
-          include: { homeTeam: true, awayTeam: true, competition: true },
+          include: {
+            homeTeam: true,
+            awayTeam: true,
+            competition: { include: { country: true } },
+          },
         },
       },
     });
 
     const topReportsPromise = this.prisma.report.findMany({
-      where: { AND: [{ finalRating: { in: [3, 4] } }, observationsSubscribed] },
+      where: {
+        AND: [{ percentageRating: { gte: 75 } }, observationsSubscribed],
+      },
       orderBy: { createdAt: 'desc' },
       take: 5,
       include: {
@@ -365,12 +306,12 @@ export class DashboardService {
     switch (user.role) {
       case 'ADMIN':
       case 'PLAYMAKER_SCOUT_MANAGER':
-        return this.getPriviledgedData(user);
+        return this.getScoutData(user);
       case 'PLAYMAKER_SCOUT':
         return this.getPMData(user);
       case 'SCOUT':
         if (user.organizationId) return this.getScoutOrganizationData(user);
-        return null;
+        return this.getScoutData(user);
     }
   }
 }
