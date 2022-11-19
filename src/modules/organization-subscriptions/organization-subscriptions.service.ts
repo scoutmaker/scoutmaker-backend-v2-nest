@@ -133,15 +133,8 @@ export class OrganizationSubscriptionsService {
     id: string,
     updateOrganizationSubscriptionDto: UpdateOrganizationSubscriptionDto,
   ) {
-    const {
-      startDate,
-      endDate,
-      competitionIds,
-      competitionGroupIds,
-      organizationId,
-    } = updateOrganizationSubscriptionDto;
-
-    this.deleteFormattedFromCache(organizationId);
+    const { startDate, endDate, competitionIds, competitionGroupIds } =
+      updateOrganizationSubscriptionDto;
 
     const shouldUpdateCompetitions =
       competitionIds && competitionIds.length > 0;
@@ -162,32 +155,37 @@ export class OrganizationSubscriptionsService {
       );
     }
 
-    return this.prisma.organizationSubscription.update({
-      where: { id },
-      data: {
-        startDate: startDate ? new Date(startDate) : undefined,
-        endDate: endDate ? new Date(endDate) : undefined,
-        competitions: shouldUpdateCompetitions
-          ? {
-              createMany: {
-                data: competitionIds.map((id) => ({
-                  competitionId: id,
-                })),
-              },
-            }
-          : undefined,
-        competitionGroups: shouldUpdateCompetitionGroups
-          ? {
-              createMany: {
-                data: competitionGroupIds.map((id) => ({
-                  groupId: id,
-                })),
-              },
-            }
-          : undefined,
-      },
-      include,
-    });
+    const updatedSubsripiton =
+      await this.prisma.organizationSubscription.update({
+        where: { id },
+        data: {
+          startDate: startDate ? new Date(startDate) : undefined,
+          endDate: endDate ? new Date(endDate) : undefined,
+          competitions: shouldUpdateCompetitions
+            ? {
+                createMany: {
+                  data: competitionIds.map((id) => ({
+                    competitionId: id,
+                  })),
+                },
+              }
+            : undefined,
+          competitionGroups: shouldUpdateCompetitionGroups
+            ? {
+                createMany: {
+                  data: competitionGroupIds.map((id) => ({
+                    groupId: id,
+                  })),
+                },
+              }
+            : undefined,
+        },
+        include,
+      });
+
+    this.deleteFormattedFromCache(updatedSubsripiton.organizationId);
+
+    return updatedSubsripiton;
   }
 
   async getFormattedForSingleOrganization(
