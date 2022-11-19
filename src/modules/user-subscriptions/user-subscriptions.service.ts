@@ -27,9 +27,19 @@ export class UserSubscriptionsService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
+  private getFormattedRedisKey(userId: string) {
+    return `user:${userId}:subscriptions`;
+  }
+
+  private async deleteFormattedFromCache(userId: string) {
+    await this.redis.del(this.getFormattedRedisKey(userId));
+  }
+
   create(createUserSubscriptionDto: CreateUserSubscriptionDto) {
     const { competitionIds, competitionGroupIds, userId, startDate, endDate } =
       createUserSubscriptionDto;
+
+    this.deleteFormattedFromCache(userId);
 
     return this.prisma.userSubscription.create({
       data: {
@@ -131,7 +141,7 @@ export class UserSubscriptionsService {
       });
     }
 
-    return this.prisma.userSubscription.update({
+    const updatedSubscription = await this.prisma.userSubscription.update({
       where: { id },
       data: {
         startDate: startDate ? new Date(startDate) : undefined,
@@ -157,13 +167,16 @@ export class UserSubscriptionsService {
       },
       include,
     });
+
+    await this.deleteFormattedFromCache(updatedSubscription.userId);
+
+    return updatedSubscription;
   }
 
   async getFormattedForSingleUser(
     userId: string,
   ): Promise<FormattedSubscription[]> {
-    const redisKey = `user:${userId}:subscriptions`;
-
+    const redisKey = this.getFormattedRedisKey(userId);
     const cachedSubscriptions = await this.redis.get(redisKey);
 
     if (cachedSubscriptions) {
@@ -210,6 +223,11 @@ export class UserSubscriptionsService {
     await this.prisma.competitionGroupsOnUserSubscriptions.deleteMany({
       where: { subscriptionId: id },
     });
-    return this.prisma.userSubscription.delete({ where: { id }, include });
+    const deletedSubscription = await this.prisma.userSubscription.delete({
+      where: { id },
+      include,
+    });
+    this.deleteFormattedFromCache(deletedSubscription.userId);
+    return deletedSubscription;
   }
 }
