@@ -81,8 +81,12 @@ export class UserSubscriptionsService {
 
     const where: Prisma.UserSubscriptionWhereInput = {
       userId,
-      competitions: { some: { competitionId: { in: competitionIds } } },
-      competitionGroups: { some: { groupId: { in: competitionGroupIds } } },
+      competitions: competitionIds
+        ? { some: { competitionId: { in: competitionIds } } }
+        : undefined,
+      competitionGroups: competitionGroupIds
+        ? { some: { groupId: { in: competitionGroupIds } } }
+        : undefined,
     };
 
     const subscriptions = await this.prisma.userSubscription.findMany({
