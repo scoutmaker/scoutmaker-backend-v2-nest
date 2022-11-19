@@ -60,7 +60,7 @@ export class DashboardService {
       where: { authorId: user.id },
     });
     const lastUserReportsPromise = this.prisma.report.count({
-      where: { authorId: user.id, createdAt: { gte: monthAgoDate } },
+      where: lastUserObserevationsWhere,
     });
     const lastReportsPromise = this.prisma.report.count({
       where: lastObservationsWhere,
@@ -71,7 +71,7 @@ export class DashboardService {
       where: { authorId: user.id },
     });
     const lastUserNotesPromise = this.prisma.note.count({
-      where: { authorId: user.id, createdAt: { gte: monthAgoDate } },
+      where: lastUserObserevationsWhere,
     });
     const lastNotesPromise = this.prisma.note.count({
       where: lastObservationsWhere,
@@ -176,18 +176,18 @@ export class DashboardService {
       }),
     ]);
 
-    // Is missing matches shared with subscriptions
+    // Missing matches shared with subscriptions
     data.organizations = sharedAclOrganizations.map((org) => {
-      const observedMatchIds = new Set<string>();
+      const observedMatchesIds = new Set<string>();
 
       org.noteAccessControlList.forEach((noteAce) => {
-        if (noteAce.note.matchId) observedMatchIds.add(noteAce.note.matchId);
+        if (noteAce.note.matchId) observedMatchesIds.add(noteAce.note.matchId);
       });
       org.reportAccessControlList.forEach((reportAce) => {
         if (reportAce.report.matchId)
-          observedMatchIds.add(reportAce.report.matchId);
+          observedMatchesIds.add(reportAce.report.matchId);
       });
-      return { name: org.name, sharedInfo: observedMatchIds.size };
+      return { name: org.name, sharedInfo: observedMatchesIds.size };
     });
 
     return data;
