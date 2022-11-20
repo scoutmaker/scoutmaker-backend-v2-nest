@@ -27,10 +27,7 @@ export class DashboardService {
   private async getScoutData(user: CurrentUserDto) {
     const data: DashboardDto = { user };
 
-    const today = new Date();
-    const monthAgoDate = new Date(
-      new Date().setDate(today.getDate() - 30),
-    ).toISOString();
+    const monthAgo = subMonths(new Date(), 1)
 
     const rolesScope: UserRole[] =
       user.role === 'SCOUT'
