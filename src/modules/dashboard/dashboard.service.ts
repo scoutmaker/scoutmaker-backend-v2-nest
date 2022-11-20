@@ -31,7 +31,7 @@ export class DashboardService {
         ? ['SCOUT']
         : ['PLAYMAKER_SCOUT', 'ADMIN', 'PLAYMAKER_SCOUT_MANAGER'];
 
-    const lastObservationsWhere:
+    const recentScopedObservationsWhere:
       | Prisma.NoteWhereInput
       | Prisma.ReportWhereInput = {
       createdAt: { gte: monthAgoDate },
@@ -42,7 +42,7 @@ export class DashboardService {
       },
     };
 
-    const lastUserObserevationsWhere:
+    const recentUserObservationsWhere:
       | Prisma.NoteWhereInput
       | Prisma.ReportWhereInput = {
       createdAt: { gte: monthAgoDate },
@@ -50,29 +50,29 @@ export class DashboardService {
     };
 
     // reports
-    const userReportsPromise = this.prisma.report.count({
+    const totalUserReportsPromise = this.prisma.report.count({
       where: { authorId: user.id },
     });
-    const lastUserReportsPromise = this.prisma.report.count({
-      where: lastUserObserevationsWhere,
+    const recentUserReportsPromise = this.prisma.report.count({
+      where: recentUserObservationsWhere,
     });
-    const lastReportsPromise = this.prisma.report.count({
-      where: lastObservationsWhere,
+    const recentScopedReportsPromise = this.prisma.report.count({
+      where: recentScopedObservationsWhere,
     });
 
     // notes
-    const userNotesPromise = this.prisma.note.count({
+    const totalUserNotesPromise = this.prisma.note.count({
       where: { authorId: user.id },
     });
-    const lastUserNotesPromise = this.prisma.note.count({
-      where: lastUserObserevationsWhere,
+    const recentUserNotesPromise = this.prisma.note.count({
+      where: recentUserObservationsWhere,
     });
-    const lastNotesPromise = this.prisma.note.count({
-      where: lastObservationsWhere,
+    const recentScopedNotesPromise = this.prisma.note.count({
+      where: recentScopedObservationsWhere,
     });
 
     // matches
-    const userMatchesPromise = this.prisma.match.count({
+    const totalUserMatchesPromise = this.prisma.match.count({
       where: {
         OR: [
           { notes: { some: { authorId: user.id } } },
@@ -81,60 +81,67 @@ export class DashboardService {
       },
     });
 
-    const lastUserMatchesPromise = this.prisma.match.count({
+    const recentUserMatchesPromise = this.prisma.match.count({
       where: {
         OR: [
           {
-            notes: { some: lastUserObserevationsWhere },
+            notes: { some: recentUserObservationsWhere },
           },
           {
-            reports: { some: lastUserObserevationsWhere },
+            reports: { some: recentUserObservationsWhere },
           },
         ],
       },
     });
-    const lastMatchesPromise = this.prisma.match.count({
+    const recentScopedMatchesPromise = this.prisma.match.count({
       where: {
         OR: [
-          { notes: { some: lastObservationsWhere } },
-          { reports: { some: lastObservationsWhere } },
+          { notes: { some: recentScopedObservationsWhere } },
+          { reports: { some: recentScopedObservationsWhere } },
         ],
       },
     });
 
     const [
-      userReports,
-      userNotes,
-      userMatches,
-      lastUserMatches,
-      lastMatches,
-      lastReports,
-      lastNotes,
-      lastUserReports,
-      lastUserNotes,
+      totalUserReports,
+      recentScopedReports,
+      recentUserReports,
+      //
+      totalUserNotes,
+      recentUserNotes,
+      recentScopedNotes,
+      //
+      totalUserMatches,
+      recentUserMatches,
+      recentScopedMatches,
     ] = await Promise.all([
-      userReportsPromise,
-      userNotesPromise,
-      userMatchesPromise,
-      lastUserMatchesPromise,
-      lastMatchesPromise,
-      lastReportsPromise,
-      lastNotesPromise,
-      lastUserReportsPromise,
-      lastUserNotesPromise,
+      totalUserReportsPromise,
+      recentScopedReportsPromise,
+      recentUserReportsPromise,
+      //
+      totalUserNotesPromise,
+      recentUserNotesPromise,
+      recentScopedNotesPromise,
+      //
+      totalUserMatchesPromise,
+      recentUserMatchesPromise,
+      recentScopedMatchesPromise,
     ]);
 
     // include data
-    data.reports = userReports;
-    data.reportsRatio = calculatePercentage(lastUserReports, lastReports);
+    data.reports = totalUserReports;
+    data.reportsRatio = calculatePercentage(
+      recentUserReports,
+      recentScopedReports,
+    );
 
-    data.notes = userNotes;
-    data.notesRatio = calculatePercentage(lastUserNotes, lastNotes);
+    data.notes = totalUserNotes;
+    data.notesRatio = calculatePercentage(recentUserNotes, recentScopedNotes);
 
-    data.observedMatches = userMatches;
+    data.observedMatches = totalUserMatches;
     data.observedMatchesRatio = calculatePercentage(
-      lastUserMatches,
-      lastMatches,
+      recentUserMatches,
+      recentScopedMatches,
     );
 
     return data;
