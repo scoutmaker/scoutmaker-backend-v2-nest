@@ -26,10 +26,7 @@ export function calculateSkip(page: number, limit: number) {
   return (page - 1) * limit;
 }
 
-export function calculatePercentageRating(
-  rating: number,
-  maxRatingScore: number,
-) {
+export function calculatePercentage(rating: number, maxRatingScore: number) {
   return parseFloat(((rating / maxRatingScore) * 100).toFixed(2));
 }
 

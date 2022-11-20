@@ -6,7 +6,7 @@ import Redis from 'ioredis';
 import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
-  calculatePercentageRating,
+  calculatePercentage,
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
@@ -97,7 +97,7 @@ export class NotesService {
     let percentageRating: number;
 
     if (rating && maxRatingScore) {
-      percentageRating = calculatePercentageRating(rating, maxRatingScore);
+      percentageRating = calculatePercentage(rating, maxRatingScore);
     }
 
     let metaPositionId: string;
@@ -384,17 +384,14 @@ export class NotesService {
     });
 
     if (rating && maxRatingScore) {
-      percentageRating = calculatePercentageRating(rating, maxRatingScore);
+      percentageRating = calculatePercentage(rating, maxRatingScore);
     }
 
     if ((!rating && maxRatingScore) || (rating && !maxRatingScore)) {
       const newRating = rating || note.rating;
       const newMaxRatingScore = maxRatingScore || note.maxRatingScore;
       if (newRating && newMaxRatingScore) {
-        percentageRating = calculatePercentageRating(
-          newRating,
-          newMaxRatingScore,
-        );
+        percentageRating = calculatePercentage(newRating, newMaxRatingScore);
       }
     }
 

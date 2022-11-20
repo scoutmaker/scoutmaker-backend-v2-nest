@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
+import { subMonths } from 'date-fns';
 
+import { calculatePercentage } from '../../utils/helpers';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
@@ -18,16 +20,11 @@ export class DashboardService {
     private readonly organizationSubscriptionsService: OrganizationSubscriptionsService,
   ) {}
 
-  private getPrecentage(value, total) {
-    if (!value && !total) return 0;
-    return +((value / total) * 100).toFixed();
-  }
-
   // PM-ScoutManager | ADMIN | 'SCOUT'
   private async getScoutData(user: CurrentUserDto) {
     const data: DashboardDto = { user };
 
-    const monthAgo = subMonths(new Date(), 1)
+    const monthAgoDate = subMonths(new Date(), 1);
 
     const rolesScope: UserRole[] =
       user.role === 'SCOUT'
@@ -129,13 +126,13 @@ export class DashboardService {
 
     // include data
     data.reports = userReports;
-    data.reportsRatio = this.getPrecentage(lastUserReports, lastReports);
+    data.reportsRatio = calculatePercentage(lastUserReports, lastReports);
 
     data.notes = userNotes;
-    data.notesRatio = this.getPrecentage(lastUserNotes, lastNotes);
+    data.notesRatio = calculatePercentage(lastUserNotes, lastNotes);
 
     data.observedMatches = userMatches;
-    data.observedMatchesRatio = this.getPrecentage(
+    data.observedMatchesRatio = calculatePercentage(
       lastUserMatches,
       lastMatches,
     );

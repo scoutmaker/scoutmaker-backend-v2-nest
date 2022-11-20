@@ -7,7 +7,7 @@ import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateAvg,
-  calculatePercentageRating,
+  calculatePercentage,
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
@@ -153,7 +153,7 @@ export class ReportsService {
 
     // Calculate percentage rating
     if (finalRating) {
-      percentageRating = calculatePercentageRating(
+      percentageRating = calculatePercentage(
         finalRating,
         maxRatingScore || template?.maxRatingScore,
       );
@@ -546,7 +546,7 @@ export class ReportsService {
     let percentageRating: number;
 
     if (finalRating) {
-      percentageRating = calculatePercentageRating(
+      percentageRating = calculatePercentage(
         finalRating,
         updatedReport.maxRatingScore,
       );
