@@ -58,22 +58,22 @@ export class DashboardDto {
   user: UserDashboardDto;
 
   @Expose()
-  reports?: number;
+  reportsCount?: number;
 
   @Expose()
-  reportsRatio?: number;
+  recentReportsRatio?: number;
 
   @Expose()
-  notes?: number;
+  notesCount?: number;
 
   @Expose()
-  notesRatio?: number;
+  recentNotesRatio?: number;
 
   @Expose()
-  observedMatches?: number;
+  observedMatchesCount?: number;
 
   @Expose()
-  observedMatchesRatio?: number;
+  recentObservedMatchesRatio?: number;
 
   @Transform(({ value }) =>
     plainToInstance(OrganizationInfoDto, value, {
@@ -84,10 +84,10 @@ export class DashboardDto {
   organizations?: OrganizationInfoDto[];
 
   @Expose()
-  scouts?: number;
+  scoutsCount?: number;
 
   @Expose()
-  observerdPlayers?: number;
+  observerdPlayersCount?: number;
 
   @Transform(({ value }) =>
     plainToInstance(DashboardNoteDto, value, {
