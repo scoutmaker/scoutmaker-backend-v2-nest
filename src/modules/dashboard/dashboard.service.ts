@@ -130,22 +130,16 @@ export class DashboardService {
 
     // include data
     data.reportsCount = totalUserReports;
-    data.recentReportsRatio = calculatePercentage(
-      recentUserReports,
-      recentScopedReports,
-    );
+    data.recentReportsRatio =
+      calculatePercentage(recentUserReports, recentScopedReports) || 0;
 
     data.notesCount = totalUserNotes;
-    data.recentNotesRatio = calculatePercentage(
-      recentUserNotes,
-      recentScopedNotes,
-    );
+    data.recentNotesRatio =
+      calculatePercentage(recentUserNotes, recentScopedNotes) || 0;
 
     data.observedMatchesCount = totalUserMatches;
-    data.recentObservedMatchesRatio = calculatePercentage(
-      recentUserMatches,
-      recentScopedMatches,
-    );
+    data.recentObservedMatchesRatio =
+      calculatePercentage(recentUserMatches, recentScopedMatches) || 0;
 
     return data;
   }
