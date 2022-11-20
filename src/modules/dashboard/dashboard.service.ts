@@ -185,7 +185,7 @@ export class DashboardService {
         if (reportAce.report.matchId)
           observedMatchesIds.add(reportAce.report.matchId);
       });
-      return { name: org.name, sharedInfo: observedMatchesIds.size };
+      return { name: org.name, sharedMatchesCount: observedMatchesIds.size };
     });
 
     return data;

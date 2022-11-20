@@ -8,7 +8,7 @@ import { UserDto } from '../../users/dto/user.dto';
 
 class OrganizationInfoDto {
   name: string;
-  sharedInfo: number;
+  sharedMatchesCount: number;
 }
 
 class DashboardReportDto extends PickType(ReportDto, [
