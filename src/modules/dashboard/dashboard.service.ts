@@ -21,7 +21,7 @@ export class DashboardService {
   ) {}
 
   // PM-ScoutManager | ADMIN | 'SCOUT'
-  private async getScoutData(user: CurrentUserDto) {
+  private async getCommonData(user: CurrentUserDto) {
     const data: DashboardDto = { user };
 
     const monthAgoDate = subMonths(new Date(), 1);
@@ -129,17 +129,20 @@ export class DashboardService {
     ]);
 
     // include data
-    data.reports = totalUserReports;
-    data.reportsRatio = calculatePercentage(
+    data.reportsCount = totalUserReports;
+    data.recentReportsRatio = calculatePercentage(
       recentUserReports,
       recentScopedReports,
     );
 
-    data.notes = totalUserNotes;
-    data.notesRatio = calculatePercentage(recentUserNotes, recentScopedNotes);
+    data.notesCount = totalUserNotes;
+    data.recentNotesRatio = calculatePercentage(
+      recentUserNotes,
+      recentScopedNotes,
+    );
 
-    data.observedMatches = totalUserMatches;
-    data.observedMatchesRatio = calculatePercentage(
+    data.observedMatchesCount = totalUserMatches;
+    data.recentObservedMatchesRatio = calculatePercentage(
       recentUserMatches,
       recentScopedMatches,
     );
@@ -148,9 +151,9 @@ export class DashboardService {
   }
 
   // PlayMaker-Scout
-  private async getPMData(user: CurrentUserDto) {
+  private async getPlaymakerScoutData(user: CurrentUserDto) {
     const [data, sharedAclOrganizations] = await Promise.all([
-      this.getScoutData(user),
+      this.getCommonData(user),
       this.prisma.organization.findMany({
         where: {
           OR: [
@@ -213,7 +216,7 @@ export class DashboardService {
     );
 
     // get data
-    const scoutsPromise = this.prisma.user.count({
+    const scoutsCountPromise = this.prisma.user.count({
       where: {
         OR: [
           {
@@ -230,7 +233,7 @@ export class DashboardService {
       },
     });
 
-    const playersPromise = this.prisma.player.count({
+    const playersCountPromise = this.prisma.player.count({
       where: {
         AND: [
           { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
@@ -239,7 +242,7 @@ export class DashboardService {
       },
     });
 
-    const matchesPromise = this.prisma.match.count({
+    const matchesCountPromise = this.prisma.match.count({
       where: {
         AND: [
           { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
@@ -284,18 +287,19 @@ export class DashboardService {
       },
     });
 
-    const [scouts, players, matches, topNotes, topReports] = await Promise.all([
-      scoutsPromise,
-      playersPromise,
-      matchesPromise,
-      topNotesPromise,
-      topReportsPromise,
-    ]);
+    const [scoutsCount, playersCount, matchesCount, topNotes, topReports] =
+      await Promise.all([
+        scoutsCountPromise,
+        playersCountPromise,
+        matchesCountPromise,
+        topNotesPromise,
+        topReportsPromise,
+      ]);
 
     // include data
-    data.scouts = scouts;
-    data.observerdPlayers = players;
-    data.observedMatches = matches;
+    data.scoutsCount = scoutsCount;
+    data.observerdPlayersCount = playersCount;
+    data.observedMatchesCount = matchesCount;
 
     data.topNotes = topNotes;
     data.topReports = topReports;
@@ -307,12 +311,12 @@ export class DashboardService {
     switch (user.role) {
       case 'ADMIN':
       case 'PLAYMAKER_SCOUT_MANAGER':
-        return this.getScoutData(user);
+        return this.getCommonData(user);
       case 'PLAYMAKER_SCOUT':
-        return this.getPMData(user);
+        return this.getPlaymakerScoutData(user);
       case 'SCOUT':
         if (user.organizationId) return this.getScoutOrganizationData(user);
-        return this.getScoutData(user);
+        return this.getCommonData(user);
     }
   }
 }
