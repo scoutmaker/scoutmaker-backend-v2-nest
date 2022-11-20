@@ -19,7 +19,7 @@ export class MatchAttendancesService {
     });
   }
 
-  async goToMatch(
+  async setActiveMatch(
     matchId: string,
     userId: string,
     observationType: ObservationType,
@@ -57,7 +57,7 @@ export class MatchAttendancesService {
     });
   }
 
-  leaveTheMatch(userId: string) {
+  leaveActiveMatch(userId: string) {
     return this.prisma.matchAttendance.update({
       where: { userId_isActive: { userId, isActive: true } },
       data: { isActive: null },

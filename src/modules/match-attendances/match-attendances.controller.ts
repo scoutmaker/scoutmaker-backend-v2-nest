@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -24,13 +24,14 @@ export class MatchAttendancesController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Set new active match' })
   @ApiResponse(MatchAttendanceDto, { type: 'create' })
   async goToMatch(
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
     @Body() { observationType, matchId }: CreateMatchAttendanceDto,
   ) {
-    const attendance = await this.matchAttendancesService.goToMatch(
+    const attendance = await this.matchAttendancesService.setActiveMatch(
       matchId,
       user.id,
       observationType,
@@ -82,12 +83,13 @@ export class MatchAttendancesController {
   }
 
   @Patch()
+  @ApiOperation({ summary: 'Leave current active match' })
   @ApiResponse(MatchAttendanceDto, { type: 'update' })
   async leaveTheMatch(
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    const attendance = await this.matchAttendancesService.leaveTheMatch(
+    const attendance = await this.matchAttendancesService.leaveActiveMatch(
       user.id,
     );
 
