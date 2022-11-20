@@ -155,7 +155,7 @@ export class OrganizationSubscriptionsService {
       );
     }
 
-    const updatedSubsripiton =
+    const updatedSubscription =
       await this.prisma.organizationSubscription.update({
         where: { id },
         data: {
