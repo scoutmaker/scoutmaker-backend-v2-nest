@@ -82,7 +82,7 @@ export class MatchAttendancesController {
     return formatSuccessResponse(message, attendance);
   }
 
-  @Patch()
+  @Patch('leave-active')
   @ApiOperation({ summary: 'Leave current active match' })
   @ApiResponse(MatchAttendanceDto, { type: 'update' })
   async leaveTheMatch(
