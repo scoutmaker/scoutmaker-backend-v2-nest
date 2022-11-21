@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -30,7 +30,7 @@ import { OrganizationInsiderNoteAclService } from './organization-insider-note-a
 @Controller('organization-insider-note-acl')
 @ApiTags('organization insider note ACL')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class OrganizationInsiderNoteAclController {
   constructor(
     private readonly aclService: OrganizationInsiderNoteAclService,

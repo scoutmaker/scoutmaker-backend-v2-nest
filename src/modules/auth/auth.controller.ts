@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { add } from 'date-fns';
 import { CookieOptions, Response } from 'express';
 import { I18nLang, I18nService } from 'nestjs-i18n';
@@ -93,7 +93,7 @@ export class AuthController {
   @ApiResponse(UserDto, { type: 'read' })
   @Serialize(UserDto)
   @UseGuards(AuthGuard)
-  @ApiCookieAuth()
+  @ApiSecurity('auth-token')
   async getAccount(
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
@@ -109,7 +109,7 @@ export class AuthController {
   @ApiResponse(UserDto, { type: 'update' })
   @Serialize(UserDto)
   @UseGuards(AuthGuard)
-  @ApiCookieAuth()
+  @ApiSecurity('auth-token')
   async updateAccount(
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
@@ -126,7 +126,7 @@ export class AuthController {
   @ApiResponse(UserDto, { type: 'update' })
   @Serialize(UserDto, 'user')
   @UseGuards(AuthGuard)
-  @ApiCookieAuth()
+  @ApiSecurity('auth-token')
   async updatePassword(
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,

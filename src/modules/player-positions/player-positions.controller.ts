@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,7 +38,7 @@ import { PlayerPositionsService } from './player-positions.service';
 @Controller('player-positions')
 @ApiTags('player positions')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class PlayerPositionsController {
   constructor(
     private readonly positionsService: PlayerPositionsService,

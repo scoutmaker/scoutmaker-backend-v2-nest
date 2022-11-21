@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -30,7 +30,7 @@ import { OrganizationReportAclService } from './organization-report-acl.service'
 @Controller('organization-report-acl')
 @ApiTags('organization report ACL')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class OrganizationReportAclController {
   constructor(
     private readonly aclService: OrganizationReportAclService,
