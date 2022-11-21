@@ -355,9 +355,22 @@ export class ReportsService {
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
