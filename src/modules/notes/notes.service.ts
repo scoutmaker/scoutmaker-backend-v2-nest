@@ -208,6 +208,7 @@ export class NotesService {
       userId: userIdFindParam,
       onlyLikedPlayers,
       onlyLikedTeams,
+      onlyNullPlayers,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -281,9 +282,22 @@ export class NotesService {
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
@@ -295,10 +309,13 @@ export class NotesService {
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
+            { playerId: onlyNullPlayers ? null : undefined },
           ],
         },
       ],
     };
+
+    console.log(where);
 
     const notes = await this.prisma.note.findMany({
       where,
