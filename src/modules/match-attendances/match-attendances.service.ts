@@ -19,7 +19,7 @@ export class MatchAttendancesService {
     });
   }
 
-  async setActiveMatch(
+  async create(
     matchId: string,
     userId: string,
     observationType: ObservationType,

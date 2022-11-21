@@ -31,7 +31,7 @@ export class MatchAttendancesController {
     @CurrentUser() user: CurrentUserDto,
     @Body() { observationType, matchId }: CreateMatchAttendanceDto,
   ) {
-    const attendance = await this.matchAttendancesService.setActiveMatch(
+    const attendance = await this.matchAttendancesService.create(
       matchId,
       user.id,
       observationType,
