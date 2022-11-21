@@ -7,7 +7,11 @@ import {
   CachedFormattedSubscription,
   FormattedSubscription,
 } from '../../types/formatted-subscription';
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
 import { FindAllUserSubscriptionsDto } from './dto/find-all-user-subscriptions.dto';
@@ -81,10 +85,10 @@ export class UserSubscriptionsService {
 
     const where: Prisma.UserSubscriptionWhereInput = {
       userId,
-      competitions: competitionIds
+      competitions: isIdsArrayFilterDefined(competitionIds)
         ? { some: { competitionId: { in: competitionIds } } }
         : undefined,
-      competitionGroups: competitionGroupIds
+      competitionGroups: isIdsArrayFilterDefined(competitionGroupIds)
         ? { some: { groupId: { in: competitionGroupIds } } }
         : undefined,
     };
