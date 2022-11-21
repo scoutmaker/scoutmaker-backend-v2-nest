@@ -315,8 +315,6 @@ export class NotesService {
       ],
     };
 
-    console.log(where);
-
     const notes = await this.prisma.note.findMany({
       where,
       take: limit,
