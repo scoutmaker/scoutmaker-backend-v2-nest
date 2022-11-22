@@ -223,4 +223,21 @@ export class MatchesService {
   remove(id: string) {
     return this.prisma.match.delete({ where: { id }, include });
   }
+
+  getCount({
+    accessFilters,
+    query,
+  }: {
+    query?: FindAllMatchesDto;
+    accessFilters?: Prisma.MatchWhereInput;
+  }) {
+    return this.prisma.match.count({
+      where: {
+        AND: [
+          query ? this.generateWhereClause(query) : undefined,
+          accessFilters,
+        ],
+      },
+    });
+  }
 }

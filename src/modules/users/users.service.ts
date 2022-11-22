@@ -239,4 +239,8 @@ export class UsersService {
       data: { role },
     });
   }
+
+  getCount(accessFilters: Prisma.UserWhereInput) {
+    return this.prisma.user.count({ where: accessFilters });
+  }
 }

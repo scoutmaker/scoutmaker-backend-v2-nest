@@ -3,9 +3,14 @@ import { Prisma, UserRole } from '@prisma/client';
 import { subMonths } from 'date-fns';
 
 import { calculatePercentage } from '../../utils/helpers';
+import { MatchesService } from '../matches/matches.service';
+import { NotesService } from '../notes/notes.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
+import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ReportsService } from '../reports/reports.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
+import { UsersService } from '../users/users.service';
 import { DashboardDto } from './dto/dashboard.dto';
 import {
   transformMatchSubscriptions,
@@ -18,10 +23,22 @@ export class DashboardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly organizationSubscriptionsService: OrganizationSubscriptionsService,
+    private readonly reportsService: ReportsService,
+    private readonly notesService: NotesService,
+    private readonly matchesService: MatchesService,
+    private readonly playersService: PlayersService,
+    private readonly usersService: UsersService,
   ) {}
 
   // PM-ScoutManager | ADMIN | 'SCOUT'
   private async getCommonData(user: CurrentUserDto) {
+    const getMatchesCount = (filters: Prisma.MatchWhereInput) =>
+      this.matchesService.getCount({ accessFilters: filters });
+    const getReportsCount = (filters: Prisma.ReportWhereInput) =>
+      this.reportsService.getCount({ accessFilters: filters });
+    const getNotesCount = (filters: Prisma.NoteWhereInput) =>
+      this.notesService.getCount(filters);
+
     const data: DashboardDto = { user };
 
     const monthAgoDate = subMonths(new Date(), 1);
@@ -50,56 +67,46 @@ export class DashboardService {
     };
 
     // reports
-    const totalUserReportsPromise = this.prisma.report.count({
-      where: { authorId: user.id },
+    const totalUserReportsPromise = getReportsCount({
+      authorId: user.id,
     });
-    const recentUserReportsPromise = this.prisma.report.count({
-      where: recentUserObservationsWhere,
-    });
-    const recentScopedReportsPromise = this.prisma.report.count({
-      where: recentScopedObservationsWhere,
-    });
+    const recentUserReportsPromise = getReportsCount(
+      recentUserObservationsWhere,
+    );
+    const recentScopedReportsPromise = getReportsCount(
+      recentScopedObservationsWhere,
+    );
 
     // notes
-    const totalUserNotesPromise = this.prisma.note.count({
-      where: { authorId: user.id },
-    });
-    const recentUserNotesPromise = this.prisma.note.count({
-      where: recentUserObservationsWhere,
-    });
-    const recentScopedNotesPromise = this.prisma.note.count({
-      where: recentScopedObservationsWhere,
-    });
+    const totalUserNotesPromise = getNotesCount({ authorId: user.id });
+    const recentUserNotesPromise = getNotesCount(recentUserObservationsWhere);
+    const recentScopedNotesPromise = getNotesCount(
+      recentScopedObservationsWhere,
+    );
 
     // matches
-    const totalUserMatchesPromise = this.prisma.match.count({
-      where: {
-        OR: [
-          { notes: { some: { authorId: user.id } } },
-          { reports: { some: { authorId: user.id } } },
-        ],
-      },
+    const totalUserMatchesPromise = getMatchesCount({
+      OR: [
+        { notes: { some: { authorId: user.id } } },
+        { reports: { some: { authorId: user.id } } },
+      ],
     });
 
-    const recentUserMatchesPromise = this.prisma.match.count({
-      where: {
-        OR: [
-          {
-            notes: { some: recentUserObservationsWhere },
-          },
-          {
-            reports: { some: recentUserObservationsWhere },
-          },
-        ],
-      },
+    const recentUserMatchesPromise = getMatchesCount({
+      OR: [
+        {
+          notes: { some: recentUserObservationsWhere },
+        },
+        {
+          reports: { some: recentUserObservationsWhere },
+        },
+      ],
     });
-    const recentScopedMatchesPromise = this.prisma.match.count({
-      where: {
-        OR: [
-          { notes: { some: recentScopedObservationsWhere } },
-          { reports: { some: recentScopedObservationsWhere } },
-        ],
-      },
+    const recentScopedMatchesPromise = getMatchesCount({
+      OR: [
+        { notes: { some: recentScopedObservationsWhere } },
+        { reports: { some: recentScopedObservationsWhere } },
+      ],
     });
 
     const [
@@ -210,25 +217,23 @@ export class DashboardService {
     );
 
     // get data
-    const scoutsCountPromise = this.prisma.user.count({
-      where: {
-        OR: [
-          {
-            createdNotes: {
-              some: observationsSubscribed,
-            },
+    const scoutsCountPromise = this.usersService.getCount({
+      OR: [
+        {
+          createdNotes: {
+            some: observationsSubscribed,
           },
-          {
-            createdReports: {
-              some: observationsSubscribed,
-            },
+        },
+        {
+          createdReports: {
+            some: observationsSubscribed,
           },
-        ],
-      },
+        },
+      ],
     });
 
-    const playersCountPromise = this.prisma.player.count({
-      where: {
+    const playersCountPromise = this.playersService.getCount({
+      accessFilters: {
         AND: [
           { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
           playersSubscribed,
@@ -236,8 +241,8 @@ export class DashboardService {
       },
     });
 
-    const matchesCountPromise = this.prisma.match.count({
-      where: {
+    const matchesCountPromise = this.matchesService.getCount({
+      accessFilters: {
         AND: [
           { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
           matchesSubscribed,

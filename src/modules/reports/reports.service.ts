@@ -575,4 +575,19 @@ export class ReportsService {
 
     return this.prisma.report.findMany({ where, include: listInclude });
   }
+
+  getCount({
+    accessFilters,
+    query,
+  }: {
+    query?: FindAllReportsDto;
+    accessFilters?: Prisma.ReportWhereInput;
+  }) {
+    const where = this.generateWhereClause({
+      query: query || {},
+      accessFilters,
+    });
+
+    return this.prisma.report.count({ where });
+  }
 }

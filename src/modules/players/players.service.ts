@@ -524,4 +524,19 @@ export class PlayersService {
     ]);
     return this.prisma.player.delete({ where: { id } });
   }
+
+  getCount({
+    accessFilters,
+    query,
+  }: {
+    query?: FindAllPlayersDto;
+    accessFilters?: Prisma.PlayerWhereInput;
+  }) {
+    const where = this.generateWhereClause({
+      query: query || {},
+      accessFilters,
+    });
+
+    return this.prisma.player.count({ where });
+  }
 }

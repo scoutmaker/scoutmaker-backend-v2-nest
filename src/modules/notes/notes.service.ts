@@ -460,4 +460,8 @@ export class NotesService {
   async remove(id: string) {
     return this.prisma.note.delete({ where: { id }, include });
   }
+
+  getCount(accessFilters: Prisma.NoteWhereInput) {
+    return this.prisma.note.count({ where: accessFilters });
+  }
 }
