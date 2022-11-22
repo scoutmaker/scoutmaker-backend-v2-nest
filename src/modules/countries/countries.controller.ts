@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,7 +38,7 @@ import { UpdateCountryDto } from './dto/update-country.dto';
 @Controller('countries')
 @ApiTags('countries')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class CountriesController {
   constructor(
     private readonly countriesService: CountriesService,

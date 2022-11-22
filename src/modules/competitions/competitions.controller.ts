@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,7 +38,7 @@ import { UpdateCompetitionDto } from './dto/update-competition.dto';
 @Controller('competitions')
 @ApiTags('competitions')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class CompetitionsController {
   constructor(
     private readonly competitionsService: CompetitionsService,

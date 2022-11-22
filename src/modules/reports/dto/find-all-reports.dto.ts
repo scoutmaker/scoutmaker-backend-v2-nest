@@ -98,4 +98,14 @@ export class FindAllReportsDto {
     ).join(', ')}`,
   })
   observationType?: ObservationTypeEnum;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyLikedTeams?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyLikedPlayers?: boolean;
 }

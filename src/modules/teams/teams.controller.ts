@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -40,7 +40,7 @@ import { TeamsService } from './teams.service';
 @Controller('teams')
 @ApiTags('teams')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class TeamsController {
   constructor(
     private readonly teamsService: TeamsService,
@@ -116,8 +116,12 @@ export class TeamsController {
   @Get('list')
   @ApiResponse(TeamBasicDataDto, { type: 'read' })
   @Serialize(TeamBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const teams = await this.teamsService.getList();
+  async getList(
+    @I18nLang() lang: string,
+    @Query() query: FindAllTeamsDto,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const teams = await this.teamsService.getList(query, user.id);
     const message = this.i18n.translate('teams.GET_LIST_MESSAGE', {
       lang,
     });

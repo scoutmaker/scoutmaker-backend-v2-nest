@@ -1,5 +1,5 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -15,7 +15,7 @@ import { ReportSkillAssessmentsService } from './report-skill-assessments.servic
 @Controller('report-skill-assessments')
 @ApiTags('report skill assessments')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class ReportSkillAssessmentsController {
   constructor(
     private readonly assessmentsService: ReportSkillAssessmentsService,

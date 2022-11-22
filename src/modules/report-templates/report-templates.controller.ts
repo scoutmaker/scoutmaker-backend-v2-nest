@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiCookieAuth,
+  ApiSecurity,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -43,7 +43,7 @@ import { ReportTemplatesService } from './report-templates.service';
 @Controller('report-templates')
 @ApiTags('report templates')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class ReportTemplatesController {
   constructor(
     private readonly reportTemplatesService: ReportTemplatesService,

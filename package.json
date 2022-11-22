@@ -11,7 +11,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/main",
     "start:dev": "dotenv -e .env.development -- nest start --watch",
-    "start:debug": "dotenv -e .env.development nest start --debug --watch",
+    "start:debug": "dotenv -e .env.development -- nest start --debug --watch",
     "start:prod": "nest start",
     "migrate:postgres": "dotenv -e .env.development -- npx prisma migrate dev",
     "reset:postgres": "dotenv -e .env.development -- npx prisma migrate reset",

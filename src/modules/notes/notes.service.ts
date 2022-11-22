@@ -207,6 +207,8 @@ export class NotesService {
       isLiked,
       userId: userIdFindParam,
       observationType,
+      onlyLikedPlayers,
+      onlyLikedTeams,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -288,6 +290,16 @@ export class NotesService {
               player: {
                 yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
               },
+            },
+            {
+              player: onlyLikedPlayers
+                ? { likes: { some: { userId } } }
+                : undefined,
+            },
+            {
+              meta: onlyLikedTeams
+                ? { team: { likes: { some: { userId } } } }
+                : undefined,
             },
           ],
         },
