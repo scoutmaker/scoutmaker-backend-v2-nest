@@ -206,6 +206,7 @@ export class NotesService {
       playerBornBefore,
       isLiked,
       userId: userIdFindParam,
+      observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
     }: FindAllNotesDto,
@@ -250,6 +251,7 @@ export class NotesService {
           },
           likes: isLiked ? { some: { userId } } : undefined,
           authorId: userIdFindParam,
+          observationType,
           AND: [
             {
               meta: isIdsArrayFilterDefined(competitionIds)

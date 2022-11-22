@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -8,7 +8,7 @@ import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
-import { GoToMatchDto } from './dto/go-to-match.dto';
+import { CreateMatchAttendanceDto } from './dto/create-match-attendance.dto';
 import { MatchAttendanceDto } from './dto/match-attendance.dto';
 import { MatchAttendancesService } from './match-attendances.service';
 
@@ -23,16 +23,18 @@ export class MatchAttendancesController {
     private readonly i18n: I18nService,
   ) {}
 
-  @Post(':matchId')
+  @Post()
+  @ApiOperation({ summary: 'Set new active match' })
   @ApiResponse(MatchAttendanceDto, { type: 'create' })
   async goToMatch(
-    @Param() { matchId }: GoToMatchDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
+    @Body() { observationType, matchId }: CreateMatchAttendanceDto,
   ) {
-    const attendance = await this.matchAttendancesService.goToMatch(
+    const attendance = await this.matchAttendancesService.create(
       matchId,
       user.id,
+      observationType,
     );
     const message = this.i18n.translate(
       'match-attendances.GO_TO_MATCH_MESSAGE',
@@ -80,15 +82,14 @@ export class MatchAttendancesController {
     return formatSuccessResponse(message, attendance);
   }
 
-  @Patch(':matchId')
+  @Patch('leave-active')
+  @ApiOperation({ summary: 'Leave current active match' })
   @ApiResponse(MatchAttendanceDto, { type: 'update' })
   async leaveTheMatch(
-    @Param() { matchId }: GoToMatchDto,
     @I18nLang() lang: string,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    const attendance = await this.matchAttendancesService.leaveTheMatch(
-      matchId,
+    const attendance = await this.matchAttendancesService.leaveActiveMatch(
       user.id,
     );
 
