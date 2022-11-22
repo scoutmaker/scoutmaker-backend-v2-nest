@@ -1,5 +1,6 @@
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
+import { ObservationTypeEnum } from '../../../types/common';
 import { MatchBasicDataDto } from '../../matches/dto/match.dto';
 import { UserBasicDataDto } from '../../users/dto/user.dto';
 
@@ -22,4 +23,7 @@ export class MatchAttendanceDto {
   )
   @Expose()
   match: MatchBasicDataDto;
+
+  @Expose()
+  observationType: ObservationTypeEnum;
 }

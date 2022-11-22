@@ -1,4 +1,5 @@
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ObservationType } from '@prisma/client';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CompetitionGroupBasicDataDto } from '../../competition-groups/dto/competition-group.dto';
@@ -65,6 +66,10 @@ export class MatchDto {
 
   @Expose()
   _count: Count;
+
+  @Expose()
+  @ApiProperty({ enum: { ...ObservationType, BOTH: 'BOTH' } })
+  observationType?: ObservationType | 'BOTH' | null;
 }
 
 export class MatchBasicDataDto extends PickType(MatchDto, [

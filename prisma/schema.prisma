@@ -444,6 +444,7 @@ model Note {
   rating           Int?
   percentageRating Float?
   scoutmakerv1Id   String?  @unique
+  observationType  ObservationType @default(VIDEO)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -587,6 +588,11 @@ model ReportSkillAssessment {
   reportId   String
 }
 
+enum ObservationType {
+  LIVE
+  VIDEO
+}
+
 enum ReportStatus {
   IN_PROGRESS
   FINISHED
@@ -609,6 +615,7 @@ model Report {
   avgRating        Float?
   percentageRating Float?
   status           ReportStatus @default(IN_PROGRESS)
+  observationType  ObservationType @default(VIDEO)
   scoutmakerv1Id   String?      @unique
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
@@ -1122,6 +1129,7 @@ model MatchAttendance {
   isActive  Boolean?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  observationType ObservationType
 
   // Relation fields
   match   Match  @relation(fields: [matchId], references: [id])

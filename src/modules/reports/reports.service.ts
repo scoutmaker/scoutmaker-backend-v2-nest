@@ -303,6 +303,7 @@ export class ReportsService {
       hasVideo,
       isLiked,
       userId: userIdFindParam,
+      observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
     } = query;
@@ -324,6 +325,7 @@ export class ReportsService {
           likes: isLiked ? { some: { userId } } : undefined,
           videoUrl: hasVideo ? { not: null } : undefined,
           authorId: userIdFindParam,
+          observationType,
           AND: [
             {
               meta: isIdsArrayFilterDefined(competitionIds)
