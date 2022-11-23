@@ -208,7 +208,7 @@ export class NotesService {
       userId: userIdFindParam,
       onlyLikedPlayers,
       onlyLikedTeams,
-      onlyNullPlayers,
+      onlyWithoutPlayers,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -309,7 +309,7 @@ export class NotesService {
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
-            { playerId: onlyNullPlayers ? null : undefined },
+            { playerId: onlyWithoutPlayers ? null : undefined },
           ],
         },
       ],
