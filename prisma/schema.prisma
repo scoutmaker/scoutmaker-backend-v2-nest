@@ -436,17 +436,17 @@ model Match {
 }
 
 model Note {
-  id               String   @id @default(cuid())
-  docNumber        Int      @default(autoincrement())
+  id               String          @id @default(cuid())
+  docNumber        Int             @default(autoincrement())
   shirtNo          Int?
   description      String?
   maxRatingScore   Int?
   rating           Int?
   percentageRating Float?
-  scoutmakerv1Id   String?  @unique
+  scoutmakerv1Id   String?         @unique
   observationType  ObservationType @default(VIDEO)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   // Relation fields
   player                        Player?                              @relation(fields: [playerId], references: [id])
@@ -599,8 +599,8 @@ enum ReportStatus {
 }
 
 model Report {
-  id               String       @id @default(cuid())
-  docNumber        Int          @default(autoincrement())
+  id               String          @id @default(cuid())
+  docNumber        Int             @default(autoincrement())
   shirtNo          Int?
   minutesPlayed    Int?
   goals            Int?
@@ -614,11 +614,11 @@ model Report {
   summary          String?
   avgRating        Float?
   percentageRating Float?
-  status           ReportStatus @default(IN_PROGRESS)
+  status           ReportStatus    @default(IN_PROGRESS)
   observationType  ObservationType @default(VIDEO)
-  scoutmakerv1Id   String?      @unique
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  scoutmakerv1Id   String?         @unique
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   // Relation fields
   author                        User                                   @relation(fields: [authorId], references: [id])
@@ -1125,10 +1125,10 @@ model LikeTeam {
 }
 
 model MatchAttendance {
-  id        String   @id @default(cuid())
-  isActive  Boolean?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String          @id @default(cuid())
+  isActive        Boolean?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   observationType ObservationType
 
   // Relation fields
