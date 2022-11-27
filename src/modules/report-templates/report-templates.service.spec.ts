@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { ReportTemplatesService } from './report-templates.service';
 
 describe('ReportTemplatesService', () => {

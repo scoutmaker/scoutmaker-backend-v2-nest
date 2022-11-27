@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MatchAttendancesService } from './match-attendances.service';
+
 import { MatchAttendancesController } from './match-attendances.controller';
+import { MatchAttendancesService } from './match-attendances.service';
 
 @Module({
   controllers: [MatchAttendancesController],
-  providers: [MatchAttendancesService]
+  providers: [MatchAttendancesService],
 })
 export class MatchAttendancesModule {}

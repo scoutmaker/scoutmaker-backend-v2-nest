@@ -1,7 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsOptional } from 'class-validator';
-
-import { IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class FindAllInsiderNotesDto {
   @IsOptional()
