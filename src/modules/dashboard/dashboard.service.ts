@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 import { subMonths } from 'date-fns';
 
+import { SortingOrder } from '../../common/pagination/pagination-options.dto';
 import { calculatePercentage } from '../../utils/helpers';
 import { MatchesService } from '../matches/matches.service';
+import { NotesSortBy } from '../notes/dto/notes-pagination-options.dto';
 import { NotesService } from '../notes/notes.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ReportsSortBy } from '../reports/dto/reports-pagination-options.dto';
 import { ReportsService } from '../reports/reports.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { UsersService } from '../users/users.service';
@@ -146,57 +149,13 @@ export class DashboardService {
     };
   }
 
-  // get organizations that have access to your observations
-  // to implement - check subscriptions
-  private async getOrganizationsForPMScout(
-    user: CurrentUserDto,
-  ): Promise<DashboardDto['organizations']> {
-    const sharedAclOrganizations = await this.prisma.organization.findMany({
-      where: {
-        OR: [
-          {
-            noteAccessControlList: { some: { note: { authorId: user.id } } },
-          },
-          {
-            reportAccessControlList: {
-              some: { report: { authorId: user.id } },
-            },
-          },
-        ],
-      },
-      include: {
-        noteAccessControlList: {
-          include: { note: true },
-          where: { note: { authorId: user.id } },
-        },
-        reportAccessControlList: {
-          include: { report: true },
-          where: { report: { authorId: user.id } },
-        },
-      },
-    });
-
-    return sharedAclOrganizations.map((org) => {
-      const observedMatchesIds = new Set<string>();
-
-      org.noteAccessControlList.forEach((noteAce) => {
-        if (noteAce.note.matchId) observedMatchesIds.add(noteAce.note.matchId);
-      });
-      org.reportAccessControlList.forEach((reportAce) => {
-        if (reportAce.report.matchId)
-          observedMatchesIds.add(reportAce.report.matchId);
-      });
-      return { name: org.name, sharedMatchesCount: observedMatchesIds.size };
-    });
-  }
-
   // PlayMaker-Scout
   private async getPlaymakerScoutData(
     user: CurrentUserDto,
   ): Promise<DashboardDto> {
     const [data, organizations] = await Promise.all([
       this.getCommonData(user),
-      this.getOrganizationsForPMScout(user),
+      this.getSharedToOrganizations(user),
     ]);
 
     return { ...data, organizations };
@@ -205,33 +164,21 @@ export class DashboardService {
   private async getScoutOrganizationData(
     user: CurrentUserDto,
   ): Promise<DashboardDto> {
-    const organizationSubscriptions =
-      await this.organizationSubscriptionsService.getFormattedForSingleOrganization(
-        user.organizationId,
-      );
-
     // get subscriptions filters
-    const observationsSubscribed = transformObservationSubscriptions(
-      organizationSubscriptions,
-    );
-    const playersSubscribed = transformPlayerSubscriptions(
-      organizationSubscriptions,
-    );
-    const matchesSubscribed = transformMatchSubscriptions(
-      organizationSubscriptions,
-    );
+    const { subscribedMatches, subscribedObservations, subscribedPlayers } =
+      await this.getOrganizaitonSubscriptionsFilters(user.organizationId);
 
     // get data
     const scoutsCountPromise = this.usersService.getCount({
       OR: [
         {
           createdNotes: {
-            some: observationsSubscribed,
+            some: subscribedObservations,
           },
         },
         {
           createdReports: {
-            some: observationsSubscribed,
+            some: subscribedObservations,
           },
         },
       ],
@@ -240,52 +187,19 @@ export class DashboardService {
     const playersCountPromise = this.playersService.getCount({
       AND: [
         { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
-        playersSubscribed,
+        subscribedPlayers,
       ],
     });
 
     const matchesCountPromise = this.matchesService.getCount({
       AND: [
         { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
-        matchesSubscribed,
+        subscribedMatches,
       ],
     });
 
-    const topNotesPromise = this.prisma.note.findMany({
-      where: {
-        AND: [{ percentageRating: { gte: 75 } }, observationsSubscribed],
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-      include: {
-        player: true,
-        match: {
-          include: {
-            homeTeam: true,
-            awayTeam: true,
-            competition: { include: { country: true } },
-          },
-        },
-      },
-    });
-
-    const topReportsPromise = this.prisma.report.findMany({
-      where: {
-        AND: [{ percentageRating: { gte: 75 } }, observationsSubscribed],
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-      include: {
-        player: true,
-        match: {
-          include: {
-            homeTeam: true,
-            awayTeam: true,
-            competition: { include: { country: true } },
-          },
-        },
-      },
-    });
+    const topNotesPromise = this.getTopNotes(subscribedObservations);
+    const topReportsPromise = this.getTopReports(subscribedObservations);
 
     const [scoutsCount, playersCount, matchesCount, topNotes, topReports] =
       await Promise.all([
@@ -301,8 +215,8 @@ export class DashboardService {
       scoutsCount,
       observerdPlayersCount: playersCount,
       observedMatchesCount: matchesCount,
-      topNotes: topNotes,
-      topReports: topReports,
+      topNotes: topNotes.docs,
+      topReports: topReports.docs,
     };
   }
 
@@ -317,5 +231,105 @@ export class DashboardService {
         if (user.organizationId) return this.getScoutOrganizationData(user);
         return this.getCommonData(user);
     }
+  }
+  // helpers
+
+  private async getTopNotes(filters: Prisma.NoteWhereInput) {
+    return await this.notesService.findAll(
+      {
+        limit: 5,
+        sortBy: NotesSortBy.createdAt,
+        sortingOrder: SortingOrder.desc,
+      },
+      { percentageRatingRangeStart: 75 },
+      undefined,
+      filters,
+    );
+  }
+
+  private async getTopReports(filters: Prisma.ReportWhereInput) {
+    return await this.reportsService.findAll(
+      {
+        limit: 5,
+        sortBy: ReportsSortBy.createdAt,
+        sortingOrder: SortingOrder.desc,
+      },
+      { percentageRatingRangeStart: 75 },
+      undefined,
+      filters,
+    );
+  }
+
+  private async getOrganizaitonSubscriptionsFilters(organizationId: string) {
+    const organizationSubscriptions =
+      await this.organizationSubscriptionsService.getFormattedForSingleOrganization(
+        organizationId,
+      );
+
+    // transform subscriptions to filters
+    const subscribedObservations = transformObservationSubscriptions(
+      organizationSubscriptions,
+    );
+    const subscribedPlayers = transformPlayerSubscriptions(
+      organizationSubscriptions,
+    );
+    const subscribedMatches = transformMatchSubscriptions(
+      organizationSubscriptions,
+    );
+
+    return { subscribedObservations, subscribedPlayers, subscribedMatches };
+  }
+
+  // get organizations that have access to your observations
+  // missing - check subscriptions
+  private async getSharedToOrganizations(
+    user: CurrentUserDto,
+  ): Promise<DashboardDto['organizations']> {
+    const sharedAclOrganizationsInclude =
+      Prisma.validator<Prisma.OrganizationInclude>()({
+        noteAccessControlList: {
+          include: { note: true },
+          where: { note: { authorId: user.id } },
+        },
+        reportAccessControlList: {
+          include: { report: true },
+          where: { report: { authorId: user.id } },
+        },
+      });
+
+    const sharedAclOrganizations = (await this.organizationsService.getList(
+      {
+        OR: [
+          {
+            noteAccessControlList: { some: { note: { authorId: user.id } } },
+          },
+          {
+            reportAccessControlList: {
+              some: { report: { authorId: user.id } },
+            },
+          },
+        ],
+      },
+      sharedAclOrganizationsInclude,
+    )) as Prisma.OrganizationGetPayload<{
+      include: typeof sharedAclOrganizationsInclude & { members: true };
+    }>[];
+
+    const sharedFromAls: DashboardDto['organizations'] =
+      sharedAclOrganizations.map((org) => {
+        const observedMatchesIds = new Set<string>();
+
+        org.noteAccessControlList.forEach((noteAce) => {
+          if (noteAce.note.matchId)
+            observedMatchesIds.add(noteAce.note.matchId);
+        });
+        org.reportAccessControlList.forEach((reportAce) => {
+          if (reportAce.report.matchId)
+            observedMatchesIds.add(reportAce.report.matchId);
+        });
+        return { name: org.name, sharedMatchesCount: observedMatchesIds.size };
+      });
+
+    return sharedFromAls;
   }
 }

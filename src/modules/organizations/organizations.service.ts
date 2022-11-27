@@ -119,8 +119,16 @@ export class OrganizationsService {
     });
   }
 
-  getList() {
-    return this.prisma.organization.findMany({ include });
+  getList(
+    filters?: Prisma.OrganizationWhereInput,
+    additionalInclude?: Prisma.OrganizationInclude,
+  ) {
+    return this.prisma.organization.findMany({
+      include: additionalInclude
+        ? { ...include, ...additionalInclude }
+        : include,
+      where: filters,
+    });
   }
 
   findOne(id: string) {
