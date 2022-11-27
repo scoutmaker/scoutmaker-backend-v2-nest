@@ -35,6 +35,20 @@ export class DashboardService {
     private readonly organizationsService: OrganizationsService,
   ) {}
 
+  async getData(user: CurrentUserDto) {
+    switch (user.role) {
+      case 'ADMIN':
+      case 'PLAYMAKER_SCOUT_MANAGER':
+        return this.getCommonData(user);
+      case 'PLAYMAKER_SCOUT':
+        return this.getPlaymakerScoutData(user);
+      case 'SCOUT':
+        if (user.organizationId) return this.getScoutOrganizationData(user);
+        return this.getCommonData(user);
+    }
+  }
+  // main helpers
+
   // PM-ScoutManager | ADMIN | 'SCOUT'
   private async getCommonData(user: CurrentUserDto): Promise<DashboardDto> {
     const monthAgoDate = subMonths(new Date(), 1);
@@ -218,19 +232,6 @@ export class DashboardService {
       topNotes: topNotes.docs,
       topReports: topReports.docs,
     };
-  }
-
-  async getData(user: CurrentUserDto) {
-    switch (user.role) {
-      case 'ADMIN':
-      case 'PLAYMAKER_SCOUT_MANAGER':
-        return this.getCommonData(user);
-      case 'PLAYMAKER_SCOUT':
-        return this.getPlaymakerScoutData(user);
-      case 'SCOUT':
-        if (user.organizationId) return this.getScoutOrganizationData(user);
-        return this.getCommonData(user);
-    }
   }
   // helpers
 
