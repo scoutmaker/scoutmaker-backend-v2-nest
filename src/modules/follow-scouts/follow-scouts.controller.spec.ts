@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { FollowScoutsController } from './follow-scouts.controller';
 import { FollowScoutsService } from './follow-scouts.service';
 

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { InsiderNotesService } from './insider-notes.service';
 
 describe('InsiderNotesService', () => {

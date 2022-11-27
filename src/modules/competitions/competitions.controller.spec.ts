@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CompetitionsController } from './competitions.controller';
 import { CompetitionsService } from './competitions.service';
 

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { TeamAffiliationsController } from './team-affiliations.controller';
 import { TeamAffiliationsService } from './team-affiliations.service';
 
@@ -11,7 +12,9 @@ describe('TeamAffiliationsController', () => {
       providers: [TeamAffiliationsService],
     }).compile();
 
-    controller = module.get<TeamAffiliationsController>(TeamAffiliationsController);
+    controller = module.get<TeamAffiliationsController>(
+      TeamAffiliationsController,
+    );
   });
 
   it('should be defined', () => {
