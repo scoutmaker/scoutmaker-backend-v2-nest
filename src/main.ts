@@ -45,7 +45,7 @@ async function bootstrap() {
       },
       'auth-token',
     )
-    .addServer(`http://localhost:${port}`)
+    .addServer(process.env.API_URL)
     .setDescription(
       `<a href="https://insomnia.rest/run/?label=ScoutMaker%20API%202.0&uri=http%3A%2F%2Flocalhost%3A${port}%2Fapi-docs-json" target="_blank"><img src="https://insomnia.rest/images/run.svg" alt="Run in Insomnia"></a>`,
     )
