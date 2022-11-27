@@ -12,6 +12,7 @@ import {
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -24,15 +25,27 @@ import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
 
+interface CsvInput {
+  id: number;
+  informant?: string;
+  description?: string;
+  playerId: number;
+  teamId?: number;
+  competitionId?: number;
+  competitionGroupId?: number;
+  authorId: string;
+}
+
 const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
-  player: true,
+  player: { include: { primaryPosition: true } },
   author: true,
+  meta: { include: { team: true } },
 });
 
 const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { country: true, primaryPosition: true } },
   author: true,
-  meta: { include: { competition: true, competitionGroup: true } },
+  meta: { include: { competition: true, competitionGroup: true, team: true } },
 });
 
 type SingleInsiderNoteWithInclude = InsiderNote & {
@@ -60,11 +73,11 @@ export class InsiderNotesService {
       playerId,
     );
 
-    const metaTeamId = teamId || player.teams[0].teamId;
+    const metaTeamId = teamId || player.teams[0]?.teamId;
     const metaCompetitionId =
-      competitionId || player.teams[0].team.competitions[0].competitionId;
+      competitionId || player.teams[0]?.team.competitions[0].competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0].team.competitions[0].groupId;
+      competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
     return this.prisma.insiderNote.create({
       data: {
@@ -73,8 +86,10 @@ export class InsiderNotesService {
         author: { connect: { id: authorId } },
         meta: {
           create: {
-            team: { connect: { id: metaTeamId } },
-            competition: { connect: { id: metaCompetitionId } },
+            team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+            competition: metaCompetitionId
+              ? { connect: { id: metaCompetitionId } }
+              : undefined,
             competitionGroup: metaCompetitionGroupId
               ? { connect: { id: metaCompetitionGroupId } }
               : undefined,
@@ -83,6 +98,47 @@ export class InsiderNotesService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateInsiderNoteDto();
+
+      instance.id = item.id?.toString();
+      instance.informant = item.informant;
+      instance.description = item.description;
+      instance.playerId = item.playerId?.toString();
+      instance.teamId = item.teamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.competitionGroupId = item.competitionGroupId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: InsiderNote[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, id: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
@@ -198,7 +254,10 @@ export class InsiderNotesService {
   }
 
   getList(accessFilters?: Prisma.InsiderNoteWhereInput) {
-    return this.prisma.insiderNote.findMany({ where: accessFilters, include });
+    return this.prisma.insiderNote.findMany({
+      where: accessFilters || undefined,
+      include,
+    });
   }
 
   async findOne(
@@ -249,11 +308,11 @@ export class InsiderNotesService {
         playerId,
       );
 
-      metaTeamId = teamId || player.teams[0].teamId;
+      metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0]?.competitionId;
+        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0]?.groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
       await this.prisma.insiderNoteMeta.update({
         where: { insiderNoteId: id },

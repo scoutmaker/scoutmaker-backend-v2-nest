@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { ReportTemplatesController } from './report-templates.controller';
 import { ReportTemplatesService } from './report-templates.service';
 
@@ -11,7 +12,9 @@ describe('ReportTemplatesController', () => {
       providers: [ReportTemplatesService],
     }).compile();
 
-    controller = module.get<ReportTemplatesController>(ReportTemplatesController);
+    controller = module.get<ReportTemplatesController>(
+      ReportTemplatesController,
+    );
   });
 
   it('should be defined', () => {

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { UserFootballRolesController } from './user-football-roles.controller';
 import { UserFootballRolesService } from './user-football-roles.service';
 
@@ -11,7 +12,9 @@ describe('UserFootballRolesController', () => {
       providers: [UserFootballRolesService],
     }).compile();
 
-    controller = module.get<UserFootballRolesController>(UserFootballRolesController);
+    controller = module.get<UserFootballRolesController>(
+      UserFootballRolesController,
+    );
   });
 
   it('should be defined', () => {

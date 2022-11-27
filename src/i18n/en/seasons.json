@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Successfully created new season - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all seasons data, page {currentPage} of {totalPages}",
   "GET_LIST_MESSAGE": "Successfully fetched all seasons list",
   "GET_ONE_MESSAGE": "Successfully fetched season data - {name}",
   "UPDATE_MESSAGE": "Successfully updated season data - {name}",

@@ -7,10 +7,18 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
@@ -18,6 +26,7 @@ import { AccessFilters } from '../../common/access-filters/access-filters.decora
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
@@ -37,7 +46,7 @@ import { PlayersService } from './players.service';
 @Controller('players')
 @ApiTags('players')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class PlayersController {
   constructor(
     private readonly playersService: PlayersService,
@@ -58,6 +67,31 @@ export class PlayersController {
       args: { name: `${player.firstName} ${player.lastName}` },
     });
     return formatSuccessResponse(message, player);
+  }
+
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.playersService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
   }
 
   @Get()
@@ -91,9 +125,15 @@ export class PlayersController {
   @Serialize(PlayerBasicDataDto)
   async getList(
     @I18nLang() lang: string,
+    @Query() query: FindAllPlayersDto,
+    @CurrentUser() user: CurrentUserDto,
     @AccessFilters() accessFilters: Prisma.PlayerWhereInput,
   ) {
-    const players = await this.playersService.getList(accessFilters);
+    const players = await this.playersService.getList(
+      query,
+      user.id,
+      accessFilters,
+    );
     const message = this.i18n.translate('players.GET_LIST_MESSAGE', {
       lang,
     });
@@ -110,6 +150,23 @@ export class PlayersController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const player = await this.playersService.findOne(id, user.id);
+    const message = this.i18n.translate('players.GET_ONE_MESSAGE', {
+      lang,
+      args: { name: `${player.firstName} ${player.lastName}` },
+    });
+    return formatSuccessResponse(message, player);
+  }
+
+  @Get('by-slug/:slug')
+  @UseGuards(ReadGuard)
+  @ApiResponse(PlayerDto, { type: 'read' })
+  @Serialize(PlayerDto)
+  async findOneBySlug(
+    @I18nLang() lang: string,
+    @Param('slug') slug: string,
+    @CurrentUser() user: CurrentUserDto,
+  ) {
+    const player = await this.playersService.findOneBySlug(slug, user.id);
     const message = this.i18n.translate('players.GET_ONE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },

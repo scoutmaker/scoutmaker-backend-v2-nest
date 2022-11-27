@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
@@ -29,7 +29,7 @@ import { UpdateAgencyDto } from './dto/update-agency.dto';
 @Controller('agencies')
 @ApiTags('agencies')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class AgenciesController {
   constructor(
     private readonly agenciesService: AgenciesService,

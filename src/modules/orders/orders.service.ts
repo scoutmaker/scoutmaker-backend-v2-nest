@@ -20,8 +20,15 @@ import { OrdersPaginationOptionsDto } from './dto/orders-pagination-options.dto'
 const include: Prisma.OrderInclude = {
   author: true,
   scout: true,
-  player: { include: { primaryPosition: true, country: true } },
+  player: {
+    include: {
+      primaryPosition: true,
+      country: true,
+      teams: { where: { endDate: null }, include: { team: true } },
+    },
+  },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
+  _count: { select: { reports: true } },
 };
 
 const { author, scout, ...listInclude } = include;
@@ -77,7 +84,12 @@ export class OrdersService {
             { match: { awayTeam: { id: { in: teamIds } } } },
             {
               player: {
-                teams: { some: { endDate: null, id: { in: teamIds } } },
+                teams: {
+                  some: {
+                    endDate: null,
+                    team: { id: { in: teamIds } },
+                  },
+                },
               },
             },
           ]
@@ -98,6 +110,7 @@ export class OrdersService {
         break;
       case 'position':
         sort = { player: { primaryPosition: { name: sortingOrder } } };
+        break;
       default:
         sort = { [sortBy]: sortingOrder };
         break;

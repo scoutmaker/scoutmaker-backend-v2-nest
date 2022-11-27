@@ -139,13 +139,39 @@ export class AuthService {
     };
   }
 
-  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
-    const user = await this.usersService.updatePassword(id, updatePasswordDto);
+  async updatePassword(
+    id: string,
+    updatePasswordDto: UpdatePasswordDto,
+    lang: string,
+  ) {
+    const invalidCredentialsMessage = this.i18n.translate(
+      'auth.INVALID_CREDENTIALS_ERROR',
+      { lang },
+    );
+    // Check if the user with the given id exists
+    const user = await this.usersService.findOne(id);
+    if (!user) {
+      throw new UnauthorizedException(invalidCredentialsMessage);
+    }
 
-    const { role, organizationId } = user;
+    // Password comparison
+    const isPasswordValid = await bcrypt.compare(
+      updatePasswordDto.oldPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new UnauthorizedException(invalidCredentialsMessage);
+    }
+
+    const updatedUser = await this.usersService.updatePassword(
+      id,
+      updatePasswordDto,
+    );
+
+    const { role, organizationId } = updatedUser;
     const { token, expiresIn } = this.getAndVerifyJwt(id, role, organizationId);
 
-    return { user, token, expiresIn };
+    return { user: updatedUser, token, expiresIn };
   }
 
   async forgotPassword(email: string, lang: string) {

@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
+
 import { CreateReportSkillAssessmentCategoryDto } from './create-report-skill-assessment-category.dto';
 
-export class UpdateReportSkillAssessmentCategoryDto extends PartialType(CreateReportSkillAssessmentCategoryDto) {}
+export class UpdateReportSkillAssessmentCategoryDto extends PartialType(
+  OmitType(CreateReportSkillAssessmentCategoryDto, ['id']),
+) {}

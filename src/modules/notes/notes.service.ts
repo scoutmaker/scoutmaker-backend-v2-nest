@@ -1,9 +1,10 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Note, Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculatePercentageRating,
   calculateSkip,
@@ -17,10 +18,26 @@ import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
+interface CsvInput {
+  id: number;
+  shirtNo?: number;
+  description?: string;
+  maxRatingScore?: number;
+  rating?: number;
+  playerId?: number;
+  matchId?: number;
+  positionPlayedId?: number;
+  teamId?: number;
+  competitionId?: number;
+  competitionGroupId?: number;
+  authorId: number;
+}
+
 const include: Prisma.NoteInclude = {
   player: { include: { country: true, primaryPosition: true } },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
+  meta: { include: { team: true, position: true } },
 };
 
 const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
@@ -28,7 +45,12 @@ const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
   meta: {
-    include: { competition: true, competitionGroup: true, position: true },
+    include: {
+      competition: true,
+      competitionGroup: true,
+      position: true,
+      team: true,
+    },
   },
 });
 
@@ -41,6 +63,23 @@ export class NotesService {
     private readonly playersService: PlayersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
+
+  private getCacheKey(id: string) {
+    return `note:${id}`;
+  }
+
+  private getOneFromCache(id: string) {
+    return this.redis.get(this.getCacheKey(id));
+  }
+
+  private saveOneToCache<T extends Note>(note: T) {
+    return this.redis.set(
+      this.getCacheKey(note.id),
+      JSON.stringify(note),
+      'EX',
+      REDIS_TTL,
+    );
+  }
 
   async create(createNoteDto: CreateNoteDto, authorId: string) {
     const {
@@ -73,11 +112,11 @@ export class NotesService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0].teamId;
+      metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0].competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
     }
 
     return this.prisma.note.create({
@@ -93,8 +132,10 @@ export class NotesService {
           ? {
               create: {
                 position: { connect: { id: metaPositionId } },
-                team: { connect: { id: metaTeamId } },
-                competition: { connect: { id: metaCompetitionId } },
+                team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+                competition: metaCompetitionId
+                  ? { connect: { id: metaCompetitionId } }
+                  : undefined,
                 competitionGroup: metaCompetitionGroupId
                   ? { connect: { id: metaCompetitionGroupId } }
                   : undefined,
@@ -104,6 +145,50 @@ export class NotesService {
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateNoteDto();
+      instance.id = item.id?.toString();
+      instance.shirtNo = item.shirtNo;
+      instance.description = item.description;
+      instance.maxRatingScore = item.maxRatingScore;
+      instance.rating = item.rating;
+      instance.playerId = item.playerId?.toString();
+      instance.matchId = item.matchId?.toString();
+      instance.positionPlayedId = item.positionPlayedId?.toString();
+      instance.teamId = item.teamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.competitionGroupId = item.competitionGroupId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Note[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
@@ -120,6 +205,10 @@ export class NotesService {
       playerBornAfter,
       playerBornBefore,
       isLiked,
+      userId: userIdFindParam,
+      observationType,
+      onlyLikedPlayers,
+      onlyLikedTeams,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -161,6 +250,8 @@ export class NotesService {
             lte: percentageRatingRangeEnd,
           },
           likes: isLiked ? { some: { userId } } : undefined,
+          authorId: userIdFindParam,
+          observationType,
           AND: [
             {
               meta: isIdsArrayFilterDefined(competitionIds)
@@ -199,6 +290,16 @@ export class NotesService {
               player: {
                 yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
               },
+            },
+            {
+              player: onlyLikedPlayers
+                ? { likes: { some: { userId } } }
+                : undefined,
+            },
+            {
+              meta: onlyLikedTeams
+                ? { team: { likes: { some: { userId } } } }
+                : undefined,
             },
           ],
         },
@@ -243,9 +344,7 @@ export class NotesService {
   }
 
   async findOne(id: string, userId?: string) {
-    const redisKey = `note:${id}`;
-
-    const cached = await this.redis.get(redisKey);
+    const cached = await this.getOneFromCache(id);
 
     if (cached) {
       return JSON.parse(cached);
@@ -263,7 +362,7 @@ export class NotesService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(note), 'EX', REDIS_TTL);
+    await this.saveOneToCache(note);
 
     return note;
   }
@@ -307,8 +406,11 @@ export class NotesService {
         playerId,
       );
 
+      const metaTeamId = teamId || player.teams[0]?.teamId;
+      const metaCompetitionId =
+        competitionId || player.teams[0].team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
-        competitionGroupId || player.teams[0].team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
       await this.prisma.noteMeta.create({
         data: {
@@ -316,14 +418,14 @@ export class NotesService {
           position: {
             connect: { id: positionPlayedId || player.primaryPositionId },
           },
-          team: { connect: { id: teamId || player.teams[0].teamId } },
-          competition: {
-            connect: {
-              id:
-                competitionId ||
-                player.teams[0].team.competitions[0].competitionId,
-            },
-          },
+          team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,
+          competition: metaCompetitionId
+            ? {
+                connect: {
+                  id: metaCompetitionId,
+                },
+              }
+            : undefined,
           competitionGroup: metaCompetitionGroupId
             ? { connect: { id: metaCompetitionGroupId } }
             : undefined,
@@ -344,7 +446,7 @@ export class NotesService {
       });
     }
 
-    return this.prisma.note.update({
+    const updated = await this.prisma.note.update({
       where: { id },
       data: {
         ...rest,
@@ -354,18 +456,13 @@ export class NotesService {
       },
       include,
     });
+
+    await this.saveOneToCache(updated);
+
+    return updated;
   }
 
   async remove(id: string) {
-    await Promise.all([
-      this.prisma.noteMeta.delete({ where: { noteId: id } }),
-      this.prisma.userNoteAccessControlEntry.deleteMany({
-        where: { noteId: id },
-      }),
-      this.prisma.organizationNoteAccessControlEntry.deleteMany({
-        where: { noteId: id },
-      }),
-    ]);
     return this.prisma.note.delete({ where: { id }, include });
   }
 }

@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Successfully created new competition junior level - {name}",
-  "GET_ALL_MESSAGE": "Successfully fetched all competition junior levels",
+  "GET_ALL_MESSAGE": "Successfully fetched all competition junior levels data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all competition junior levels",
   "GET_ONE_MESSAGE": "Successfully fetched competition junior level data - {name}",
   "UPDATE_MESSAGE": "Successfully updated competition junior level data - {name}",
   "DELETE_MESSAGE": "Successfully deleted competition junior level data - {name}"

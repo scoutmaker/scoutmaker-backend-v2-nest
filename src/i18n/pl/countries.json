@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nowy kraj - {name}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich krajów",
   "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich krajów, strona {currentPage} z {totalPages}",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane kraju - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane kraju - {name}",

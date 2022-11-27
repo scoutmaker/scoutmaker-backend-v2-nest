@@ -1,13 +1,11 @@
-import { IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindAllOrganizationInsiderNoteAceDto {
   @IsOptional()
-  @IsCuid()
+  @IsString()
   organizationId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   insiderNoteId?: string;
 }

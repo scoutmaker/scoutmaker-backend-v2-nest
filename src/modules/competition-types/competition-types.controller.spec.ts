@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CompetitionTypesController } from './competition-types.controller';
 import { CompetitionTypesService } from './competition-types.service';
 
@@ -11,7 +12,9 @@ describe('CompetitionTypesController', () => {
       providers: [CompetitionTypesService],
     }).compile();
 
-    controller = module.get<CompetitionTypesController>(CompetitionTypesController);
+    controller = module.get<CompetitionTypesController>(
+      CompetitionTypesController,
+    );
   });
 
   it('should be defined', () => {

@@ -1,6 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -10,7 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { ObservationTypeEnum } from '../../../types/common';
 
 class CreateReportSkillAssessmentDto {
   @IsOptional()
@@ -21,14 +22,18 @@ class CreateReportSkillAssessmentDto {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim())
+  @Transform(({ value }) => value?.trim() || value)
   description?: string;
 
-  @IsCuid()
+  @IsString()
   templateId: string;
 }
 
 export class CreateReportDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -84,34 +89,51 @@ export class CreateReportDto {
   @Transform(({ value }) => value.trim())
   summary?: string;
 
-  @IsCuid()
-  templateId: string;
+  @IsOptional()
+  @IsString()
+  templateId?: string;
 
-  @IsCuid()
+  @IsOptional()
+  @IsInt()
+  maxRatingScore?: number;
+
+  @IsString()
   playerId: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsInt()
+  orderId?: string;
+
+  @IsOptional()
+  @IsString()
   positionPlayedId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   teamId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   competitionId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   competitionGroupId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   matchId?: string;
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateReportSkillAssessmentDto)
   skillAssessments?: CreateReportSkillAssessmentDto[];
+
+  @IsOptional()
+  @IsEnum(ObservationTypeEnum, {
+    message: `Observation type must be a valid enum value. Available values: ${Object.keys(
+      ObservationTypeEnum,
+    ).join(', ')}`,
+  })
+  observationType?: ObservationTypeEnum;
 }

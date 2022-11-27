@@ -10,7 +10,7 @@ import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exce
 const port = process.env.PORT || 3000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   // Set global prefix for all routes
   app.setGlobalPrefix('api/v2');
@@ -37,7 +37,18 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Scoutmaker Pro API v2')
     .setVersion('2.0')
-    .addCookieAuth('token')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-auth-token',
+        in: 'header',
+      },
+      'auth-token',
+    )
+    .addServer(process.env.API_URL)
+    .setDescription(
+      `<a href="https://insomnia.rest/run/?label=ScoutMaker%20API%202.0&uri=http%3A%2F%2Flocalhost%3A${port}%2Fapi-docs-json" target="_blank"><img src="https://insomnia.rest/images/run.svg" alt="Run in Insomnia"></a>`,
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);

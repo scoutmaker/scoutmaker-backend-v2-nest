@@ -1,6 +1,6 @@
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsString } from 'class-validator';
 
 export class CreateLikeInsiderNoteDto {
-  @IsCuid()
+  @IsString()
   insiderNoteId: string;
 }

@@ -6,25 +6,39 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
+import { FindAllTeamAffiliationsDto } from './dto/find-all-team-affiliations.dto';
 import { TeamAffiliationDto } from './dto/team-affiliation.dto';
+import { TeamAffiliationsPaginationOptionsDto } from './dto/team-affiliations-pagination-options.dto';
 import { UpdateTeamAffiliationDto } from './dto/update-team-affiliation.dto';
 import { TeamAffiliationsService } from './team-affiliations.service';
 
 @Controller('team-affiliations')
 @ApiTags('team affiliations')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
-@Serialize(TeamAffiliationDto)
+@ApiSecurity('auth-token')
 export class TeamAffiliationsController {
   constructor(
     private readonly teamAffiliationsService: TeamAffiliationsService,
@@ -33,6 +47,7 @@ export class TeamAffiliationsController {
 
   @Post()
   @ApiResponse(TeamAffiliationDto, { type: 'create' })
+  @Serialize(TeamAffiliationDto)
   async create(
     @I18nLang() lang: string,
     @Body() createTeamAffiliationDto: CreateTeamAffiliationDto,
@@ -50,10 +65,60 @@ export class TeamAffiliationsController {
     return formatSuccessResponse(message, affiliation);
   }
 
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.teamAffiliationsService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
+  }
+
   @Get()
+  @ApiPaginatedResponse(TeamAffiliationDto)
+  @ApiQuery({ type: TeamAffiliationsPaginationOptionsDto })
+  @Serialize(TeamAffiliationDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: TeamAffiliationsPaginationOptionsDto,
+    @Query() query: FindAllTeamAffiliationsDto,
+  ) {
+    const data = await this.teamAffiliationsService.findAll(
+      paginationOptions,
+      query,
+    );
+    const message = this.i18n.translate('team-affiliations.GET_ALL_MESSAGE', {
+      lang,
+      args: {
+        currentPage: data.page,
+        totalPages: data.totalPages,
+      },
+    });
+    return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
   @ApiResponse(TeamAffiliationDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
-    const affiliations = await this.teamAffiliationsService.findAll();
+  @Serialize(TeamAffiliationDto)
+  async getList(@I18nLang() lang: string) {
+    const affiliations = await this.teamAffiliationsService.getList();
     const message = this.i18n.translate('team-affiliations.GET_LIST_MESSAGE', {
       lang,
     });
@@ -62,6 +127,7 @@ export class TeamAffiliationsController {
 
   @Get(':id')
   @ApiResponse(TeamAffiliationDto, { type: 'read' })
+  @Serialize(TeamAffiliationDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const affiliation = await this.teamAffiliationsService.findOne(id);
     const message = this.i18n.translate('team-affiliations.GET_ONE_MESSAGE', {
@@ -76,6 +142,7 @@ export class TeamAffiliationsController {
 
   @Patch(':id')
   @ApiResponse(TeamAffiliationDto, { type: 'update' })
+  @Serialize(TeamAffiliationDto)
   async update(
     @I18nLang() lang: string,
     @Param('id') id: string,
@@ -97,6 +164,7 @@ export class TeamAffiliationsController {
 
   @Delete(':id')
   @ApiResponse(TeamAffiliationDto, { type: 'delete' })
+  @Serialize(TeamAffiliationDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const affiliation = await this.teamAffiliationsService.remove(id);
     const message = this.i18n.translate('team-affiliations.DELETE_MESSAGE', {

@@ -6,27 +6,40 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CreateSeasonDto } from './dto/create-season.dto';
+import { FindAllSeasonsDto } from './dto/find-all-seasons.dto';
 import { SeasonDto } from './dto/season.dto';
+import { SeasonsPaginationOptionsDto } from './dto/seasons-pagination-options.dto';
 import { ToggleIsActiveDto } from './dto/toggle-is-active.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
 import { SeasonsService } from './seasons.service';
 
 @Controller('seasons')
 @ApiTags('seasons')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
-@Serialize(SeasonDto)
+@UseGuards(AuthGuard)
+@ApiSecurity('auth-token')
 export class SeasonsController {
   constructor(
     private readonly seasonsService: SeasonsService,
@@ -34,7 +47,9 @@ export class SeasonsController {
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'create' })
+  @Serialize(SeasonDto)
   async create(
     @I18nLang() lang: string,
     @Body() createSeasonDto: CreateSeasonDto,
@@ -47,10 +62,54 @@ export class SeasonsController {
     return formatSuccessResponse(message, season);
   }
 
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.seasonsService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
+  }
+
   @Get()
+  @ApiPaginatedResponse(SeasonDto)
+  @ApiQuery({ type: SeasonsPaginationOptionsDto })
+  @Serialize(SeasonDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: SeasonsPaginationOptionsDto,
+    @Query() query: FindAllSeasonsDto,
+  ) {
+    const data = await this.seasonsService.findAll(paginationOptions, query);
+    const message = this.i18n.translate('seasons.GET_ALL_MESSAGE', {
+      lang,
+      args: { currentPage: data.page, totalPages: data.totalPages },
+    });
+    return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
   @ApiResponse(SeasonDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
-    const seasons = await this.seasonsService.findAll();
+  @Serialize(SeasonDto)
+  async getList(@I18nLang() lang: string) {
+    const seasons = await this.seasonsService.getList();
     const message = this.i18n.translate('seasons.GET_LIST_MESSAGE', {
       lang,
     });
@@ -59,6 +118,7 @@ export class SeasonsController {
 
   @Get(':id')
   @ApiResponse(SeasonDto, { type: 'read' })
+  @Serialize(SeasonDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const season = await this.seasonsService.findOne(id);
     const message = this.i18n.translate('seasons.GET_ONE_MESSAGE', {
@@ -69,7 +129,9 @@ export class SeasonsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'update' })
+  @Serialize(SeasonDto)
   async update(
     @I18nLang() lang: string,
     @Param('id') id: string,
@@ -84,7 +146,9 @@ export class SeasonsController {
   }
 
   @Patch(':id/toggle-active')
+  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'update' })
+  @Serialize(SeasonDto)
   async toggleIsActive(
     @I18nLang() lang: string,
     @Param('id') id: string,
@@ -111,7 +175,9 @@ export class SeasonsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'delete' })
+  @Serialize(SeasonDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const season = await this.seasonsService.remove(id);
     const message = this.i18n.translate('seasons.DELETE_MESSAGE', {

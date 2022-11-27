@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
@@ -10,30 +11,34 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 import { FootEnum } from '../types';
 
 export class CreatePlayerDto {
-  @IsRequiredStringWithMaxLength(30)
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsRequiredStringWithMaxLength(50)
   firstName: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   lastName: string;
 
-  @IsCuid()
+  @IsString()
   countryId: string;
 
-  @IsCuid()
+  @IsString()
   primaryPositionId: string;
 
   @IsOptional()
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   secondaryPositionIds?: string[];
 
-  @IsCuid()
-  teamId: string;
+  @IsOptional()
+  @IsString()
+  teamId?: string;
 
   @IsInt()
   @Min(1950)
@@ -85,4 +90,12 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsUrl()
   transfermarktUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  scoutmakerv1Id?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublic?: boolean;
 }

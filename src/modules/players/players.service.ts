@@ -5,6 +5,7 @@ import Redis from 'ioredis';
 import slugify from 'slugify';
 
 import { REDIS_TTL } from '../../utils/constants';
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -15,6 +16,35 @@ import { CreatePlayerDto } from './dto/create-player.dto';
 import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { FootEnum } from './types';
+
+type CsvFooted = 'R' | 'L' | 'both';
+interface CsvInput {
+  id: number;
+  firstName: string;
+  lastName: string;
+  yearOfBirth: number | string;
+  height?: number | string;
+  weight?: number | string;
+  footed: 'R' | 'L' | 'both';
+  lnpId?: number;
+  lnpUrl?: string;
+  minut90id?: string;
+  minut90url?: string;
+  transfermarktId?: string;
+  transfermarktUrl?: string;
+  isPublic?: boolean;
+  scoutmakerv1Id?: string;
+  countryId: number;
+  primaryPositionId: number;
+  authorId: number;
+}
+
+const footedMap: Record<CsvFooted, FootEnum> = {
+  R: FootEnum.RIGHT,
+  L: FootEnum.LEFT,
+  both: FootEnum.BOTH,
+};
 
 const include: Prisma.PlayerInclude = {
   country: true,
@@ -53,6 +83,12 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   _count: { select: { notes: true, reports: true } },
 });
 
+interface IGenerateWhereClauseArgs {
+  query: FindAllPlayersDto;
+  accessFilters?: Prisma.PlayerWhereInput;
+  userId?: string;
+}
+
 @Injectable()
 export class PlayersService {
   constructor(
@@ -87,16 +123,78 @@ export class PlayersService {
                 },
               }
             : undefined,
-        teams: { create: { teamId, startDate: new Date(), endDate: null } },
+        teams: teamId
+          ? { create: { teamId, startDate: new Date(), endDate: null } }
+          : undefined,
         author: { connect: { id: authorId } },
       },
       include,
     });
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
-    {
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreatePlayerDto();
+      instance.id = item.id?.toString();
+      instance.firstName = item.firstName;
+      instance.lastName = item.lastName;
+      instance.yearOfBirth =
+        typeof item.yearOfBirth === 'string' ? 2000 : item.yearOfBirth || 2000;
+      instance.height =
+        typeof item.height === 'string' ? 170 : item.height || 170;
+      instance.weight =
+        typeof item.weight === 'string' ? 70 : item.weight || 70;
+      instance.footed = footedMap[item.footed];
+      instance.lnpId = item.lnpId?.toString();
+      instance.lnpUrl = item.lnpUrl;
+      instance.minut90id = item.minut90id;
+      instance.minut90url = item.minut90url;
+      instance.transfermarktId = item.transfermarktId;
+      instance.transfermarktUrl = item.transfermarktUrl;
+      instance.isPublic = item.isPublic || false;
+      instance.scoutmakerv1Id = item.scoutmakerv1Id;
+      instance.countryId = item.countryId?.toString();
+      instance.primaryPositionId = item.primaryPositionId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Player[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({
+          index,
+          name: `${instance.firstName} ${instance.lastName}`,
+          error,
+        });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
+  }
+
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.PlayerWhereInput {
+    const {
       bornAfter,
       bornBefore,
       competitionIds,
@@ -106,37 +204,31 @@ export class PlayersService {
       isLiked,
       name,
       positionIds,
+      orderId,
       teamIds,
-    }: FindAllPlayersDto,
-    userId?: string,
-    accessFilters?: Prisma.PlayerWhereInput,
-  ) {
-    let sort: Prisma.PlayerOrderByWithRelationInput;
+      hasNote,
+      hasReport,
+      hasAnyObservation,
+    } = query;
 
-    switch (sortBy) {
-      case 'country':
-      case 'primaryPosition':
-        sort = { [sortBy]: { name: sortingOrder } };
-        break;
+    const slugfiedQueryString = name
+      ? slugify(name, {
+          lower: true,
+        })
+      : undefined;
 
-      case 'reportsCount':
-        sort = { reports: { _count: sortingOrder } };
-        break;
+    const slugifiedReversedQueryString = name
+      ? slugify(name.split(' ').reverse().join(' '), {
+          lower: true,
+        })
+      : undefined;
 
-      case 'notesCount':
-        sort = { notes: { _count: sortingOrder } };
-        break;
-
-      default:
-        sort = { [sortBy]: sortingOrder };
-        break;
-    }
-
-    const where: Prisma.PlayerWhereInput = {
+    return {
       AND: [
         accessFilters,
         {
           yearOfBirth: { gte: bornAfter, lte: bornBefore },
+          orders: orderId ? { some: { id: orderId } } : undefined,
           footed,
           country: isIdsArrayFilterDefined(countryIds)
             ? {
@@ -144,11 +236,25 @@ export class PlayersService {
               }
             : undefined,
           likes: isLiked ? { some: { userId } } : undefined,
+          notes: hasNote ? { some: {} } : undefined,
+          reports: hasReport ? { some: {} } : undefined,
           AND: [
             {
               OR: [
                 { firstName: { contains: name, mode: 'insensitive' } },
                 { lastName: { contains: name, mode: 'insensitive' } },
+                {
+                  slug: {
+                    contains: slugifiedReversedQueryString,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  slug: {
+                    contains: slugfiedQueryString,
+                    mode: 'insensitive',
+                  },
+                },
               ],
             },
             {
@@ -202,10 +308,45 @@ export class PlayersService {
                   }
                 : undefined,
             },
+            {
+              OR: hasAnyObservation
+                ? [{ notes: { some: {} } }, { reports: { some: {} } }]
+                : undefined,
+            },
           ],
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: PlayersPaginationOptionsDto,
+    query: FindAllPlayersDto,
+    userId?: string,
+    accessFilters?: Prisma.PlayerWhereInput,
+  ) {
+    let sort: Prisma.PlayerOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'country':
+      case 'primaryPosition':
+        sort = { [sortBy]: { name: sortingOrder } };
+        break;
+
+      case 'reportsCount':
+        sort = { reports: { _count: sortingOrder } };
+        break;
+
+      case 'notesCount':
+        sort = { notes: { _count: sortingOrder } };
+        break;
+
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, userId, accessFilters });
 
     const players = await this.prisma.player.findMany({
       where,
@@ -232,9 +373,15 @@ export class PlayersService {
     });
   }
 
-  getList(accessFilters?: Prisma.PlayerWhereInput) {
+  getList(
+    query: FindAllPlayersDto,
+    userId?: string,
+    accessFilters?: Prisma.PlayerWhereInput,
+  ) {
+    const where = this.generateWhereClause({ query, userId, accessFilters });
+
     return this.prisma.player.findMany({
-      where: { ...accessFilters },
+      where,
       include: listInclude,
     });
   }
@@ -250,6 +397,32 @@ export class PlayersService {
 
     const player = await this.prisma.player.findUnique({
       where: { id },
+      include: userId
+        ? {
+            ...singleInclude,
+            likes: {
+              where: { userId },
+            },
+          }
+        : singleInclude,
+    });
+
+    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+
+    return player;
+  }
+
+  async findOneBySlug(slug: string, userId?: string) {
+    const redisKey = `player:${slug}`;
+
+    const cached = await this.redis.get(redisKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const player = await this.prisma.player.findUnique({
+      where: { slug },
       include: userId
         ? {
             ...singleInclude,

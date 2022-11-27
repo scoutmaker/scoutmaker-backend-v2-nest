@@ -1,9 +1,13 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { ObservationTypeEnum } from '../../../types/common';
 
 export class CreateNoteDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -23,31 +27,39 @@ export class CreateNoteDto {
 
   @IsOptional()
   @IsInt()
-  @Min(2)
+  @Min(1)
   @Max(20)
   rating?: number;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   playerId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   matchId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   positionPlayedId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   teamId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   competitionId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   competitionGroupId?: string;
+
+  @IsOptional()
+  @IsEnum(ObservationTypeEnum, {
+    message: `Observation type must be a valid enum value. Available values: ${Object.keys(
+      ObservationTypeEnum,
+    ).join(', ')}`,
+  })
+  observationType?: ObservationTypeEnum;
 }

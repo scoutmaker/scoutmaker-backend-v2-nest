@@ -3,49 +3,51 @@ import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
   IsInt,
   IsOptional,
+  IsString,
   Max,
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { ObservationTypeEnum } from '../../../types/common';
 
 export class FindAllNotesDto {
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   playerIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   positionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   teamIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   matchIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionGroupIds?: string[];
 
   @IsOptional()
@@ -80,6 +82,28 @@ export class FindAllNotesDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;
+
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
+  @IsOptional()
+  @IsEnum(ObservationTypeEnum, {
+    message: `Observation type must be a valid enum value. Available values: ${Object.keys(
+      ObservationTypeEnum,
+    ).join(', ')}`,
+  })
+  observationType?: ObservationTypeEnum;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyLikedTeams?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyLikedPlayers?: boolean;
 }
 
 export class GetNotesListDto extends PickType(FindAllNotesDto, ['matchIds']) {}

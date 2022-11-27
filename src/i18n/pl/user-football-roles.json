@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nową piłkarską rolę użytkowników - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich ról piłkarskich użytkowników, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich ról piłkarskich użytkowników",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane roli piłkarskiej użytkowników - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane roli piłkarskiej użytkowników - {name}",

@@ -1,5 +1,12 @@
 export enum UserRoleEnum {
   ADMIN = 'ADMIN',
   PLAYMAKER_SCOUT = 'PLAYMAKER_SCOUT',
+  PLAYMAKER_SCOUT_MANAGER = 'PLAYMAKER_SCOUT_MANAGER',
   SCOUT = 'SCOUT',
+}
+
+export enum AccountStatusEnum {
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  BLOCKED = 'BLOCKED',
 }

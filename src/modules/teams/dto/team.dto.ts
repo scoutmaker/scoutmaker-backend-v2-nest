@@ -1,7 +1,7 @@
 import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
-import { ClubBasicDataDto, ClubDto } from '../../clubs/dto/club.dto';
+import { ClubBasicDataDto } from '../../clubs/dto/club.dto';
 import { CompetitionParticipationWithoutTeamDto } from '../../competition-participations/dto/competition-participation.dto';
 import { LikeTeamBasicDataDto } from '../../like-teams/dto/like-team.dto';
 

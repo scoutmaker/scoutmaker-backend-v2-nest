@@ -11,6 +11,9 @@ export class CompetitionGroupDto {
   @Expose()
   name: string;
 
+  @Expose()
+  transfermarktUrl?: string;
+
   @Transform(({ value }) =>
     plainToInstance(CompetitionBasicDataDto, value, {
       excludeExtraneousValues: true,
@@ -27,7 +30,7 @@ export class CompetitionGroupDto {
     ),
   )
   @Expose()
-  regions: RegionWithoutCountryDto[];
+  regions?: RegionWithoutCountryDto[];
 }
 
 export class CompetitionGroupBasicDataDto extends PickType(

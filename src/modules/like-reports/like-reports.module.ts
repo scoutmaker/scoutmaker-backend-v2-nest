@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { LikeReportsService } from './like-reports.service';
+
 import { LikeReportsController } from './like-reports.controller';
+import { LikeReportsService } from './like-reports.service';
 
 @Module({
   controllers: [LikeReportsController],
-  providers: [LikeReportsService]
+  providers: [LikeReportsService],
 })
 export class LikeReportsModule {}

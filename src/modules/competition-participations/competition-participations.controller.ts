@@ -6,27 +6,40 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CompetitionParticipationsService } from './competition-participations.service';
 import { CompetitionParticipationDto } from './dto/competition-participation.dto';
+import { CompetitionParticipationsPaginationOptionsDto } from './dto/competition-participations-pagination-options.dto';
 import { CopySeasonToSeasonDto } from './dto/copy-season-to-season.dto';
 import { CreateCompetitionParticipationDto } from './dto/create-competition-participation.dto';
-import { FindUniqueCompetitionParticipationDto } from './dto/find-unique-competition-participation.dto';
+import { FindAllCompetitionParticipationsDto } from './dto/find-all-competition-participations.dto';
 import { UpdateCompetitionParticipationDto } from './dto/update-competition-participation.dto';
 
 @Controller('competition-participations')
 @ApiTags('competition participations')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
-@Serialize(CompetitionParticipationDto)
+@ApiSecurity('auth-token')
 export class CompetitionParticipationsController {
   constructor(
     private readonly participationsService: CompetitionParticipationsService,
@@ -35,6 +48,7 @@ export class CompetitionParticipationsController {
 
   @Post()
   @ApiResponse(CompetitionParticipationDto, { type: 'create' })
+  @Serialize(CompetitionParticipationDto)
   async create(
     @I18nLang() lang: string,
     @Body()
@@ -50,8 +64,85 @@ export class CompetitionParticipationsController {
     return formatSuccessResponse(message, participation);
   }
 
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.participationsService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
+  }
+
+  @Get()
+  @ApiPaginatedResponse(CompetitionParticipationDto)
+  @ApiQuery({ type: CompetitionParticipationsPaginationOptionsDto })
+  @Serialize(CompetitionParticipationDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: CompetitionParticipationsPaginationOptionsDto,
+    @Query() query: FindAllCompetitionParticipationsDto,
+  ) {
+    const data = await this.participationsService.findAll(
+      paginationOptions,
+      query,
+    );
+    const message = this.i18n.translate(
+      'competition-participations.GET_ALL_MESSAGE',
+      {
+        lang,
+        args: {
+          currentPage: data.page,
+          totalPages: data.totalPages,
+        },
+      },
+    );
+    return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
+  @ApiResponse(CompetitionParticipationDto, { type: 'read' })
+  @Serialize(CompetitionParticipationDto)
+  async getList(@I18nLang() lang: string) {
+    const participations = await this.participationsService.getList();
+    const message = this.i18n.translate(
+      'competition-participations.GET_LIST_MESSAGE',
+      { lang },
+    );
+    return formatSuccessResponse(message, participations);
+  }
+
+  @Get(':id')
+  @ApiResponse(CompetitionParticipationDto, { type: 'read' })
+  @Serialize(CompetitionParticipationDto)
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+    const participation = await this.participationsService.findOne(id);
+    const message = this.i18n.translate(
+      'competition-participations.GET_ONE_MESSAGE',
+      { lang },
+    );
+    return formatSuccessResponse(message, participation);
+  }
+
   @Post('/copy/:fromSeasonId/:toSeasonId')
   @ApiResponse(CompetitionParticipationDto, { type: 'create' })
+  @Serialize(CompetitionParticipationDto)
   async copyFromSeasonToSeason(
     @I18nLang() lang: string,
     @Param() { fromSeasonId, toSeasonId }: CopySeasonToSeasonDto,
@@ -69,41 +160,17 @@ export class CompetitionParticipationsController {
     return formatSuccessResponse(message, participations);
   }
 
-  @Get()
-  @ApiResponse(CompetitionParticipationDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
-    const participations = await this.participationsService.findAll();
-    const message = this.i18n.translate(
-      'competition-participations.GET_ALL_MESSAGE',
-      { lang },
-    );
-    return formatSuccessResponse(message, participations);
-  }
-
-  @Get(':teamId/:competitionId/:seasonId')
-  @ApiResponse(CompetitionParticipationDto, { type: 'read' })
-  async findOne(
-    @I18nLang() lang: string,
-    @Param() params: FindUniqueCompetitionParticipationDto,
-  ) {
-    const participation = await this.participationsService.findOne(params);
-    const message = this.i18n.translate(
-      'competition-participations.GET_ONE_MESSAGE',
-      { lang },
-    );
-    return formatSuccessResponse(message, participation);
-  }
-
-  @Patch(':teamId/:competitionId/:seasonId')
+  @Patch(':id')
   @ApiResponse(CompetitionParticipationDto, { type: 'update' })
+  @Serialize(CompetitionParticipationDto)
   async update(
     @I18nLang() lang: string,
-    @Param() params: FindUniqueCompetitionParticipationDto,
+    @Param('id') id: string,
     @Body()
     updateCompetitionParticipationDto: UpdateCompetitionParticipationDto,
   ) {
     const participation = await this.participationsService.update(
-      params,
+      id,
       updateCompetitionParticipationDto,
     );
     const message = this.i18n.translate(
@@ -113,13 +180,11 @@ export class CompetitionParticipationsController {
     return formatSuccessResponse(message, participation);
   }
 
-  @Delete(':teamId/:competitionId/:seasonId')
+  @Delete(':id')
   @ApiResponse(CompetitionParticipationDto, { type: 'delete' })
-  async remove(
-    @I18nLang() lang: string,
-    @Param() params: FindUniqueCompetitionParticipationDto,
-  ) {
-    const participation = await this.participationsService.remove(params);
+  @Serialize(CompetitionParticipationDto)
+  async remove(@I18nLang() lang: string, @Param('id') id: string) {
+    const participation = await this.participationsService.remove(id);
     const message = this.i18n.translate(
       'competition-participations.DELETE_MESSAGE',
       { lang },

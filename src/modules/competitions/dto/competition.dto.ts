@@ -20,6 +20,9 @@ export class CompetitionDto {
   @Expose()
   gender: GenderEnum;
 
+  @Expose()
+  transfermarktUrl?: string;
+
   @Transform(({ value }) =>
     plainToInstance(CountryDto, value, { excludeExtraneousValues: true }),
   )

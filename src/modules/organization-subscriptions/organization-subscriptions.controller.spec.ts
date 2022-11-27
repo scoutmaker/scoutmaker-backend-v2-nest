@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { OrganizationSubscriptionsController } from './organization-subscriptions.controller';
 import { OrganizationSubscriptionsService } from './organization-subscriptions.service';
 
@@ -11,7 +12,9 @@ describe('OrganizationSubscriptionsController', () => {
       providers: [OrganizationSubscriptionsService],
     }).compile();
 
-    controller = module.get<OrganizationSubscriptionsController>(OrganizationSubscriptionsController);
+    controller = module.get<OrganizationSubscriptionsController>(
+      OrganizationSubscriptionsController,
+    );
   });
 
   it('should be defined', () => {

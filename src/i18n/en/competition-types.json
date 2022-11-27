@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Successfully created new competition type - {name}",
-  "GET_ALL_MESSAGE": "Successfully fetched all competition types",
+  "GET_ALL_MESSAGE": "Successfully fetched all competition types data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all competition types",
   "GET_ONE_MESSAGE": "Successfully fetched competition type - {name}",
   "UPDATE_MESSAGE": "Successfully updated competition type - {name}",
   "DELETE_MESSAGE": "Successfully deleted competition type - {name}"

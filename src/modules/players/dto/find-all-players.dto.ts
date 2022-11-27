@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -10,7 +10,6 @@ import {
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { FootEnum } from '../types';
 
 export class FindAllPlayersDto {
@@ -19,14 +18,14 @@ export class FindAllPlayersDto {
   name?: string;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(1950)
   @Max(2050)
   bornAfter?: number;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
   @IsInt()
   @Min(1950)
   @Max(2050)
@@ -43,35 +42,54 @@ export class FindAllPlayersDto {
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   countryIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   positionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   teamIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
-  @IsCuid({ each: true })
+  @IsString({ each: true })
   competitionGroupIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  orderId?: string;
 
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isLiked?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasNote?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasReport?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasAnyObservation?: boolean;
 }

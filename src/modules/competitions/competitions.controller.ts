@@ -7,9 +7,18 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -28,8 +37,8 @@ import { UpdateCompetitionDto } from './dto/update-competition.dto';
 
 @Controller('competitions')
 @ApiTags('competitions')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
+@UseGuards(AuthGuard)
+@ApiSecurity('auth-token')
 export class CompetitionsController {
   constructor(
     private readonly competitionsService: CompetitionsService,
@@ -37,6 +46,7 @@ export class CompetitionsController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'create' })
   @Serialize(CompetitionDto)
   async create(
@@ -51,6 +61,31 @@ export class CompetitionsController {
       args: { name: competition.name },
     });
     return formatSuccessResponse(message, competition);
+  }
+
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.competitionsService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
   }
 
   @Get()
@@ -97,6 +132,7 @@ export class CompetitionsController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'update' })
   @Serialize(CompetitionDto)
   async update(
@@ -116,6 +152,7 @@ export class CompetitionsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'delete' })
   @Serialize(CompetitionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

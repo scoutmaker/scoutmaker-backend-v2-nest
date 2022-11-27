@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Team } from '@prisma/client';
 import slugify from 'slugify';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -13,6 +14,16 @@ import { FindAllTeamsDto } from './dto/find-all-teams.dto';
 import { TeamsPaginationOptionsDto } from './dto/teams-pagination-options.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 
+interface CsvInput {
+  id: number;
+  name: string;
+  transfermarktUrl?: string;
+  isPublic: boolean;
+  scoutmakerv1Id?: string;
+  clubId: number;
+  authorId: number;
+}
+
 const include: Prisma.TeamInclude = {
   club: true,
   competitions: {
@@ -20,6 +31,13 @@ const include: Prisma.TeamInclude = {
     include: { competition: true, group: true, season: true },
   },
 };
+
+interface IGenerateWhereClauseArgs {
+  query: FindAllTeamsDto;
+  accessFilters?: Prisma.TeamWhereInput;
+  userId?: string;
+}
+
 @Injectable()
 export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -36,20 +54,64 @@ export class TeamsService {
         club: { connect: { id: clubId } },
         author: { connect: { id: authorId } },
         competitions: {
-          create: {
-            competition: { connect: { id: competitionId } },
-            group: groupId ? { connect: { id: groupId } } : undefined,
-            season: { connect: { isActive: true } },
-          },
+          create: competitionId
+            ? {
+                competition: { connect: { id: competitionId } },
+                group: groupId ? { connect: { id: groupId } } : undefined,
+                season: { connect: { isActive: true } },
+              }
+            : undefined,
         },
       },
       include,
     });
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
-    {
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateTeamDto();
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.transfermarktUrl = item.transfermarktUrl;
+      instance.isPublic = item.isPublic;
+      instance.scoutmakerv1Id = item.scoutmakerv1Id;
+      instance.clubId = item.clubId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Team[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId?.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
+  }
+
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.TeamWhereInput {
+    const {
       name,
       clubId,
       regionIds,
@@ -57,31 +119,21 @@ export class TeamsService {
       isLiked,
       competitionIds,
       competitionGroupIds,
-    }: FindAllTeamsDto,
-    userId?: string,
-  ) {
-    let sort: Prisma.TeamOrderByWithRelationInput;
+    } = query;
 
-    switch (sortBy) {
-      case 'name':
-        sort = { name: sortingOrder };
-        break;
-      case 'clubId':
-        sort = { club: { name: sortingOrder } };
-        break;
-      case 'regionId':
-        sort = { club: { region: { name: sortingOrder } } };
-        break;
-      case 'countryId':
-        sort = { club: { country: { name: sortingOrder } } };
-        break;
-      default:
-        sort = undefined;
-        break;
-    }
+    const slugifiedQueryString = name
+      ? slugify(name, { lower: true })
+      : undefined;
 
-    const where: Prisma.TeamWhereInput = {
-      name: { contains: name, mode: 'insensitive' },
+    return {
+      OR: name
+        ? [
+            {
+              name: { contains: name, mode: 'insensitive' },
+            },
+            { slug: { contains: slugifiedQueryString, mode: 'insensitive' } },
+          ]
+        : undefined,
       clubId,
       likes: isLiked ? { some: { userId } } : undefined,
       AND: [
@@ -117,6 +169,34 @@ export class TeamsService {
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: TeamsPaginationOptionsDto,
+    query: FindAllTeamsDto,
+    userId?: string,
+  ) {
+    let sort: Prisma.TeamOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'name':
+        sort = { name: sortingOrder };
+        break;
+      case 'clubId':
+        sort = { club: { name: sortingOrder } };
+        break;
+      case 'regionId':
+        sort = { club: { region: { name: sortingOrder } } };
+        break;
+      case 'countryId':
+        sort = { club: { country: { name: sortingOrder } } };
+        break;
+      default:
+        sort = undefined;
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, userId });
 
     const teams = await this.prisma.team.findMany({
       where,
@@ -143,13 +223,33 @@ export class TeamsService {
     });
   }
 
-  getList() {
-    return this.prisma.team.findMany();
+  getList(
+    query: FindAllTeamsDto,
+    userId?: string,
+    accessFilters?: Prisma.TeamWhereInput,
+  ) {
+    const where = this.generateWhereClause({ query, userId, accessFilters });
+
+    return this.prisma.team.findMany({ where });
   }
 
   findOne(id: string, userId?: string) {
     return this.prisma.team.findUnique({
       where: { id },
+      include: userId
+        ? {
+            ...include,
+            likes: {
+              where: { userId },
+            },
+          }
+        : include,
+    });
+  }
+
+  findOneBySlug(slug: string, userId?: string) {
+    return this.prisma.team.findUnique({
+      where: { slug },
       include: userId
         ? {
             ...include,

@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Pomyślnie utworzono nową kategorię ocen umiejętności - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich kategorii ocen umiejętności, strona {currentPage} z {totalPages}",
   "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich kategorii ocen umiejętności",
   "GET_ONE_MESSAGE": "Pomyślnie pobrano dane kategorii ocen umiejętności - {name}",
   "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane kategorii ocen umiejętności - {name}",

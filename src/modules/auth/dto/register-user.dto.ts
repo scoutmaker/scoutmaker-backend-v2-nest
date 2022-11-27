@@ -10,7 +10,6 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 import { MatchesProperty } from '../../../common/decorators/matches-property.decorator';
 import { PASSWORD_REGEXP } from '../../../utils/constants';
@@ -20,18 +19,18 @@ export class RegisterUserDto {
   @IsEmail()
   email: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   firstName: string;
 
-  @IsRequiredStringWithMaxLength(30)
+  @IsRequiredStringWithMaxLength(50)
   lastName: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   clubId?: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   footballRoleId?: string;
 
   @IsOptional()
@@ -62,6 +61,7 @@ export class RegisterUserDto {
   @Min(0)
   activeRadius?: number;
 
-  @IsCuid()
-  regionId: string;
+  @IsOptional()
+  @IsString()
+  regionId?: string;
 }

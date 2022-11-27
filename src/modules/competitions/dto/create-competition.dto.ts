@@ -3,15 +3,20 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
+  IsUrl,
   Max,
   Min,
 } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 import { GenderEnum } from '../types';
 
 export class CreateCompetitionDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
@@ -22,6 +27,10 @@ export class CreateCompetitionDto {
   level: number;
 
   @IsOptional()
+  @IsUrl()
+  transfermarktUrl?: string;
+
+  @IsOptional()
   @IsEnum(GenderEnum, {
     message: `Gender must be a valid enum value. Available values: ${Object.keys(
       GenderEnum,
@@ -30,18 +39,18 @@ export class CreateCompetitionDto {
   gender?: GenderEnum;
 
   @IsNotEmpty()
-  @IsCuid()
+  @IsString()
   countryId: string;
 
   @IsNotEmpty()
-  @IsCuid()
+  @IsString()
   ageCategoryId: string;
 
   @IsNotEmpty()
-  @IsCuid()
+  @IsString()
   typeId: string;
 
   @IsOptional()
-  @IsCuid()
+  @IsString()
   juniorLevelId?: string;
 }

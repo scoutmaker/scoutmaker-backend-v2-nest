@@ -6,27 +6,41 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
+import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
+import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { CreateReportSkillAssessmentTemplateDto } from './dto/create-report-skill-assessment-template.dto';
+import { FindAllReportSkillAssessmentTemplatesDto } from './dto/find-all-report-skill-assessment-templates.dto';
 import { ReportSkillAssessmentTemplateDto } from './dto/report-skill-assessment-template.dto';
+import { ReportSkillAssessmentTemplatesPaginationOptionsDto } from './dto/report-skill-assessment-templates-pagination-options.dto';
 import { UpdateReportSkillAssessmentTemplateDto } from './dto/update-report-skill-assessment-template.dto';
 import { ReportSkillAssessmentTemplatesService } from './report-skill-assessment-templates.service';
 
 @Controller('report-skill-assessment-templates')
 @ApiTags('report skill assessment templates')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
-@Serialize(ReportSkillAssessmentTemplateDto)
+@ApiSecurity('auth-token')
 export class ReportSkillAssessmentTemplatesController {
   constructor(
     private readonly templatesService: ReportSkillAssessmentTemplatesService,
@@ -35,6 +49,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Post()
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'create' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async create(
     @I18nLang() lang: string,
     @Body()
@@ -52,10 +67,57 @@ export class ReportSkillAssessmentTemplatesController {
     return formatSuccessResponse(message, template);
   }
 
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.templatesService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
+  }
+
   @Get()
+  @ApiPaginatedResponse(ReportSkillAssessmentTemplateDto)
+  @ApiQuery({ type: ReportSkillAssessmentTemplatesPaginationOptionsDto })
+  @Serialize(ReportSkillAssessmentTemplateDto, 'docs')
+  async findAll(
+    @I18nLang() lang: string,
+    @PaginationOptions()
+    paginationOptions: ReportSkillAssessmentTemplatesPaginationOptionsDto,
+    @Query() query: FindAllReportSkillAssessmentTemplatesDto,
+  ) {
+    const data = await this.templatesService.findAll(paginationOptions, query);
+    const message = this.i18n.translate(
+      'report-skill-assessment-templates.GET_ALL_MESSAGE',
+      {
+        lang,
+        args: { currentPage: data.page, totalPages: data.totalPages },
+      },
+    );
+    return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
-  async findAll(@I18nLang() lang: string) {
-    const templates = await this.templatesService.findAll();
+  @Serialize(ReportSkillAssessmentTemplateDto)
+  async getList(@I18nLang() lang: string) {
+    const templates = await this.templatesService.getList();
     const message = this.i18n.translate(
       'report-skill-assessment-templates.GET_LIST_MESSAGE',
       { lang },
@@ -65,6 +127,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Get(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'read' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.findOne(id);
     const message = this.i18n.translate(
@@ -76,6 +139,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Patch(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'update' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async update(
     @I18nLang() lang: string,
     @Param('id') id: string,
@@ -95,6 +159,7 @@ export class ReportSkillAssessmentTemplatesController {
 
   @Delete(':id')
   @ApiResponse(ReportSkillAssessmentTemplateDto, { type: 'delete' })
+  @Serialize(ReportSkillAssessmentTemplateDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
     const template = await this.templatesService.remove(id);
     const message = this.i18n.translate(

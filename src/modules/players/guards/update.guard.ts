@@ -8,6 +8,7 @@ import { OrganizationPlayerAccessControlEntry } from '@prisma/client';
 import { Request } from 'express';
 import { I18nService } from 'nestjs-i18n';
 
+import { playmakerRoles, privilegedRoles } from '../../../utils/constants';
 import { OrganizationPlayerAclService } from '../../organization-player-acl/organization-player-acl.service';
 import { UserPlayerAclService } from '../../user-player-acl/user-player-acl.service';
 import { PlayersService } from '../players.service';
@@ -32,12 +33,16 @@ export class UpdateGuard implements CanActivate {
     }
 
     // If user is not an admin, we have to fetch the players data to determine if they can update it
-    const player = await this.playersService.findOne(request.params.id);
+    let player;
+    if (request.params.id)
+      player = await this.playersService.findOne(request.params.id);
+    else if (request.params.slug)
+      player = await this.playersService.findOneBySlug(request.params.slug);
 
-    // If user is a playmaker-scout, they can update all players data created by other playmaker-scouts
+    // If user is a playmaker-scout or scout-manager, they can update all players data created by all other users except for SCOUT
     if (
-      user.role === 'PLAYMAKER_SCOUT' &&
-      player.author.role === 'PLAYMAKER_SCOUT'
+      playmakerRoles.includes(user.role) &&
+      privilegedRoles.includes(player.author.role)
     ) {
       return true;
     }

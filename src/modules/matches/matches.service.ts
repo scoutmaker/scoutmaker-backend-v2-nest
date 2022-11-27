@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Match, ObservationType, Prisma } from '@prisma/client';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateSkip,
   formatPaginatedResponse,
@@ -12,13 +13,36 @@ import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 
+interface CsvInput {
+  id: number;
+  date: string;
+  homeGoals?: number;
+  awayGoals?: number;
+  videoUrl?: string;
+  homeTeamId: number;
+  awayTeamId: number;
+  competitionId: number;
+  groupId?: number;
+  seasonId: number;
+  authorId: number;
+}
+
+type ObservationTypeOnly = { observationType: ObservationType }[];
+
 const include = Prisma.validator<Prisma.MatchInclude>()({
   homeTeam: true,
   awayTeam: true,
   competition: true,
   group: true,
   season: true,
+  author: true,
   _count: { select: { notes: true, reports: true } },
+});
+
+const observationTypeInclude = Prisma.validator<Prisma.MatchInclude>()({
+  ...include,
+  notes: { select: { observationType: true } },
+  reports: { select: { observationType: true } },
 });
 
 const { group, season, ...listInclude } = include;
@@ -51,9 +75,104 @@ export class MatchesService {
     });
   }
 
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateMatchDto();
+
+      instance.id = item.id?.toString();
+      instance.date = item.date;
+      instance.homeGoals = item.homeGoals;
+      instance.awayGoals = item.awayGoals;
+      instance.videoUrl = item.videoUrl;
+      instance.homeTeamId = item.homeTeamId?.toString();
+      instance.awayTeamId = item.awayTeamId?.toString();
+      instance.competitionId = item.competitionId?.toString();
+      instance.groupId = item.groupId?.toString();
+      instance.seasonId = item.seasonId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Match[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.id, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
+  }
+
+  private generateWhereClause({
+    competitionIds,
+    groupIds,
+    hasVideo,
+    seasonId,
+    orderId,
+    teamId,
+  }: FindAllMatchesDto): Prisma.MatchWhereInput {
+    return {
+      competition: isIdsArrayFilterDefined(competitionIds)
+        ? { id: { in: competitionIds } }
+        : undefined,
+      group: isIdsArrayFilterDefined(groupIds)
+        ? { id: { in: groupIds } }
+        : undefined,
+      seasonId,
+      orders: orderId ? { some: { id: orderId } } : undefined,
+      videoUrl: hasVideo ? { not: null } : undefined,
+      AND: teamId
+        ? [
+            {
+              OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
+            },
+          ]
+        : undefined,
+    };
+  }
+
+  private fillObservationType<
+    T extends { notes: ObservationTypeOnly; reports: ObservationTypeOnly },
+  >(match: T): T & { observationType: ObservationType | 'BOTH' } {
+    if (!match.notes.length && !match.reports.length) {
+      return { ...match, observationType: null };
+    }
+
+    const isVideo =
+      match.notes.some((note) => note.observationType === 'VIDEO') ||
+      match.reports.some((report) => report.observationType === 'VIDEO');
+
+    const isLive =
+      match.notes.some((note) => note.observationType === 'LIVE') ||
+      match.reports.some((report) => report.observationType === 'LIVE');
+
+    let observationType: ObservationType | 'BOTH' = null;
+    if (isVideo && isLive) observationType = 'BOTH';
+    else if (isLive) observationType = 'LIVE';
+    else if (isVideo) observationType = 'VIDEO';
+
+    return { ...match, observationType };
+  }
+
   async findAll(
     { limit, page, sortBy, sortingOrder }: MatchesPaginationOptionsDto,
-    { teamId, competitionIds, groupIds, seasonId, hasVideo }: FindAllMatchesDto,
+    query: FindAllMatchesDto,
   ) {
     let sort: Prisma.MatchOrderByWithRelationInput;
 
@@ -93,48 +212,39 @@ export class MatchesService {
         break;
     }
 
-    const where: Prisma.MatchWhereInput = {
-      competition: isIdsArrayFilterDefined(competitionIds)
-        ? { id: { in: competitionIds } }
-        : undefined,
-      group: isIdsArrayFilterDefined(groupIds)
-        ? { id: { in: groupIds } }
-        : undefined,
-      seasonId,
-      videoUrl: hasVideo ? { not: null } : undefined,
-      AND: teamId
-        ? [
-            {
-              OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
-            },
-          ]
-        : undefined,
-    };
+    const where = this.generateWhereClause(query);
 
     const matches = await this.prisma.match.findMany({
       where,
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: sort,
-      include,
+      include: observationTypeInclude,
     });
-
     const total = await this.prisma.match.count({ where });
 
+    const finalMatches = matches.map(this.fillObservationType);
     return formatPaginatedResponse({
-      docs: matches,
+      docs: finalMatches,
       totalDocs: total,
       limit,
       page,
     });
   }
 
-  getList() {
-    return this.prisma.match.findMany({ include: listInclude });
+  getList(query: FindAllMatchesDto) {
+    return this.prisma.match.findMany({
+      where: this.generateWhereClause(query),
+      include: listInclude,
+    });
   }
 
-  findOne(id: string) {
-    return this.prisma.match.findUnique({ where: { id }, include });
+  async findOne(id: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id },
+      include: observationTypeInclude,
+    });
+    return this.fillObservationType(match);
   }
 
   update(id: string, updateMatchDto: UpdateMatchDto) {

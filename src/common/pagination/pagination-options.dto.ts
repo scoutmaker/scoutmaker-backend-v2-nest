@@ -12,7 +12,7 @@ export class PaginationOptionsDto {
 
   @IsOptional()
   @IsNumber()
-  @Min(2)
+  @Min(1)
   limit?: number;
 
   @IsOptional()

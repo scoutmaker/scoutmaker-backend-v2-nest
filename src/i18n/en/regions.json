@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Successfully created new region - {name}",
   "GET_LIST_MESSAGE": "Successfully fetched all regions list",
+  "GET_ALL_MESSAGE": "Successfully fetched all regions data, page {currentPage} of {totalPages}",
   "GET_ONE_MESSAGE": "Successfully fetched region data - {name}",
   "UPDATE_MESSAGE": "Successfully updated region data - {name}",
   "DELETE_MESSAGE": "Successfully deleted region data - {name}"

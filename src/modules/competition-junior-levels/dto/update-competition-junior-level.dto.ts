@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
+
 import { CreateCompetitionJuniorLevelDto } from './create-competition-junior-level.dto';
 
-export class UpdateCompetitionJuniorLevelDto extends PartialType(CreateCompetitionJuniorLevelDto) {}
+export class UpdateCompetitionJuniorLevelDto extends PartialType(
+  OmitType(CreateCompetitionJuniorLevelDto, ['id']),
+) {}

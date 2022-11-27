@@ -1,18 +1,25 @@
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateReportSkillAssessmentTemplateDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsString()
+  scoutmakerv1Id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsRequiredStringWithMaxLength(6)
+  @IsRequiredStringWithMaxLength(10)
   shortName: string;
 
   @IsBoolean()
   hasScore: boolean;
 
-  @IsCuid()
+  @IsString()
   categoryId: string;
 }

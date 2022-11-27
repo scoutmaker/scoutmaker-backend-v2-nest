@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
+import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { ReportTemplatesController } from './report-templates.controller';
 import { ReportTemplatesService } from './report-templates.service';
 
@@ -8,4 +9,11 @@ import { ReportTemplatesService } from './report-templates.service';
   providers: [ReportTemplatesService],
   exports: [ReportTemplatesService],
 })
-export class ReportTemplatesModule {}
+export class ReportTemplatesModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(PrepareQueryMiddleware).forRoutes({
+      path: 'report-templates',
+      method: RequestMethod.GET,
+    });
+  }
+}

@@ -7,14 +7,24 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
@@ -28,7 +38,7 @@ import { UpdateCountryDto } from './dto/update-country.dto';
 @Controller('countries')
 @ApiTags('countries')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class CountriesController {
   constructor(
     private readonly countriesService: CountriesService,
@@ -50,6 +60,27 @@ export class CountriesController {
     return formatSuccessResponse(message, country);
   }
 
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdDocuments, errors } =
+      await this.countriesService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', { createdDocuments, errors });
+  }
+
   @Get()
   @ApiPaginatedResponse(CountryDto)
   @ApiQuery({ type: CountriesPaginationOptionDto })
@@ -65,6 +96,17 @@ export class CountriesController {
       args: { currentPage: data.page, totalPages: data.totalPages },
     });
     return formatSuccessResponse(message, data);
+  }
+
+  @Get('list')
+  @ApiResponse(CountryDto, { type: 'read' })
+  @Serialize(CountryDto)
+  async getList(@I18nLang() lang: string) {
+    const countries = await this.countriesService.getList();
+    const message = this.i18n.translate('countries.GET_LIST_MESSAGE', {
+      lang,
+    });
+    return formatSuccessResponse(message, countries);
   }
 
   @Get(':id')

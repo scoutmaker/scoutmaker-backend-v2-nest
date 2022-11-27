@@ -1,6 +1,7 @@
 {
   "CREATE_MESSAGE": "Successfully created new competition age category - {name}",
-  "GET_ALL_MESSAGE": "Successfully fetched all competition age categories",
+  "GET_ALL_MESSAGE": "Successfully fetched all competition age categories data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all competition age categories list",
   "GET_ONE_MESSAGE": "Successfully fetched competition age category data - {name}",
   "UPDATE_MESSAGE": "Successfully updated competition age category data - {name}",
   "DELETE_MESSAGE": "Successfully deleted competition age category data - {name}"

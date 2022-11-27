@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { PlayerPositionsController } from './player-positions.controller';
 import { PlayerPositionsService } from './player-positions.service';
 
@@ -11,7 +12,9 @@ describe('PlayerPositionsController', () => {
       providers: [PlayerPositionsService],
     }).compile();
 
-    controller = module.get<PlayerPositionsController>(PlayerPositionsController);
+    controller = module.get<PlayerPositionsController>(
+      PlayerPositionsController,
+    );
   });
 
   it('should be defined', () => {

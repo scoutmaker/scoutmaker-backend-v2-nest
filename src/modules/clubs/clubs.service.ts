@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Club, Prisma } from '@prisma/client';
 import slugify from 'slugify';
 
+import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClubsPaginationOptionsDto } from './dto/clubs-pagination-options.dto';
@@ -13,6 +14,23 @@ const include: Prisma.ClubInclude = {
   region: true,
   country: true,
 };
+
+interface CsvInput {
+  id: number;
+  name: string;
+  lnpId?: string;
+  city?: string;
+  postalCode?: string;
+  street?: string;
+  website?: string;
+  twitter?: string;
+  facebook?: string;
+  instagram?: string;
+  isPublic: boolean;
+  countryId: number | string;
+  regionId: number | string;
+  authorId: number | string;
+}
 
 @Injectable()
 export class ClubsService {
@@ -28,11 +46,57 @@ export class ClubsService {
         ...rest,
         slug,
         country: { connect: { id: countryId } },
-        region: { connect: { id: regionId } },
+        region: regionId ? { connect: { id: regionId } } : undefined,
         author: { connect: { id: authorId } },
       },
       include,
     });
+  }
+
+  async createManyFromCsv(file: Express.Multer.File) {
+    const result = parseCsv<CsvInput>(file.buffer.toString());
+
+    const instances = result.data.map((item) => {
+      const instance = new CreateClubDto();
+      instance.id = item.id?.toString();
+      instance.name = item.name;
+      instance.lnpId = item.lnpId;
+      instance.city = item.city;
+      instance.postalCode = item.postalCode;
+      instance.street = item.street;
+      instance.website = item.website;
+      instance.twitter = item.twitter;
+      instance.facebook = item.facebook;
+      instance.instagram = item.instagram;
+      instance.isPublic = item.isPublic;
+      instance.countryId = item.countryId?.toString();
+      instance.regionId = item.regionId?.toString();
+
+      return instance;
+    });
+
+    await validateInstances(instances);
+
+    const createdDocuments: Club[] = [];
+    const errors: any[] = [];
+
+    for (const [index, instance] of instances.entries()) {
+      try {
+        const created = await this.create(
+          instance,
+          result.data[index].authorId.toString(),
+        );
+        createdDocuments.push(created);
+      } catch (error) {
+        errors.push({ index, name: instance.name, error });
+      }
+    }
+
+    return {
+      csvRowsCount: result.data.length,
+      createdCount: createdDocuments.length,
+      errors,
+    };
   }
 
   async findAll(
@@ -54,8 +118,19 @@ export class ClubsService {
         break;
     }
 
+    const slugifiedQueryString = name
+      ? slugify(name, { lower: true })
+      : undefined;
+
     const where: Prisma.ClubWhereInput = {
-      name,
+      OR: name
+        ? [
+            {
+              name: { contains: name, mode: 'insensitive' },
+            },
+            { slug: { contains: slugifiedQueryString, mode: 'insensitive' } },
+          ]
+        : undefined,
       regionId,
       countryId,
     };
@@ -84,6 +159,10 @@ export class ClubsService {
 
   findOne(id: string) {
     return this.prisma.club.findUnique({ where: { id }, include });
+  }
+
+  findOneBySlug(slug: string) {
+    return this.prisma.club.findUnique({ where: { slug }, include });
   }
 
   findAllBySlug(slug: string) {

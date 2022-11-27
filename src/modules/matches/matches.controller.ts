@@ -7,14 +7,24 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
 import { formatSuccessResponse } from '../../utils/helpers';
@@ -25,12 +35,14 @@ import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchBasicDataDto, MatchDto } from './dto/match.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
+import { DeleteGuard } from './guards/delete.guard';
+import { UpdateGuard } from './guards/update.guard';
 import { MatchesService } from './matches.service';
 
 @Controller('matches')
 @ApiTags('matches')
 @UseGuards(AuthGuard)
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class MatchesController {
   constructor(
     private readonly matchesService: MatchesService,
@@ -56,6 +68,31 @@ export class MatchesController {
     return formatSuccessResponse(message, match);
   }
 
+  @Post('upload')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const { createdCount, csvRowsCount, errors } =
+      await this.matchesService.createManyFromCsv(file);
+    return formatSuccessResponse('Success!', {
+      csvRowsCount,
+      createdCount,
+      errors,
+    });
+  }
+
   @Get()
   @ApiPaginatedResponse(MatchDto)
   @ApiQuery({ type: MatchesPaginationOptionsDto })
@@ -79,8 +116,8 @@ export class MatchesController {
   @Get('list')
   @ApiResponse(MatchBasicDataDto, { type: 'read' })
   @Serialize(MatchBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const matches = await this.matchesService.getList();
+  async getList(@I18nLang() lang: string, @Query() query: FindAllMatchesDto) {
+    const matches = await this.matchesService.getList(query);
     const message = this.i18n.translate('matches.GET_LIST_MESSAGE', {
       lang,
     });
@@ -103,6 +140,7 @@ export class MatchesController {
   }
 
   @Patch(':id')
+  @UseGuards(UpdateGuard)
   @ApiResponse(MatchDto, { type: 'update' })
   @Serialize(MatchDto)
   async update(
@@ -122,6 +160,7 @@ export class MatchesController {
   }
 
   @Delete(':id')
+  @UseGuards(DeleteGuard)
   @ApiResponse(MatchDto, { type: 'delete' })
   @Serialize(MatchDto)
   async remove(

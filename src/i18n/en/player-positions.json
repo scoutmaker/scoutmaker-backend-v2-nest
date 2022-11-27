@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Successfully created new player position - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all player positions data, page {currentPage} of {totalPages}",
   "GET_LIST_MESSAGE": "Successfully fetched all player positions list",
   "GET_ONE_MESSAGE": "Successfully fetched player position data - {name}",
   "UPDATE_MESSAGE": "Successfully updated player position data - {name}",

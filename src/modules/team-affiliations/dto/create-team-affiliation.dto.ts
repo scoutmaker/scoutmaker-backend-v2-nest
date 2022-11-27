@@ -1,21 +1,20 @@
-import { Transform } from 'class-transformer';
-import { IsDate, IsOptional } from 'class-validator';
-
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateTeamAffiliationDto {
-  @IsCuid()
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsString()
   playerId: string;
 
-  @IsCuid()
+  @IsString()
   teamId: string;
 
-  @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @IsDateString()
   startDate: string;
 
   @IsOptional()
-  @IsDate()
-  @Transform(({ value }) => new Date(value))
+  @IsDateString()
   endDate?: string;
 }

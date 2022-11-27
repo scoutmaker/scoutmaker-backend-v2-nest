@@ -1,16 +1,24 @@
-import { IsArray } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
 
-import { IsCuid } from '../../../common/decorators/is-cuid.decorator';
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
 export class CreateCompetitionGroupDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsRequiredStringWithMaxLength(30)
   name: string;
 
-  @IsCuid()
+  @IsString()
   competitionId: string;
 
+  @IsOptional()
+  @IsUrl()
+  transfermarktUrl?: string;
+
+  @IsOptional()
   @IsArray()
-  @IsCuid({ each: true })
-  regionIds: string[];
+  @IsString({ each: true })
+  regionIds?: string[];
 }

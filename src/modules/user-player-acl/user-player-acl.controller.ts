@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
@@ -29,7 +29,7 @@ import { UserPlayerAclService } from './user-player-acl.service';
 @Controller('user-player-acl')
 @ApiTags('user player ACL')
 @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
-@ApiCookieAuth()
+@ApiSecurity('auth-token')
 export class UserPlayerAclController {
   constructor(
     private readonly aclService: UserPlayerAclService,

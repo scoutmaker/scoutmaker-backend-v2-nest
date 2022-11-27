@@ -1,5 +1,6 @@
 {
   "CREATE_MESSAGE": "Successfully created new report skill assessment template - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all report skill assessment templates data, page {currentPage} of {totalPages}",
   "GET_LIST_MESSAGE": "Successfully fetched all report skill assessment templates list",
   "GET_ONE_MESSAGE": "Successfully fetched report skill template data - {name}",
   "UPDATE_MESSAGE": "Successfully updated report skill template data - {name}",

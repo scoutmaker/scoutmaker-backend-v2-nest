@@ -14,6 +14,7 @@ datasource db {
 enum UserRole {
   SCOUT
   PLAYMAKER_SCOUT
+  PLAYMAKER_SCOUT_MANAGER
   ADMIN
 }
 
@@ -43,8 +44,8 @@ model User {
   updatedAt                  DateTime      @updatedAt
 
   // Relation fields
-  region                                 Region                              @relation(fields: [regionId], references: [id])
-  regionId                               String
+  region                                 Region?                             @relation(fields: [regionId], references: [id])
+  regionId                               String?
   footballRole                           UserFootballRole?                   @relation(fields: [footballRoleId], references: [id])
   footballRoleId                         String?
   club                                   Club?                               @relation(fields: [clubId], references: [id], name: "club")
@@ -144,8 +145,8 @@ model Club {
   // Relation fields
   country   Country @relation(fields: [countryId], references: [id])
   countryId String
-  region    Region  @relation(fields: [regionId], references: [id])
-  regionId  String
+  region    Region? @relation(fields: [regionId], references: [id])
+  regionId  String?
   author    User    @relation(fields: [authorId], references: [id], name: "created-clubs")
   authorId  String
   teams     Team[]
@@ -201,12 +202,13 @@ enum Gender {
 }
 
 model Competition {
-  id        String   @id @default(cuid())
-  name      String
-  level     Int?
-  gender    Gender   @default(MALE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  level            Int?
+  gender           Gender   @default(MALE)
+  transfermarktUrl String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relation fields
   country                   Country                                   @relation(fields: [countryId], references: [id])
@@ -230,10 +232,11 @@ model Competition {
 }
 
 model CompetitionGroup {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  transfermarktUrl String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relation fields
   competition              Competition                                    @relation(fields: [competitionId], references: [id])
@@ -251,6 +254,7 @@ model CompetitionGroup {
 }
 
 model RegionsOnCompetitionGroups {
+  id        String           @id @default(cuid())
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   // Relation fields
@@ -259,7 +263,7 @@ model RegionsOnCompetitionGroups {
   group     CompetitionGroup @relation(fields: [groupId], references: [id])
   groupId   String
 
-  @@id([regionId, groupId])
+  @@unique([regionId, groupId])
 }
 
 model CompetitionAgeCategory {
@@ -294,8 +298,10 @@ model CompetitionJuniorLevel {
 }
 
 model CompetitionParticipation {
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relation fields
   team          Team              @relation(fields: [teamId], references: [id])
   teamId        String
@@ -306,7 +312,7 @@ model CompetitionParticipation {
   group         CompetitionGroup? @relation(fields: [groupId], references: [id])
   groupId       String?
 
-  @@id([teamId, competitionId, seasonId])
+  @@unique([teamId, competitionId, seasonId])
 }
 
 model PlayerPosition {
@@ -371,6 +377,7 @@ model Player {
 }
 
 model SecondaryPositionsOnPlayers {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -380,7 +387,7 @@ model SecondaryPositionsOnPlayers {
   position         PlayerPosition @relation(fields: [playerPositionId], references: [id])
   playerPositionId String
 
-  @@id([playerId, playerPositionId])
+  @@unique([playerId, playerPositionId])
 }
 
 model TeamAffiliation {
@@ -423,22 +430,23 @@ model Match {
   authorId      String
   notes         Note[]
   reports       Report[]
-  order         Order[]
+  orders        Order[]
   stats         PlayerStats[]
   attendances   MatchAttendance[]
 }
 
 model Note {
-  id               String   @id @default(cuid())
-  docNumber        Int      @default(autoincrement())
+  id               String          @id @default(cuid())
+  docNumber        Int             @default(autoincrement())
   shirtNo          Int?
   description      String?
   maxRatingScore   Int?
   rating           Int?
   percentageRating Float?
-  scoutmakerv1Id   String?  @unique
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  scoutmakerv1Id   String?         @unique
+  observationType  ObservationType @default(VIDEO)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   // Relation fields
   player                        Player?                              @relation(fields: [playerId], references: [id])
@@ -459,14 +467,14 @@ model NoteMeta {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  note               Note              @relation(fields: [noteId], references: [id])
+  note               Note              @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId             String            @unique
-  position           PlayerPosition    @relation(fields: [positionId], references: [id])
-  positionId         String
-  team               Team              @relation(fields: [teamId], references: [id])
-  teamId             String
-  competition        Competition       @relation(fields: [competitionId], references: [id])
-  competitionId      String
+  position           PlayerPosition?   @relation(fields: [positionId], references: [id])
+  positionId         String?
+  team               Team?             @relation(fields: [teamId], references: [id])
+  teamId             String?
+  competition        Competition?      @relation(fields: [competitionId], references: [id])
+  competitionId      String?
   competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
   competitionGroupId String?
 }
@@ -498,10 +506,10 @@ model InsiderNoteMeta {
   // Relation fields
   insiderNote        InsiderNote       @relation(fields: [insiderNoteId], references: [id])
   insiderNoteId      String            @unique
-  team               Team              @relation(fields: [teamId], references: [id])
-  teamId             String
-  competition        Competition       @relation(fields: [competitionId], references: [id])
-  competitionId      String
+  team               Team?             @relation(fields: [teamId], references: [id])
+  teamId             String?
+  competition        Competition?      @relation(fields: [competitionId], references: [id])
+  competitionId      String?
   competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
   competitionGroupId String?
 }
@@ -550,10 +558,10 @@ model ReportTemplate {
   author                   User                                        @relation(fields: [authorId], references: [id])
   authorId                 String
   skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
-  reports                  Report[]
 }
 
 model SkillAssessmentTemplatesOnReportTemplates {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -563,7 +571,7 @@ model SkillAssessmentTemplatesOnReportTemplates {
   skillAssessmentTemplate   ReportSkillAssessmentTemplate @relation(fields: [skillAssessmentTemplateId], references: [id])
   skillAssessmentTemplateId String
 
-  @@id([reportTemplateId, skillAssessmentTemplateId])
+  @@unique([reportTemplateId, skillAssessmentTemplateId])
 }
 
 model ReportSkillAssessment {
@@ -576,8 +584,13 @@ model ReportSkillAssessment {
   // Relation fields
   template   ReportSkillAssessmentTemplate @relation(fields: [templateId], references: [id])
   templateId String
-  report     Report                        @relation(fields: [reportId], references: [id])
+  report     Report                        @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId   String
+}
+
+enum ObservationType {
+  LIVE
+  VIDEO
 }
 
 enum ReportStatus {
@@ -586,8 +599,8 @@ enum ReportStatus {
 }
 
 model Report {
-  id               String       @id @default(cuid())
-  docNumber        Int          @default(autoincrement())
+  id               String          @id @default(cuid())
+  docNumber        Int             @default(autoincrement())
   shirtNo          Int?
   minutesPlayed    Int?
   goals            Int?
@@ -596,20 +609,20 @@ model Report {
   redCards         Int?
   videoUrl         String?
   videoDescription String?
+  maxRatingScore   Int
   finalRating      Int?
   summary          String?
   avgRating        Float?
   percentageRating Float?
-  status           ReportStatus @default(IN_PROGRESS)
-  scoutmakerv1Id   String?      @unique
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  status           ReportStatus    @default(IN_PROGRESS)
+  observationType  ObservationType @default(VIDEO)
+  scoutmakerv1Id   String?         @unique
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   // Relation fields
   author                        User                                   @relation(fields: [authorId], references: [id])
   authorId                      String
-  template                      ReportTemplate                         @relation(fields: [templateId], references: [id])
-  templateId                    String
   player                        Player                                 @relation(fields: [playerId], references: [id])
   playerId                      String
   match                         Match?                                 @relation(fields: [matchId], references: [id])
@@ -629,14 +642,14 @@ model ReportMeta {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  report             Report            @relation(fields: [reportId], references: [id])
+  report             Report            @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId           String            @unique
-  position           PlayerPosition    @relation(fields: [positionId], references: [id])
-  positionId         String
-  team               Team              @relation(fields: [teamId], references: [id])
-  teamId             String
-  competition        Competition       @relation(fields: [competitionId], references: [id])
-  competitionId      String
+  position           PlayerPosition?   @relation(fields: [positionId], references: [id])
+  positionId         String?
+  team               Team?             @relation(fields: [teamId], references: [id])
+  teamId             String?
+  competition        Competition?      @relation(fields: [competitionId], references: [id])
+  competitionId      String?
   competitionGroup   CompetitionGroup? @relation(fields: [competitionGroupId], references: [id])
   competitionGroupId String?
 }
@@ -710,6 +723,7 @@ model AgencyAffiliation {
 }
 
 model FollowPlayer {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -719,10 +733,11 @@ model FollowPlayer {
   follower   User   @relation(fields: [followerId], references: [id])
   followerId String
 
-  @@id([playerId, followerId])
+  @@unique([playerId, followerId])
 }
 
 model FollowTeam {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -732,10 +747,11 @@ model FollowTeam {
   follower   User   @relation(fields: [followerId], references: [id])
   followerId String
 
-  @@id([teamId, followerId])
+  @@unique([teamId, followerId])
 }
 
 model FollowScout {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -745,10 +761,11 @@ model FollowScout {
   follower   User   @relation(fields: [followerId], references: [id], name: "follower")
   followerId String
 
-  @@id([scoutId, followerId])
+  @@unique([scoutId, followerId])
 }
 
 model FollowAgency {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -758,7 +775,7 @@ model FollowAgency {
   follower   User   @relation(fields: [followerId], references: [id])
   followerId String
 
-  @@id([agencyId, followerId])
+  @@unique([agencyId, followerId])
 }
 
 model Organization {
@@ -806,8 +823,8 @@ model PlayerStatsMeta {
   // Relation fields
   stats   PlayerStats @relation(fields: [statsId], references: [id])
   statsId String      @unique
-  team    Team        @relation(fields: [teamId], references: [id])
-  teamId  String
+  team    Team?       @relation(fields: [teamId], references: [id])
+  teamId  String?
 }
 
 model ReportBackgroundImage {
@@ -834,6 +851,7 @@ model UserSubscription {
 }
 
 model CompetitionsOnUserSubscriptions {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -843,10 +861,11 @@ model CompetitionsOnUserSubscriptions {
   competition    Competition      @relation(fields: [competitionId], references: [id])
   competitionId  String
 
-  @@id([subscriptionId, competitionId])
+  @@unique([subscriptionId, competitionId])
 }
 
 model CompetitionGroupsOnUserSubscriptions {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -856,7 +875,7 @@ model CompetitionGroupsOnUserSubscriptions {
   group          CompetitionGroup @relation(fields: [groupId], references: [id])
   groupId        String
 
-  @@id([subscriptionId, groupId])
+  @@unique([subscriptionId, groupId])
 }
 
 model OrganizationSubscription {
@@ -874,6 +893,7 @@ model OrganizationSubscription {
 }
 
 model CompetitionsOnOrganizationSubscriptions {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -883,10 +903,11 @@ model CompetitionsOnOrganizationSubscriptions {
   competition    Competition              @relation(fields: [competitionId], references: [id])
   competitionId  String
 
-  @@id([subscriptionId, competitionId])
+  @@unique([subscriptionId, competitionId])
 }
 
 model CompetitionGroupsOnOrganizationSubscriptions {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -896,7 +917,7 @@ model CompetitionGroupsOnOrganizationSubscriptions {
   group          CompetitionGroup         @relation(fields: [groupId], references: [id])
   groupId        String
 
-  @@id([subscriptionId, groupId])
+  @@unique([subscriptionId, groupId])
 }
 
 enum AccessControlEntryPermissionLevel {
@@ -946,7 +967,7 @@ model UserReportAccessControlEntry {
   // Relation Fields
   user     User   @relation(fields: [userId], references: [id])
   userId   String
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId String
 
   @@unique([userId, reportId])
@@ -962,7 +983,7 @@ model OrganizationReportAccessControlEntry {
   // Relation Fields
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
-  report         Report       @relation(fields: [reportId], references: [id])
+  report         Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId       String
 
   @@unique([organizationId, reportId])
@@ -978,7 +999,7 @@ model UserNoteAccessControlEntry {
   // Relation Fields
   user   User   @relation(fields: [userId], references: [id])
   userId String
-  note   Note   @relation(fields: [noteId], references: [id])
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId String
 
   @@unique([userId, noteId])
@@ -994,7 +1015,7 @@ model OrganizationNoteAccessControlEntry {
   // Relation Fields
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
-  note           Note         @relation(fields: [noteId], references: [id])
+  note           Note         @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId         String
 
   @@unique([organizationId, noteId])
@@ -1034,6 +1055,7 @@ model OrganizationInsiderNoteAccessControlEntry {
 }
 
 model LikePlayer {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1043,36 +1065,39 @@ model LikePlayer {
   user     User   @relation(fields: [userId], references: [id])
   userId   String
 
-  @@id([playerId, userId])
+  @@unique([playerId, userId])
 }
 
 model LikeReport {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  report   Report @relation(fields: [reportId], references: [id])
+  report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
   reportId String
   user     User   @relation(fields: [userId], references: [id])
   userId   String
 
-  @@id([reportId, userId])
+  @@unique([reportId, userId])
 }
 
 model LikeNote {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  note   Note   @relation(fields: [noteId], references: [id])
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
   noteId String
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  @@id([noteId, userId])
+  @@unique([noteId, userId])
 }
 
 model LikeInsiderNote {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1082,10 +1107,11 @@ model LikeInsiderNote {
   user          User        @relation(fields: [userId], references: [id])
   userId        String
 
-  @@id([insiderNoteId, userId])
+  @@unique([insiderNoteId, userId])
 }
 
 model LikeTeam {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1095,13 +1121,15 @@ model LikeTeam {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  @@id([teamId, userId])
+  @@unique([teamId, userId])
 }
 
 model MatchAttendance {
-  isActive  Boolean?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String          @id @default(cuid())
+  isActive        Boolean?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  observationType ObservationType
 
   // Relation fields
   match   Match  @relation(fields: [matchId], references: [id])
@@ -1109,6 +1137,6 @@ model MatchAttendance {
   user    User   @relation(fields: [userId], references: [id])
   userId  String
 
-  @@id([matchId, userId])
+  @@unique([matchId, userId])
   @@unique([userId, isActive])
 }

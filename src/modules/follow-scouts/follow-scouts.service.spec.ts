@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { FollowScoutsService } from './follow-scouts.service';
 
 describe('FollowScoutsService', () => {
