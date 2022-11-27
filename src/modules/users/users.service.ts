@@ -240,7 +240,7 @@ export class UsersService {
     });
   }
 
-  getCount(accessFilters: Prisma.UserWhereInput) {
-    return this.prisma.user.count({ where: accessFilters });
+  getCount(filters: Prisma.UserWhereInput) {
+    return this.prisma.user.count({ where: filters });
   }
 }

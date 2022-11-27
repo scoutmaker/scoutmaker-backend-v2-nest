@@ -6,6 +6,7 @@ import { calculatePercentage } from '../../utils/helpers';
 import { MatchesService } from '../matches/matches.service';
 import { NotesService } from '../notes/notes.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportsService } from '../reports/reports.service';
@@ -28,19 +29,11 @@ export class DashboardService {
     private readonly matchesService: MatchesService,
     private readonly playersService: PlayersService,
     private readonly usersService: UsersService,
+    private readonly organizationsService: OrganizationsService,
   ) {}
 
   // PM-ScoutManager | ADMIN | 'SCOUT'
-  private async getCommonData(user: CurrentUserDto) {
-    const getMatchesCount = (filters: Prisma.MatchWhereInput) =>
-      this.matchesService.getCount({ accessFilters: filters });
-    const getReportsCount = (filters: Prisma.ReportWhereInput) =>
-      this.reportsService.getCount({ accessFilters: filters });
-    const getNotesCount = (filters: Prisma.NoteWhereInput) =>
-      this.notesService.getCount(filters);
-
-    const data: DashboardDto = { user };
-
+  private async getCommonData(user: CurrentUserDto): Promise<DashboardDto> {
     const monthAgoDate = subMonths(new Date(), 1);
 
     const rolesScope: UserRole[] =
@@ -67,32 +60,36 @@ export class DashboardService {
     };
 
     // reports
-    const totalUserReportsPromise = getReportsCount({
+    const totalUserReportsPromise = this.reportsService.getCount({
       authorId: user.id,
     });
-    const recentUserReportsPromise = getReportsCount(
+    const recentUserReportsPromise = this.reportsService.getCount(
       recentUserObservationsWhere,
     );
-    const recentScopedReportsPromise = getReportsCount(
+    const recentScopedReportsPromise = this.reportsService.getCount(
       recentScopedObservationsWhere,
     );
 
     // notes
-    const totalUserNotesPromise = getNotesCount({ authorId: user.id });
-    const recentUserNotesPromise = getNotesCount(recentUserObservationsWhere);
-    const recentScopedNotesPromise = getNotesCount(
+    const totalUserNotesPromise = this.notesService.getCount({
+      authorId: user.id,
+    });
+    const recentUserNotesPromise = this.notesService.getCount(
+      recentUserObservationsWhere,
+    );
+    const recentScopedNotesPromise = this.notesService.getCount(
       recentScopedObservationsWhere,
     );
 
     // matches
-    const totalUserMatchesPromise = getMatchesCount({
+    const totalUserMatchesPromise = this.matchesService.getCount({
       OR: [
         { notes: { some: { authorId: user.id } } },
         { reports: { some: { authorId: user.id } } },
       ],
     });
 
-    const recentUserMatchesPromise = getMatchesCount({
+    const recentUserMatchesPromise = this.matchesService.getCount({
       OR: [
         {
           notes: { some: recentUserObservationsWhere },
@@ -102,7 +99,7 @@ export class DashboardService {
         },
       ],
     });
-    const recentScopedMatchesPromise = getMatchesCount({
+    const recentScopedMatchesPromise = this.matchesService.getCount({
       OR: [
         { notes: { some: recentScopedObservationsWhere } },
         { reports: { some: recentScopedObservationsWhere } },
@@ -135,54 +132,51 @@ export class DashboardService {
       recentScopedMatchesPromise,
     ]);
 
-    // include data
-    data.reportsCount = totalUserReports;
-    data.recentReportsRatio =
-      calculatePercentage(recentUserReports, recentScopedReports) || 0;
-
-    data.notesCount = totalUserNotes;
-    data.recentNotesRatio =
-      calculatePercentage(recentUserNotes, recentScopedNotes) || 0;
-
-    data.observedMatchesCount = totalUserMatches;
-    data.recentObservedMatchesRatio =
-      calculatePercentage(recentUserMatches, recentScopedMatches) || 0;
-
-    return data;
+    return {
+      user,
+      reportsCount: totalUserReports,
+      recentReportsRatio:
+        calculatePercentage(recentUserReports, recentScopedReports) || 0,
+      notesCount: totalUserNotes,
+      recentNotesRatio:
+        calculatePercentage(recentUserNotes, recentScopedNotes) || 0,
+      observedMatchesCount: totalUserMatches,
+      recentObservedMatchesRatio:
+        calculatePercentage(recentUserMatches, recentScopedMatches) || 0,
+    };
   }
 
-  // PlayMaker-Scout
-  private async getPlaymakerScoutData(user: CurrentUserDto) {
-    const [data, sharedAclOrganizations] = await Promise.all([
-      this.getCommonData(user),
-      this.prisma.organization.findMany({
-        where: {
-          OR: [
-            {
-              noteAccessControlList: { some: { note: { authorId: user.id } } },
-            },
-            {
-              reportAccessControlList: {
-                some: { report: { authorId: user.id } },
-              },
-            },
-          ],
-        },
-        include: {
-          noteAccessControlList: {
-            include: { note: true },
-            where: { note: { authorId: user.id } },
+  // get organizations that have access to your observations
+  // to implement - check subscriptions
+  private async getOrganizationsForPMScout(
+    user: CurrentUserDto,
+  ): Promise<DashboardDto['organizations']> {
+    const sharedAclOrganizations = await this.prisma.organization.findMany({
+      where: {
+        OR: [
+          {
+            noteAccessControlList: { some: { note: { authorId: user.id } } },
           },
-          reportAccessControlList: {
-            include: { report: true },
-            where: { report: { authorId: user.id } },
+          {
+            reportAccessControlList: {
+              some: { report: { authorId: user.id } },
+            },
           },
+        ],
+      },
+      include: {
+        noteAccessControlList: {
+          include: { note: true },
+          where: { note: { authorId: user.id } },
         },
-      }),
-    ]);
+        reportAccessControlList: {
+          include: { report: true },
+          where: { report: { authorId: user.id } },
+        },
+      },
+    });
 
-    // Missing matches shared with subscriptions
-    data.organizations = sharedAclOrganizations.map((org) => {
+    return sharedAclOrganizations.map((org) => {
       const observedMatchesIds = new Set<string>();
 
       org.noteAccessControlList.forEach((noteAce) => {
@@ -194,12 +188,23 @@ export class DashboardService {
       });
       return { name: org.name, sharedMatchesCount: observedMatchesIds.size };
     });
-
-    return data;
   }
 
-  private async getScoutOrganizationData(user: CurrentUserDto) {
-    const data: DashboardDto = { user };
+  // PlayMaker-Scout
+  private async getPlaymakerScoutData(
+    user: CurrentUserDto,
+  ): Promise<DashboardDto> {
+    const [data, organizations] = await Promise.all([
+      this.getCommonData(user),
+      this.getOrganizationsForPMScout(user),
+    ]);
+
+    return { ...data, organizations };
+  }
+
+  private async getScoutOrganizationData(
+    user: CurrentUserDto,
+  ): Promise<DashboardDto> {
     const organizationSubscriptions =
       await this.organizationSubscriptionsService.getFormattedForSingleOrganization(
         user.organizationId,
@@ -233,21 +238,17 @@ export class DashboardService {
     });
 
     const playersCountPromise = this.playersService.getCount({
-      accessFilters: {
-        AND: [
-          { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
-          playersSubscribed,
-        ],
-      },
+      AND: [
+        { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
+        playersSubscribed,
+      ],
     });
 
     const matchesCountPromise = this.matchesService.getCount({
-      accessFilters: {
-        AND: [
-          { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
-          matchesSubscribed,
-        ],
-      },
+      AND: [
+        { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
+        matchesSubscribed,
+      ],
     });
 
     const topNotesPromise = this.prisma.note.findMany({
@@ -295,15 +296,14 @@ export class DashboardService {
         topReportsPromise,
       ]);
 
-    // include data
-    data.scoutsCount = scoutsCount;
-    data.observerdPlayersCount = playersCount;
-    data.observedMatchesCount = matchesCount;
-
-    data.topNotes = topNotes;
-    data.topReports = topReports;
-
-    return data;
+    return {
+      user,
+      scoutsCount,
+      observerdPlayersCount: playersCount,
+      observedMatchesCount: matchesCount,
+      topNotes: topNotes,
+      topReports: topReports,
+    };
   }
 
   async getData(user: CurrentUserDto) {

@@ -305,7 +305,7 @@ export class NotesService {
         },
       ],
     };
-
+    
     const notes = await this.prisma.note.findMany({
       where,
       take: limit,
@@ -463,7 +463,7 @@ export class NotesService {
     return this.prisma.note.delete({ where: { id }, include });
   }
 
-  getCount(accessFilters: Prisma.NoteWhereInput) {
-    return this.prisma.note.count({ where: accessFilters });
+  getCount(filters: Prisma.NoteWhereInput) {
+    return this.prisma.note.count({ where: filters });
   }
 }

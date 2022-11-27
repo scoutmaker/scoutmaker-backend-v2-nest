@@ -259,20 +259,9 @@ export class MatchesService {
     return this.prisma.match.delete({ where: { id }, include });
   }
 
-  getCount({
-    accessFilters,
-    query,
-  }: {
-    query?: FindAllMatchesDto;
-    accessFilters?: Prisma.MatchWhereInput;
-  }) {
+  getCount(filters: Prisma.MatchWhereInput) {
     return this.prisma.match.count({
-      where: {
-        AND: [
-          query ? this.generateWhereClause(query) : undefined,
-          accessFilters,
-        ],
-      },
+      where: filters,
     });
   }
 }
