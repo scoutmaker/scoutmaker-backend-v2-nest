@@ -4,18 +4,15 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { OrganizationPlayerAccessControlEntry } from '@prisma/client';
 import { Request } from 'express';
 import { I18nService } from 'nestjs-i18n';
 
-import { OrganizationPlayerAclService } from '../../organization-player-acl/organization-player-acl.service';
 import { PlayersService } from '../players.service';
 
 @Injectable()
 export class DeleteGuard implements CanActivate {
   constructor(
     private readonly playersService: PlayersService,
-    private readonly organizationAclService: OrganizationPlayerAclService,
     private readonly i18n: I18nService,
   ) {}
 
@@ -38,21 +35,6 @@ export class DeleteGuard implements CanActivate {
 
     // Users can delete players data created by them
     if (user.id === player.author.id) {
-      return true;
-    }
-
-    // User can delete players data if their organization has ACE for this player with FULL permission
-    let organizationAce: OrganizationPlayerAccessControlEntry = null;
-
-    if (user.organizationId) {
-      organizationAce =
-        await this.organizationAclService.findOneByOrganizationAndPlayerId(
-          user.organizationId,
-          player.id,
-        );
-    }
-
-    if (organizationAce?.permissionLevel === 'FULL') {
       return true;
     }
 

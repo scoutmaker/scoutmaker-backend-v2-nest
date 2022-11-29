@@ -3,7 +3,6 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { OrganizationInsiderNoteAclService } from '../organization-insider-note-acl/organization-insider-note-acl.service';
 import { OrganizationNoteAclService } from '../organization-note-acl/organization-note-acl.service';
-import { OrganizationPlayerAclService } from '../organization-player-acl/organization-player-acl.service';
 import { OrganizationReportAclService } from '../organization-report-acl/organization-report-acl.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { UserInsiderNoteAclService } from '../user-insider-note-acl/user-insider-note-acl.service';
@@ -22,7 +21,6 @@ import { PlayersService } from './players.service';
     UserInsiderNoteAclService,
     UserNoteAclService,
     UserReportAclService,
-    OrganizationPlayerAclService,
     OrganizationInsiderNoteAclService,
     OrganizationNoteAclService,
     OrganizationReportAclService,
