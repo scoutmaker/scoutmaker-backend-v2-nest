@@ -10,14 +10,12 @@ import { I18nService } from 'nestjs-i18n';
 
 import { playmakerRoles, privilegedRoles } from '../../../utils/constants';
 import { OrganizationPlayerAclService } from '../../organization-player-acl/organization-player-acl.service';
-import { UserPlayerAclService } from '../../user-player-acl/user-player-acl.service';
 import { PlayersService } from '../players.service';
 
 @Injectable()
 export class UpdateGuard implements CanActivate {
   constructor(
     private readonly playersService: PlayersService,
-    private readonly userAclService: UserPlayerAclService,
     private readonly organizationAclService: OrganizationPlayerAclService,
     private readonly i18n: I18nService,
   ) {}
@@ -49,19 +47,6 @@ export class UpdateGuard implements CanActivate {
 
     // Users can update players data created by them
     if (user.id === player.author.id) {
-      return true;
-    }
-
-    // Users can update players data if they have ACE for this player with UPDATE permission
-    const userAce = await this.userAclService.findOneByUserAndPlayerId(
-      user.id,
-      player.id,
-    );
-
-    if (
-      userAce?.permissionLevel === 'READ_AND_WRITE' ||
-      userAce?.permissionLevel === 'FULL'
-    ) {
       return true;
     }
 

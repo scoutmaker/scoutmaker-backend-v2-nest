@@ -8,7 +8,6 @@ import { OrganizationReportAclService } from '../organization-report-acl/organiz
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { UserInsiderNoteAclService } from '../user-insider-note-acl/user-insider-note-acl.service';
 import { UserNoteAclService } from '../user-note-acl/user-note-acl.service';
-import { UserPlayerAclService } from '../user-player-acl/user-player-acl.service';
 import { UserReportAclService } from '../user-report-acl/user-report-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
 import { PlayersController } from './players.controller';
@@ -20,7 +19,6 @@ import { PlayersService } from './players.service';
     PlayersService,
     UserSubscriptionsService,
     OrganizationSubscriptionsService,
-    UserPlayerAclService,
     UserInsiderNoteAclService,
     UserNoteAclService,
     UserReportAclService,
