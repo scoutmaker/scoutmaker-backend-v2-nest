@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
+import { featureServiceName } from '../../common/guards/admin-or-author.guard';
 import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { OrganizationInsiderNoteAclService } from '../organization-insider-note-acl/organization-insider-note-acl.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
@@ -17,6 +18,7 @@ import { InsiderNotesService } from './insider-notes.service';
     OrganizationSubscriptionsService,
     UserInsiderNoteAclService,
     OrganizationInsiderNoteAclService,
+    { provide: featureServiceName, useExisting: InsiderNotesService },
   ],
   imports: [PlayersModule],
 })
