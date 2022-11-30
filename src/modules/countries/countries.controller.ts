@@ -46,6 +46,7 @@ export class CountriesController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CountryDto, { type: 'create' })
   @Serialize(CountryDto)
   async create(
@@ -122,6 +123,7 @@ export class CountriesController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CountryDto, { type: 'update' })
   @Serialize(CountryDto)
   async update(
@@ -138,6 +140,7 @@ export class CountriesController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CountryDto, { type: 'delete' })
   @Serialize(CountryDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

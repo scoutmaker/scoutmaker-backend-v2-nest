@@ -47,7 +47,7 @@ export class SeasonsController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'create' })
   @Serialize(SeasonDto)
   async create(
@@ -129,7 +129,7 @@ export class SeasonsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'update' })
   @Serialize(SeasonDto)
   async update(
@@ -146,7 +146,7 @@ export class SeasonsController {
   }
 
   @Patch(':id/toggle-active')
-  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'update' })
   @Serialize(SeasonDto)
   async toggleIsActive(
@@ -175,7 +175,7 @@ export class SeasonsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(SeasonDto, { type: 'delete' })
   @Serialize(SeasonDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

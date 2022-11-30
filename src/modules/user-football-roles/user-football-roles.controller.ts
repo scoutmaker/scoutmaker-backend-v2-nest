@@ -46,6 +46,7 @@ export class UserFootballRolesController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   @Serialize(UserFootballRoleDto)
   async create(
@@ -128,6 +129,7 @@ export class UserFootballRolesController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   @Serialize(UserFootballRoleDto)
   async update(
@@ -146,6 +148,7 @@ export class UserFootballRolesController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(UserFootballRoleDto, { type: 'read' })
   @Serialize(UserFootballRoleDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
