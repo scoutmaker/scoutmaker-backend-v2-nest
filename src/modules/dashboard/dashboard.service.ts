@@ -127,11 +127,9 @@ export class DashboardService {
       totalUserReports,
       recentScopedReports,
       recentUserReports,
-      //
       totalUserNotes,
       recentUserNotes,
       recentScopedNotes,
-      //
       totalUserMatches,
       recentUserMatches,
       recentScopedMatches,
@@ -139,11 +137,9 @@ export class DashboardService {
       totalUserReportsPromise,
       recentScopedReportsPromise,
       recentUserReportsPromise,
-      //
       totalUserNotesPromise,
       recentUserNotesPromise,
       recentScopedNotesPromise,
-      //
       totalUserMatchesPromise,
       recentUserMatchesPromise,
       recentScopedMatchesPromise,
@@ -237,8 +233,8 @@ export class DashboardService {
   }
   // helpers
 
-  private async getTopNotes(filters: Prisma.NoteWhereInput) {
-    return await this.notesService.findAll(
+  private getTopNotes(filters: Prisma.NoteWhereInput) {
+    return this.notesService.findAll(
       {
         limit: 5,
         sortBy: NotesSortBy.createdAt,
@@ -250,8 +246,8 @@ export class DashboardService {
     );
   }
 
-  private async getTopReports(filters: Prisma.ReportWhereInput) {
-    return await this.reportsService.findAll(
+  private getTopReports(filters: Prisma.ReportWhereInput) {
+    return this.reportsService.findAll(
       {
         limit: 5,
         sortBy: ReportsSortBy.createdAt,
