@@ -1,0 +1,3 @@
+{
+  "ACCESS_ERROR": "Nie mozesz wykonać operacji {method} na dokumencie {param}"
+}

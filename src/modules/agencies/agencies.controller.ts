@@ -13,6 +13,7 @@ import { ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { PaginationOptions } from '../../common/pagination/pagination-options.decorator';
@@ -93,6 +94,7 @@ export class AgenciesController {
   }
 
   @Patch(':id')
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(AgencyDto, { type: 'update' })
   @Serialize(AgencyDto)
   async update(
@@ -109,6 +111,7 @@ export class AgenciesController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(AgencyDto, { type: 'delete' })
   @Serialize(AgencyDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

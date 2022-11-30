@@ -6,7 +6,10 @@ import { AgenciesService } from './agencies.service';
 
 @Module({
   controllers: [AgenciesController],
-  providers: [AgenciesService],
+  providers: [
+    AgenciesService,
+    { provide: 'FeatureService', useExisting: AgenciesService },
+  ],
 })
 export class AgenciesModule {
   configure(consumer: MiddlewareConsumer) {
