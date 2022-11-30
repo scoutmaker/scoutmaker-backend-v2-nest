@@ -2,14 +2,10 @@ import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { NoteDto } from '../../notes/dto/note.dto';
+import { OrganizationBasicDataDto } from '../../organizations/dto/organization.dto';
 import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { ReportDto } from '../../reports/dto/report.dto';
 import { UserDto } from '../../users/dto/user.dto';
-
-class OrganizationInfoDto {
-  name: string;
-  sharedMatchesCount: number;
-}
 
 class DashboardReportDto extends PickType(ReportDto, [
   'id',
@@ -76,12 +72,12 @@ export class DashboardDto {
   recentObservedMatchesRatio?: number;
 
   @Transform(({ value }) =>
-    plainToInstance(OrganizationInfoDto, value, {
+    plainToInstance(OrganizationBasicDataDto, value, {
       excludeExtraneousValues: true,
     }),
   )
   @Expose()
-  organizations?: OrganizationInfoDto[];
+  organizations?: OrganizationBasicDataDto[];
 
   @Expose()
   scoutsCount?: number;

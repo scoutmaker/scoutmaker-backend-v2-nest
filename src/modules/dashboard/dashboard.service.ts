@@ -169,7 +169,9 @@ export class DashboardService {
   ): Promise<DashboardDto> {
     const [data, organizations] = await Promise.all([
       this.getCommonData(user),
-      this.getSharedToOrganizations(user),
+      this.organizationsService.getList({
+        subscriptions: { some: { endDate: { gte: new Date() } } },
+      }),
     ]);
 
     return { ...data, organizations };
@@ -279,58 +281,5 @@ export class DashboardService {
     );
 
     return { subscribedObservations, subscribedPlayers, subscribedMatches };
-  }
-
-  // get organizations that have access to your observations
-  // missing - check subscriptions
-  private async getSharedToOrganizations(
-    user: CurrentUserDto,
-  ): Promise<DashboardDto['organizations']> {
-    const sharedAclOrganizationsInclude =
-      Prisma.validator<Prisma.OrganizationInclude>()({
-        noteAccessControlList: {
-          include: { note: true },
-          where: { note: { authorId: user.id } },
-        },
-        reportAccessControlList: {
-          include: { report: true },
-          where: { report: { authorId: user.id } },
-        },
-      });
-
-    const sharedAclOrganizations = (await this.organizationsService.getList(
-      {
-        OR: [
-          {
-            noteAccessControlList: { some: { note: { authorId: user.id } } },
-          },
-          {
-            reportAccessControlList: {
-              some: { report: { authorId: user.id } },
-            },
-          },
-        ],
-      },
-      sharedAclOrganizationsInclude,
-    )) as Prisma.OrganizationGetPayload<{
-      include: typeof sharedAclOrganizationsInclude & { members: true };
-    }>[];
-
-    const sharedFromAls: DashboardDto['organizations'] =
-      sharedAclOrganizations.map((org) => {
-        const observedMatchesIds = new Set<string>();
-
-        org.noteAccessControlList.forEach((noteAce) => {
-          if (noteAce.note.matchId)
-            observedMatchesIds.add(noteAce.note.matchId);
-        });
-        org.reportAccessControlList.forEach((reportAce) => {
-          if (reportAce.report.matchId)
-            observedMatchesIds.add(reportAce.report.matchId);
-        });
-        return { name: org.name, sharedMatchesCount: observedMatchesIds.size };
-      });
-
-    return sharedFromAls;
   }
 }
