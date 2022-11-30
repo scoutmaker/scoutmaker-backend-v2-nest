@@ -17,11 +17,13 @@ interface FeatureService {
   findOneBySlug?: (slug: string) => Promise<DocumentBase>;
 }
 
+export const featureServiceName = 'FeatureService';
+
 @Injectable()
 export class AdminOrAuthorGuard implements CanActivate {
   constructor(
     private readonly i18n: I18nService,
-    @Inject('FeatureService') private readonly featureService: FeatureService,
+    @Inject(featureServiceName) private readonly featureService: FeatureService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
