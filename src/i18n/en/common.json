@@ -1,0 +1,3 @@
+{
+  "ACCESS_ERROR": "You are not authorized to perform {method} operation on a document {param}"
+}
