@@ -104,6 +104,11 @@ export class FindAllNotesDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   onlyLikedPlayers?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyWithoutPlayers?: boolean;
 }
 
 export class GetNotesListDto extends PickType(FindAllNotesDto, ['matchIds']) {}
