@@ -49,7 +49,7 @@ const include: Prisma.ReportInclude = {
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   match: { include: { homeTeam: true, awayTeam: true } },
@@ -68,7 +68,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
@@ -89,7 +89,7 @@ const listInclude: Prisma.ReportInclude = {
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   author: true,
@@ -352,18 +352,27 @@ export class ReportsService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers

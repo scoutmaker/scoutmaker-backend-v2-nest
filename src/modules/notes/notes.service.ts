@@ -209,6 +209,7 @@ export class NotesService {
       observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
+      onlyWithoutPlayers,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -278,18 +279,27 @@ export class NotesService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
@@ -301,6 +311,7 @@ export class NotesService {
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
+            { playerId: onlyWithoutPlayers ? null : undefined },
           ],
         },
       ],
