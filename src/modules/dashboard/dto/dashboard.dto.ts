@@ -5,7 +5,6 @@ import { NoteDto } from '../../notes/dto/note.dto';
 import { OrganizationBasicDataDto } from '../../organizations/dto/organization.dto';
 import { PlayerSuperBasicDataDto } from '../../players/dto/player.dto';
 import { ReportDto } from '../../reports/dto/report.dto';
-import { UserDto } from '../../users/dto/user.dto';
 
 class DashboardReportDto extends PickType(ReportDto, [
   'id',
@@ -39,20 +38,7 @@ class DashboardNoteDto extends PickType(NoteDto, [
   player?: PlayerSuperBasicDataDto;
 }
 
-export class UserDashboardDto extends PickType(UserDto, ['id', 'role']) {
-  @Expose()
-  organizationId: string;
-}
-
 export class DashboardDto {
-  @Transform(({ value }) =>
-    plainToInstance(UserDashboardDto, value, {
-      excludeExtraneousValues: true,
-    }),
-  )
-  @Expose()
-  user: UserDashboardDto;
-
   @Expose()
   reportsCount?: number;
 

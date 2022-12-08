@@ -146,7 +146,6 @@ export class DashboardService {
     ]);
 
     return {
-      user,
       reportsCount: totalUserReports,
       recentReportsRatio:
         calculatePercentage(recentUserReports, recentScopedReports) || 0,
@@ -223,7 +222,6 @@ export class DashboardService {
       ]);
 
     return {
-      user,
       scoutsCount,
       observerdPlayersCount: playersCount,
       observedMatchesCount: matchesCount,
