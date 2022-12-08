@@ -406,7 +406,7 @@ export class ReportsService {
     const reports = await this.prisma.report.findMany({
       where,
       take: limit,
-      skip: calculateSkip(page, limit),
+      skip: calculateSkip(page, limit) || 0,
       orderBy: sort,
       include: userId
         ? { ...paginatedDataInclude, likes: { where: { userId } } }

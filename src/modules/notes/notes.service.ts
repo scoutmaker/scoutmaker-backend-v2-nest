@@ -305,11 +305,11 @@ export class NotesService {
         },
       ],
     };
-    
+
     const notes = await this.prisma.note.findMany({
       where,
       take: limit,
-      skip: calculateSkip(page, limit),
+      skip: calculateSkip(page, limit) || 0,
       orderBy: sort,
       include: userId
         ? {
