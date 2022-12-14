@@ -114,9 +114,9 @@ export class NotesService {
       metaPositionId = positionPlayedId || player.primaryPositionId;
       metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
     }
 
     return this.prisma.note.create({
@@ -410,7 +410,7 @@ export class NotesService {
       const metaCompetitionId =
         competitionId || player.teams[0].team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
       await this.prisma.noteMeta.create({
         data: {
