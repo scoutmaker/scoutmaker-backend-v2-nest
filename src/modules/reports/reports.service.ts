@@ -174,9 +174,9 @@ export class ReportsService {
     const metaPositionId = positionPlayedId || player.primaryPositionId;
     const metaTeamId = teamId || player.teams[0]?.teamId;
     const metaCompetitionId =
-      competitionId || player.teams[0]?.team.competitions[0].competitionId;
+      competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+      competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
@@ -477,9 +477,9 @@ export class ReportsService {
       metaPositionId = positionPlayedId || player.primaryPositionId;
       metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
       await this.prisma.reportMeta.update({
         where: { reportId: id },
