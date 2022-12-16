@@ -11,6 +11,7 @@ enum NotesSortBy {
   match = 'match',
   author = 'author',
   createdAt = 'createdAt',
+  percentageRating_createdAt = 'percentageRating_createdAt',
 }
 
 export type NotesSortByUnion = keyof typeof NotesSortBy;
