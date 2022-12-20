@@ -13,6 +13,7 @@ enum ReportsSortBy {
   author = 'author',
   createdAt = 'createdAt',
   status = 'status',
+  match = 'match',
 }
 
 export class ReportsPaginationOptionsDto extends PaginationOptionsDto {
