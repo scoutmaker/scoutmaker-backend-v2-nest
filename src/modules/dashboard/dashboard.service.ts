@@ -319,8 +319,9 @@ export class DashboardService {
 
     return topPlayersWithIncludedData.map((player) => ({
       ...player,
-      averageRating: topPlayersRaw.find((e) => e.playerId === player.id)
-        .averagerating,
+      averagePrecentageRating: topPlayersRaw.find(
+        (e) => e.playerId === player.id,
+      ).averagerating,
     }));
   }
 }

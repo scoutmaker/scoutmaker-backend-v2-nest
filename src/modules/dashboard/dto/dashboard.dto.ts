@@ -30,7 +30,7 @@ class DashboardReportDto extends PickType(ReportDto, [
 
 export class DashboardPlayerDto extends OmitType(PlayerDto, ['teams']) {
   @Expose()
-  averageRating: number;
+  averagePrecentageRating: number;
 
   @Transform(({ value }) =>
     plainToInstance(DashboardTeamAffiliationDto, value, {
