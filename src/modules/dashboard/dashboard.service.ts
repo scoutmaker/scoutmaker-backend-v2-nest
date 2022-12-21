@@ -9,18 +9,25 @@ import { NotesSortBy } from '../notes/dto/notes-pagination-options.dto';
 import { NotesService } from '../notes/notes.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { PlayerDto } from '../players/dto/player.dto';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportsSortBy } from '../reports/dto/reports-pagination-options.dto';
 import { ReportsService } from '../reports/reports.service';
 import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { UsersService } from '../users/users.service';
-import { DashboardDto } from './dto/dashboard.dto';
+import { DashboardDto, DashboardPlayerDto } from './dto/dashboard.dto';
 import {
   transformMatchSubscriptions,
   transformObservationSubscriptions,
   transformPlayerSubscriptions,
 } from './transform-subscriptions';
+
+type TTopPlayersRaw = {
+  playerId: string;
+  averagerating: number;
+  observations: number;
+}[];
 
 @Injectable()
 export class DashboardService {
@@ -202,7 +209,8 @@ export class DashboardService {
       ],
     });
 
-    const matchesCountPromise = this.matchesService.getCount({
+    const matchesCountPromise = this.matchesService.getCount({});
+    const observedMatchesCountPromise = this.matchesService.getCount({
       AND: [
         { OR: [{ notes: { some: {} } }, { reports: { some: {} } }] },
         subscribedMatches,
@@ -212,21 +220,45 @@ export class DashboardService {
     const topNotesPromise = this.getTopNotes(subscribedObservations);
     const topReportsPromise = this.getTopReports(subscribedObservations);
 
-    const [scoutsCount, playersCount, matchesCount, topNotes, topReports] =
-      await Promise.all([
-        scoutsCountPromise,
-        playersCountPromise,
-        matchesCountPromise,
-        topNotesPromise,
-        topReportsPromise,
-      ]);
+    const notesCountPromise = this.notesService.getCount(
+      subscribedObservations,
+    );
+    const reportsCountPromise = this.reportsService.getCount(
+      subscribedObservations,
+    );
+
+    const [
+      scoutsCount,
+      playersCount,
+      observedMatchesCount,
+      topNotes,
+      topReports,
+      notesCount,
+      reportsCount,
+      matchesCount,
+      topPlayers,
+    ] = await Promise.all([
+      scoutsCountPromise,
+      playersCountPromise,
+      observedMatchesCountPromise,
+      topNotesPromise,
+      topReportsPromise,
+      notesCountPromise,
+      reportsCountPromise,
+      matchesCountPromise,
+      this.getTopPlayers(),
+    ]);
 
     return {
       scoutsCount,
       observerdPlayersCount: playersCount,
-      observedMatchesCount: matchesCount,
+      observedMatchesCount,
       topNotes: topNotes.docs,
       topReports: topReports.docs,
+      notesCount,
+      reportsCount,
+      matchesCount,
+      topPlayers,
     };
   }
   // helpers
@@ -275,5 +307,20 @@ export class DashboardService {
     );
 
     return { subscribedObservations, subscribedPlayers, subscribedMatches };
+  }
+
+  private async getTopPlayers(): Promise<DashboardDto['topPlayers']> {
+    const topPlayersRaw = await this.prisma
+      .$queryRaw<TTopPlayersRaw>`SELECT "r"."playerId", avg(r.rating) as averageRating, count(r.rating) as observations from (select "playerId", "percentageRating" as rating from "Report" union all select "playerId", "percentageRating" as rating from "Note") r group by "r"."playerId" having count(r.rating) >= 3 order by 2 desc FETCH FIRST 5 ROWS ONLY`;
+
+    const topPlayersWithIncludedData: DashboardPlayerDto[] = await Promise.all(
+      topPlayersRaw.map((entry) => this.playersService.findOne(entry.playerId)),
+    );
+
+    return topPlayersWithIncludedData.map((player) => ({
+      ...player,
+      averageRating: topPlayersRaw.find((e) => e.playerId === player.id)
+        .averagerating,
+    }));
   }
 }
