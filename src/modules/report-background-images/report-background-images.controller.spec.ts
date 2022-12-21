@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { ReportBackgroundImagesController } from './report-background-images.controller';
 import { ReportBackgroundImagesService } from './report-background-images.service';
 
@@ -11,7 +12,9 @@ describe('ReportBackgroundImagesController', () => {
       providers: [ReportBackgroundImagesService],
     }).compile();
 
-    controller = module.get<ReportBackgroundImagesController>(ReportBackgroundImagesController);
+    controller = module.get<ReportBackgroundImagesController>(
+      ReportBackgroundImagesController,
+    );
   });
 
   it('should be defined', () => {

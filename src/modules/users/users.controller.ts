@@ -14,8 +14,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';

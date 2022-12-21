@@ -31,12 +31,13 @@ interface CsvInput {
   lnpUrl?: string;
   minut90id?: string;
   minut90url?: string;
-  transfermarktId?: string;
+  transfermarktId?: number;
   transfermarktUrl?: string;
   isPublic?: boolean;
   scoutmakerv1Id?: string;
   countryId: number;
   primaryPositionId: number;
+  primaryPositionid?: number;
   authorId: number;
 }
 
@@ -51,6 +52,7 @@ const include: Prisma.PlayerInclude = {
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
   teams: {
+    where: { endDate: null },
     include: {
       team: true,
     },
@@ -70,6 +72,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   secondaryPositions: { include: { position: true } },
   author: true,
   teams: {
+    where: { endDate: null },
     include: {
       team: {
         include: {
@@ -151,12 +154,14 @@ export class PlayersService {
       instance.lnpUrl = item.lnpUrl;
       instance.minut90id = item.minut90id;
       instance.minut90url = item.minut90url;
-      instance.transfermarktId = item.transfermarktId;
+      instance.transfermarktId = item.transfermarktId?.toString();
       instance.transfermarktUrl = item.transfermarktUrl;
       instance.isPublic = item.isPublic || false;
       instance.scoutmakerv1Id = item.scoutmakerv1Id;
       instance.countryId = item.countryId?.toString();
-      instance.primaryPositionId = item.primaryPositionId?.toString();
+      instance.primaryPositionId =
+        item.primaryPositionid?.toString() ||
+        item.primaryPositionId?.toString();
 
       return instance;
     });

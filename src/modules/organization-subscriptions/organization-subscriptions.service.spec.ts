@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { OrganizationSubscriptionsService } from './organization-subscriptions.service';
 
 describe('OrganizationSubscriptionsService', () => {
@@ -9,7 +10,9 @@ describe('OrganizationSubscriptionsService', () => {
       providers: [OrganizationSubscriptionsService],
     }).compile();
 
-    service = module.get<OrganizationSubscriptionsService>(OrganizationSubscriptionsService);
+    service = module.get<OrganizationSubscriptionsService>(
+      OrganizationSubscriptionsService,
+    );
   });
 
   it('should be defined', () => {

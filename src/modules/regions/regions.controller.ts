@@ -15,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
@@ -46,6 +46,7 @@ export class RegionsController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(RegionDto, { type: 'create' })
   @Serialize(RegionDto)
   async create(
@@ -122,6 +123,7 @@ export class RegionsController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(RegionDto, { type: 'update' })
   @Serialize(RegionDto)
   async update(
@@ -138,6 +140,7 @@ export class RegionsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(RegionDto, { type: 'delete' })
   @Serialize(RegionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -16,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
@@ -50,6 +49,7 @@ export class CompetitionGroupsController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionGroupDto, { type: 'create' })
   @Serialize(CompetitionGroupDto)
   async create(
@@ -131,6 +131,7 @@ export class CompetitionGroupsController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionGroupDto, { type: 'update' })
   @Serialize(CompetitionGroupDto)
   async update(
@@ -150,6 +151,7 @@ export class CompetitionGroupsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionGroupDto, { type: 'delete' })
   @Serialize(CompetitionGroupDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

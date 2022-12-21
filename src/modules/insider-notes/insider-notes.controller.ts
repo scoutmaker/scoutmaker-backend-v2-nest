@@ -15,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
@@ -25,6 +25,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
@@ -41,9 +42,7 @@ import {
 } from './dto/insider-note.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
 import { UpdateInsiderNoteDto } from './dto/update-insider-note.dto';
-import { DeleteGuard } from './guards/delete.guard';
 import { ReadGuard } from './guards/read.guard';
-import { UpdateGuard } from './guards/update.guard';
 import { InsiderNotesService } from './insider-notes.service';
 
 @Controller('insider-notes')
@@ -161,7 +160,7 @@ export class InsiderNotesController {
   }
 
   @Patch(':id')
-  @UseGuards(UpdateGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(InsiderNoteDto, { type: 'update' })
   @Serialize(InsiderNoteDto)
   async update(
@@ -181,7 +180,7 @@ export class InsiderNotesController {
   }
 
   @Delete(':id')
-  @UseGuards(DeleteGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(InsiderNoteDto, { type: 'delete' })
   @Serialize(InsiderNoteDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

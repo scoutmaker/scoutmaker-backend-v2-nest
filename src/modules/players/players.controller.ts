@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -16,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
@@ -26,6 +25,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
@@ -38,9 +38,7 @@ import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayerBasicDataDto, PlayerDto } from './dto/player.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
-import { DeleteGuard } from './guards/delete.guard';
 import { ReadGuard } from './guards/read.guard';
-import { UpdateGuard } from './guards/update.guard';
 import { AccessFiltersInterceptor } from './interceptors/access-filters.interceptor';
 import { PlayersService } from './players.service';
 
@@ -176,7 +174,7 @@ export class PlayersController {
   }
 
   @Patch(':id')
-  @UseGuards(UpdateGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(PlayerDto, { type: 'update' })
   @Serialize(PlayerDto)
   async update(
@@ -193,7 +191,7 @@ export class PlayersController {
   }
 
   @Delete(':id')
-  @UseGuards(DeleteGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(PlayerDto, { type: 'delete' })
   @Serialize(PlayerDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

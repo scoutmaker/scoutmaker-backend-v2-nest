@@ -49,7 +49,7 @@ const include: Prisma.ReportInclude = {
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   match: { include: { homeTeam: true, awayTeam: true } },
@@ -68,7 +68,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
@@ -89,7 +89,7 @@ const listInclude: Prisma.ReportInclude = {
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   author: true,
@@ -174,9 +174,9 @@ export class ReportsService {
     const metaPositionId = positionPlayedId || player.primaryPositionId;
     const metaTeamId = teamId || player.teams[0]?.teamId;
     const metaCompetitionId =
-      competitionId || player.teams[0]?.team.competitions[0].competitionId;
+      competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+      competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
@@ -352,18 +352,27 @@ export class ReportsService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
@@ -468,9 +477,9 @@ export class ReportsService {
       metaPositionId = positionPlayedId || player.primaryPositionId;
       metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
       await this.prisma.reportMeta.update({
         where: { reportId: id },

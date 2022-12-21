@@ -702,9 +702,9 @@ async function main() {
 
   const marchwinskiReportPromise = prisma.report.create({
     data: {
-      template: { connect: { id: defaultReportTemplate.id } },
       player: { connect: { id: marchwinski.id } },
       author: { connect: { id: admin.id } },
+      maxRatingScore: 4,
       skills: {
         createMany: {
           data: skillAssessmentTemplates.map((template) => ({
@@ -726,9 +726,9 @@ async function main() {
 
   const skibickiReportPromise = prisma.report.create({
     data: {
-      template: { connect: { id: defaultReportTemplate.id } },
       player: { connect: { id: skibicki.id } },
       author: { connect: { id: admin.id } },
+      maxRatingScore: 4,
       skills: {
         createMany: {
           data: skillAssessmentTemplates.map((template) => ({

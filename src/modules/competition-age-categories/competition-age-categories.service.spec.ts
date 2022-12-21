@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CompetitionAgeCategoriesService } from './competition-age-categories.service';
 
 describe('CompetitionAgeCategoriesService', () => {
@@ -9,7 +10,9 @@ describe('CompetitionAgeCategoriesService', () => {
       providers: [CompetitionAgeCategoriesService],
     }).compile();
 
-    service = module.get<CompetitionAgeCategoriesService>(CompetitionAgeCategoriesService);
+    service = module.get<CompetitionAgeCategoriesService>(
+      CompetitionAgeCategoriesService,
+    );
   });
 
   it('should be defined', () => {

@@ -15,14 +15,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
@@ -161,6 +162,7 @@ export class TeamsController {
   }
 
   @Patch(':id')
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(TeamDto, { type: 'update' })
   @Serialize(TeamDto)
   async update(
@@ -177,6 +179,7 @@ export class TeamsController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(TeamDto, { type: 'delete' })
   @Serialize(TeamDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

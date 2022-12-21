@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { ReportSkillAssessmentsService } from './report-skill-assessments.service';
 
 describe('ReportSkillAssessmentsService', () => {
@@ -9,7 +10,9 @@ describe('ReportSkillAssessmentsService', () => {
       providers: [ReportSkillAssessmentsService],
     }).compile();
 
-    service = module.get<ReportSkillAssessmentsService>(ReportSkillAssessmentsService);
+    service = module.get<ReportSkillAssessmentsService>(
+      ReportSkillAssessmentsService,
+    );
   });
 
   it('should be defined', () => {

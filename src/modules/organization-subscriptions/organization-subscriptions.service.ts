@@ -183,9 +183,9 @@ export class OrganizationSubscriptionsService {
         include,
       });
 
-    this.deleteFormattedFromCache(updatedSubsripiton.organizationId);
+    this.deleteFormattedFromCache(updatedSubscription.organizationId);
 
-    return updatedSubsripiton;
+    return updatedSubscription;
   }
 
   async getFormattedForSingleOrganization(

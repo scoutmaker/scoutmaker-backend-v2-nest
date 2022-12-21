@@ -15,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
-  ApiSecurity,
   ApiQuery,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
@@ -25,6 +25,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 import { AccessFilters } from '../../common/access-filters/access-filters.decorator';
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { DocumentAccessFiltersInterceptor } from '../../common/interceptors/document-access-filters-interceptor';
@@ -42,9 +43,7 @@ import {
 } from './dto/report.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
-import { DeleteGuard } from './guards/delete.guard';
 import { ReadGuard } from './guards/read.guard';
-import { UpdateGuard } from './guards/update.guard';
 import { ReportsService } from './reports.service';
 
 @Controller('reports')
@@ -162,7 +161,7 @@ export class ReportsController {
   }
 
   @Patch(':id')
-  @UseGuards(UpdateGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(ReportDto, { type: 'update' })
   @Serialize(ReportDto)
   async update(
@@ -179,7 +178,7 @@ export class ReportsController {
   }
 
   @Delete(':id')
-  @UseGuards(DeleteGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(ReportDto, { type: 'delete' })
   @Serialize(ReportDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

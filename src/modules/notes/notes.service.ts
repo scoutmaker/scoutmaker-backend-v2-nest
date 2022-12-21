@@ -114,9 +114,9 @@ export class NotesService {
       metaPositionId = positionPlayedId || player.primaryPositionId;
       metaTeamId = teamId || player.teams[0]?.teamId;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0].competitionId;
+        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
     }
 
     return this.prisma.note.create({
@@ -152,6 +152,7 @@ export class NotesService {
 
     const instances = result.data.map((item) => {
       const instance = new CreateNoteDto();
+
       instance.id = item.id?.toString();
       instance.shirtNo = item.shirtNo;
       instance.description = item.description;
@@ -209,6 +210,7 @@ export class NotesService {
       observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
+      onlyWithoutPlayers,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -278,18 +280,27 @@ export class NotesService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
@@ -301,6 +312,7 @@ export class NotesService {
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
+            { playerId: onlyWithoutPlayers ? null : undefined },
           ],
         },
       ],
@@ -407,7 +419,7 @@ export class NotesService {
       const metaCompetitionId =
         competitionId || player.teams[0].team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
+        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
 
       await this.prisma.noteMeta.create({
         data: {
