@@ -60,6 +60,7 @@ const include: Prisma.ReportInclude = {
 const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
   player: true,
   author: true,
+  match: { include: { homeTeam: true, awayTeam: true } },
   meta: { include: { team: true, position: true } },
 });
 
