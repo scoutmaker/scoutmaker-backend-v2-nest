@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Note, Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 
-import { REDIS_TTL } from '../../utils/constants';
+import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculatePercentageRating,
@@ -211,6 +211,7 @@ export class NotesService {
       onlyLikedPlayers,
       onlyLikedTeams,
       onlyWithoutPlayers,
+      percentageRatingRanges: percentageRatingRangesFilter,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -313,6 +314,14 @@ export class NotesService {
                 : undefined,
             },
             { playerId: onlyWithoutPlayers ? null : undefined },
+            {
+              OR: percentageRatingRangesFilter?.map((range) => ({
+                percentageRating: {
+                  gte: percentageRatingRanges[range][0],
+                  lte: percentageRatingRanges[range][1],
+                },
+              })),
+            },
           ],
         },
       ],
