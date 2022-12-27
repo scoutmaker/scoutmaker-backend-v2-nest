@@ -529,4 +529,8 @@ export class PlayersService {
     ]);
     return this.prisma.player.delete({ where: { id } });
   }
+
+  getCount(filters?: Prisma.PlayerWhereInput) {
+    return this.prisma.player.count({ where: filters });
+  }
 }

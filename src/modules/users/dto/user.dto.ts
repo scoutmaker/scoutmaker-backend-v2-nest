@@ -62,6 +62,9 @@ export class UserDto {
 
   @Expose()
   _count: Count;
+
+  @Expose()
+  organizationId?: string;
 }
 
 export class UserBasicDataDto extends PickType(UserDto, [
