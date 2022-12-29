@@ -1,6 +1,7 @@
 import { OmitType, PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
+import { MatchDto } from '../../matches/dto/match.dto';
 import { NoteDto } from '../../notes/dto/note.dto';
 import { OrganizationBasicDataDto } from '../../organizations/dto/organization.dto';
 import {
@@ -18,15 +19,28 @@ class DashboardTeamAffiliationDto extends OmitType(
   @Expose()
   team: TeamDto;
 }
+class DashboardMatchDto extends PickType(MatchDto, [
+  'id',
+  'date',
+  'homeTeam',
+  'awayTeam',
+]) {}
 
 class DashboardReportDto extends PickType(ReportDto, [
   'id',
   'player',
   'createdAt',
   'finalRating',
-  'match',
   'docNumber',
-]) {}
+]) {
+  @Transform(({ value }) =>
+    plainToInstance(DashboardMatchDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  match: DashboardMatchDto;
+}
 
 export class DashboardPlayerDto extends OmitType(PlayerDto, ['teams']) {
   @Expose()
