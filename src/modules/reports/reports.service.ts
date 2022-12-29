@@ -405,6 +405,9 @@ export class ReportsService {
         break;
       case 'positionPlayed':
         sort = { meta: { position: { name: sortingOrder } } };
+      case 'match':
+        sort = { match: { date: sortingOrder } };
+        break;
       default:
         sort = { [sortBy]: sortingOrder };
         break;
