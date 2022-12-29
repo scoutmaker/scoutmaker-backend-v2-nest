@@ -4,6 +4,10 @@ import { Expose, plainToInstance, Transform } from 'class-transformer';
 import { CountryDto } from '../../countries/dto/country.dto';
 import { RegionWithoutCountryDto } from '../../regions/dto/region-without-country.dto';
 
+class ClubCount {
+  teams: number;
+}
+
 export class ClubDto {
   @Expose()
   id: string;
@@ -53,6 +57,9 @@ export class ClubDto {
   )
   @Expose()
   region: RegionWithoutCountryDto;
+
+  @Expose()
+  _count: ClubCount;
 }
 
 export class ClubBasicDataDto extends PickType(ClubDto, [
