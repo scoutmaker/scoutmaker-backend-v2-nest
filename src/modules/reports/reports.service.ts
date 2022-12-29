@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Report, ReportTemplate } from '@prisma/client';
 import Redis from 'ioredis';
 
-import { REDIS_TTL } from '../../utils/constants';
+import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateAvg,
@@ -307,6 +307,7 @@ export class ReportsService {
       observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
+      percentageRatingRanges: percentageRatingRangesFilter,
     } = query;
 
     return {
@@ -384,6 +385,14 @@ export class ReportsService {
               meta: onlyLikedTeams
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
+            },
+            {
+              OR: percentageRatingRangesFilter?.map((range) => ({
+                percentageRating: {
+                  gte: percentageRatingRanges[range][0],
+                  lte: percentageRatingRanges[range][1],
+                },
+              })),
             },
           ],
         },

@@ -11,7 +11,7 @@ import {
   Min,
 } from 'class-validator';
 
-import { ObservationTypeEnum } from '../../../types/common';
+import { ObservationTypeEnum, RatingRangesEnum } from '../../../types/common';
 
 export class FindAllNotesDto {
   @IsOptional()
@@ -63,6 +63,17 @@ export class FindAllNotesDto {
   @Min(0)
   @Max(100)
   percentageRatingRangeEnd?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsEnum(RatingRangesEnum, {
+    message: `Percentage rating ranges must be a valid enum value. Available values: ${Object.keys(
+      RatingRangesEnum,
+    ).join(', ')}`,
+    each: true,
+  })
+  percentageRatingRanges?: RatingRangesEnum[];
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

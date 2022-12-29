@@ -20,3 +20,11 @@ export const playmakerRoles: UserRole[] = [
   'PLAYMAKER_SCOUT',
   'PLAYMAKER_SCOUT_MANAGER',
 ];
+
+export const percentageRatingRanges = {
+  ALL: [undefined, undefined],
+  NEGATIVE_SELECTION: [0, 25],
+  NO_DECISION: [26, 50],
+  TO_OBSERVE: [51, 75],
+  POSITIVE_SELECTION: [76, 100],
+} as const;
