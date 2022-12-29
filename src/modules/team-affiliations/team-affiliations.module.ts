@@ -1,12 +1,16 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
+import { featureServiceName } from '../../common/guards/admin-or-author.guard';
 import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { TeamAffiliationsController } from './team-affiliations.controller';
 import { TeamAffiliationsService } from './team-affiliations.service';
 
 @Module({
   controllers: [TeamAffiliationsController],
-  providers: [TeamAffiliationsService],
+  providers: [
+    TeamAffiliationsService,
+    { provide: featureServiceName, useExisting: TeamAffiliationsService },
+  ],
 })
 export class TeamAffiliationsModule {
   configure(consumer: MiddlewareConsumer) {

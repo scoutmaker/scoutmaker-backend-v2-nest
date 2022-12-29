@@ -46,6 +46,7 @@ export class PlayerPositionsController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(PlayerPositionDto, { type: 'create' })
   @Serialize(PlayerPositionDto)
   async create(
@@ -129,6 +130,7 @@ export class PlayerPositionsController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(PlayerPositionDto, { type: 'update' })
   @Serialize(PlayerPositionDto)
   async update(
@@ -148,6 +150,7 @@ export class PlayerPositionsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(PlayerPositionDto, { type: 'delete' })
   @Serialize(PlayerPositionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

@@ -23,6 +23,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
@@ -35,8 +36,6 @@ import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchBasicDataDto, MatchDto } from './dto/match.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
-import { DeleteGuard } from './guards/delete.guard';
-import { UpdateGuard } from './guards/update.guard';
 import { MatchesService } from './matches.service';
 
 @Controller('matches')
@@ -140,7 +139,7 @@ export class MatchesController {
   }
 
   @Patch(':id')
-  @UseGuards(UpdateGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(MatchDto, { type: 'update' })
   @Serialize(MatchDto)
   async update(
@@ -160,7 +159,7 @@ export class MatchesController {
   }
 
   @Delete(':id')
-  @UseGuards(DeleteGuard)
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(MatchDto, { type: 'delete' })
   @Serialize(MatchDto)
   async remove(

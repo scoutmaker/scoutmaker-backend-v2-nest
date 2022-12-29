@@ -23,6 +23,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
@@ -139,6 +140,7 @@ export class ReportTemplatesController {
   }
 
   @Patch(':id')
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(ReportTemplateDto, { type: 'update' })
   @Serialize(ReportTemplateDto)
   async update(
@@ -158,6 +160,7 @@ export class ReportTemplatesController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(ReportTemplateDto, { type: 'delete' })
   @Serialize(ReportTemplateDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

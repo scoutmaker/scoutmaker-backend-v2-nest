@@ -6,7 +6,7 @@ import Redis from 'ioredis';
 import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
-  calculatePercentageRating,
+  calculatePercentage,
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
@@ -97,7 +97,7 @@ export class NotesService {
     let percentageRating: number;
 
     if (rating && maxRatingScore) {
-      percentageRating = calculatePercentageRating(rating, maxRatingScore);
+      percentageRating = calculatePercentage(rating, maxRatingScore);
     }
 
     let metaPositionId: string;
@@ -152,6 +152,7 @@ export class NotesService {
 
     const instances = result.data.map((item) => {
       const instance = new CreateNoteDto();
+
       instance.id = item.id?.toString();
       instance.shirtNo = item.shirtNo;
       instance.description = item.description;
@@ -209,6 +210,7 @@ export class NotesService {
       observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
+      onlyWithoutPlayers,
     }: FindAllNotesDto,
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
@@ -278,18 +280,27 @@ export class NotesService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
@@ -301,6 +312,7 @@ export class NotesService {
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
+            { playerId: onlyWithoutPlayers ? null : undefined },
           ],
         },
       ],
@@ -309,7 +321,7 @@ export class NotesService {
     const notes = await this.prisma.note.findMany({
       where,
       take: limit,
-      skip: calculateSkip(page, limit),
+      skip: calculateSkip(page, limit) || 0,
       orderBy: sort,
       include: userId
         ? {
@@ -386,17 +398,14 @@ export class NotesService {
     });
 
     if (rating && maxRatingScore) {
-      percentageRating = calculatePercentageRating(rating, maxRatingScore);
+      percentageRating = calculatePercentage(rating, maxRatingScore);
     }
 
     if ((!rating && maxRatingScore) || (rating && !maxRatingScore)) {
       const newRating = rating || note.rating;
       const newMaxRatingScore = maxRatingScore || note.maxRatingScore;
       if (newRating && newMaxRatingScore) {
-        percentageRating = calculatePercentageRating(
-          newRating,
-          newMaxRatingScore,
-        );
+        percentageRating = calculatePercentage(newRating, newMaxRatingScore);
       }
     }
 
@@ -464,5 +473,9 @@ export class NotesService {
 
   async remove(id: string) {
     return this.prisma.note.delete({ where: { id }, include });
+  }
+
+  getCount(filters: Prisma.NoteWhereInput) {
+    return this.prisma.note.count({ where: filters });
   }
 }

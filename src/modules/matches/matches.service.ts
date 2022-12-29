@@ -258,4 +258,10 @@ export class MatchesService {
   remove(id: string) {
     return this.prisma.match.delete({ where: { id }, include });
   }
+
+  getCount(filters: Prisma.MatchWhereInput) {
+    return this.prisma.match.count({
+      where: filters,
+    });
+  }
 }

@@ -24,6 +24,7 @@ import { CompetitionParticipationsModule } from './modules/competition-participa
 import { CompetitionTypesModule } from './modules/competition-types/competition-types.module';
 import { CompetitionsModule } from './modules/competitions/competitions.module';
 import { CountriesModule } from './modules/countries/countries.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { FollowAgenciesModule } from './modules/follow-agencies/follow-agencies.module';
 import { FollowPlayersModule } from './modules/follow-players/follow-players.module';
 import { FollowScoutsModule } from './modules/follow-scouts/follow-scouts.module';
@@ -41,7 +42,6 @@ import { NotesModule } from './modules/notes/notes.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { OrganizationInsiderNoteAclModule } from './modules/organization-insider-note-acl/organization-insider-note-acl.module';
 import { OrganizationNoteAclModule } from './modules/organization-note-acl/organization-note-acl.module';
-import { OrganizationPlayerAclModule } from './modules/organization-player-acl/organization-player-acl.module';
 import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
@@ -62,7 +62,6 @@ import { TeamsModule } from './modules/teams/teams.module';
 import { UserFootballRolesModule } from './modules/user-football-roles/user-football-roles.module';
 import { UserInsiderNoteAclModule } from './modules/user-insider-note-acl/user-insider-note-acl.module';
 import { UserNoteAclModule } from './modules/user-note-acl/user-note-acl.module';
-import { UserPlayerAclModule } from './modules/user-player-acl/user-player-acl.module';
 import { UserReportAclModule } from './modules/user-report-acl/user-report-acl.module';
 import { UserSubscriptionsModule } from './modules/user-subscriptions/user-subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
@@ -130,8 +129,6 @@ import { UsersModule } from './modules/users/users.module';
     ReportBackgroundImagesModule,
     UserSubscriptionsModule,
     OrganizationSubscriptionsModule,
-    UserPlayerAclModule,
-    OrganizationPlayerAclModule,
     UserReportAclModule,
     OrganizationReportAclModule,
     UserNoteAclModule,
@@ -145,6 +142,7 @@ import { UsersModule } from './modules/users/users.module';
     LikeTeamsModule,
     SendgridModule,
     MatchAttendancesModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

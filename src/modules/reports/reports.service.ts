@@ -7,7 +7,7 @@ import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateAvg,
-  calculatePercentageRating,
+  calculatePercentage,
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
@@ -49,7 +49,7 @@ const include: Prisma.ReportInclude = {
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   match: { include: { homeTeam: true, awayTeam: true } },
@@ -68,7 +68,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
@@ -89,7 +89,7 @@ const listInclude: Prisma.ReportInclude = {
     include: {
       country: true,
       primaryPosition: true,
-      teams: { include: { team: true } },
+      teams: { include: { team: true }, where: { endDate: null } },
     },
   },
   author: true,
@@ -153,7 +153,7 @@ export class ReportsService {
 
     // Calculate percentage rating
     if (finalRating) {
-      percentageRating = calculatePercentageRating(
+      percentageRating = calculatePercentage(
         finalRating,
         maxRatingScore || template?.maxRatingScore,
       );
@@ -352,18 +352,27 @@ export class ReportsService {
                 : undefined,
             },
             {
-              OR: isIdsArrayFilterDefined(teamIds)
-                ? [
-                    { match: { homeTeam: { id: { in: teamIds } } } },
-                    { match: { awayTeam: { id: { in: teamIds } } } },
-                    { meta: { team: { id: { in: teamIds } } } },
-                  ]
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { team: { id: { in: teamIds } } }
                 : undefined,
             },
             {
-              player: {
-                yearOfBirth: { gte: playerBornAfter, lte: playerBornBefore },
-              },
+              player: playerBornAfter
+                ? {
+                    yearOfBirth: {
+                      gte: playerBornAfter,
+                    },
+                  }
+                : undefined,
+            },
+            {
+              player: playerBornBefore
+                ? {
+                    yearOfBirth: {
+                      lte: playerBornBefore,
+                    },
+                  }
+                : undefined,
             },
             {
               player: onlyLikedPlayers
@@ -406,7 +415,7 @@ export class ReportsService {
     const reports = await this.prisma.report.findMany({
       where,
       take: limit,
-      skip: calculateSkip(page, limit),
+      skip: calculateSkip(page, limit) || 0,
       orderBy: sort,
       include: userId
         ? { ...paginatedDataInclude, likes: { where: { userId } } }
@@ -548,7 +557,7 @@ export class ReportsService {
     let percentageRating: number;
 
     if (finalRating) {
-      percentageRating = calculatePercentageRating(
+      percentageRating = calculatePercentage(
         finalRating,
         updatedReport.maxRatingScore,
       );
@@ -576,5 +585,9 @@ export class ReportsService {
     const where = this.generateWhereClause({ query, userId, accessFilters });
 
     return this.prisma.report.findMany({ where, include: listInclude });
+  }
+
+  getCount(filters: Prisma.ReportWhereInput) {
+    return this.prisma.report.count({ where: filters });
   }
 }

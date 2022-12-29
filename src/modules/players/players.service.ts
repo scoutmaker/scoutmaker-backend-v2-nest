@@ -52,6 +52,7 @@ const include: Prisma.PlayerInclude = {
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
   teams: {
+    where: { endDate: null },
     include: {
       team: true,
     },
@@ -71,6 +72,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   secondaryPositions: { include: { position: true } },
   author: true,
   teams: {
+    where: { endDate: null },
     include: {
       team: {
         include: {
@@ -526,5 +528,9 @@ export class PlayersService {
       }),
     ]);
     return this.prisma.player.delete({ where: { id } });
+  }
+
+  getCount(filters?: Prisma.PlayerWhereInput) {
+    return this.prisma.player.count({ where: filters });
   }
 }
