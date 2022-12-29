@@ -215,7 +215,7 @@ export class NotesService {
     userId?: string,
     accessFilters?: Prisma.NoteWhereInput,
   ) {
-    let sort: Prisma.NoteOrderByWithRelationInput;
+    let sort: Prisma.Enumerable<Prisma.NoteOrderByWithRelationInput>;
 
     switch (sortBy) {
       case 'percentageRating':
@@ -231,6 +231,12 @@ export class NotesService {
         break;
       case 'positionPlayed':
         sort = { meta: { position: { name: sortingOrder } } };
+        break;
+      case 'percentageRating_createdAt':
+        sort = [
+          { createdAt: sortingOrder },
+          { percentageRating: sortingOrder },
+        ];
         break;
       default:
         sort = undefined;
