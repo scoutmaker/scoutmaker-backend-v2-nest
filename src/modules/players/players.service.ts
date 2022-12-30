@@ -47,7 +47,7 @@ const footedMap: Record<CsvFooted, FootEnum> = {
   both: FootEnum.BOTH,
 };
 
-const include: Prisma.PlayerInclude = {
+const include = Prisma.validator<Prisma.PlayerInclude>()({
   country: true,
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
@@ -57,8 +57,10 @@ const include: Prisma.PlayerInclude = {
       team: true,
     },
   },
+  notes: { select: { percentageRating: true } },
+  reports: { select: { percentageRating: true } },
   _count: { select: { notes: true, reports: true } },
-};
+});
 
 const listInclude: Prisma.PlayerInclude = {
   country: true,
@@ -71,6 +73,8 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
   author: true,
+  notes: { select: { percentageRating: true } },
+  reports: { select: { percentageRating: true } },
   teams: {
     where: { endDate: null },
     include: {
@@ -85,6 +89,11 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   },
   _count: { select: { notes: true, reports: true } },
 });
+
+const playerWithInclude = Prisma.validator<Prisma.PlayerArgs>()({
+  include,
+});
+type TPlayerWithInclude = Prisma.PlayerGetPayload<typeof playerWithInclude>;
 
 interface IGenerateWhereClauseArgs {
   query: FindAllPlayersDto;
@@ -353,7 +362,7 @@ export class PlayersService {
 
     const where = this.generateWhereClause({ query, userId, accessFilters });
 
-    const players = await this.prisma.player.findMany({
+    const players: TPlayerWithInclude[] = await this.prisma.player.findMany({
       where,
       take: limit,
       skip: calculateSkip(page, limit),
@@ -368,10 +377,12 @@ export class PlayersService {
         : include,
     });
 
+    const playersWithAvgRating = players.map(this.fillAverageRating);
+
     const total = await this.prisma.player.count({ where });
 
     return formatPaginatedResponse({
-      docs: players,
+      docs: playersWithAvgRating,
       totalDocs: total,
       limit,
       page,
@@ -412,9 +423,16 @@ export class PlayersService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+    const playerWithAvgRating = this.fillAverageRating(player);
 
-    return player;
+    await this.redis.set(
+      redisKey,
+      JSON.stringify(playerWithAvgRating),
+      'EX',
+      REDIS_TTL,
+    );
+
+    return playerWithAvgRating;
   }
 
   async findOneBySlug(slug: string, userId?: string) {
@@ -438,9 +456,16 @@ export class PlayersService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+    const playerWithAvgRating = this.fillAverageRating(player);
 
-    return player;
+    await this.redis.set(
+      redisKey,
+      JSON.stringify(playerWithAvgRating),
+      'EX',
+      REDIS_TTL,
+    );
+
+    return playerWithAvgRating;
   }
 
   findAllBySlug(slug: string) {
@@ -532,5 +557,28 @@ export class PlayersService {
 
   getCount(filters?: Prisma.PlayerWhereInput) {
     return this.prisma.player.count({ where: filters });
+  }
+
+  private fillAverageRating<
+    T extends {
+      notes: { percentageRating: number }[];
+      reports: { percentageRating: number }[];
+    },
+  >(player: T): T & { avgPercentageRating: number } {
+    const notes = player.notes.filter(
+      (note) => typeof note.percentageRating === 'number',
+    );
+    const reports = player.reports.filter(
+      (report) => typeof report.percentageRating === 'number',
+    );
+
+    const sumNotes = notes.reduce((a, b) => a + b.percentageRating, 0);
+    const sumReports = reports.reduce((a, b) => a + b.percentageRating, 0);
+
+    return {
+      ...player,
+      avgPercentageRating:
+        (sumNotes + sumReports) / (notes.length + reports.length),
+    };
   }
 }
