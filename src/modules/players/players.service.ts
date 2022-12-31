@@ -209,6 +209,7 @@ export class PlayersService {
       isLiked,
       name,
       positionIds,
+      positionTypeIds,
       orderId,
       teamIds,
       hasNote,
@@ -269,6 +270,26 @@ export class PlayersService {
                     {
                       secondaryPositions: {
                         some: { playerPositionId: { in: positionIds } },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      primaryPosition: {
+                        positionType: { id: { in: positionTypeIds } },
+                      },
+                    },
+                    {
+                      secondaryPositions: {
+                        some: {
+                          position: {
+                            positionType: { id: { in: positionTypeIds } },
+                          },
+                        },
                       },
                     },
                   ]
