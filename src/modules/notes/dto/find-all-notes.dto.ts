@@ -30,6 +30,12 @@ export class FindAllNotesDto {
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsString({ each: true })
+  positionTypeIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
   teamIds?: string[];
 
   @IsOptional()
