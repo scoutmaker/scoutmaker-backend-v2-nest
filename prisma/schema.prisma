@@ -315,6 +315,17 @@ model CompetitionParticipation {
   @@unique([teamId, competitionId, seasonId])
 }
 
+model PlayerPositionType {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  positions PlayerPosition[]
+}
+
 model PlayerPosition {
   id        String   @id @default(cuid())
   name      String
@@ -323,10 +334,12 @@ model PlayerPosition {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  players          Player[]
-  playersSecondary SecondaryPositionsOnPlayers[]
-  notesMeta        NoteMeta[]
-  reportsMeta      ReportMeta[]
+  positionType         PlayerPositionType?           @relation(fields: [playerPositionTypeId], references: [id])
+  playerPositionTypeId String?
+  players              Player[]
+  playersSecondary     SecondaryPositionsOnPlayers[]
+  notesMeta            NoteMeta[]
+  reportsMeta          ReportMeta[]
 }
 
 enum Foot {
