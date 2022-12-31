@@ -49,7 +49,7 @@ const footedMap: Record<CsvFooted, FootEnum> = {
 
 const include: Prisma.PlayerInclude = {
   country: true,
-  primaryPosition: true,
+  primaryPosition: { include: { positionType: true } },
   secondaryPositions: { include: { position: true } },
   teams: {
     where: { endDate: null },
@@ -62,13 +62,13 @@ const include: Prisma.PlayerInclude = {
 
 const listInclude: Prisma.PlayerInclude = {
   country: true,
-  primaryPosition: true,
+  primaryPosition: { include: { positionType: true } },
   teams: { where: { endDate: null }, include: { team: true } },
 };
 
 const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   country: true,
-  primaryPosition: true,
+  primaryPosition: { include: { positionType: true } },
   secondaryPositions: { include: { position: true } },
   author: true,
   teams: {

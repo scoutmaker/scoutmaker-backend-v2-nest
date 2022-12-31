@@ -37,7 +37,9 @@ const include: Prisma.NoteInclude = {
   player: { include: { country: true, primaryPosition: true } },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
-  meta: { include: { team: true, position: true } },
+  meta: {
+    include: { team: true, position: { include: { positionType: true } } },
+  },
 };
 
 const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
@@ -48,7 +50,7 @@ const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
     include: {
       competition: true,
       competitionGroup: true,
-      position: true,
+      position: { include: { positionType: true } },
       team: true,
     },
   },
