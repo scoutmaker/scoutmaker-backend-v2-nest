@@ -295,6 +295,7 @@ export class ReportsService {
     const {
       playerIds,
       positionIds,
+      positionTypeIds,
       matchIds,
       teamIds,
       competitionIds,
@@ -351,6 +352,26 @@ export class ReportsService {
                     { meta: { position: { id: { in: positionIds } } } },
                     {
                       player: { primaryPosition: { id: { in: positionIds } } },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      meta: {
+                        position: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                    {
+                      player: {
+                        primaryPosition: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
                     },
                   ]
                 : undefined,

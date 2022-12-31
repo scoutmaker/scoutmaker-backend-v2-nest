@@ -29,6 +29,12 @@ export class FindAllReportsDto {
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsString({ each: true })
+  positionTypeIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
   matchIds?: string[];
 
   @IsOptional()
