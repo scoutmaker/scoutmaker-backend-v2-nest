@@ -405,15 +405,16 @@ model TeamAffiliation {
 }
 
 model Match {
-  id             String   @id @default(cuid())
-  date           DateTime
-  homeGoals      Int?
-  awayGoals      Int?
-  videoUrl       String?
-  isPublic       Boolean  @default(false)
-  scoutmakerv1Id String?  @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  date             DateTime
+  homeGoals        Int?
+  awayGoals        Int?
+  videoUrl         String?
+  transfermarktUrl String?
+  isPublic         Boolean  @default(false)
+  scoutmakerv1Id   String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relation fields
   homeTeam      Team              @relation(fields: [homeTeamId], references: [id], name: "homeTeam")
