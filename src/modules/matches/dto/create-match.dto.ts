@@ -46,4 +46,8 @@ export class CreateMatchDto {
 
   @IsString()
   seasonId: string;
+
+  @IsOptional()
+  @IsString()
+  transfermarktUrl?: string;
 }
