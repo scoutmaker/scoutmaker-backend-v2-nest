@@ -47,7 +47,7 @@ const footedMap: Record<CsvFooted, FootEnum> = {
   both: FootEnum.BOTH,
 };
 
-const include = Prisma.validator<Prisma.PlayerInclude>()({
+const include: Prisma.PlayerInclude = {
   country: true,
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
@@ -57,10 +57,8 @@ const include = Prisma.validator<Prisma.PlayerInclude>()({
       team: true,
     },
   },
-  notes: { select: { percentageRating: true } },
-  reports: { select: { percentageRating: true } },
   _count: { select: { notes: true, reports: true } },
-});
+};
 
 const listInclude: Prisma.PlayerInclude = {
   country: true,
@@ -68,13 +66,11 @@ const listInclude: Prisma.PlayerInclude = {
   teams: { where: { endDate: null }, include: { team: true } },
 };
 
-const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
+const singleInclude: Prisma.PlayerInclude = {
   country: true,
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
   author: true,
-  notes: { select: { percentageRating: true } },
-  reports: { select: { percentageRating: true } },
   teams: {
     where: { endDate: null },
     include: {
@@ -88,12 +84,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
     },
   },
   _count: { select: { notes: true, reports: true } },
-});
-
-const playerWithInclude = Prisma.validator<Prisma.PlayerArgs>()({
-  include,
-});
-type TPlayerWithInclude = Prisma.PlayerGetPayload<typeof playerWithInclude>;
+};
 
 interface IGenerateWhereClauseArgs {
   query: FindAllPlayersDto;
@@ -366,7 +357,7 @@ export class PlayersService {
 
     const where = this.generateWhereClause({ query, userId, accessFilters });
 
-    const players: TPlayerWithInclude[] = await this.prisma.player.findMany({
+    const players = await this.prisma.player.findMany({
       where,
       take: limit,
       skip: calculateSkip(page, limit),
