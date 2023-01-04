@@ -377,12 +377,10 @@ export class PlayersService {
         : include,
     });
 
-    const playersWithAvgRating = players.map(this.fillAverageRating);
-
     const total = await this.prisma.player.count({ where });
 
     return formatPaginatedResponse({
-      docs: playersWithAvgRating,
+      docs: players,
       totalDocs: total,
       limit,
       page,
@@ -423,16 +421,9 @@ export class PlayersService {
         : singleInclude,
     });
 
-    const playerWithAvgRating = this.fillAverageRating(player);
+    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
 
-    await this.redis.set(
-      redisKey,
-      JSON.stringify(playerWithAvgRating),
-      'EX',
-      REDIS_TTL,
-    );
-
-    return playerWithAvgRating;
+    return player;
   }
 
   async findOneBySlug(slug: string, userId?: string) {
@@ -456,16 +447,9 @@ export class PlayersService {
         : singleInclude,
     });
 
-    const playerWithAvgRating = this.fillAverageRating(player);
+    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
 
-    await this.redis.set(
-      redisKey,
-      JSON.stringify(playerWithAvgRating),
-      'EX',
-      REDIS_TTL,
-    );
-
-    return playerWithAvgRating;
+    return player;
   }
 
   findAllBySlug(slug: string) {
@@ -520,7 +504,7 @@ export class PlayersService {
       });
     }
 
-    return this.prisma.player.update({
+    const updated = await this.prisma.player.update({
       where: { id },
       data: {
         ...rest,
@@ -537,6 +521,10 @@ export class PlayersService {
       },
       include,
     });
+
+    this.redis.del(`player:${updated.slug}`);
+
+    return updated;
   }
 
   async remove(id: string) {
@@ -559,26 +547,30 @@ export class PlayersService {
     return this.prisma.player.count({ where: filters });
   }
 
-  private fillAverageRating<
-    T extends {
-      notes: { percentageRating: number }[];
-      reports: { percentageRating: number }[];
-    },
-  >(player: T): T & { avgPercentageRating: number } {
-    const notes = player.notes.filter(
-      (note) => typeof note.percentageRating === 'number',
-    );
-    const reports = player.reports.filter(
-      (report) => typeof report.percentageRating === 'number',
-    );
-
-    const sumNotes = notes.reduce((a, b) => a + b.percentageRating, 0);
-    const sumReports = reports.reduce((a, b) => a + b.percentageRating, 0);
-
-    return {
-      ...player,
-      avgPercentageRating:
-        (sumNotes + sumReports) / (notes.length + reports.length),
+  async fillAveragePercentageRating(playerId: string) {
+    const args: Prisma.ReportAggregateArgs | Prisma.NoteAggregateArgs = {
+      where: {
+        playerId,
+        percentageRating: { not: null },
+      },
+      _avg: { percentageRating: true },
     };
+
+    const [notes, reports] = await Promise.all([
+      this.prisma.note.aggregate(args),
+      this.prisma.report.aggregate(args),
+    ]);
+    const notesAvg = notes._avg.percentageRating;
+    const reportsAvg = reports._avg.percentageRating;
+
+    let averagePercentageRating: number;
+
+    if (notesAvg && reportsAvg) {
+      averagePercentageRating = (notesAvg + reportsAvg) / 2;
+    } else {
+      averagePercentageRating = notesAvg || reportsAvg;
+    }
+
+    await this.update(playerId, { averagePercentageRating });
   }
 }

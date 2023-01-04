@@ -99,7 +99,7 @@ export class PlayerDto {
   likes: LikePlayerBasicDataDto[];
 
   @Expose()
-  avgPercentageRating: number;
+  averagePercentageRating: number;
 
   @Expose()
   _count: Count;
