@@ -119,7 +119,7 @@ export class NotesService {
         competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
     }
 
-    return this.prisma.note.create({
+    const createdNote = await this.prisma.note.create({
       data: {
         ...rest,
         rating,
@@ -145,6 +145,10 @@ export class NotesService {
       },
       include,
     });
+
+    if (playerId) this.playersService.fillAveragePercentageRating(playerId);
+
+    return createdNote;
   }
 
   async createManyFromCsv(file: Express.Multer.File) {
@@ -481,7 +485,9 @@ export class NotesService {
       include,
     });
 
-    await this.saveOneToCache(updated);
+    this.saveOneToCache(updated);
+    if (playerId)
+      this.playersService.fillAveragePercentageRating(updated.playerId);
 
     return updated;
   }
