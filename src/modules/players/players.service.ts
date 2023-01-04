@@ -66,7 +66,7 @@ const listInclude: Prisma.PlayerInclude = {
   teams: { where: { endDate: null }, include: { team: true } },
 };
 
-const singleInclude: Prisma.PlayerInclude = {
+const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   country: true,
   primaryPosition: true,
   secondaryPositions: { include: { position: true } },
@@ -84,7 +84,7 @@ const singleInclude: Prisma.PlayerInclude = {
     },
   },
   _count: { select: { notes: true, reports: true } },
-};
+});
 
 interface IGenerateWhereClauseArgs {
   query: FindAllPlayersDto;
