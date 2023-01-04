@@ -7,6 +7,7 @@ import slugify from 'slugify';
 import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
+  calculatePercentage,
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
@@ -214,6 +215,8 @@ export class PlayersService {
       hasNote,
       hasReport,
       hasAnyObservation,
+      maxAverageRating,
+      minAverageRating,
     } = query;
 
     const slugfiedQueryString = name
@@ -243,6 +246,14 @@ export class PlayersService {
           likes: isLiked ? { some: { userId } } : undefined,
           notes: hasNote ? { some: {} } : undefined,
           reports: hasReport ? { some: {} } : undefined,
+          averagePercentageRating: {
+            gte: minAverageRating
+              ? calculatePercentage(minAverageRating, 4)
+              : undefined,
+            lte: maxAverageRating
+              ? calculatePercentage(maxAverageRating, 4)
+              : undefined,
+          },
           AND: [
             {
               OR: [
