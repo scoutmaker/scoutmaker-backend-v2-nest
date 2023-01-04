@@ -355,6 +355,10 @@ export class PlayersService {
         sort = { notes: { _count: sortingOrder } };
         break;
 
+      case 'averagePercentageRating':
+        sort = { [sortBy]: { sort: sortingOrder, nulls: 'last' } };
+        break;
+
       default:
         sort = { [sortBy]: sortingOrder };
         break;
@@ -548,13 +552,15 @@ export class PlayersService {
   }
 
   async fillAveragePercentageRating(playerId: string) {
-    const args: Prisma.ReportAggregateArgs | Prisma.NoteAggregateArgs = {
+    const args = Prisma.validator<
+      Prisma.ReportAggregateArgs | Prisma.NoteAggregateArgs
+    >()({
       where: {
         playerId,
         percentageRating: { not: null },
       },
       _avg: { percentageRating: true },
-    };
+    });
 
     const [notes, reports] = await Promise.all([
       this.prisma.note.aggregate(args),
