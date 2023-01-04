@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["orderByNulls"]
 }
 
 datasource db {
@@ -336,24 +337,25 @@ enum Foot {
 }
 
 model Player {
-  id               String   @id @default(cuid())
-  firstName        String
-  lastName         String
-  slug             String   @unique
-  yearOfBirth      Int
-  height           Int?
-  weight           Int?
-  footed           Foot
-  lnpId            String?
-  lnpUrl           String?
-  minut90id        String?
-  minut90url       String?
-  transfermarktId  String?
-  transfermarktUrl String?
-  isPublic         Boolean  @default(false)
-  scoutmakerv1Id   String?  @unique
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                      String   @id @default(cuid())
+  firstName               String
+  lastName                String
+  slug                    String   @unique
+  yearOfBirth             Int
+  height                  Int?
+  weight                  Int?
+  footed                  Foot
+  lnpId                   String?
+  lnpUrl                  String?
+  minut90id               String?
+  minut90url              String?
+  transfermarktId         String?
+  transfermarktUrl        String?
+  isPublic                Boolean  @default(false)
+  scoutmakerv1Id          String?  @unique
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  averagePercentageRating Float?
 
   // Relation fields
   country                       Country                                @relation(fields: [countryId], references: [id])
