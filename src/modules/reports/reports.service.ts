@@ -312,6 +312,7 @@ export class ReportsService {
       onlyLikedPlayers,
       onlyLikedTeams,
       percentageRatingRanges: percentageRatingRangesFilter,
+      onlyMine,
     } = query;
 
     return {
@@ -398,6 +399,7 @@ export class ReportsService {
                 },
               })),
             },
+            { authorId: onlyMine ? userId : undefined },
           ],
         },
       ],

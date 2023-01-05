@@ -119,4 +119,9 @@ export class FindAllReportsDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   onlyLikedPlayers?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyMine?: boolean;
 }
