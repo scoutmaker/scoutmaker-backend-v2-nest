@@ -182,7 +182,7 @@ export class ReportsService {
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
 
-    return this.prisma.report.create({
+    const createdReport = await this.prisma.report.create({
       data: {
         ...rest,
         finalRating,
@@ -221,6 +221,10 @@ export class ReportsService {
       },
       include,
     });
+
+    if (playerId) this.playersService.fillAveragePercentageRating(playerId);
+
+    return createdReport;
   }
 
   async createManyFromCsv(file: Express.Multer.File) {
@@ -581,7 +585,10 @@ export class ReportsService {
       });
     }
 
-    await this.saveOneToCache(updatedReport);
+    this.saveOneToCache(updatedReport);
+
+    if (updateReportDto.playerId)
+      this.playersService.fillAveragePercentageRating(updateReportDto.playerId);
 
     return updatedReport;
   }

@@ -346,6 +346,10 @@ export class PlayersService {
         sort = { notes: { _count: sortingOrder } };
         break;
 
+      case 'averagePercentageRating':
+        sort = { [sortBy]: { sort: sortingOrder, nulls: 'last' } };
+        break;
+
       default:
         sort = { [sortBy]: sortingOrder };
         break;
@@ -495,7 +499,7 @@ export class PlayersService {
       });
     }
 
-    return this.prisma.player.update({
+    const updated = await this.prisma.player.update({
       where: { id },
       data: {
         ...rest,
@@ -512,6 +516,10 @@ export class PlayersService {
       },
       include,
     });
+
+    this.redis.del(`player:${updated.slug}`);
+
+    return updated;
   }
 
   async remove(id: string) {
@@ -532,5 +540,34 @@ export class PlayersService {
 
   getCount(filters?: Prisma.PlayerWhereInput) {
     return this.prisma.player.count({ where: filters });
+  }
+
+  async fillAveragePercentageRating(playerId: string) {
+    const args = Prisma.validator<
+      Prisma.ReportAggregateArgs | Prisma.NoteAggregateArgs
+    >()({
+      where: {
+        playerId,
+        percentageRating: { not: null },
+      },
+      _avg: { percentageRating: true },
+    });
+
+    const [notes, reports] = await Promise.all([
+      this.prisma.note.aggregate(args),
+      this.prisma.report.aggregate(args),
+    ]);
+    const notesAvg = notes._avg.percentageRating;
+    const reportsAvg = reports._avg.percentageRating;
+
+    let averagePercentageRating: number;
+
+    if (notesAvg && reportsAvg) {
+      averagePercentageRating = (notesAvg + reportsAvg) / 2;
+    } else {
+      averagePercentageRating = notesAvg || reportsAvg;
+    }
+
+    await this.update(playerId, { averagePercentageRating });
   }
 }
