@@ -9,7 +9,6 @@ import { NotesSortBy } from '../notes/dto/notes-pagination-options.dto';
 import { NotesService } from '../notes/notes.service';
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { OrganizationsService } from '../organizations/organizations.service';
-import { PlayerDto } from '../players/dto/player.dto';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportsSortBy } from '../reports/dto/reports-pagination-options.dto';
@@ -253,7 +252,7 @@ export class DashboardService {
       scoutsCount,
       observerdPlayersCount: playersCount,
       observedMatchesCount,
-      topNotes: topNotes.docs,
+      topNotes: topNotes,
       topReports: topReports.docs,
       notesCount,
       reportsCount,
@@ -263,17 +262,19 @@ export class DashboardService {
   }
   // helpers
 
-  private getTopNotes(filters: Prisma.NoteWhereInput) {
-    return this.notesService.findAll(
-      {
-        limit: 5,
-        sortBy: NotesSortBy.createdAt,
-        sortingOrder: SortingOrder.desc,
-      },
-      { percentageRatingRangeStart: 75 },
-      undefined,
-      filters,
-    );
+  private async getTopNotes(filters: Prisma.NoteWhereInput) {
+    return (
+      await this.notesService.findAll(
+        {
+          limit: 5,
+          sortBy: NotesSortBy.createdAt,
+          sortingOrder: SortingOrder.desc,
+        },
+        { percentageRatingRangeStart: 75 },
+        undefined,
+        filters,
+      )
+    ).docs as unknown as DashboardDto['topNotes'];
   }
 
   private getTopReports(filters: Prisma.ReportWhereInput) {

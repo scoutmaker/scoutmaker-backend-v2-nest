@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -98,4 +99,15 @@ export class FindAllPlayersDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   hasAnyObservation?: boolean;
+
+  // as max 4 rating system
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  minAverageRating?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  maxAverageRating?: number;
 }
