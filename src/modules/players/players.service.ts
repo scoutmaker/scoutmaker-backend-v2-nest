@@ -222,6 +222,7 @@ export class PlayersService {
       hasAnyObservation,
       maxAverageRating,
       minAverageRating,
+      roleIds,
     } = query;
 
     const slugfiedQueryString = name
@@ -352,6 +353,11 @@ export class PlayersService {
             {
               OR: hasAnyObservation
                 ? [{ notes: { some: {} } }, { reports: { some: {} } }]
+                : undefined,
+            },
+            {
+              role: isIdsArrayFilterDefined(roleIds)
+                ? { id: { in: roleIds } }
                 : undefined,
             },
           ],
