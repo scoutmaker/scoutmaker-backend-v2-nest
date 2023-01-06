@@ -78,7 +78,12 @@ export class AuthService {
     });
 
     const user = await this.prisma.user.create({
-      data: { ...rest, confirmationCode, confirmationCodeExpiryDate },
+      data: {
+        ...rest,
+        confirmationCode,
+        confirmationCodeExpiryDate,
+        profile: { create: {} },
+      },
       include,
     });
 
