@@ -77,6 +77,12 @@ export class FindAllPlayersDto {
   competitionGroupIds?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
+  roleIds?: string[];
+
+  @IsOptional()
   @IsString()
   orderId?: string;
 

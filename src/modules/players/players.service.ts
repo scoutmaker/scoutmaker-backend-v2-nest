@@ -52,6 +52,7 @@ const include: Prisma.PlayerInclude = {
   country: true,
   primaryPosition: { include: { positionType: true } },
   secondaryPositions: { include: { position: true } },
+  role: true,
   teams: {
     where: { endDate: null },
     include: {
@@ -72,6 +73,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   primaryPosition: { include: { positionType: true } },
   secondaryPositions: { include: { position: true } },
   author: true,
+  role: true,
   teams: {
     where: { endDate: null },
     include: {
@@ -106,6 +108,7 @@ export class PlayersService {
       primaryPositionId,
       secondaryPositionIds,
       teamId,
+      roleId,
       ...rest
     } = createPlayerDto;
 
@@ -131,6 +134,7 @@ export class PlayersService {
           ? { create: { teamId, startDate: new Date(), endDate: null } }
           : undefined,
         author: { connect: { id: authorId } },
+        role: roleId ? { connect: { id: roleId } } : undefined,
       },
       include,
     });
@@ -218,6 +222,7 @@ export class PlayersService {
       hasAnyObservation,
       maxAverageRating,
       minAverageRating,
+      roleIds,
     } = query;
 
     const slugfiedQueryString = name
@@ -348,6 +353,11 @@ export class PlayersService {
             {
               OR: hasAnyObservation
                 ? [{ notes: { some: {} } }, { reports: { some: {} } }]
+                : undefined,
+            },
+            {
+              role: isIdsArrayFilterDefined(roleIds)
+                ? { id: { in: roleIds } }
                 : undefined,
             },
           ],
