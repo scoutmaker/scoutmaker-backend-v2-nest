@@ -1,0 +1,5 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowy profil skauta - {id}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane profilu skauta - {id}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane profilu skauta - {id}"
+}

@@ -59,6 +59,7 @@ import { ReportSkillAssessmentTemplatesModule } from './modules/report-skill-ass
 import { ReportSkillAssessmentsModule } from './modules/report-skill-assessments/report-skill-assessments.module';
 import { ReportTemplatesModule } from './modules/report-templates/report-templates.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { ScoutProfilesModule } from './modules/scout-profiles/scout-profiles.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 import { TeamsModule } from './modules/teams/teams.module';
@@ -149,6 +150,7 @@ import { UsersModule } from './modules/users/users.module';
     PlayerPositionTypesModule,
     PlayerRolesModule,
     PlayerRoleExamplesModule,
+    ScoutProfilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
