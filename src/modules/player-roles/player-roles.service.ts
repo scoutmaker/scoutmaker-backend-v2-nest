@@ -15,6 +15,7 @@ import { UpdatePlayerRoleDto } from './dto/update-player-role.dto';
 
 const include: Prisma.PlayerRoleInclude = {
   positionType: true,
+  examples: true,
 };
 
 interface CsvInput {
@@ -107,6 +108,7 @@ export class PlayerRolesService {
   getList() {
     return this.prisma.playerRole.findMany({
       where: { isPublished: true },
+      include,
     });
   }
 

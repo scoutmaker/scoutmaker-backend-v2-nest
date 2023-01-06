@@ -30,10 +30,7 @@ import { PaginationOptions } from '../../common/pagination/pagination-options.de
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CreatePlayerRoleExampleDto } from './dto/create-player-role-example.dto';
 import { FindAllPlayerRoleExamplesDto } from './dto/find-all-player-role-examples.dto';
-import {
-  PlayerRoleExampleBasicDataDto,
-  PlayerRoleExampleDto,
-} from './dto/player-role-example.dto';
+import { PlayerRoleExampleDto } from './dto/player-role-example.dto';
 import { PlayerRoleExamplesPaginationOptionsDto } from './dto/player-role-examples-pagination-options.dto';
 import { UpdatePlayerRoleExampleDto } from './dto/update-player-role-example.dto';
 import { PlayerRoleExamplesService } from './player-role-examples.service';
@@ -114,8 +111,8 @@ export class PlayerRoleExamplesController {
   }
 
   @Get('list')
-  @ApiResponse(PlayerRoleExampleBasicDataDto, { type: 'read', isArray: true })
-  @Serialize(PlayerRoleExampleBasicDataDto)
+  @ApiResponse(PlayerRoleExampleDto, { type: 'read', isArray: true })
+  @Serialize(PlayerRoleExampleDto)
   async getList(@I18nLang() lang: string) {
     const examples = await this.examplesService.getList();
     const message = this.i18n.translate(
