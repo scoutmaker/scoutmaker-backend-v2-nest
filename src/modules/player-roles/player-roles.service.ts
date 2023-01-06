@@ -106,7 +106,6 @@ export class PlayerRolesService {
 
   getList() {
     return this.prisma.playerRole.findMany({
-      include,
       where: { isPublished: true },
     });
   }

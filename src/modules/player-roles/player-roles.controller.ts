@@ -30,7 +30,7 @@ import { PaginationOptions } from '../../common/pagination/pagination-options.de
 import { formatSuccessResponse } from '../../utils/helpers';
 import { CreatePlayerRoleDto } from './dto/create-player-role.dto';
 import { FindAllPlayerRolesDto } from './dto/find-all-player-roles.dto';
-import { PlayerRoleDto } from './dto/player-role.dto';
+import { PlayerRoleBasicDataDto, PlayerRoleDto } from './dto/player-role.dto';
 import { PlayerRolesPaginationOptionsDto } from './dto/player-roles-pagination-options.dto';
 import { UpdatePlayerRoleDto } from './dto/update-player-role.dto';
 import { PlayerRolesService } from './player-roles.service';
@@ -106,8 +106,8 @@ export class PlayerRolesController {
   }
 
   @Get('list')
-  @ApiResponse(PlayerRoleDto, { type: 'read', isArray: true })
-  @Serialize(PlayerRoleDto)
+  @ApiResponse(PlayerRoleBasicDataDto, { type: 'read', isArray: true })
+  @Serialize(PlayerRoleBasicDataDto)
   async getList(@I18nLang() lang: string) {
     const roles = await this.rolesService.getList();
     const message = this.i18n.translate('player-roles.GET_LIST_MESSAGE', {

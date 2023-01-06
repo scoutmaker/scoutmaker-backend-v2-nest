@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/swagger';
 import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { PlayerPositionTypeDto } from '../../player-position-types/dto/player-position-type.dto';
@@ -23,3 +24,8 @@ export class PlayerRoleDto {
   @Expose()
   positionType: PlayerPositionTypeDto;
 }
+
+export class PlayerRoleBasicDataDto extends PickType(PlayerRoleDto, [
+  'id',
+  'name',
+]) {}
