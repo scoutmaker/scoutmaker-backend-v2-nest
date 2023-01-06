@@ -5,6 +5,7 @@ import { Expose, plainToInstance, Transform } from 'class-transformer';
 import { CountryDto } from '../../countries/dto/country.dto';
 import { LikePlayerBasicDataDto } from '../../like-players/dto/like-player.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
+import { PlayerRoleBasicDataDto } from '../../player-roles/dto/player-role.dto';
 import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
 
 class Count {
@@ -100,6 +101,14 @@ export class PlayerDto {
 
   @Expose()
   averagePercentageRating: number;
+
+  @Transform(({ value }) =>
+    plainToInstance(PlayerRoleBasicDataDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  role: PlayerRoleBasicDataDto;
 
   @Expose()
   _count: Count;
