@@ -3,7 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
-export class CreatePlayerPositionDto {
+export class CreatePlayerPositionTypeDto {
   @IsOptional()
   @IsString()
   id?: string;
@@ -14,7 +14,4 @@ export class CreatePlayerPositionDto {
   @IsRequiredStringWithMaxLength(10)
   @Transform(({ value }) => value.trim().toUpperCase())
   code: string;
-
-  @IsString()
-  playerPositionTypeId: string;
 }

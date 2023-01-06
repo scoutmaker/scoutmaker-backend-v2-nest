@@ -33,11 +33,19 @@ interface CsvInput {
   authorId: number;
 }
 
+interface IGenerateWhereClauseArgs {
+  query: FindAllNotesDto;
+  accessFilters?: Prisma.NoteWhereInput;
+  userId?: string;
+}
+
 const include: Prisma.NoteInclude = {
   player: { include: { country: true, primaryPosition: true } },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
   author: true,
-  meta: { include: { team: true, position: true } },
+  meta: {
+    include: { team: true, position: { include: { positionType: true } } },
+  },
 };
 
 const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
@@ -48,7 +56,7 @@ const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
     include: {
       competition: true,
       competitionGroup: true,
-      position: true,
+      position: { include: { positionType: true } },
       team: true,
     },
   },
@@ -196,11 +204,15 @@ export class NotesService {
     };
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: NotesPaginationOptionsDto,
-    {
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.NoteWhereInput {
+    const {
       playerIds,
       positionIds,
+      positionTypeIds,
       teamIds,
       matchIds,
       competitionIds,
@@ -217,39 +229,9 @@ export class NotesService {
       onlyWithoutPlayers,
       percentageRatingRanges: percentageRatingRangesFilter,
       onlyMine,
-    }: FindAllNotesDto,
-    userId?: string,
-    accessFilters?: Prisma.NoteWhereInput,
-  ) {
-    let sort: Prisma.Enumerable<Prisma.NoteOrderByWithRelationInput>;
+    } = query;
 
-    switch (sortBy) {
-      case 'percentageRating':
-      case 'createdAt':
-        sort = { [sortBy]: sortingOrder };
-        break;
-      case 'match':
-        sort = { match: { date: sortingOrder } };
-        break;
-      case 'player':
-      case 'author':
-        sort = { [sortBy]: { lastName: sortingOrder } };
-        break;
-      case 'positionPlayed':
-        sort = { meta: { position: { name: sortingOrder } } };
-        break;
-      case 'percentageRating_createdAt':
-        sort = [
-          { createdAt: sortingOrder },
-          { percentageRating: sortingOrder },
-        ];
-        break;
-      default:
-        sort = undefined;
-        break;
-    }
-
-    const where: Prisma.NoteWhereInput = {
+    return {
       AND: [
         { ...accessFilters },
         {
@@ -287,6 +269,26 @@ export class NotesService {
                     { meta: { position: { id: { in: positionIds } } } },
                     {
                       player: { primaryPosition: { id: { in: positionIds } } },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      meta: {
+                        position: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                    {
+                      player: {
+                        primaryPosition: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
                     },
                   ]
                 : undefined,
@@ -338,6 +340,43 @@ export class NotesService {
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: NotesPaginationOptionsDto,
+    query: FindAllNotesDto,
+    userId?: string,
+    accessFilters?: Prisma.NoteWhereInput,
+  ) {
+    let sort: Prisma.Enumerable<Prisma.NoteOrderByWithRelationInput>;
+
+    switch (sortBy) {
+      case 'percentageRating':
+      case 'createdAt':
+        sort = { [sortBy]: sortingOrder };
+        break;
+      case 'match':
+        sort = { match: { date: sortingOrder } };
+        break;
+      case 'player':
+      case 'author':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      case 'positionPlayed':
+        sort = { meta: { position: { name: sortingOrder } } };
+        break;
+      case 'percentageRating_createdAt':
+        sort = [
+          { createdAt: sortingOrder },
+          { percentageRating: sortingOrder },
+        ];
+        break;
+      default:
+        sort = undefined;
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, accessFilters, userId });
 
     const notes = await this.prisma.note.findMany({
       where,

@@ -45,6 +45,7 @@ import { OrganizationNoteAclModule } from './modules/organization-note-acl/organ
 import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { PlayerPositionTypesModule } from './modules/player-position-types/player-position-types.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
 import { PlayerStatsModule } from './modules/player-stats/player-stats.module';
 import { PlayersModule } from './modules/players/players.module';
@@ -143,6 +144,7 @@ import { UsersModule } from './modules/users/users.module';
     SendgridModule,
     MatchAttendancesModule,
     DashboardModule,
+    PlayerPositionTypesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

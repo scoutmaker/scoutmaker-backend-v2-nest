@@ -61,7 +61,9 @@ const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
   player: true,
   author: true,
   match: { include: { homeTeam: true, awayTeam: true } },
-  meta: { include: { team: true, position: true } },
+  meta: {
+    include: { team: true, position: { include: { positionType: true } } },
+  },
 });
 
 const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
@@ -79,7 +81,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
     include: {
       competition: true,
       competitionGroup: true,
-      position: true,
+      position: { include: { positionType: true } },
       team: true,
     },
   },
@@ -297,6 +299,7 @@ export class ReportsService {
     const {
       playerIds,
       positionIds,
+      positionTypeIds,
       matchIds,
       teamIds,
       competitionIds,
@@ -354,6 +357,26 @@ export class ReportsService {
                     { meta: { position: { id: { in: positionIds } } } },
                     {
                       player: { primaryPosition: { id: { in: positionIds } } },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      meta: {
+                        position: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                    {
+                      player: {
+                        primaryPosition: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
                     },
                   ]
                 : undefined,

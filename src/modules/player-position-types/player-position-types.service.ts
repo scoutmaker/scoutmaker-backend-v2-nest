@@ -1,17 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PlayerPosition, Prisma } from '@prisma/client';
+import { PlayerPositionType, Prisma } from '@prisma/client';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreatePlayerPositionDto } from './dto/create-player-position.dto';
-import { FindAllPlayerPositionsDto } from './dto/find-all-player-positions.dto';
-import { PlayerPositionsPaginationOptionsDto } from './dto/player-positions-pagination-options.dto';
-import { UpdatePlayerPositionDto } from './dto/update-player-position.dto';
-
-const include: Prisma.PlayerPositionInclude = {
-  positionType: true,
-};
+import { CreatePlayerPositionTypeDto } from './dto/create-player-position-type.dto';
+import { FindAllPlayerPositionTypesDto } from './dto/find-all-player-position-types.dto';
+import { PlayerPositionTypesPaginationOptionsDto } from './dto/player-position-types-pagination-options.dto';
+import { UpdatePlayerPositionTypeDto } from './dto/update-player-position-type.dto';
 
 interface CsvInput {
   id: number;
@@ -20,13 +16,12 @@ interface CsvInput {
 }
 
 @Injectable()
-export class PlayerPositionsService {
+export class PlayerPositionTypesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createPlayerPositionDto: CreatePlayerPositionDto) {
-    return this.prisma.playerPosition.create({
-      data: createPlayerPositionDto,
-      include,
+  create(createPlayerPositionTypeDto: CreatePlayerPositionTypeDto) {
+    return this.prisma.playerPositionType.create({
+      data: createPlayerPositionTypeDto,
     });
   }
 
@@ -34,7 +29,7 @@ export class PlayerPositionsService {
     const result = parseCsv<CsvInput>(file.buffer.toString());
 
     const instances = result.data.map((item) => {
-      const instance = new CreatePlayerPositionDto();
+      const instance = new CreatePlayerPositionTypeDto();
 
       instance.id = item.id?.toString();
       instance.name = item.name;
@@ -45,7 +40,7 @@ export class PlayerPositionsService {
 
     await validateInstances(instances);
 
-    const createdDocuments: PlayerPosition[] = [];
+    const createdDocuments: PlayerPositionType[] = [];
     const errors: any[] = [];
 
     for (const [index, instance] of instances.entries()) {
@@ -65,26 +60,30 @@ export class PlayerPositionsService {
   }
 
   async findAll(
-    { limit, page, sortBy, sortingOrder }: PlayerPositionsPaginationOptionsDto,
-    { name, code }: FindAllPlayerPositionsDto,
+    {
+      limit,
+      page,
+      sortBy,
+      sortingOrder,
+    }: PlayerPositionTypesPaginationOptionsDto,
+    { name, code }: FindAllPlayerPositionTypesDto,
   ) {
     const where: Prisma.PlayerPositionWhereInput = {
       name: { contains: name, mode: 'insensitive' },
       code: { contains: code, mode: 'insensitive' },
     };
 
-    const playerPositions = await this.prisma.playerPosition.findMany({
+    const playerPositionTypes = await this.prisma.playerPositionType.findMany({
       where,
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: { [sortBy]: sortingOrder },
-      include,
     });
 
-    const total = await this.prisma.playerPosition.count({ where });
+    const total = await this.prisma.playerPositionType.count({ where });
 
     return formatPaginatedResponse({
-      docs: playerPositions,
+      docs: playerPositionTypes,
       totalDocs: total,
       limit,
       page,
@@ -92,22 +91,21 @@ export class PlayerPositionsService {
   }
 
   getList() {
-    return this.prisma.playerPosition.findMany({ include });
+    return this.prisma.playerPositionType.findMany();
   }
 
   findOne(id: string) {
-    return this.prisma.playerPosition.findUnique({ where: { id }, include });
+    return this.prisma.playerPositionType.findUnique({ where: { id } });
   }
 
-  update(id: string, updatePlayerPositionDto: UpdatePlayerPositionDto) {
-    return this.prisma.playerPosition.update({
+  update(id: string, updatePlayerPositionTypeDto: UpdatePlayerPositionTypeDto) {
+    return this.prisma.playerPositionType.update({
       where: { id },
-      data: updatePlayerPositionDto,
-      include,
+      data: updatePlayerPositionTypeDto,
     });
   }
 
   remove(id: string) {
-    return this.prisma.playerPosition.delete({ where: { id }, include });
+    return this.prisma.playerPositionType.delete({ where: { id } });
   }
 }

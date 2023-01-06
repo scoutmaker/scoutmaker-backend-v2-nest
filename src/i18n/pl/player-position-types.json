@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Pomyślnie utworzono nowy typ pozycji boiskowej - {name}",
+  "GET_ALL_MESSAGE": "Pomyślnie pobrano dane wszystkich typów pozycji boiskowych, strona {currentPage} z {totalPages}",
+  "GET_LIST_MESSAGE": "Pomyślnie pobrano listę wszystkich typów pozycji boiskowych",
+  "GET_ONE_MESSAGE": "Pomyślnie pobrano dane typu pozycji boiskowej - {name}",
+  "UPDATE_MESSAGE": "Pomyślnie zaktualizowano dane typu pozycji boiskowej - {name}",
+  "DELETE_MESSAGE": "Pomyślnie usunięto dane typu pozycji boiskowej - {name}"
+}
