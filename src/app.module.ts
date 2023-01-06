@@ -47,6 +47,7 @@ import { OrganizationSubscriptionsModule } from './modules/organization-subscrip
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { PlayerPositionTypesModule } from './modules/player-position-types/player-position-types.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
+import { PlayerRolesModule } from './modules/player-roles/player-roles.module';
 import { PlayerStatsModule } from './modules/player-stats/player-stats.module';
 import { PlayersModule } from './modules/players/players.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -145,6 +146,7 @@ import { UsersModule } from './modules/users/users.module';
     MatchAttendancesModule,
     DashboardModule,
     PlayerPositionTypesModule,
+    PlayerRolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
