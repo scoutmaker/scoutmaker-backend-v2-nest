@@ -83,6 +83,20 @@ model User {
   likedInsiderNotes                      LikeInsiderNote[]
   likedTeams                             LikeTeam[]
   matchAttendances                       MatchAttendance[]
+  profile                                ScoutProfile?
+}
+
+model ScoutProfile {
+  id                   String    @id @default(cuid())
+  cooperationStartDate DateTime?
+  description          String?
+  rating               Int       @default(1)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relation fields
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 }
 
 model UserFootballRole {
