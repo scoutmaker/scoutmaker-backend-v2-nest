@@ -117,8 +117,11 @@ export class ReportTemplatesService {
     });
   }
 
-  getList() {
-    return this.prisma.reportTemplate.findMany({ include });
+  getList(userId: string) {
+    return this.prisma.reportTemplate.findMany({
+      where: { OR: [{ authorId: userId }, { isPublic: true }] },
+      include,
+    });
   }
 
   findOne(id: string) {
