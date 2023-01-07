@@ -1,0 +1,5 @@
+{
+  "CREATE_MESSAGE": "Successfully created new scout profile - {id}",
+  "UPDATE_MESSAGE": "Successfully updated player scout profile data - {id}",
+  "DELETE_MESSAGE": "Successfully deleted player scout profile data - {id}"
+}

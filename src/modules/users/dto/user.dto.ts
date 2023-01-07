@@ -4,6 +4,7 @@ import { Expose, plainToClass, Transform } from 'class-transformer';
 
 import { ClubBasicDataDto } from '../../clubs/dto/club.dto';
 import { RegionDto } from '../../regions/dto/region.dto';
+import { ScoutProfileWithoutUserDto } from '../../scout-profiles/dto/scout-profile.dto';
 import { UserFootballRoleDto } from '../../user-football-roles/dto/user-football-role.dto';
 
 class Count {
@@ -60,6 +61,14 @@ export class UserDto {
   @Expose()
   footballRole?: UserFootballRoleDto;
 
+  @Transform(({ value }) =>
+    plainToClass(ScoutProfileWithoutUserDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  @Expose()
+  profile?: ScoutProfileWithoutUserDto;
+
   @Expose()
   _count: Count;
 
@@ -72,4 +81,5 @@ export class UserBasicDataDto extends PickType(UserDto, [
   'firstName',
   'lastName',
   'email',
+  'profile',
 ]) {}

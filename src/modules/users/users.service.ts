@@ -54,6 +54,7 @@ export class UsersService {
     return this.prisma.user.create({
       data: {
         ...rest,
+        profile: { create: {} },
         region: regionId ? { connect: { id: regionId } } : undefined,
         footballRole: footballRoleId
           ? { connect: { id: footballRoleId } }

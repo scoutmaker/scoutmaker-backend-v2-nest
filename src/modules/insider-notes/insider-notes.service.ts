@@ -44,13 +44,13 @@ interface IGenerateWhereClauseArgs {
 
 const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { primaryPosition: true } },
-  author: true,
+  author: { include: { profile: true } },
   meta: { include: { team: true } },
 });
 
 const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { country: true, primaryPosition: true } },
-  author: true,
+  author: { include: { profile: true } },
   meta: { include: { competition: true, competitionGroup: true, team: true } },
 });
 

@@ -53,13 +53,13 @@ const include: Prisma.ReportInclude = {
     },
   },
   match: { include: { homeTeam: true, awayTeam: true } },
-  author: true,
+  author: { include: { profile: true } },
   skills: { include: { template: { include: { category: true } } } },
 };
 
 const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
   player: true,
-  author: true,
+  author: { include: { profile: true } },
   match: { include: { homeTeam: true, awayTeam: true } },
   meta: {
     include: { team: true, position: { include: { positionType: true } } },
@@ -75,7 +75,7 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
     },
   },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
-  author: true,
+  author: { include: { profile: true } },
   skills: { include: { template: { include: { category: true } } } },
   meta: {
     include: {
