@@ -87,7 +87,6 @@ export class PlayerRolesController {
   }
 
   @Get()
-  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiPaginatedResponse(PlayerRoleDto)
   @ApiQuery({ type: PlayerRolesPaginationOptionsDto })
   @Serialize(PlayerRoleDto, 'docs')
