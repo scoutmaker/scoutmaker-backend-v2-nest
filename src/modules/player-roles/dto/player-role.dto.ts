@@ -37,4 +37,5 @@ export class PlayerRoleDto {
 export class PlayerRoleBasicDataDto extends PickType(PlayerRoleDto, [
   'id',
   'name',
+  'description',
 ]) {}
