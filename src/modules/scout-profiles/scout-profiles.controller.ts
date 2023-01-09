@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -85,6 +86,18 @@ export class ScoutProfilesController {
       updateScoutProfileDto,
     );
     const message = this.i18n.translate('scout-profiles.UPDATE_MESSAGE', {
+      lang,
+      args: { id: profile.id },
+    });
+    return formatSuccessResponse(message, profile);
+  }
+
+  @Get(':id')
+  @ApiResponse(ScoutProfileDto, { type: 'read' })
+  @Serialize(ScoutProfileDto)
+  async findOne(@I18nLang() lang: string, @Param('id') id: string) {
+    const profile = await this.profilesService.findOne(id);
+    const message = this.i18n.translate('scout-profiles.GET_ONE_MESSAGE', {
       lang,
       args: { id: profile.id },
     });
