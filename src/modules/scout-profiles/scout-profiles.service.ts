@@ -77,4 +77,8 @@ export class ScoutProfilesService {
   remove(id: string) {
     return this.prisma.scoutProfile.delete({ where: { id }, include });
   }
+
+  findOne(id: string) {
+    return this.prisma.scoutProfile.findUnique({ where: { id }, include });
+  }
 }
