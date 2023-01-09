@@ -19,6 +19,7 @@ const include: Prisma.UserInclude = {
   region: { include: { country: true } },
   footballRole: true,
   club: true,
+  profile: true,
   _count: {
     select: {
       createdReports: true,
@@ -111,7 +112,14 @@ export class UsersService {
 
   async findAllWithPagination(
     { limit, page, sortBy, sortingOrder }: UsersPaginationOptionsDto,
-    { name, role, clubIds, footballRoleIds, regionIds }: FindAllUsersDto,
+    {
+      name,
+      role,
+      clubIds,
+      footballRoleIds,
+      regionIds,
+      hasScoutProfile,
+    }: FindAllUsersDto,
   ) {
     let sort: Prisma.UserOrderByWithRelationInput;
 
@@ -162,6 +170,7 @@ export class UsersService {
             id: { in: footballRoleIds },
           }
         : undefined,
+      profile: hasScoutProfile ? { isNot: null } : undefined,
     };
 
     const users = await this.prisma.user.findMany({
