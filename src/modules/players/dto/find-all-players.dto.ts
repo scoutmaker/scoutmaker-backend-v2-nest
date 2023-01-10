@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -55,6 +56,12 @@ export class FindAllPlayersDto {
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsArray()
   @IsString({ each: true })
+  positionTypeIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
   teamIds?: string[];
 
   @IsOptional()
@@ -68,6 +75,12 @@ export class FindAllPlayersDto {
   @IsArray()
   @IsString({ each: true })
   competitionGroupIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
+  roleIds?: string[];
 
   @IsOptional()
   @IsString()
@@ -92,4 +105,15 @@ export class FindAllPlayersDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   hasAnyObservation?: boolean;
+
+  // as max 4 rating system
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  minAverageRating?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  maxAverageRating?: number;
 }

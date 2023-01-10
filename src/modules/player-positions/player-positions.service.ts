@@ -9,6 +9,10 @@ import { FindAllPlayerPositionsDto } from './dto/find-all-player-positions.dto';
 import { PlayerPositionsPaginationOptionsDto } from './dto/player-positions-pagination-options.dto';
 import { UpdatePlayerPositionDto } from './dto/update-player-position.dto';
 
+const include: Prisma.PlayerPositionInclude = {
+  positionType: true,
+};
+
 interface CsvInput {
   id: number;
   name: string;
@@ -20,7 +24,10 @@ export class PlayerPositionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createPlayerPositionDto: CreatePlayerPositionDto) {
-    return this.prisma.playerPosition.create({ data: createPlayerPositionDto });
+    return this.prisma.playerPosition.create({
+      data: createPlayerPositionDto,
+      include,
+    });
   }
 
   async createManyFromCsv(file: Express.Multer.File) {
@@ -71,6 +78,7 @@ export class PlayerPositionsService {
       take: limit,
       skip: calculateSkip(page, limit),
       orderBy: { [sortBy]: sortingOrder },
+      include,
     });
 
     const total = await this.prisma.playerPosition.count({ where });
@@ -84,21 +92,22 @@ export class PlayerPositionsService {
   }
 
   getList() {
-    return this.prisma.playerPosition.findMany();
+    return this.prisma.playerPosition.findMany({ include });
   }
 
   findOne(id: string) {
-    return this.prisma.playerPosition.findUnique({ where: { id } });
+    return this.prisma.playerPosition.findUnique({ where: { id }, include });
   }
 
   update(id: string, updatePlayerPositionDto: UpdatePlayerPositionDto) {
     return this.prisma.playerPosition.update({
       where: { id },
       data: updatePlayerPositionDto,
+      include,
     });
   }
 
   remove(id: string) {
-    return this.prisma.playerPosition.delete({ where: { id } });
+    return this.prisma.playerPosition.delete({ where: { id }, include });
   }
 }

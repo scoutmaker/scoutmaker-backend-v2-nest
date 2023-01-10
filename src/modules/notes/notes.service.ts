@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Note, Prisma } from '@prisma/client';
 import Redis from 'ioredis';
 
-import { REDIS_TTL } from '../../utils/constants';
+import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculatePercentage,
@@ -33,22 +33,30 @@ interface CsvInput {
   authorId: number;
 }
 
+interface IGenerateWhereClauseArgs {
+  query: FindAllNotesDto;
+  accessFilters?: Prisma.NoteWhereInput;
+  userId?: string;
+}
+
 const include: Prisma.NoteInclude = {
   player: { include: { country: true, primaryPosition: true } },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
-  author: true,
-  meta: { include: { team: true, position: true } },
+  author: { include: { profile: true } },
+  meta: {
+    include: { team: true, position: { include: { positionType: true } } },
+  },
 };
 
 const singleInclude = Prisma.validator<Prisma.NoteInclude>()({
   player: { include: { country: true, primaryPosition: true } },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
-  author: true,
+  author: { include: { profile: true } },
   meta: {
     include: {
       competition: true,
       competitionGroup: true,
-      position: true,
+      position: { include: { positionType: true } },
       team: true,
     },
   },
@@ -119,7 +127,7 @@ export class NotesService {
         competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
     }
 
-    return this.prisma.note.create({
+    const createdNote = await this.prisma.note.create({
       data: {
         ...rest,
         rating,
@@ -145,6 +153,10 @@ export class NotesService {
       },
       include,
     });
+
+    if (playerId) this.playersService.fillAveragePercentageRating(playerId);
+
+    return createdNote;
   }
 
   async createManyFromCsv(file: Express.Multer.File) {
@@ -192,11 +204,15 @@ export class NotesService {
     };
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: NotesPaginationOptionsDto,
-    {
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.NoteWhereInput {
+    const {
       playerIds,
       positionIds,
+      positionTypeIds,
       teamIds,
       matchIds,
       competitionIds,
@@ -211,33 +227,11 @@ export class NotesService {
       onlyLikedPlayers,
       onlyLikedTeams,
       onlyWithoutPlayers,
-    }: FindAllNotesDto,
-    userId?: string,
-    accessFilters?: Prisma.NoteWhereInput,
-  ) {
-    let sort: Prisma.NoteOrderByWithRelationInput;
+      percentageRatingRanges: percentageRatingRangesFilter,
+      onlyMine,
+    } = query;
 
-    switch (sortBy) {
-      case 'percentageRating':
-      case 'createdAt':
-        sort = { [sortBy]: sortingOrder };
-        break;
-      case 'match':
-        sort = { match: { date: sortingOrder } };
-        break;
-      case 'player':
-      case 'author':
-        sort = { [sortBy]: { lastName: sortingOrder } };
-        break;
-      case 'positionPlayed':
-        sort = { meta: { position: { name: sortingOrder } } };
-        break;
-      default:
-        sort = undefined;
-        break;
-    }
-
-    const where: Prisma.NoteWhereInput = {
+    return {
       AND: [
         { ...accessFilters },
         {
@@ -280,6 +274,26 @@ export class NotesService {
                 : undefined,
             },
             {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      meta: {
+                        position: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                    {
+                      player: {
+                        primaryPosition: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
+            {
               meta: isIdsArrayFilterDefined(teamIds)
                 ? { team: { id: { in: teamIds } } }
                 : undefined,
@@ -313,10 +327,56 @@ export class NotesService {
                 : undefined,
             },
             { playerId: onlyWithoutPlayers ? null : undefined },
+            {
+              OR: percentageRatingRangesFilter?.map((range) => ({
+                percentageRating: {
+                  gte: percentageRatingRanges[range][0],
+                  lte: percentageRatingRanges[range][1],
+                },
+              })),
+            },
+            { authorId: onlyMine ? userId : undefined },
           ],
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: NotesPaginationOptionsDto,
+    query: FindAllNotesDto,
+    userId?: string,
+    accessFilters?: Prisma.NoteWhereInput,
+  ) {
+    let sort: Prisma.Enumerable<Prisma.NoteOrderByWithRelationInput>;
+
+    switch (sortBy) {
+      case 'percentageRating':
+      case 'createdAt':
+        sort = { [sortBy]: sortingOrder };
+        break;
+      case 'match':
+        sort = { match: { date: sortingOrder } };
+        break;
+      case 'player':
+      case 'author':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      case 'positionPlayed':
+        sort = { meta: { position: { name: sortingOrder } } };
+        break;
+      case 'percentageRating_createdAt':
+        sort = [
+          { createdAt: sortingOrder },
+          { percentageRating: sortingOrder },
+        ];
+        break;
+      default:
+        sort = undefined;
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, accessFilters, userId });
 
     const notes = await this.prisma.note.findMany({
       where,
@@ -466,7 +526,9 @@ export class NotesService {
       include,
     });
 
-    await this.saveOneToCache(updated);
+    this.saveOneToCache(updated);
+    if (playerId)
+      this.playersService.fillAveragePercentageRating(updated.playerId);
 
     return updated;
   }

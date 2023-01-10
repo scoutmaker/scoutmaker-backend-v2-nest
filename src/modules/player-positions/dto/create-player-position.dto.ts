@@ -14,4 +14,7 @@ export class CreatePlayerPositionDto {
   @IsRequiredStringWithMaxLength(10)
   @Transform(({ value }) => value.trim().toUpperCase())
   code: string;
+
+  @IsString()
+  playerPositionTypeId: string;
 }

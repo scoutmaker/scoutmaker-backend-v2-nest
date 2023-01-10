@@ -7,6 +7,7 @@ import slugify from 'slugify';
 import { REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
+  calculatePercentage,
   calculateSkip,
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
@@ -49,8 +50,9 @@ const footedMap: Record<CsvFooted, FootEnum> = {
 
 const include: Prisma.PlayerInclude = {
   country: true,
-  primaryPosition: true,
+  primaryPosition: { include: { positionType: true } },
   secondaryPositions: { include: { position: true } },
+  role: true,
   teams: {
     where: { endDate: null },
     include: {
@@ -62,15 +64,16 @@ const include: Prisma.PlayerInclude = {
 
 const listInclude: Prisma.PlayerInclude = {
   country: true,
-  primaryPosition: true,
+  primaryPosition: { include: { positionType: true } },
   teams: { where: { endDate: null }, include: { team: true } },
 };
 
 const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
   country: true,
-  primaryPosition: true,
+  primaryPosition: { include: { positionType: true } },
   secondaryPositions: { include: { position: true } },
   author: true,
+  role: true,
   teams: {
     where: { endDate: null },
     include: {
@@ -105,6 +108,7 @@ export class PlayersService {
       primaryPositionId,
       secondaryPositionIds,
       teamId,
+      roleId,
       ...rest
     } = createPlayerDto;
 
@@ -130,6 +134,7 @@ export class PlayersService {
           ? { create: { teamId, startDate: new Date(), endDate: null } }
           : undefined,
         author: { connect: { id: authorId } },
+        role: roleId ? { connect: { id: roleId } } : undefined,
       },
       include,
     });
@@ -209,11 +214,15 @@ export class PlayersService {
       isLiked,
       name,
       positionIds,
+      positionTypeIds,
       orderId,
       teamIds,
       hasNote,
       hasReport,
       hasAnyObservation,
+      maxAverageRating,
+      minAverageRating,
+      roleIds,
     } = query;
 
     const slugfiedQueryString = name
@@ -243,6 +252,14 @@ export class PlayersService {
           likes: isLiked ? { some: { userId } } : undefined,
           notes: hasNote ? { some: {} } : undefined,
           reports: hasReport ? { some: {} } : undefined,
+          averagePercentageRating: {
+            gte: minAverageRating
+              ? calculatePercentage(minAverageRating, 4)
+              : undefined,
+            lte: maxAverageRating
+              ? calculatePercentage(maxAverageRating, 4)
+              : undefined,
+          },
           AND: [
             {
               OR: [
@@ -269,6 +286,26 @@ export class PlayersService {
                     {
                       secondaryPositions: {
                         some: { playerPositionId: { in: positionIds } },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
+            {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      primaryPosition: {
+                        positionType: { id: { in: positionTypeIds } },
+                      },
+                    },
+                    {
+                      secondaryPositions: {
+                        some: {
+                          position: {
+                            positionType: { id: { in: positionTypeIds } },
+                          },
+                        },
                       },
                     },
                   ]
@@ -318,6 +355,11 @@ export class PlayersService {
                 ? [{ notes: { some: {} } }, { reports: { some: {} } }]
                 : undefined,
             },
+            {
+              role: isIdsArrayFilterDefined(roleIds)
+                ? { id: { in: roleIds } }
+                : undefined,
+            },
           ],
         },
       ],
@@ -344,6 +386,10 @@ export class PlayersService {
 
       case 'notesCount':
         sort = { notes: { _count: sortingOrder } };
+        break;
+
+      case 'averagePercentageRating':
+        sort = { [sortBy]: { sort: sortingOrder, nulls: 'last' } };
         break;
 
       default:
@@ -495,7 +541,7 @@ export class PlayersService {
       });
     }
 
-    return this.prisma.player.update({
+    const updated = await this.prisma.player.update({
       where: { id },
       data: {
         ...rest,
@@ -512,6 +558,10 @@ export class PlayersService {
       },
       include,
     });
+
+    this.redis.del(`player:${updated.slug}`);
+
+    return updated;
   }
 
   async remove(id: string) {
@@ -532,5 +582,34 @@ export class PlayersService {
 
   getCount(filters?: Prisma.PlayerWhereInput) {
     return this.prisma.player.count({ where: filters });
+  }
+
+  async fillAveragePercentageRating(playerId: string) {
+    const args = Prisma.validator<
+      Prisma.ReportAggregateArgs | Prisma.NoteAggregateArgs
+    >()({
+      where: {
+        playerId,
+        percentageRating: { not: null },
+      },
+      _avg: { percentageRating: true },
+    });
+
+    const [notes, reports] = await Promise.all([
+      this.prisma.note.aggregate(args),
+      this.prisma.report.aggregate(args),
+    ]);
+    const notesAvg = notes._avg.percentageRating;
+    const reportsAvg = reports._avg.percentageRating;
+
+    let averagePercentageRating: number;
+
+    if (notesAvg && reportsAvg) {
+      averagePercentageRating = (notesAvg + reportsAvg) / 2;
+    } else {
+      averagePercentageRating = notesAvg || reportsAvg;
+    }
+
+    await this.update(playerId, { averagePercentageRating });
   }
 }

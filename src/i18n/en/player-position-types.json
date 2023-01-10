@@ -1,0 +1,8 @@
+{
+  "CREATE_MESSAGE": "Successfully created new player position type - {name}",
+  "GET_ALL_MESSAGE": "Successfully fetched all player position types data, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all player position types list",
+  "GET_ONE_MESSAGE": "Successfully fetched player position type data - {name}",
+  "UPDATE_MESSAGE": "Successfully updated player position type data - {name}",
+  "DELETE_MESSAGE": "Successfully deleted player position type data - {name}"
+}

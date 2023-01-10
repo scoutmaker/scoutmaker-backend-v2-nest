@@ -1,4 +1,5 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { IsOptionalStringArray } from '../../../common/decorators/string-array-filter.decorator';
 import { UserRoleEnum } from '../types';
@@ -24,4 +25,9 @@ export class FindAllUsersDto {
 
   @IsOptionalStringArray()
   footballRoleIds?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  hasScoutProfile?: boolean;
 }

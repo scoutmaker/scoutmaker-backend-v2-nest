@@ -13,6 +13,9 @@ import { UpdateClubDto } from './dto/update-club.dto';
 const include: Prisma.ClubInclude = {
   region: true,
   country: true,
+  _count: {
+    select: { teams: true },
+  },
 };
 
 interface CsvInput {

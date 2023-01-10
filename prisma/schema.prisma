@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByNulls"]
 }
 
 datasource db {
@@ -82,6 +83,20 @@ model User {
   likedInsiderNotes                      LikeInsiderNote[]
   likedTeams                             LikeTeam[]
   matchAttendances                       MatchAttendance[]
+  profile                                ScoutProfile?
+}
+
+model ScoutProfile {
+  id                   String    @id @default(cuid())
+  cooperationStartDate DateTime?
+  description          String?
+  rating               Int       @default(1)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relation fields
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 }
 
 model UserFootballRole {
@@ -315,6 +330,18 @@ model CompetitionParticipation {
   @@unique([teamId, competitionId, seasonId])
 }
 
+model PlayerPositionType {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation fields
+  positions PlayerPosition[]
+  roles     PlayerRole[]
+}
+
 model PlayerPosition {
   id        String   @id @default(cuid())
   name      String
@@ -323,10 +350,12 @@ model PlayerPosition {
   updatedAt DateTime @updatedAt
 
   // Relation fields
-  players          Player[]
-  playersSecondary SecondaryPositionsOnPlayers[]
-  notesMeta        NoteMeta[]
-  reportsMeta      ReportMeta[]
+  positionType         PlayerPositionType?           @relation(fields: [playerPositionTypeId], references: [id])
+  playerPositionTypeId String?
+  players              Player[]
+  playersSecondary     SecondaryPositionsOnPlayers[]
+  notesMeta            NoteMeta[]
+  reportsMeta          ReportMeta[]
 }
 
 enum Foot {
@@ -336,24 +365,25 @@ enum Foot {
 }
 
 model Player {
-  id               String   @id @default(cuid())
-  firstName        String
-  lastName         String
-  slug             String   @unique
-  yearOfBirth      Int
-  height           Int?
-  weight           Int?
-  footed           Foot
-  lnpId            String?
-  lnpUrl           String?
-  minut90id        String?
-  minut90url       String?
-  transfermarktId  String?
-  transfermarktUrl String?
-  isPublic         Boolean  @default(false)
-  scoutmakerv1Id   String?  @unique
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                      String   @id @default(cuid())
+  firstName               String
+  lastName                String
+  slug                    String   @unique
+  yearOfBirth             Int
+  height                  Int?
+  weight                  Int?
+  footed                  Foot
+  lnpId                   String?
+  lnpUrl                  String?
+  minut90id               String?
+  minut90url              String?
+  transfermarktId         String?
+  transfermarktUrl        String?
+  isPublic                Boolean  @default(false)
+  scoutmakerv1Id          String?  @unique
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  averagePercentageRating Float?
 
   // Relation fields
   country                       Country                                @relation(fields: [countryId], references: [id])
@@ -362,6 +392,8 @@ model Player {
   primaryPositionId             String
   author                        User                                   @relation(fields: [authorId], references: [id])
   authorId                      String
+  role                          PlayerRole?                            @relation(fields: [roleId], references: [id])
+  roleId                        String?
   secondaryPositions            SecondaryPositionsOnPlayers[]
   teams                         TeamAffiliation[]
   notes                         Note[]
@@ -405,15 +437,16 @@ model TeamAffiliation {
 }
 
 model Match {
-  id             String   @id @default(cuid())
-  date           DateTime
-  homeGoals      Int?
-  awayGoals      Int?
-  videoUrl       String?
-  isPublic       Boolean  @default(false)
-  scoutmakerv1Id String?  @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  date             DateTime
+  homeGoals        Int?
+  awayGoals        Int?
+  videoUrl         String?
+  transfermarktUrl String?
+  isPublic         Boolean  @default(false)
+  scoutmakerv1Id   String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relation fields
   homeTeam      Team              @relation(fields: [homeTeamId], references: [id], name: "homeTeam")
@@ -1139,4 +1172,33 @@ model MatchAttendance {
 
   @@unique([matchId, userId])
   @@unique([userId, isActive])
+}
+
+model PlayerRole {
+  id          String   @id @default(cuid())
+  name        String
+  altName     String?
+  description String?
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation fields
+  positionType   PlayerPositionType  @relation(fields: [positionTypeId], references: [id])
+  positionTypeId String
+  players        Player[]
+  examples       PlayerRoleExample[]
+}
+
+model PlayerRoleExample {
+  id          String   @id @default(cuid())
+  player      String
+  type        String
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation fields
+  role   PlayerRole @relation(fields: [roleId], references: [id])
+  roleId String
 }

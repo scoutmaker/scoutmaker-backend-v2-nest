@@ -11,7 +11,7 @@ import {
   Min,
 } from 'class-validator';
 
-import { ObservationTypeEnum } from '../../../types/common';
+import { ObservationTypeEnum, RatingRangesEnum } from '../../../types/common';
 
 export class FindAllNotesDto {
   @IsOptional()
@@ -25,6 +25,12 @@ export class FindAllNotesDto {
   @IsArray()
   @IsString({ each: true })
   positionIds?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsString({ each: true })
+  positionTypeIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
@@ -63,6 +69,17 @@ export class FindAllNotesDto {
   @Min(0)
   @Max(100)
   percentageRatingRangeEnd?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsEnum(RatingRangesEnum, {
+    message: `Percentage rating ranges must be a valid enum value. Available values: ${Object.keys(
+      RatingRangesEnum,
+    ).join(', ')}`,
+    each: true,
+  })
+  percentageRatingRanges?: RatingRangesEnum[];
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
@@ -109,6 +126,11 @@ export class FindAllNotesDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   onlyWithoutPlayers?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  onlyMine?: boolean;
 }
 
 export class GetNotesListDto extends PickType(FindAllNotesDto, ['matchIds']) {}

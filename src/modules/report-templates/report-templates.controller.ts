@@ -119,8 +119,8 @@ export class ReportTemplatesController {
   @Get('list')
   @ApiResponse(ReportTemplateBasicDataDto, { type: 'read' })
   @Serialize(ReportTemplateBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const templates = await this.reportTemplatesService.getList();
+  async getList(@I18nLang() lang: string, @CurrentUser() user: CurrentUserDto) {
+    const templates = await this.reportTemplatesService.getList(user.id);
     const message = this.i18n.translate('report-templates.GET_LIST_MESSAGE', {
       lang,
     });

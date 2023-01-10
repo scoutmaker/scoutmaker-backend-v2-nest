@@ -98,4 +98,8 @@ export class CreatePlayerDto {
   @IsOptional()
   @IsBoolean()
   isPublic?: boolean;
+
+  @IsOptional()
+  @IsString()
+  roleId?: string;
 }

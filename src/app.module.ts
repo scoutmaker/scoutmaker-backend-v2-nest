@@ -45,7 +45,10 @@ import { OrganizationNoteAclModule } from './modules/organization-note-acl/organ
 import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { PlayerPositionTypesModule } from './modules/player-position-types/player-position-types.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
+import { PlayerRoleExamplesModule } from './modules/player-role-examples/player-role-examples.module';
+import { PlayerRolesModule } from './modules/player-roles/player-roles.module';
 import { PlayerStatsModule } from './modules/player-stats/player-stats.module';
 import { PlayersModule } from './modules/players/players.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -56,6 +59,7 @@ import { ReportSkillAssessmentTemplatesModule } from './modules/report-skill-ass
 import { ReportSkillAssessmentsModule } from './modules/report-skill-assessments/report-skill-assessments.module';
 import { ReportTemplatesModule } from './modules/report-templates/report-templates.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { ScoutProfilesModule } from './modules/scout-profiles/scout-profiles.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TeamAffiliationsModule } from './modules/team-affiliations/team-affiliations.module';
 import { TeamsModule } from './modules/teams/teams.module';
@@ -143,6 +147,10 @@ import { UsersModule } from './modules/users/users.module';
     SendgridModule,
     MatchAttendancesModule,
     DashboardModule,
+    PlayerPositionTypesModule,
+    PlayerRolesModule,
+    PlayerRoleExamplesModule,
+    ScoutProfilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

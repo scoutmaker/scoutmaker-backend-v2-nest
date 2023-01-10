@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Report, ReportTemplate } from '@prisma/client';
 import Redis from 'ioredis';
 
-import { REDIS_TTL } from '../../utils/constants';
+import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
   calculateAvg,
@@ -53,14 +53,17 @@ const include: Prisma.ReportInclude = {
     },
   },
   match: { include: { homeTeam: true, awayTeam: true } },
-  author: true,
+  author: { include: { profile: true } },
   skills: { include: { template: { include: { category: true } } } },
 };
 
 const paginatedDataInclude = Prisma.validator<Prisma.ReportInclude>()({
   player: true,
-  author: true,
-  meta: { include: { team: true, position: true } },
+  author: { include: { profile: true } },
+  match: { include: { homeTeam: true, awayTeam: true } },
+  meta: {
+    include: { team: true, position: { include: { positionType: true } } },
+  },
 });
 
 const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
@@ -72,13 +75,13 @@ const singleInclude = Prisma.validator<Prisma.ReportInclude>()({
     },
   },
   match: { include: { homeTeam: true, awayTeam: true, competition: true } },
-  author: true,
+  author: { include: { profile: true } },
   skills: { include: { template: { include: { category: true } } } },
   meta: {
     include: {
       competition: true,
       competitionGroup: true,
-      position: true,
+      position: { include: { positionType: true } },
       team: true,
     },
   },
@@ -181,7 +184,7 @@ export class ReportsService {
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
 
-    return this.prisma.report.create({
+    const createdReport = await this.prisma.report.create({
       data: {
         ...rest,
         finalRating,
@@ -220,6 +223,10 @@ export class ReportsService {
       },
       include,
     });
+
+    if (playerId) this.playersService.fillAveragePercentageRating(playerId);
+
+    return createdReport;
   }
 
   async createManyFromCsv(file: Express.Multer.File) {
@@ -292,6 +299,7 @@ export class ReportsService {
     const {
       playerIds,
       positionIds,
+      positionTypeIds,
       matchIds,
       teamIds,
       competitionIds,
@@ -306,6 +314,8 @@ export class ReportsService {
       observationType,
       onlyLikedPlayers,
       onlyLikedTeams,
+      percentageRatingRanges: percentageRatingRangesFilter,
+      onlyMine,
     } = query;
 
     return {
@@ -352,6 +362,26 @@ export class ReportsService {
                 : undefined,
             },
             {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      meta: {
+                        position: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                    {
+                      player: {
+                        primaryPosition: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
+            {
               meta: isIdsArrayFilterDefined(teamIds)
                 ? { team: { id: { in: teamIds } } }
                 : undefined,
@@ -384,6 +414,15 @@ export class ReportsService {
                 ? { team: { likes: { some: { userId } } } }
                 : undefined,
             },
+            {
+              OR: percentageRatingRangesFilter?.map((range) => ({
+                percentageRating: {
+                  gte: percentageRatingRanges[range][0],
+                  lte: percentageRatingRanges[range][1],
+                },
+              })),
+            },
+            { authorId: onlyMine ? userId : undefined },
           ],
         },
       ],
@@ -405,6 +444,9 @@ export class ReportsService {
         break;
       case 'positionPlayed':
         sort = { meta: { position: { name: sortingOrder } } };
+      case 'match':
+        sort = { match: { date: sortingOrder } };
+        break;
       default:
         sort = { [sortBy]: sortingOrder };
         break;
@@ -568,7 +610,10 @@ export class ReportsService {
       });
     }
 
-    await this.saveOneToCache(updatedReport);
+    this.saveOneToCache(updatedReport);
+
+    if (updateReportDto.playerId)
+      this.playersService.fillAveragePercentageRating(updateReportDto.playerId);
 
     return updatedReport;
   }

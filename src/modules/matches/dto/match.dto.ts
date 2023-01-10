@@ -29,6 +29,9 @@ export class MatchDto {
   videoUrl?: string;
 
   @Expose()
+  transfermarktUrl?: string;
+
+  @Expose()
   @Transform(({ value }) =>
     plainToInstance(TeamBasicDataDto, value, { excludeExtraneousValues: true }),
   )

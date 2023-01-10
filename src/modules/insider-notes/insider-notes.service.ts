@@ -36,15 +36,21 @@ interface CsvInput {
   authorId: string;
 }
 
+interface IGenerateWhereClauseArgs {
+  query: FindAllInsiderNotesDto;
+  accessFilters?: Prisma.ReportWhereInput;
+  userId?: string;
+}
+
 const include = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { primaryPosition: true } },
-  author: true,
+  author: { include: { profile: true } },
   meta: { include: { team: true } },
 });
 
 const singleInclude = Prisma.validator<Prisma.InsiderNoteInclude>()({
   player: { include: { country: true, primaryPosition: true } },
-  author: true,
+  author: { include: { profile: true } },
   meta: { include: { competition: true, competitionGroup: true, team: true } },
 });
 
@@ -141,31 +147,22 @@ export class InsiderNotesService {
     };
   }
 
-  async findAll(
-    { limit, page, sortBy, sortingOrder }: InsiderNotesPaginationOptionsDto,
-    {
+  private generateWhereClause({
+    query,
+    accessFilters,
+    userId,
+  }: IGenerateWhereClauseArgs): Prisma.InsiderNoteWhereInput {
+    const {
       competitionGroupIds,
       competitionIds,
       playerIds,
       positionIds,
+      positionTypeIds,
       teamIds,
       isLiked,
-    }: FindAllInsiderNotesDto,
-    userId?: string,
-    accessFilters?: Prisma.InsiderNoteWhereInput,
-  ) {
-    let sort: Prisma.InsiderNoteOrderByWithRelationInput;
+    } = query;
 
-    switch (sortBy) {
-      case 'player':
-        sort = { [sortBy]: { lastName: sortingOrder } };
-        break;
-      default:
-        sort = { [sortBy]: sortingOrder };
-        break;
-    }
-
-    const where: Prisma.InsiderNoteWhereInput = {
+    return {
       AND: [
         { ...accessFilters },
         {
@@ -223,10 +220,54 @@ export class InsiderNotesService {
                   ]
                 : undefined,
             },
+            {
+              OR: isIdsArrayFilterDefined(positionTypeIds)
+                ? [
+                    {
+                      player: {
+                        primaryPosition: {
+                          positionType: { id: { in: positionTypeIds } },
+                        },
+                      },
+                    },
+                    {
+                      player: {
+                        secondaryPositions: {
+                          some: {
+                            position: {
+                              positionType: { id: { in: positionTypeIds } },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  ]
+                : undefined,
+            },
           ],
         },
       ],
     };
+  }
+
+  async findAll(
+    { limit, page, sortBy, sortingOrder }: InsiderNotesPaginationOptionsDto,
+    query: FindAllInsiderNotesDto,
+    userId?: string,
+    accessFilters?: Prisma.InsiderNoteWhereInput,
+  ) {
+    let sort: Prisma.InsiderNoteOrderByWithRelationInput;
+
+    switch (sortBy) {
+      case 'player':
+        sort = { [sortBy]: { lastName: sortingOrder } };
+        break;
+      default:
+        sort = { [sortBy]: sortingOrder };
+        break;
+    }
+
+    const where = this.generateWhereClause({ query, accessFilters, userId });
 
     const insiderNotes = await this.prisma.insiderNote.findMany({
       where,

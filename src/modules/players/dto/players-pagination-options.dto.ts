@@ -15,6 +15,8 @@ enum PlayersSortBy {
   primaryPosition = 'primaryPosition',
   reportsCount = 'reportsCount',
   notesCount = 'notesCount',
+  updatedAt = 'updatedAt',
+  averagePercentageRating = 'averagePercentageRating',
 }
 
 export type PlayersSortByUnion = keyof typeof PlayersSortBy;
