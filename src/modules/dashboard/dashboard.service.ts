@@ -44,8 +44,8 @@ export class DashboardService {
   async getData(user: CurrentUserDto) {
     switch (user.role) {
       case 'ADMIN':
-      case 'PLAYMAKER_SCOUT_MANAGER':
         return this.getCommonData(user);
+      case 'PLAYMAKER_SCOUT_MANAGER':
       case 'PLAYMAKER_SCOUT':
         return this.getPlaymakerScoutData(user);
       case 'SCOUT':
