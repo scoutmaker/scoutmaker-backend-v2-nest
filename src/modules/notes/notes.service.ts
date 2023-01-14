@@ -469,8 +469,8 @@ export class NotesService {
       }
     }
 
-    // If the user wants to update playerId and there's no note metadata, we need to create it
     if (playerId && !note.meta) {
+      // If the user wants to update playerId and there's no note metadata, we need to create it
       const player = await this.playersService.findOneWithCurrentTeamDetails(
         playerId,
       );
@@ -498,6 +498,15 @@ export class NotesService {
           competitionGroup: metaCompetitionGroupId
             ? { connect: { id: metaCompetitionGroupId } }
             : undefined,
+        },
+      });
+    } else if (
+      !note.meta &&
+      (positionPlayedId || teamId || competitionId || competitionGroupId)
+    ) {
+      await this.prisma.noteMeta.create({
+        data: {
+          note: { connect: { id } },
         },
       });
     }
