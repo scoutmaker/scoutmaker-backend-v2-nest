@@ -200,7 +200,10 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.prisma.user.findUnique({ where: { id }, include });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: { ...include, reportBackgroundImage: true },
+    });
   }
 
   findByEmail(email: string) {
