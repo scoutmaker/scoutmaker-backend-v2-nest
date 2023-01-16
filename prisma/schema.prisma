@@ -7,9 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum UserRole {
@@ -84,6 +84,10 @@ model User {
   likedTeams                             LikeTeam[]
   matchAttendances                       MatchAttendance[]
   profile                                ScoutProfile?
+  reportBackgroundImage                  ReportBackgroundImage?              @relation(fields: [reportBackgroundImageId], references: [id], onDelete: Cascade)
+  reportBackgroundImageId                String?
+  reportTemplate                         ReportTemplate?                     @relation(fields: [reportTemplateId], references: [id], onDelete: Cascade, name: "defaultReportTemplate")
+  reportTemplateId                       String?
 }
 
 model ScoutProfile {
@@ -591,6 +595,7 @@ model ReportTemplate {
   author                   User                                        @relation(fields: [authorId], references: [id])
   authorId                 String
   skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
+  asDefault                User[]                                      @relation("defaultReportTemplate")
 }
 
 model SkillAssessmentTemplatesOnReportTemplates {
@@ -867,6 +872,7 @@ model ReportBackgroundImage {
   isPublic  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  User      User[]
 }
 
 model UserSubscription {
