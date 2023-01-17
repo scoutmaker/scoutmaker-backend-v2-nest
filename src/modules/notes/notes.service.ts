@@ -268,6 +268,7 @@ export class NotesService {
                 ? [
                     { meta: { position: { id: { in: positionIds } } } },
                     {
+                      meta: { position: null },
                       player: { primaryPosition: { id: { in: positionIds } } },
                     },
                   ]
@@ -284,6 +285,9 @@ export class NotesService {
                       },
                     },
                     {
+                      meta: {
+                        position: null,
+                      },
                       player: {
                         primaryPosition: {
                           positionType: { id: { in: positionTypeIds } },
