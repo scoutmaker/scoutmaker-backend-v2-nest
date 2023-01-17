@@ -102,6 +102,27 @@ export class PlayersService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
+  getRedisKey(id: string) {
+    return `player:${id}`;
+  }
+
+  async deleteFromCache(id: string) {
+    await this.redis.del(this.getRedisKey(id));
+  }
+
+  async setToCache(id: string, player: any) {
+    await this.redis.set(
+      this.getRedisKey(id),
+      JSON.stringify(player),
+      'EX',
+      REDIS_TTL,
+    );
+  }
+
+  getFromCache(id: string) {
+    return this.redis.get(this.getRedisKey(id));
+  }
+
   async create(createPlayerDto: CreatePlayerDto, authorId: string) {
     const {
       countryId,
@@ -438,9 +459,7 @@ export class PlayersService {
   }
 
   async findOne(id: string, userId?: string) {
-    const redisKey = `player:${id}`;
-
-    const cached = await this.redis.get(redisKey);
+    const cached = await this.getFromCache(id);
 
     if (cached) {
       return JSON.parse(cached);
@@ -458,15 +477,13 @@ export class PlayersService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+    this.setToCache(id, player);
 
     return player;
   }
 
   async findOneBySlug(slug: string, userId?: string) {
-    const redisKey = `player:${slug}`;
-
-    const cached = await this.redis.get(redisKey);
+    const cached = await this.getFromCache(slug);
 
     if (cached) {
       return JSON.parse(cached);
@@ -484,7 +501,7 @@ export class PlayersService {
         : singleInclude,
     });
 
-    await this.redis.set(redisKey, JSON.stringify(player), 'EX', REDIS_TTL);
+    this.setToCache(slug, player);
 
     return player;
   }
@@ -559,7 +576,8 @@ export class PlayersService {
       include,
     });
 
-    this.redis.del(`player:${updated.slug}`);
+    this.deleteFromCache(updated.slug);
+    this.deleteFromCache(updated.id);
 
     return updated;
   }
@@ -577,7 +595,10 @@ export class PlayersService {
         where: { playerId: id },
       }),
     ]);
-    return this.prisma.player.delete({ where: { id } });
+    const deleted = await this.prisma.player.delete({ where: { id } });
+    this.deleteFromCache(deleted.slug);
+    this.deleteFromCache(deleted.id);
+    return deleted;
   }
 
   getCount(filters?: Prisma.PlayerWhereInput) {
