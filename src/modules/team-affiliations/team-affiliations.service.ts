@@ -3,6 +3,7 @@ import { Prisma, TeamAffiliation } from '@prisma/client';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
 import { FindAllTeamAffiliationsDto } from './dto/find-all-team-affiliations.dto';
@@ -38,16 +39,19 @@ const include = Prisma.validator<Prisma.TeamAffiliationInclude>()({
 
 @Injectable()
 export class TeamAffiliationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly playersService: PlayersService,
+  ) {}
 
-  create({
+  async create({
     playerId,
     teamId,
     startDate,
     endDate,
     ...rest
   }: CreateTeamAffiliationDto) {
-    return this.prisma.teamAffiliation.create({
+    const created = await this.prisma.teamAffiliation.create({
       data: {
         player: { connect: { id: playerId } },
         team: { connect: { id: teamId } },
@@ -57,6 +61,9 @@ export class TeamAffiliationsService {
       },
       include,
     });
+    this.playersService.deleteFromCache(created.player.slug);
+    this.playersService.deleteFromCache(created.player.id);
+    return created;
   }
 
   async createManyFromCsv(file: Express.Multer.File) {
@@ -142,8 +149,8 @@ export class TeamAffiliationsService {
     return this.prisma.teamAffiliation.findUnique({ where: { id }, include });
   }
 
-  update(id: string, { endDate, startDate }: UpdateTeamAffiliationDto) {
-    return this.prisma.teamAffiliation.update({
+  async update(id: string, { endDate, startDate }: UpdateTeamAffiliationDto) {
+    const updated = await this.prisma.teamAffiliation.update({
       where: { id },
       data: {
         startDate: startDate ? new Date(startDate) : undefined,
@@ -151,9 +158,18 @@ export class TeamAffiliationsService {
       },
       include,
     });
+    this.playersService.deleteFromCache(updated.player.slug);
+    this.playersService.deleteFromCache(updated.player.id);
+    return updated;
   }
 
-  remove(id: string) {
-    return this.prisma.teamAffiliation.delete({ where: { id }, include });
+  async remove(id: string) {
+    const deleted = await this.prisma.teamAffiliation.delete({
+      where: { id },
+      include,
+    });
+    this.playersService.deleteFromCache(deleted.player.slug);
+    this.playersService.deleteFromCache(deleted.player.id);
+    return deleted;
   }
 }
