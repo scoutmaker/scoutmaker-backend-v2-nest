@@ -309,6 +309,24 @@ export class PlayersService {
                         some: { playerPositionId: { in: positionIds } },
                       },
                     },
+                    {
+                      notes: {
+                        some: {
+                          meta: {
+                            position: { id: { in: positionIds } },
+                          },
+                        },
+                      },
+                    },
+                    {
+                      reports: {
+                        some: {
+                          meta: {
+                            position: { id: { in: positionIds } },
+                          },
+                        },
+                      },
+                    },
                   ]
                 : undefined,
             },
@@ -325,6 +343,28 @@ export class PlayersService {
                         some: {
                           position: {
                             positionType: { id: { in: positionTypeIds } },
+                          },
+                        },
+                      },
+                    },
+                    {
+                      notes: {
+                        some: {
+                          meta: {
+                            position: {
+                              positionType: { id: { in: positionTypeIds } },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    {
+                      reports: {
+                        some: {
+                          meta: {
+                            position: {
+                              positionType: { id: { in: positionTypeIds } },
+                            },
                           },
                         },
                       },
