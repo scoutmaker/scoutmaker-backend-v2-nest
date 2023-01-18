@@ -8,16 +8,26 @@ import { UserRole } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
+type RoleGuardRoles = Array<UserRole | 'SCOUT_ORGANIZATION'>;
+
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private readonly roles: UserRole[]) {}
+  constructor(private readonly roles: RoleGuardRoles) {}
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const { role } = request?.user;
+    const { role, organizationId } = request?.user;
+
+    if (
+      this.roles.includes('SCOUT_ORGANIZATION') &&
+      role === 'SCOUT' &&
+      organizationId
+    ) {
+      return true;
+    }
 
     if (!this.roles.includes(role)) {
       throw new ForbiddenException(
