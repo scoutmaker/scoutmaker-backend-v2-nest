@@ -150,11 +150,16 @@ export class TeamAffiliationsService {
   }
 
   async update(id: string, { endDate, startDate }: UpdateTeamAffiliationDto) {
+    let endDateFinal = undefined;
+
+    if (endDate === null) endDateFinal = null;
+    else if (endDate) endDateFinal = new Date(endDate);
+
     const updated = await this.prisma.teamAffiliation.update({
       where: { id },
       data: {
         startDate: startDate ? new Date(startDate) : undefined,
-        endDate: endDate ? new Date(endDate) : undefined,
+        endDate: endDateFinal,
       },
       include,
     });
