@@ -69,6 +69,9 @@ export class OrderDto {
 
   @Expose()
   _count: OrderCount;
+
+  @Expose()
+  executionDate?: Date;
 }
 
 class PlayerSuperBasicInfoDto extends PickType(PlayerBasicDataWithoutTeamsDto, [

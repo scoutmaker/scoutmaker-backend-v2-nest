@@ -11,6 +11,7 @@ enum OrdersSortBy {
   scout = 'scout',
   description = 'description',
   createdAt = 'createdAt',
+  executionDate = 'executionDate',
 }
 
 export class OrdersPaginationOptionsDto extends PaginationOptionsDto {

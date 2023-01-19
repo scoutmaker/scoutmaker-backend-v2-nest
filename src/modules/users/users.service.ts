@@ -110,16 +110,44 @@ export class UsersService {
     return { createdDocuments, errors };
   }
 
+  generateWhereClause({
+    name,
+    roles,
+    clubIds,
+    footballRoleIds,
+    regionIds,
+    hasScoutProfile,
+  }: FindAllUsersDto): Prisma.UserWhereInput {
+    return {
+      OR: name
+        ? [
+            { firstName: { contains: name, mode: 'insensitive' } },
+            { lastName: { contains: name, mode: 'insensitive' } },
+          ]
+        : undefined,
+      role: isIdsArrayFilterDefined(roles) ? { in: roles } : undefined,
+      region: isIdsArrayFilterDefined(regionIds)
+        ? {
+            id: { in: regionIds },
+          }
+        : undefined,
+      club: isIdsArrayFilterDefined(clubIds)
+        ? {
+            id: { in: clubIds },
+          }
+        : undefined,
+      footballRole: isIdsArrayFilterDefined(footballRoleIds)
+        ? {
+            id: { in: footballRoleIds },
+          }
+        : undefined,
+      profile: hasScoutProfile ? { isNot: null } : undefined,
+    };
+  }
+
   async findAllWithPagination(
     { limit, page, sortBy, sortingOrder }: UsersPaginationOptionsDto,
-    {
-      name,
-      role,
-      clubIds,
-      footballRoleIds,
-      regionIds,
-      hasScoutProfile,
-    }: FindAllUsersDto,
+    query: FindAllUsersDto,
   ) {
     let sort: Prisma.UserOrderByWithRelationInput;
 
@@ -147,31 +175,7 @@ export class UsersService {
         break;
     }
 
-    const where: Prisma.UserWhereInput = {
-      OR: name
-        ? [
-            { firstName: { contains: name, mode: 'insensitive' } },
-            { lastName: { contains: name, mode: 'insensitive' } },
-          ]
-        : undefined,
-      role,
-      region: isIdsArrayFilterDefined(regionIds)
-        ? {
-            id: { in: regionIds },
-          }
-        : undefined,
-      club: isIdsArrayFilterDefined(clubIds)
-        ? {
-            id: { in: clubIds },
-          }
-        : undefined,
-      footballRole: isIdsArrayFilterDefined(footballRoleIds)
-        ? {
-            id: { in: footballRoleIds },
-          }
-        : undefined,
-      profile: hasScoutProfile ? { isNot: null } : undefined,
-    };
+    const where = this.generateWhereClause(query);
 
     const users = await this.prisma.user.findMany({
       where,
@@ -195,8 +199,12 @@ export class UsersService {
     return this.prisma.user.findMany({ include });
   }
 
-  getList() {
-    return this.prisma.user.findMany();
+  getList(query?: FindAllUsersDto) {
+    let where = undefined;
+
+    if (query) where = this.generateWhereClause(query);
+
+    return this.prisma.user.findMany({ where });
   }
 
   findOne(id: string) {

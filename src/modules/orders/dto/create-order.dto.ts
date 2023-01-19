@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrderDto {
   @IsOptional()
@@ -18,4 +18,12 @@ export class CreateOrderDto {
   @IsString()
   @Transform(({ value }) => value.trim())
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  scoutId?: string;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  executionDate: string;
 }
