@@ -8,6 +8,7 @@
   "CLOSE_MESSAGE": "Successfully closed order no. {docNumber}",
   "DELETE_MESSAGE": "Successfully deleted order no. {docNumber}",
   "ACCEPT_STATUS_ERROR": "Order no {docNumber} is already accepted or closed",
+  "ACCEPT_ASSIGNEE_ERROR": "You cannot accept order no {docNumber} as it's not assigned to you",
   "REJECT_STATUS_ERROR": "Order no {docNumber} cannot be rejected",
   "REJECT_ASSIGNEE_ERROR": "You cannot reject order no {docNumber} as it's not assigned to you",
   "REJECT_REPORTS_ERROR": "You cannot reject order no {docNumber} as it already has {reportsCount} reports related",
