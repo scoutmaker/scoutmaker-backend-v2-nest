@@ -103,8 +103,8 @@ export class UsersController {
   @Get('list')
   @ApiResponse(UserBasicDataDto, { type: 'read', isArray: true })
   @Serialize(UserBasicDataDto)
-  async getList(@I18nLang() lang: string) {
-    const users = await this.usersService.getList();
+  async getList(@I18nLang() lang: string, @Query() query: FindAllUsersDto) {
+    const users = await this.usersService.getList(query);
     const message = this.i18n.translate('users.GET_LIST_MESSAGE', {
       lang,
     });
