@@ -167,7 +167,7 @@ export class ReportsService {
       .filter(({ rating }) => rating)
       .map(({ rating }) => rating);
 
-    const avgRating = calculateAvg(skillsRatings);
+    const avgRating: number = calculateAvg(skillsRatings);
 
     // Calculate report meta data
     const player = await this.playersService.findOneWithCurrentTeamDetails(
@@ -189,7 +189,7 @@ export class ReportsService {
         ...rest,
         finalRating,
         percentageRating,
-        avgRating,
+        avgRating: !Number.isNaN(avgRating) ? avgRating : undefined,
         maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
