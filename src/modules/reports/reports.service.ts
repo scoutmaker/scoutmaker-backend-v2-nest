@@ -167,7 +167,7 @@ export class ReportsService {
       .filter(({ rating }) => rating)
       .map(({ rating }) => rating);
 
-    const avgRating: number = calculateAvg(skillsRatings);
+    const avgRating = calculateAvg(skillsRatings);
 
     // Calculate report meta data
     const player = await this.playersService.findOneWithCurrentTeamDetails(
