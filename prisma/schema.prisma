@@ -7,9 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum UserRole {
@@ -384,6 +384,7 @@ model Player {
   minut90url              String?
   transfermarktId         String?
   transfermarktUrl        String?
+  inStatUrl               String?
   isPublic                Boolean  @default(false)
   scoutmakerv1Id          String?  @unique
   createdAt               DateTime @default(now())
