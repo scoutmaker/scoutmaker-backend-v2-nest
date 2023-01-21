@@ -189,7 +189,7 @@ export class ReportsService {
         ...rest,
         finalRating,
         percentageRating,
-        avgRating,
+        avgRating: !Number.isNaN(avgRating) ? avgRating : undefined,
         maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
