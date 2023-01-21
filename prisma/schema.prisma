@@ -352,6 +352,7 @@ model PlayerPosition {
   code      String   @unique()
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  listOrder Int?
 
   // Relation fields
   positionType         PlayerPositionType?           @relation(fields: [playerPositionTypeId], references: [id])

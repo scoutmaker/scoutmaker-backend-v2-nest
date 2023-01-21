@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 import { IsRequiredStringWithMaxLength } from '../../../common/decorators/is-required-string-with-max-length.decorator';
 
@@ -17,4 +17,8 @@ export class CreatePlayerPositionDto {
 
   @IsString()
   playerPositionTypeId: string;
+
+  @IsOptional()
+  @IsInt()
+  listOrder?: number;
 }
