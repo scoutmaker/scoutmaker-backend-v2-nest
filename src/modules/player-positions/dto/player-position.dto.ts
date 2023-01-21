@@ -19,4 +19,7 @@ export class PlayerPositionDto {
   )
   @Expose()
   positionType: PlayerPositionTypeDto;
+
+  @Expose()
+  listOrder?: number;
 }

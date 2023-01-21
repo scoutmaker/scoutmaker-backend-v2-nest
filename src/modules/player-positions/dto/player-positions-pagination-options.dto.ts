@@ -7,6 +7,7 @@ enum PlayerPositionsSortBy {
   id = 'id',
   name = 'name',
   code = 'code',
+  listOrder = 'listOrder',
 }
 
 export class PlayerPositionsPaginationOptionsDto extends PaginationOptionsDto {
