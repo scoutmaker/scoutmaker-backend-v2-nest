@@ -57,6 +57,9 @@ export class PlayerDto {
   @Expose()
   transfermarktUrl?: string;
 
+  @Expose()
+  inStatUrl?: string;
+
   @Transform(({ value }) =>
     plainToInstance(CountryDto, value, { excludeExtraneousValues: true }),
   )

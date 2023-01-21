@@ -92,6 +92,10 @@ export class CreatePlayerDto {
   transfermarktUrl?: string;
 
   @IsOptional()
+  @IsUrl()
+  inStatUrl?: string;
+
+  @IsOptional()
   @IsString()
   scoutmakerv1Id?: string;
 
