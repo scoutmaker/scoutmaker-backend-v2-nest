@@ -30,6 +30,7 @@ import { FollowPlayersModule } from './modules/follow-players/follow-players.mod
 import { FollowScoutsModule } from './modules/follow-scouts/follow-scouts.module';
 import { FollowTeamsModule } from './modules/follow-teams/follow-teams.module';
 import { InsiderNotesModule } from './modules/insider-notes/insider-notes.module';
+import { LandingModule } from './modules/landing/landing.module';
 import { InsiderNotesLikesModule } from './modules/like-insider-notes/like-insider-notes.module';
 import { LikeNotesModule } from './modules/like-notes/like-notes.module';
 import { LikePlayersModule } from './modules/like-players/like-players.module';
@@ -69,7 +70,6 @@ import { UserNoteAclModule } from './modules/user-note-acl/user-note-acl.module'
 import { UserReportAclModule } from './modules/user-report-acl/user-report-acl.module';
 import { UserSubscriptionsModule } from './modules/user-subscriptions/user-subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
-import { LandingModule } from './modules/landing/landing.module';
 
 @Module({
   imports: [

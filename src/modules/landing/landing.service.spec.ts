@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { LandingService } from './landing.service';
 
 describe('LandingService', () => {
