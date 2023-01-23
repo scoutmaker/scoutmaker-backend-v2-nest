@@ -40,7 +40,7 @@ export class LandingService {
 
     const [notes, reports, scouts] = await Promise.all([
       this.notesService.getCount(where),
-      this.notesService.getCount(where),
+      this.reportsService.getCount(where),
       this.usersService.getCount({ role: { in: roles } }),
     ]);
 
