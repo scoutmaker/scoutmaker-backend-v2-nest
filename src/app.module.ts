@@ -69,6 +69,7 @@ import { UserNoteAclModule } from './modules/user-note-acl/user-note-acl.module'
 import { UserReportAclModule } from './modules/user-report-acl/user-report-acl.module';
 import { UserSubscriptionsModule } from './modules/user-subscriptions/user-subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
+import { LandingModule } from './modules/landing/landing.module';
 
 @Module({
   imports: [
@@ -151,6 +152,7 @@ import { UsersModule } from './modules/users/users.module';
     PlayerRolesModule,
     PlayerRoleExamplesModule,
     ScoutProfilesModule,
+    LandingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
