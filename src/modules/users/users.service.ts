@@ -1,5 +1,7 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma, User, UserRole } from '@prisma/client';
+import Redis from 'ioredis';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
@@ -9,6 +11,7 @@ import {
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CurrentUserDto } from './dto/current-user.dto';
 import { FindAllUsersDto } from './dto/find-all-users.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -47,7 +50,10 @@ interface CsvInput {
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const { footballRoleId, regionId, ...rest } = createUserDto;
@@ -212,6 +218,22 @@ export class UsersService {
       where: { id },
       include: { ...include, reportBackgroundImage: true },
     });
+  }
+
+  async findCurrentWithCache(id: string): Promise<CurrentUserDto> {
+    const redisKey = `userTemp:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+    if (cached) return JSON.parse(cached);
+
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, organizationId: true, role: true },
+    });
+
+    this.redis.set(redisKey, JSON.stringify(user), 'EX', 60 * 7);
+
+    return user;
   }
 
   findByEmail(email: string) {
