@@ -1,15 +1,21 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
 import * as jwt from 'jsonwebtoken';
-import { Observable } from 'rxjs';
+
+import { CurrentUserDto } from '../../modules/users/dto/current-user.dto';
+import { UsersService } from '../../modules/users/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     const token = request.headers['x-auth-token'];
@@ -18,9 +24,14 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    const decoded = jwt.verify(token, this.configService.get('JWT_SECRET'));
+    const decodedUser = jwt.verify(
+      token,
+      this.configService.get('JWT_SECRET'),
+    ) as CurrentUserDto;
 
-    request.user = decoded;
+    const user = await this.usersService.findCurrentWithCache(decodedUser.id);
+
+    request.user = user;
     return true;
   }
 }
