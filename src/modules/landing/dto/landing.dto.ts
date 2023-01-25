@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { IsString } from 'class-validator';
 
 export class LandingPageNumbersDto {
   @Expose()
@@ -9,4 +10,24 @@ export class LandingPageNumbersDto {
 
   @Expose()
   scoutsCount: number;
+}
+
+export class LandingEmailDto {
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
+  @IsString()
+  email: string;
+
+  @IsString()
+  club: string;
+
+  @IsString()
+  tel: string;
+
+  @IsString()
+  title: string;
 }
