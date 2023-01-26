@@ -37,7 +37,7 @@ import { UpdateCompetitionAgeCategoryDto } from './dto/update-competition-age-ca
 
 @Controller('competition-age-categories')
 @ApiTags('competition age categories')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+@UseGuards(AuthGuard)
 @ApiSecurity('auth-token')
 export class CompetitionAgeCategoriesController {
   constructor(
@@ -46,6 +46,7 @@ export class CompetitionAgeCategoriesController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'create' })
   @Serialize(CompetitionAgeCategoryDto)
   async create(
@@ -88,6 +89,7 @@ export class CompetitionAgeCategoriesController {
   }
 
   @Get()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiPaginatedResponse(CompetitionAgeCategoryDto)
   @ApiQuery({ type: CompetitionAgeCategoriesPaginationOptionsDto })
   @Serialize(CompetitionAgeCategoryDto, 'docs')
@@ -121,6 +123,7 @@ export class CompetitionAgeCategoriesController {
   }
 
   @Get(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'read' })
   @Serialize(CompetitionAgeCategoryDto)
   async findOne(@I18nLang() lang: string, @Param('id') id: string) {
@@ -133,6 +136,7 @@ export class CompetitionAgeCategoriesController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'update' })
   @Serialize(CompetitionAgeCategoryDto)
   async update(
@@ -152,6 +156,7 @@ export class CompetitionAgeCategoriesController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionAgeCategoryDto, { type: 'delete' })
   @Serialize(CompetitionAgeCategoryDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

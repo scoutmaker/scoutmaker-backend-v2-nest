@@ -28,7 +28,7 @@ import { UpdateCompetitionJuniorLevelDto } from './dto/update-competition-junior
 
 @Controller('competition-junior-levels')
 @ApiTags('competition junior levels')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+@UseGuards(AuthGuard)
 @ApiSecurity('auth-token')
 export class CompetitionJuniorLevelsController {
   constructor(
@@ -37,6 +37,7 @@ export class CompetitionJuniorLevelsController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'create' })
   @Serialize(CompetitionJuniorLevelDto)
   async create(
@@ -102,6 +103,7 @@ export class CompetitionJuniorLevelsController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'update' })
   @Serialize(CompetitionJuniorLevelDto)
   async update(
@@ -121,6 +123,7 @@ export class CompetitionJuniorLevelsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionJuniorLevelDto, { type: 'delete' })
   @Serialize(CompetitionJuniorLevelDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
