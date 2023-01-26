@@ -37,7 +37,7 @@ import { UpdateCompetitionTypeDto } from './dto/update-competition-type.dto';
 
 @Controller('competition-types')
 @ApiTags('competition types')
-@UseGuards(AuthGuard, new RoleGuard(['ADMIN']))
+@UseGuards(AuthGuard)
 @ApiSecurity('auth-token')
 export class CompetitionTypesController {
   constructor(
@@ -46,6 +46,7 @@ export class CompetitionTypesController {
   ) {}
 
   @Post()
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionTypeDto, { type: 'create' })
   @Serialize(CompetitionTypeDto)
   async create(
@@ -127,6 +128,7 @@ export class CompetitionTypesController {
   }
 
   @Patch(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionTypeDto, { type: 'update' })
   @Serialize(CompetitionTypeDto)
   async update(
@@ -143,6 +145,7 @@ export class CompetitionTypesController {
   }
 
   @Delete(':id')
+  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionTypeDto, { type: 'delete' })
   @Serialize(CompetitionTypeDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

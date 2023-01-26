@@ -23,6 +23,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
@@ -46,7 +47,6 @@ export class RegionsController {
   ) {}
 
   @Post()
-  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(RegionDto, { type: 'create' })
   @Serialize(RegionDto)
   async create(
@@ -123,7 +123,7 @@ export class RegionsController {
   }
 
   @Patch(':id')
-  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(RegionDto, { type: 'update' })
   @Serialize(RegionDto)
   async update(
@@ -140,7 +140,7 @@ export class RegionsController {
   }
 
   @Delete(':id')
-  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(RegionDto, { type: 'delete' })
   @Serialize(RegionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {

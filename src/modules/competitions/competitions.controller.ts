@@ -23,6 +23,7 @@ import { I18nLang, I18nService } from 'nestjs-i18n';
 
 import { ApiPaginatedResponse } from '../../common/api-response/api-paginated-response.decorator';
 import { ApiResponse } from '../../common/api-response/api-response.decorator';
+import { AdminOrAuthorGuard } from '../../common/guards/admin-or-author.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RoleGuard } from '../../common/guards/role.guard';
 import { Serialize } from '../../common/interceptors/serialize.interceptor';
@@ -46,7 +47,6 @@ export class CompetitionsController {
   ) {}
 
   @Post()
-  @UseGuards(new RoleGuard(['ADMIN']))
   @ApiResponse(CompetitionDto, { type: 'create' })
   @Serialize(CompetitionDto)
   async create(
@@ -132,7 +132,7 @@ export class CompetitionsController {
   }
 
   @Patch(':id')
-  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(CompetitionDto, { type: 'update' })
   @Serialize(CompetitionDto)
   async update(
@@ -152,7 +152,7 @@ export class CompetitionsController {
   }
 
   @Delete(':id')
-  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AdminOrAuthorGuard)
   @ApiResponse(CompetitionDto, { type: 'delete' })
   @Serialize(CompetitionDto)
   async remove(@I18nLang() lang: string, @Param('id') id: string) {
