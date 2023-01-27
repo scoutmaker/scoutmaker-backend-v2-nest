@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 import { IsOptionalStringArray } from '../../../common/decorators/string-array-filter.decorator';
 import { UserRoleEnum } from '../types';
@@ -10,12 +16,15 @@ export class FindAllUsersDto {
   name?: string;
 
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
   @IsEnum(UserRoleEnum, {
-    message: `Footed must be a valid enum value. Available values: ${Object.keys(
+    message: `Role must be a valid enum value. Available values: ${Object.keys(
       UserRoleEnum,
     ).join(', ')}`,
+    each: true,
   })
-  role?: UserRoleEnum;
+  roles?: UserRoleEnum[];
 
   @IsOptionalStringArray()
   regionIds?: string[];

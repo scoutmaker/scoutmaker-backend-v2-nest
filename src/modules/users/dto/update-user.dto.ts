@@ -39,4 +39,12 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   regionId?: string;
+
+  @IsOptional()
+  @IsString()
+  reportTemplateId?: string;
+
+  @IsOptional()
+  @IsString()
+  reportBackgroundImageId?: string;
 }

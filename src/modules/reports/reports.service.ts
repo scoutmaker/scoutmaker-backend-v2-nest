@@ -189,7 +189,7 @@ export class ReportsService {
         ...rest,
         finalRating,
         percentageRating,
-        avgRating,
+        avgRating: !Number.isNaN(avgRating) ? avgRating : undefined,
         maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
@@ -356,6 +356,7 @@ export class ReportsService {
                 ? [
                     { meta: { position: { id: { in: positionIds } } } },
                     {
+                      meta: { position: null },
                       player: { primaryPosition: { id: { in: positionIds } } },
                     },
                   ]
@@ -372,6 +373,9 @@ export class ReportsService {
                       },
                     },
                     {
+                      meta: {
+                        position: null,
+                      },
                       player: {
                         primaryPosition: {
                           positionType: { id: { in: positionTypeIds } },

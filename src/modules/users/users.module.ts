@@ -1,12 +1,19 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import {
+  Global,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 
 import { PrepareQueryMiddleware } from '../../common/middleware/prepare-query.middleware';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
+@Global()
 @Module({
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {

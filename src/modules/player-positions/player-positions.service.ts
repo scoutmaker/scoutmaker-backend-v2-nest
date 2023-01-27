@@ -92,7 +92,10 @@ export class PlayerPositionsService {
   }
 
   getList() {
-    return this.prisma.playerPosition.findMany({ include });
+    return this.prisma.playerPosition.findMany({
+      include,
+      orderBy: { listOrder: 'asc' },
+    });
   }
 
   findOne(id: string) {

@@ -84,6 +84,10 @@ model User {
   likedTeams                             LikeTeam[]
   matchAttendances                       MatchAttendance[]
   profile                                ScoutProfile?
+  reportBackgroundImage                  ReportBackgroundImage?              @relation(fields: [reportBackgroundImageId], references: [id], onDelete: Cascade)
+  reportBackgroundImageId                String?
+  reportTemplate                         ReportTemplate?                     @relation(fields: [reportTemplateId], references: [id], onDelete: Cascade, name: "defaultReportTemplate")
+  reportTemplateId                       String?
 }
 
 model ScoutProfile {
@@ -348,6 +352,7 @@ model PlayerPosition {
   code      String   @unique()
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  listOrder Int?
 
   // Relation fields
   positionType         PlayerPositionType?           @relation(fields: [playerPositionTypeId], references: [id])
@@ -379,6 +384,7 @@ model Player {
   minut90url              String?
   transfermarktId         String?
   transfermarktUrl        String?
+  inStatUrl               String?
   isPublic                Boolean  @default(false)
   scoutmakerv1Id          String?  @unique
   createdAt               DateTime @default(now())
@@ -591,6 +597,7 @@ model ReportTemplate {
   author                   User                                        @relation(fields: [authorId], references: [id])
   authorId                 String
   skillAssessmentTemplates SkillAssessmentTemplatesOnReportTemplates[]
+  asDefault                User[]                                      @relation("defaultReportTemplate")
 }
 
 model SkillAssessmentTemplatesOnReportTemplates {
@@ -700,6 +707,7 @@ model Order {
   description    String?
   acceptDate     DateTime?
   closeDate      DateTime?
+  executionDate  DateTime?
   scoutmakerv1Id String?     @unique
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
@@ -867,6 +875,7 @@ model ReportBackgroundImage {
   isPublic  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  User      User[]
 }
 
 model UserSubscription {

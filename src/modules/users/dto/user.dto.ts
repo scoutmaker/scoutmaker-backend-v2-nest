@@ -4,6 +4,7 @@ import { Expose, plainToClass, Transform } from 'class-transformer';
 
 import { ClubBasicDataDto } from '../../clubs/dto/club.dto';
 import { RegionDto } from '../../regions/dto/region.dto';
+import { ReportBackgroundImageDto } from '../../report-background-images/dto/report-background-image.dto';
 import { ScoutProfileWithoutUserDto } from '../../scout-profiles/dto/scout-profile.dto';
 import { UserFootballRoleDto } from '../../user-football-roles/dto/user-football-role.dto';
 
@@ -74,6 +75,17 @@ export class UserDto {
 
   @Expose()
   organizationId?: string;
+
+  @Expose()
+  reportTemplateId?: string;
+
+  @Expose()
+  @Transform(({ value }) =>
+    plainToClass(ReportBackgroundImageDto, value, {
+      excludeExtraneousValues: true,
+    }),
+  )
+  reportBackgroundImage?: ReportBackgroundImageDto;
 }
 
 export class UserBasicDataDto extends PickType(UserDto, [

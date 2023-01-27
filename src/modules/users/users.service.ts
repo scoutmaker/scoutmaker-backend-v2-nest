@@ -1,5 +1,7 @@
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Prisma, User, UserRole } from '@prisma/client';
+import Redis from 'ioredis';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
 import {
@@ -9,6 +11,7 @@ import {
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CurrentUserDto } from './dto/current-user.dto';
 import { FindAllUsersDto } from './dto/find-all-users.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -47,7 +50,10 @@ interface CsvInput {
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const { footballRoleId, regionId, ...rest } = createUserDto;
@@ -110,16 +116,44 @@ export class UsersService {
     return { createdDocuments, errors };
   }
 
+  generateWhereClause({
+    name,
+    roles,
+    clubIds,
+    footballRoleIds,
+    regionIds,
+    hasScoutProfile,
+  }: FindAllUsersDto): Prisma.UserWhereInput {
+    return {
+      OR: name
+        ? [
+            { firstName: { contains: name, mode: 'insensitive' } },
+            { lastName: { contains: name, mode: 'insensitive' } },
+          ]
+        : undefined,
+      role: isIdsArrayFilterDefined(roles) ? { in: roles } : undefined,
+      region: isIdsArrayFilterDefined(regionIds)
+        ? {
+            id: { in: regionIds },
+          }
+        : undefined,
+      club: isIdsArrayFilterDefined(clubIds)
+        ? {
+            id: { in: clubIds },
+          }
+        : undefined,
+      footballRole: isIdsArrayFilterDefined(footballRoleIds)
+        ? {
+            id: { in: footballRoleIds },
+          }
+        : undefined,
+      profile: hasScoutProfile ? { isNot: null } : undefined,
+    };
+  }
+
   async findAllWithPagination(
     { limit, page, sortBy, sortingOrder }: UsersPaginationOptionsDto,
-    {
-      name,
-      role,
-      clubIds,
-      footballRoleIds,
-      regionIds,
-      hasScoutProfile,
-    }: FindAllUsersDto,
+    query: FindAllUsersDto,
   ) {
     let sort: Prisma.UserOrderByWithRelationInput;
 
@@ -147,31 +181,7 @@ export class UsersService {
         break;
     }
 
-    const where: Prisma.UserWhereInput = {
-      OR: name
-        ? [
-            { firstName: { contains: name, mode: 'insensitive' } },
-            { lastName: { contains: name, mode: 'insensitive' } },
-          ]
-        : undefined,
-      role,
-      region: isIdsArrayFilterDefined(regionIds)
-        ? {
-            id: { in: regionIds },
-          }
-        : undefined,
-      club: isIdsArrayFilterDefined(clubIds)
-        ? {
-            id: { in: clubIds },
-          }
-        : undefined,
-      footballRole: isIdsArrayFilterDefined(footballRoleIds)
-        ? {
-            id: { in: footballRoleIds },
-          }
-        : undefined,
-      profile: hasScoutProfile ? { isNot: null } : undefined,
-    };
+    const where = this.generateWhereClause(query);
 
     const users = await this.prisma.user.findMany({
       where,
@@ -195,12 +205,35 @@ export class UsersService {
     return this.prisma.user.findMany({ include });
   }
 
-  getList() {
-    return this.prisma.user.findMany();
+  getList(query?: FindAllUsersDto) {
+    let where = undefined;
+
+    if (query) where = this.generateWhereClause(query);
+
+    return this.prisma.user.findMany({ where });
   }
 
   findOne(id: string) {
-    return this.prisma.user.findUnique({ where: { id }, include });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: { ...include, reportBackgroundImage: true },
+    });
+  }
+
+  async findCurrentWithCache(id: string): Promise<CurrentUserDto> {
+    const redisKey = `userTemp:${id}`;
+
+    const cached = await this.redis.get(redisKey);
+    if (cached) return JSON.parse(cached);
+
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, organizationId: true, role: true },
+    });
+
+    this.redis.set(redisKey, JSON.stringify(user), 'EX', 60 * 7);
+
+    return user;
   }
 
   findByEmail(email: string) {

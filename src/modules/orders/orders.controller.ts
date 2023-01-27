@@ -31,7 +31,12 @@ import { OrdersService } from './orders.service';
 @ApiTags('orders')
 @UseGuards(
   AuthGuard,
-  new RoleGuard(['ADMIN', 'PLAYMAKER_SCOUT', 'PLAYMAKER_SCOUT_MANAGER']),
+  new RoleGuard([
+    'ADMIN',
+    'PLAYMAKER_SCOUT',
+    'PLAYMAKER_SCOUT_MANAGER',
+    'SCOUT_ORGANIZATION',
+  ]),
 )
 @ApiSecurity('auth-token')
 export class OrdersController {

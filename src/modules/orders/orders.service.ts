@@ -43,7 +43,7 @@ export class OrdersService {
   ) {}
 
   create(createOrderDto: CreateOrderDto, authorId: string) {
-    const { matchId, playerId, ...rest } = createOrderDto;
+    const { matchId, playerId, scoutId, ...rest } = createOrderDto;
 
     return this.prisma.order.create({
       data: {
@@ -51,6 +51,7 @@ export class OrdersService {
         player: playerId ? { connect: { id: playerId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
         author: { connect: { id: authorId } },
+        scout: scoutId ? { connect: { id: scoutId } } : undefined,
       },
       include,
     });
@@ -152,6 +153,14 @@ export class OrdersService {
 
     if (order.status !== 'OPEN') {
       const message = this.i18n.translate('orders.ACCEPT_STATUS_ERROR', {
+        lang,
+        args: { docNumber: order.docNumber },
+      });
+      throw new BadRequestException(message);
+    }
+
+    if (order.scoutId && order.scoutId !== userId) {
+      const message = this.i18n.translate('orders.ACCEPT_ASSIGNEE_ERROR', {
         lang,
         args: { docNumber: order.docNumber },
       });

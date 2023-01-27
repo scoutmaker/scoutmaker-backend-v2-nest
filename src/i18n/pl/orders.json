@@ -8,6 +8,7 @@
   "CLOSE_MESSAGE": "Pomyślnie zamknięto zlecenie nr {docNumber}",
   "DELETE_MESSAGE": "Pomyślnie usunięto zlecenie nr {docNumber}",
   "ACCEPT_STATUS_ERROR": "Zlecenie nr {docNumber} zostało już zaakceptowane lub zamknięte",
+  "ACCEPT_ASSIGNEE_ERROR": "Nie możesz zaakceptować zlecenia nr {docNumber}, ponieważ nie jesteś jego do niego przypisany",
   "REJECT_STATUS_ERROR": "Zlecenie nr {docNumber} nie może zostać przez Ciebie odrzucone",
   "REJECT_ASSIGNEE_ERROR": "Nie możesz odrzucić zlecenia nr {docNumber}, ponieważ nie jesteś jego do niego przypisany",
   "REJECT_REPORTS_ERROR": "Nie możesz odrzucić zlecenia nr {docNumber}, ponieważ ma ono {reportsCount} przypisanych raportów",
