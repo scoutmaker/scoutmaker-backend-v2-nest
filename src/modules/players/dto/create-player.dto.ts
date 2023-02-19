@@ -57,12 +57,13 @@ export class CreatePlayerDto {
   @Max(150)
   weight?: number;
 
+  @IsOptional()
   @IsEnum(FootEnum, {
     message: `Footed must be a valid enum value. Available values: ${Object.keys(
       FootEnum,
     ).join(', ')}`,
   })
-  footed: FootEnum;
+  footed?: FootEnum;
 
   @IsOptional()
   @IsString()

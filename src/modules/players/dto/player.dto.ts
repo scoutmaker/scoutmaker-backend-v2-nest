@@ -37,7 +37,7 @@ export class PlayerDto {
 
   @Expose()
   @ApiProperty({ enum: Foot })
-  footed: Foot;
+  footed?: Foot;
 
   @Expose()
   lnpId?: string;

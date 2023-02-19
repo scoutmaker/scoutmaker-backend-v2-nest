@@ -377,7 +377,7 @@ model Player {
   yearOfBirth             Int
   height                  Int?
   weight                  Int?
-  footed                  Foot
+  footed                  Foot?
   lnpId                   String?
   lnpUrl                  String?
   minut90id               String?
