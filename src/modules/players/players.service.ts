@@ -27,7 +27,7 @@ interface CsvInput {
   yearOfBirth: number | string;
   height?: number | string;
   weight?: number | string;
-  footed: 'R' | 'L' | 'both';
+  footed?: 'R' | 'L' | 'both';
   lnpId?: number;
   lnpUrl?: string;
   minut90id?: string;
@@ -171,11 +171,9 @@ export class PlayersService {
       instance.lastName = item.lastName;
       instance.yearOfBirth =
         typeof item.yearOfBirth === 'string' ? 2000 : item.yearOfBirth || 2000;
-      instance.height =
-        typeof item.height === 'string' ? 170 : item.height || 170;
-      instance.weight =
-        typeof item.weight === 'string' ? 70 : item.weight || 70;
-      instance.footed = footedMap[item.footed];
+      instance.height = item.height ? +item.height : undefined;
+      instance.weight = item.weight ? +item.weight : undefined;
+      instance.footed = item.footed ? footedMap[item.footed] : undefined;
       instance.lnpId = item.lnpId?.toString();
       instance.lnpUrl = item.lnpUrl;
       instance.minut90id = item.minut90id;
