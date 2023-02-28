@@ -253,6 +253,8 @@ export class DashboardService {
       observerdPlayersCount: playersCount,
       observedMatchesCount,
       topNotes: topNotes,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       topReports: topReports.docs,
       notesCount,
       reportsCount,
