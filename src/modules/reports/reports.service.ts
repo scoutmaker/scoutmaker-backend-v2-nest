@@ -596,7 +596,7 @@ export class ReportsService {
             }
           : undefined,
       },
-      include,
+      include: singleInclude,
     });
 
     // Calculate percentage rating
@@ -611,6 +611,7 @@ export class ReportsService {
       updatedReport = await this.prisma.report.update({
         where: { id },
         data: { percentageRating },
+        include: singleInclude,
       });
     }
 
