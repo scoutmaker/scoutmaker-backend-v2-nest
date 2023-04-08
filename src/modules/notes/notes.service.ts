@@ -229,6 +229,7 @@ export class NotesService {
       onlyWithoutPlayers,
       percentageRatingRanges: percentageRatingRangesFilter,
       onlyMine,
+      seasonIds,
     } = query;
 
     return {
@@ -340,6 +341,11 @@ export class NotesService {
               })),
             },
             { authorId: onlyMine ? userId : undefined },
+            {
+              match: isIdsArrayFilterDefined(seasonIds)
+                ? { seasonId: { in: seasonIds } }
+                : undefined,
+            },
           ],
         },
       ],

@@ -316,6 +316,7 @@ export class ReportsService {
       onlyLikedTeams,
       percentageRatingRanges: percentageRatingRangesFilter,
       onlyMine,
+      seasonIds,
     } = query;
 
     return {
@@ -427,6 +428,11 @@ export class ReportsService {
               })),
             },
             { authorId: onlyMine ? userId : undefined },
+            {
+              match: isIdsArrayFilterDefined(seasonIds)
+                ? { seasonId: { in: seasonIds } }
+                : undefined,
+            },
           ],
         },
       ],
