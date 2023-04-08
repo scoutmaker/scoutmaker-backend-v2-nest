@@ -10,50 +10,33 @@ import {
   Min,
 } from 'class-validator';
 
+import { IsOptionalStringArray } from '../../../common/decorators/string-array-filter.decorator';
 import { ObservationTypeEnum, RatingRangesEnum } from '../../../types/common';
 
 export class FindAllReportsDto {
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   playerIds?: string[];
 
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   positionIds?: string[];
 
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   positionTypeIds?: string[];
 
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   matchIds?: string[];
 
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   teamIds?: string[];
 
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   competitionIds?: string[];
 
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptionalStringArray()
   competitionGroupIds?: string[];
+
+  @IsOptionalStringArray()
+  seasonIds?: string[];
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
