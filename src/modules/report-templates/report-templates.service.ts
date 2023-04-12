@@ -19,11 +19,11 @@ interface CsvInput {
   skillList: string;
 }
 
-const include: Prisma.ReportTemplateInclude = {
+const include = Prisma.validator<Prisma.ReportTemplateInclude>()({
   skillAssessmentTemplates: {
     include: { skillAssessmentTemplate: { include: { category: true } } },
   },
-};
+});
 
 @Injectable()
 export class ReportTemplatesService {
@@ -125,7 +125,10 @@ export class ReportTemplatesService {
   }
 
   findOne(id: string) {
-    return this.prisma.reportTemplate.findUnique({ where: { id }, include });
+    return this.prisma.reportTemplate.findUnique({
+      where: { id },
+      include,
+    });
   }
 
   async update(id: string, updateReportTemplateDto: UpdateReportTemplateDto) {

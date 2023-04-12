@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Report, ReportTemplate } from '@prisma/client';
+import { Prisma, Report } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
@@ -146,7 +146,9 @@ export class ReportsService {
       ...rest
     } = createReportDto;
 
-    let template: ReportTemplate;
+    let template:
+      | Awaited<ReturnType<typeof this.templatesService.findOne>>
+      | undefined;
 
     if (templateId) {
       template = await this.templatesService.findOne(templateId);
@@ -189,6 +191,12 @@ export class ReportsService {
         ...rest,
         finalRating,
         percentageRating,
+        skillsOrder: template
+          ? template.skillAssessmentTemplates.map(
+              ({ skillAssessmentTemplate: { id, shortName } }) =>
+                `${id}::${shortName}`,
+            )
+          : undefined,
         avgRating: !Number.isNaN(avgRating) ? avgRating : undefined,
         maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
