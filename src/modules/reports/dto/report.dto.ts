@@ -106,6 +106,9 @@ export class ReportDto {
   percentageRating?: number;
 
   @Expose()
+  skillsOrder?: string[];
+
+  @Expose()
   @ApiProperty({ enum: ReportStatus })
   status: ReportStatus;
 
