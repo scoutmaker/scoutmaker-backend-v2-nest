@@ -251,16 +251,16 @@ export class NotesService {
           observationType,
           AND: [
             {
-              meta: isIdsArrayFilterDefined(competitionIds)
+              match: isIdsArrayFilterDefined(competitionIds)
                 ? {
                     competition: { id: { in: competitionIds } },
                   }
                 : undefined,
             },
             {
-              meta: isIdsArrayFilterDefined(competitionGroupIds)
+              match: isIdsArrayFilterDefined(competitionGroupIds)
                 ? {
-                    competitionGroup: { id: { in: competitionGroupIds } },
+                    group: { id: { in: competitionGroupIds } },
                   }
                 : undefined,
             },
