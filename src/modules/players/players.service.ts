@@ -651,23 +651,20 @@ export class PlayersService {
         playerId,
         percentageRating: { not: null },
       },
-      _avg: { percentageRating: true },
+      _sum: { percentageRating: true },
+      _count: { percentageRating: true },
     });
 
     const [notes, reports] = await Promise.all([
       this.prisma.note.aggregate(args),
       this.prisma.report.aggregate(args),
     ]);
-    const notesAvg = notes._avg.percentageRating;
-    const reportsAvg = reports._avg.percentageRating;
+    const sumAvgRating =
+      notes._sum.percentageRating + reports._sum.percentageRating;
+    const countAvgRating =
+      reports._count.percentageRating + notes._count.percentageRating;
 
-    let averagePercentageRating: number;
-
-    if (notesAvg && reportsAvg) {
-      averagePercentageRating = (notesAvg + reportsAvg) / 2;
-    } else {
-      averagePercentageRating = notesAvg || reportsAvg;
-    }
+    const averagePercentageRating = sumAvgRating / countAvgRating;
 
     await this.update(playerId, { averagePercentageRating });
   }
