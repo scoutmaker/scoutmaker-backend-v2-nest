@@ -64,7 +64,11 @@ export class NotesController {
     @Body() createNoteDto: CreateNoteDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    const note = await this.notesService.create(createNoteDto, user.id);
+    const note = await this.notesService.create(
+      createNoteDto,
+      user.id,
+      user.role,
+    );
     const message = this.i18n.translate('notes.CREATE_MESSAGE', {
       lang,
       args: { docNumber: note.docNumber },

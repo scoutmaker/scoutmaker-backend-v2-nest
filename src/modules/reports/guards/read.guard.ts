@@ -43,7 +43,7 @@ export class ReadGuard implements CanActivate {
     // If user is a scout-manager, they can read all reports created by all other users except for SCOUT
     if (
       user.role === 'PLAYMAKER_SCOUT_MANAGER' &&
-      privilegedRoles.includes(report.author.role)
+      privilegedRoles.includes(report?.createdByRole || report.author.role)
     ) {
       return true;
     }
