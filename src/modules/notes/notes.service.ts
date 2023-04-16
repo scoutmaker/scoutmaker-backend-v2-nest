@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Note, Prisma } from '@prisma/client';
+import { Note, Prisma, UserRole } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
@@ -13,6 +13,7 @@ import {
 } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { FindAllNotesDto, GetNotesListDto } from './dto/find-all-notes.dto';
 import { NotesPaginationOptionsDto } from './dto/notes-pagination-options.dto';
@@ -69,6 +70,7 @@ export class NotesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
+    private readonly usersService: UsersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -89,7 +91,11 @@ export class NotesService {
     );
   }
 
-  async create(createNoteDto: CreateNoteDto, authorId: string) {
+  async create(
+    createNoteDto: CreateNoteDto,
+    authorId: string,
+    authorRole?: UserRole,
+  ) {
     const {
       playerId,
       matchId,
@@ -127,6 +133,13 @@ export class NotesService {
         competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
     }
 
+    let authorRoleFinal = authorRole;
+
+    if (!authorRoleFinal) {
+      const author = await this.usersService.findCurrentWithCache(authorId);
+      authorRoleFinal = author.role;
+    }
+
     const createdNote = await this.prisma.note.create({
       data: {
         ...rest,
@@ -136,6 +149,7 @@ export class NotesService {
         player: playerId ? { connect: { id: playerId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
         author: { connect: { id: authorId } },
+        createdByRole: authorRoleFinal,
         meta: playerId
           ? {
               create: {
@@ -430,7 +444,10 @@ export class NotesService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(
+    id: string,
+    userId?: string,
+  ): Promise<Prisma.NoteGetPayload<{ include: typeof singleInclude }>> {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {

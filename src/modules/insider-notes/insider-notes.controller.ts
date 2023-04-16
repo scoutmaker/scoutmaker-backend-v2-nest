@@ -66,6 +66,7 @@ export class InsiderNotesController {
     const insiderNote = await this.insiderNotesService.create(
       createInsiderNoteDto,
       user.id,
+      user.role,
     );
     const message = this.i18n.translate('insider-notes.CREATE_MESSAGE', {
       lang,

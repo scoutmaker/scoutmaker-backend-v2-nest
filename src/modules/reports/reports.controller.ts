@@ -64,7 +64,11 @@ export class ReportsController {
     @Body() createReportDto: CreateReportDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    const report = await this.reportsService.create(createReportDto, user.id);
+    const report = await this.reportsService.create(
+      createReportDto,
+      user.id,
+      user.role,
+    );
     const message = this.i18n.translate('reports.CREATE_MESSAGE', {
       lang,
       args: { docNumber: report.docNumber },

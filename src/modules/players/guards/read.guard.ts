@@ -35,7 +35,8 @@ export class ReadGuard implements CanActivate {
       player = await this.playersService.findOneBySlug(request.params.slug);
 
     // Users can read players created by ADMIN, PLAYMAKER-SCOUT or PLAYMAKER-SCOUTING-MANAGER users
-    if (player.author.role !== 'SCOUT') {
+    const checkRole = player?.createdByRole || player.author.role;
+    if (checkRole !== 'SCOUT') {
       return true;
     }
 

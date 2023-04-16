@@ -43,7 +43,7 @@ export class ReadGuard implements CanActivate {
     // If user is a scout-manager, they can read all notes created by all other users except for SCOUT
     if (
       user.role === 'PLAYMAKER_SCOUT_MANAGER' &&
-      privilegedRoles.includes(note.author.role)
+      privilegedRoles.includes(note?.createdByRole || note.author.role)
     ) {
       return true;
     }

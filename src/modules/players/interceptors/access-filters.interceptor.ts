@@ -30,7 +30,9 @@ export class AccessFiltersInterceptor implements NestInterceptor {
           authorId: request.user.id,
         },
         // Users can access any players created by ADMIN, PLAYMAKER-SCOUT or PLAYMAKER-SCOUTING-MANAGER users
+        { createdByRole: { not: 'SCOUT' } },
         {
+          createdByRole: null,
           author: { role: { not: 'SCOUT' } },
         },
         // Users can access players with the public flag set to true
