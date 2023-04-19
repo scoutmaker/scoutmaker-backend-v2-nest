@@ -26,6 +26,9 @@ export class ReportTemplateDto {
   )
   @Expose()
   skillAssessmentTemplates: ReportSkillAssessmentTemplateDto[];
+
+  @Expose()
+  compactCategoriesIds?: string[];
 }
 
 export class ReportTemplateBasicDataDto extends PickType(ReportTemplateDto, [

@@ -588,13 +588,14 @@ model ReportSkillAssessmentTemplate {
 }
 
 model ReportTemplate {
-  id             String   @id @default(cuid())
-  name           String
-  maxRatingScore Int
-  isPublic       Boolean  @default(false)
-  scoutmakerv1Id String?  @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  name                 String
+  maxRatingScore       Int
+  isPublic             Boolean  @default(false)
+  scoutmakerv1Id       String?  @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  compactCategoriesIds String[]
 
   // Relation fields
   author                   User                                        @relation(fields: [authorId], references: [id])
@@ -642,28 +643,29 @@ enum ReportStatus {
 }
 
 model Report {
-  id               String          @id @default(cuid())
-  docNumber        Int             @default(autoincrement())
-  shirtNo          Int?
-  minutesPlayed    Int?
-  goals            Int?
-  assists          Int?
-  yellowCards      Int?
-  redCards         Int?
-  videoUrl         String?
-  videoDescription String?
-  maxRatingScore   Int
-  finalRating      Int?
-  summary          String?
-  avgRating        Float?
-  percentageRating Float?
-  skillsOrder      String[]
-  status           ReportStatus    @default(IN_PROGRESS)
-  observationType  ObservationType @default(VIDEO)
-  scoutmakerv1Id   String?         @unique
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  createdByRole    UserRole?
+  id                   String          @id @default(cuid())
+  docNumber            Int             @default(autoincrement())
+  shirtNo              Int?
+  minutesPlayed        Int?
+  goals                Int?
+  assists              Int?
+  yellowCards          Int?
+  redCards             Int?
+  videoUrl             String?
+  videoDescription     String?
+  maxRatingScore       Int
+  finalRating          Int?
+  summary              String?
+  avgRating            Float?
+  percentageRating     Float?
+  skillsOrder          String[]
+  compactCategoriesIds String[]
+  status               ReportStatus    @default(IN_PROGRESS)
+  observationType      ObservationType @default(VIDEO)
+  scoutmakerv1Id       String?         @unique
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  createdByRole        UserRole?
 
   // Relation fields
   author                        User                                   @relation(fields: [authorId], references: [id])

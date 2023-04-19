@@ -209,6 +209,7 @@ export class ReportsService {
                 `${id}::${shortName}`,
             )
           : undefined,
+        compactCategoriesIds: template?.compactCategoriesIds,
         avgRating: !Number.isNaN(avgRating) ? avgRating : undefined,
         maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },

@@ -109,6 +109,9 @@ export class ReportDto {
   skillsOrder?: string[];
 
   @Expose()
+  compactCategoriesIds?: string[];
+
+  @Expose()
   @ApiProperty({ enum: ReportStatus })
   status: ReportStatus;
 
