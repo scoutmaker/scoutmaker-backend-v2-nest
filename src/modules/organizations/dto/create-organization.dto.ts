@@ -13,4 +13,8 @@ export class CreateOrganizationDto {
   @IsArray()
   @IsString({ each: true })
   memberIds: string[];
+
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
 }

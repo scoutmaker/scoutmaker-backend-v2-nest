@@ -10,6 +10,9 @@ export class OrganizationDto {
   @Expose()
   name: string;
 
+  @Expose()
+  logoUrl?: string;
+
   @Transform(({ value }) =>
     plainToInstance(UserBasicDataDto, value, {
       excludeExtraneousValues: true,
