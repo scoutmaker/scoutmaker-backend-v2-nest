@@ -29,7 +29,10 @@ export class OrganizationsService {
     private readonly i18n: I18nService,
   ) {}
 
-  async create({ name, memberIds }: CreateOrganizationDto, lang: string) {
+  async create(
+    { name, memberIds, logoUrl }: CreateOrganizationDto,
+    lang: string,
+  ) {
     const members = await this.prisma.user.findMany({
       where: { id: { in: memberIds } },
     });
@@ -53,6 +56,7 @@ export class OrganizationsService {
     return this.prisma.organization.create({
       data: {
         name,
+        logoUrl,
         members: { connect: memberIds.map((id) => ({ id })) },
       },
       include,

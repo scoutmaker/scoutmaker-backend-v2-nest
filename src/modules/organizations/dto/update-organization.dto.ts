@@ -4,5 +4,5 @@ import { CreateOrganizationDto } from './create-organization.dto';
 
 export class UpdateOrganizationDto extends PickType(
   PartialType(CreateOrganizationDto),
-  ['name'],
+  ['name', 'logoUrl'],
 ) {}
