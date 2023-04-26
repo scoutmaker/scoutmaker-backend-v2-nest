@@ -68,11 +68,17 @@ export class DashboardService {
       | Prisma.NoteWhereInput
       | Prisma.ReportWhereInput = {
       createdAt: { gte: monthAgoDate },
-      author: {
-        role: {
-          in: rolesScope,
+      OR: [
+        { createdByRole: { in: rolesScope } },
+        {
+          createdByRole: null,
+          author: {
+            role: {
+              in: rolesScope,
+            },
+          },
         },
-      },
+      ],
     };
 
     const recentUserObservationsWhere:
