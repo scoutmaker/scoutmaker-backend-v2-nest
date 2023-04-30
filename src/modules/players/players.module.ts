@@ -10,6 +10,7 @@ import { UserInsiderNoteAclService } from '../user-insider-note-acl/user-insider
 import { UserNoteAclService } from '../user-note-acl/user-note-acl.service';
 import { UserReportAclService } from '../user-report-acl/user-report-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
+import { UsersService } from '../users/users.service';
 import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
 
@@ -25,6 +26,7 @@ import { PlayersService } from './players.service';
     OrganizationInsiderNoteAclService,
     OrganizationNoteAclService,
     OrganizationReportAclService,
+    UsersService,
     { provide: featureServiceName, useExisting: PlayersService },
   ],
   exports: [PlayersService],

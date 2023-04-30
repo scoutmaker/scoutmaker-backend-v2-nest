@@ -60,7 +60,11 @@ export class PlayersController {
     @Body() createPlayerDto: CreatePlayerDto,
     @CurrentUser() user: CurrentUserDto,
   ) {
-    const player = await this.playersService.create(createPlayerDto, user.id);
+    const player = await this.playersService.create(
+      createPlayerDto,
+      user.id,
+      user.role,
+    );
     const message = this.i18n.translate('players.CREATE_MESSAGE', {
       lang,
       args: { name: `${player.firstName} ${player.lastName}` },

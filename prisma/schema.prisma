@@ -7,9 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  //shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum UserRole {
@@ -370,10 +370,10 @@ enum Foot {
 }
 
 model Player {
-  id                      String   @id @default(cuid())
+  id                      String    @id @default(cuid())
   firstName               String
   lastName                String
-  slug                    String   @unique
+  slug                    String    @unique
   yearOfBirth             Int
   height                  Int?
   weight                  Int?
@@ -385,11 +385,12 @@ model Player {
   transfermarktId         String?
   transfermarktUrl        String?
   inStatUrl               String?
-  isPublic                Boolean  @default(false)
-  scoutmakerv1Id          String?  @unique
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  isPublic                Boolean   @default(false)
+  scoutmakerv1Id          String?   @unique
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
   averagePercentageRating Float?
+  createdByRole           UserRole?
 
   // Relation fields
   country                       Country                                @relation(fields: [countryId], references: [id])
@@ -486,6 +487,7 @@ model Note {
   observationType  ObservationType @default(VIDEO)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  createdByRole    UserRole?
 
   // Relation fields
   player                        Player?                              @relation(fields: [playerId], references: [id])
@@ -519,12 +521,13 @@ model NoteMeta {
 }
 
 model InsiderNote {
-  id          String   @id @default(cuid())
-  docNumber   Int      @default(autoincrement())
-  informant   String?
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String    @id @default(cuid())
+  docNumber     Int       @default(autoincrement())
+  informant     String?
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdByRole UserRole?
 
   // Relation fields
   player                        Player                                      @relation(fields: [playerId], references: [id])
@@ -585,13 +588,14 @@ model ReportSkillAssessmentTemplate {
 }
 
 model ReportTemplate {
-  id             String   @id @default(cuid())
-  name           String
-  maxRatingScore Int
-  isPublic       Boolean  @default(false)
-  scoutmakerv1Id String?  @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  name                 String
+  maxRatingScore       Int
+  isPublic             Boolean  @default(false)
+  scoutmakerv1Id       String?  @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  compactCategoriesIds String[]
 
   // Relation fields
   author                   User                                        @relation(fields: [authorId], references: [id])
@@ -639,26 +643,29 @@ enum ReportStatus {
 }
 
 model Report {
-  id               String          @id @default(cuid())
-  docNumber        Int             @default(autoincrement())
-  shirtNo          Int?
-  minutesPlayed    Int?
-  goals            Int?
-  assists          Int?
-  yellowCards      Int?
-  redCards         Int?
-  videoUrl         String?
-  videoDescription String?
-  maxRatingScore   Int
-  finalRating      Int?
-  summary          String?
-  avgRating        Float?
-  percentageRating Float?
-  status           ReportStatus    @default(IN_PROGRESS)
-  observationType  ObservationType @default(VIDEO)
-  scoutmakerv1Id   String?         @unique
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id                   String          @id @default(cuid())
+  docNumber            Int             @default(autoincrement())
+  shirtNo              Int?
+  minutesPlayed        Int?
+  goals                Int?
+  assists              Int?
+  yellowCards          Int?
+  redCards             Int?
+  videoUrl             String?
+  videoDescription     String?
+  maxRatingScore       Int
+  finalRating          Int?
+  summary              String?
+  avgRating            Float?
+  percentageRating     Float?
+  skillsOrder          String[]
+  compactCategoriesIds String[]
+  status               ReportStatus    @default(IN_PROGRESS)
+  observationType      ObservationType @default(VIDEO)
+  scoutmakerv1Id       String?         @unique
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  createdByRole        UserRole?
 
   // Relation fields
   author                        User                                   @relation(fields: [authorId], references: [id])
@@ -824,6 +831,7 @@ model Organization {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  logoUrl   String?
 
   // Relation fields
   members                      User[]

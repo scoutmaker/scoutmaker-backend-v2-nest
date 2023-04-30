@@ -8,6 +8,7 @@ import {
   Player,
   Prisma,
   User,
+  UserRole,
 } from '@prisma/client';
 import Redis from 'ioredis';
 
@@ -20,6 +21,7 @@ import {
 } from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
 import { CreateInsiderNoteDto } from './dto/create-insider-note.dto';
 import { FindAllInsiderNotesDto } from './dto/find-all-insider-notes.dto';
 import { InsiderNotesPaginationOptionsDto } from './dto/insider-notes-pagination-options.dto';
@@ -68,10 +70,15 @@ export class InsiderNotesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
+    private readonly usersService: UsersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async create(createInsiderNoteDto: CreateInsiderNoteDto, authorId: string) {
+  async create(
+    createInsiderNoteDto: CreateInsiderNoteDto,
+    authorId: string,
+    authorRole?: UserRole,
+  ) {
     const { playerId, teamId, competitionId, competitionGroupId, ...rest } =
       createInsiderNoteDto;
 
@@ -85,11 +92,19 @@ export class InsiderNotesService {
     const metaCompetitionGroupId =
       competitionGroupId || player.teams[0]?.team.competitions[0].groupId;
 
+    let authorRoleFinal = authorRole;
+
+    if (!authorRoleFinal) {
+      const author = await this.usersService.findCurrentWithCache(authorId);
+      authorRoleFinal = author.role;
+    }
+
     return this.prisma.insiderNote.create({
       data: {
         ...rest,
         player: { connect: { id: playerId } },
         author: { connect: { id: authorId } },
+        createdByRole: authorRoleFinal,
         meta: {
           create: {
             team: metaTeamId ? { connect: { id: metaTeamId } } : undefined,

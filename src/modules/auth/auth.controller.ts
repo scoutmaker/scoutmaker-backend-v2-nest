@@ -99,10 +99,14 @@ export class AuthController {
     @CurrentUser() user: CurrentUserDto,
   ) {
     const accountData = await this.usersService.findOne(user.id);
+    const returnData = {
+      ...accountData,
+      organizationLogoUrl: accountData?.organization?.logoUrl,
+    };
     const message = this.i18n.translate('auth.GET_ACCOUNT_MESSAGE', {
       lang,
     });
-    return formatSuccessResponse(message, accountData);
+    return formatSuccessResponse(message, returnData);
   }
 
   @Patch('update-account')

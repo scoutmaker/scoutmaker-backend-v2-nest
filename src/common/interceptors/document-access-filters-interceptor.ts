@@ -87,7 +87,12 @@ export class DocumentAccessFiltersInterceptor implements NestInterceptor {
 
     const scoutingManagerExtraAccess: Filter =
       user.role === 'PLAYMAKER_SCOUT_MANAGER'
-        ? { author: { role: { not: 'SCOUT' } } }
+        ? {
+            OR: [
+              { createdByRole: { not: 'SCOUT' } },
+              { createdByRole: null, author: { role: { not: 'SCOUT' } } },
+            ],
+          }
         : {};
 
     const organizationAccess: Filter = user.organizationId

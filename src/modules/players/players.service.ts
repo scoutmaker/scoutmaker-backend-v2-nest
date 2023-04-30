@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Player, Prisma } from '@prisma/client';
+import { Player, Prisma, UserRole } from '@prisma/client';
 import Redis from 'ioredis';
 import slugify from 'slugify';
 
@@ -13,6 +13,7 @@ import {
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
@@ -99,6 +100,7 @@ interface IGenerateWhereClauseArgs {
 export class PlayersService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -123,7 +125,11 @@ export class PlayersService {
     return this.redis.get(this.getRedisKey(id));
   }
 
-  async create(createPlayerDto: CreatePlayerDto, authorId: string) {
+  async create(
+    createPlayerDto: CreatePlayerDto,
+    authorId: string,
+    authorRole?: UserRole,
+  ) {
     const {
       countryId,
       primaryPositionId,
@@ -134,6 +140,13 @@ export class PlayersService {
     } = createPlayerDto;
 
     const slug = await this.generateSlug(`${rest.lastName} ${rest.firstName}`);
+
+    let authorRoleFinal = authorRole;
+
+    if (!authorRoleFinal) {
+      const author = await this.usersService.findCurrentWithCache(authorId);
+      authorRoleFinal = author.role;
+    }
 
     return this.prisma.player.create({
       data: {
@@ -155,6 +168,7 @@ export class PlayersService {
           ? { create: { teamId, startDate: new Date(), endDate: null } }
           : undefined,
         author: { connect: { id: authorId } },
+        createdByRole: authorRoleFinal,
         role: roleId ? { connect: { id: roleId } } : undefined,
       },
       include,
@@ -651,23 +665,20 @@ export class PlayersService {
         playerId,
         percentageRating: { not: null },
       },
-      _avg: { percentageRating: true },
+      _sum: { percentageRating: true },
+      _count: { percentageRating: true },
     });
 
     const [notes, reports] = await Promise.all([
       this.prisma.note.aggregate(args),
       this.prisma.report.aggregate(args),
     ]);
-    const notesAvg = notes._avg.percentageRating;
-    const reportsAvg = reports._avg.percentageRating;
+    const sumAvgRating =
+      notes._sum.percentageRating + reports._sum.percentageRating;
+    const countAvgRating =
+      reports._count.percentageRating + notes._count.percentageRating;
 
-    let averagePercentageRating: number;
-
-    if (notesAvg && reportsAvg) {
-      averagePercentageRating = (notesAvg + reportsAvg) / 2;
-    } else {
-      averagePercentageRating = notesAvg || reportsAvg;
-    }
+    const averagePercentageRating = sumAvgRating / countAvgRating;
 
     await this.update(playerId, { averagePercentageRating });
   }

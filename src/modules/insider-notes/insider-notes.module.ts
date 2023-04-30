@@ -7,6 +7,7 @@ import { OrganizationSubscriptionsService } from '../organization-subscriptions/
 import { PlayersModule } from '../players/players.module';
 import { UserInsiderNoteAclService } from '../user-insider-note-acl/user-insider-note-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
+import { UsersService } from '../users/users.service';
 import { InsiderNotesController } from './insider-notes.controller';
 import { InsiderNotesService } from './insider-notes.service';
 
@@ -18,6 +19,7 @@ import { InsiderNotesService } from './insider-notes.service';
     OrganizationSubscriptionsService,
     UserInsiderNoteAclService,
     OrganizationInsiderNoteAclService,
+    UsersService,
     { provide: featureServiceName, useExisting: InsiderNotesService },
   ],
   imports: [PlayersModule],

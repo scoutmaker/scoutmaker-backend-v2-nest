@@ -216,7 +216,11 @@ export class UsersService {
   findOne(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
-      include: { ...include, reportBackgroundImage: true },
+      include: {
+        ...include,
+        reportBackgroundImage: true,
+        organization: { select: { logoUrl: true } },
+      },
     });
   }
 

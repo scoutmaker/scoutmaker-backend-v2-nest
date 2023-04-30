@@ -34,4 +34,9 @@ export class CreateReportTemplateDto {
   @IsArray()
   @IsString({ each: true })
   skillAssessmentTemplateIds: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  compactCategoriesIds?: string[];
 }

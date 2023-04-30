@@ -7,6 +7,7 @@ import { OrganizationSubscriptionsService } from '../organization-subscriptions/
 import { PlayersModule } from '../players/players.module';
 import { UserNoteAclService } from '../user-note-acl/user-note-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
+import { UsersService } from '../users/users.service';
 import { NotesController } from './notes.controller';
 import { NotesService } from './notes.service';
 
@@ -18,6 +19,7 @@ import { NotesService } from './notes.service';
     OrganizationSubscriptionsService,
     UserNoteAclService,
     OrganizationNoteAclService,
+    UsersService,
     { provide: featureServiceName, useExisting: NotesService },
   ],
   imports: [PlayersModule],

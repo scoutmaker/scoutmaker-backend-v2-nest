@@ -8,6 +8,7 @@ import { PlayersModule } from '../players/players.module';
 import { ReportTemplatesModule } from '../report-templates/report-templates.module';
 import { UserReportAclService } from '../user-report-acl/user-report-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
+import { UsersService } from '../users/users.service';
 import { ReportsController } from './reports.controller';
 import { ReportsService } from './reports.service';
 
@@ -19,6 +20,7 @@ import { ReportsService } from './reports.service';
     OrganizationSubscriptionsService,
     UserReportAclService,
     OrganizationReportAclService,
+    UsersService,
     { provide: featureServiceName, useExisting: ReportsService },
   ],
   imports: [ReportTemplatesModule, PlayersModule],

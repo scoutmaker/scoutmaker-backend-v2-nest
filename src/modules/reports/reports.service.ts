@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
-import { Prisma, Report, ReportTemplate } from '@prisma/client';
+import { Prisma, Report, UserRole } from '@prisma/client';
 import Redis from 'ioredis';
 
 import { percentageRatingRanges, REDIS_TTL } from '../../utils/constants';
@@ -15,6 +15,7 @@ import {
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportTemplatesService } from '../report-templates/report-templates.service';
+import { UsersService } from '../users/users.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FindAllReportsDto } from './dto/find-all-reports.dto';
 import { ReportsPaginationOptionsDto } from './dto/reports-pagination-options.dto';
@@ -110,6 +111,7 @@ export class ReportsService {
     private readonly prisma: PrismaService,
     private readonly templatesService: ReportTemplatesService,
     private readonly playersService: PlayersService,
+    private readonly usersService: UsersService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -130,7 +132,11 @@ export class ReportsService {
     );
   }
 
-  async create(createReportDto: CreateReportDto, authorId: string) {
+  async create(
+    createReportDto: CreateReportDto,
+    authorId: string,
+    authorRole?: UserRole,
+  ) {
     const {
       templateId,
       playerId,
@@ -146,7 +152,9 @@ export class ReportsService {
       ...rest
     } = createReportDto;
 
-    let template: ReportTemplate;
+    let template:
+      | Awaited<ReturnType<typeof this.templatesService.findOne>>
+      | undefined;
 
     if (templateId) {
       template = await this.templatesService.findOne(templateId);
@@ -173,7 +181,6 @@ export class ReportsService {
     const player = await this.playersService.findOneWithCurrentTeamDetails(
       playerId,
     );
-
     const metaPositionId = positionPlayedId || player.primaryPositionId;
     const metaTeamId = teamId || player.teams[0]?.teamId;
     const metaCompetitionId =
@@ -184,17 +191,32 @@ export class ReportsService {
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
 
+    let authorRoleFinal = authorRole;
+
+    if (!authorRoleFinal) {
+      const author = await this.usersService.findCurrentWithCache(authorId);
+      authorRoleFinal = author.role;
+    }
+
     const createdReport = await this.prisma.report.create({
       data: {
         ...rest,
         finalRating,
         percentageRating,
+        skillsOrder: template
+          ? template.skillAssessmentTemplates.map(
+              ({ skillAssessmentTemplate: { id, shortName } }) =>
+                `${id}::${shortName}`,
+            )
+          : undefined,
+        compactCategoriesIds: template?.compactCategoriesIds,
         avgRating: !Number.isNaN(avgRating) ? avgRating : undefined,
         maxRatingScore: maxRatingScore || template?.maxRatingScore,
         player: { connect: { id: playerId } },
         order: orderId ? { connect: { id: orderId } } : undefined,
         match: matchId ? { connect: { id: matchId } } : undefined,
         author: { connect: { id: authorId } },
+        createdByRole: authorRoleFinal,
         skills: areSkillAssessmentsIncluded
           ? {
               createMany: {
@@ -316,6 +338,7 @@ export class ReportsService {
       onlyLikedTeams,
       percentageRatingRanges: percentageRatingRangesFilter,
       onlyMine,
+      seasonIds,
     } = query;
 
     return {
@@ -427,6 +450,11 @@ export class ReportsService {
               })),
             },
             { authorId: onlyMine ? userId : undefined },
+            {
+              match: isIdsArrayFilterDefined(seasonIds)
+                ? { seasonId: { in: seasonIds } }
+                : undefined,
+            },
           ],
         },
       ],
@@ -478,7 +506,10 @@ export class ReportsService {
     });
   }
 
-  async findOne(id: string, userId?: string) {
+  async findOne(
+    id: string,
+    userId?: string,
+  ): Promise<Prisma.ReportGetPayload<{ include: typeof singleInclude }>> {
     const cached = await this.getOneFromCache(id);
 
     if (cached) {
@@ -491,7 +522,6 @@ export class ReportsService {
         ? { ...singleInclude, likes: { where: { userId } } }
         : singleInclude,
     });
-
     await this.saveOneToCache(report);
 
     return report;

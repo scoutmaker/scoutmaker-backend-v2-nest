@@ -77,6 +77,9 @@ export class UserDto {
   organizationId?: string;
 
   @Expose()
+  organizationLogoUrl?: string;
+
+  @Expose()
   reportTemplateId?: string;
 
   @Expose()
