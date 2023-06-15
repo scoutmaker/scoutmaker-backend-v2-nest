@@ -88,6 +88,7 @@ model User {
   reportBackgroundImageId                String?
   reportTemplate                         ReportTemplate?                     @relation(fields: [reportTemplateId], references: [id], onDelete: Cascade, name: "defaultReportTemplate")
   reportTemplateId                       String?
+  playerGrades                           PlayerGrade[]
 }
 
 model ScoutProfile {
@@ -246,6 +247,7 @@ model Competition {
   reportsMeta               ReportMeta[]
   userSubscriptions         CompetitionsOnUserSubscriptions[]
   organizationSubscriptions CompetitionsOnOrganizationSubscriptions[]
+  playerGrades              PlayerGrade[]
 
   @@unique([level, countryId])
 }
@@ -401,6 +403,8 @@ model Player {
   authorId                      String
   role                          PlayerRole?                            @relation(fields: [roleId], references: [id])
   roleId                        String?
+  latestGrade                   PlayerGrade?                           @relation(fields: [latestGradeId], references: [id], name: "latest-grade")
+  latestGradeId                 String?
   secondaryPositions            SecondaryPositionsOnPlayers[]
   teams                         TeamAffiliation[]
   notes                         Note[]
@@ -413,6 +417,30 @@ model Player {
   userAccessControlList         UserPlayerAccessControlEntry[]
   organizationAccessControlList OrganizationPlayerAccessControlEntry[]
   likes                         LikePlayer[]
+  grades                        PlayerGrade[]                          @relation(name: "player-grade")
+}
+
+enum PlayerGradeLevel {
+  LIGA1
+  LIGA2
+  LIGA3
+  EKSTRAKLASA
+  EEU_ROZGRYWKI
+}
+
+model PlayerGrade {
+  id        String           @id @default(cuid())
+  grade     PlayerGradeLevel
+  createdAt DateTime         @default(now())
+
+  // Relation fields
+  player           Player      @relation(fields: [playerId], references: [id], name: "player-grade")
+  playerId         String
+  competition      Competition @relation(fields: [competitionId], references: [id])
+  competitionId    String
+  author           User        @relation(fields: [authorId], references: [id])
+  authorId         String
+  asLatestInPlayer Player[]    @relation(name: "latest-grade")
 }
 
 model SecondaryPositionsOnPlayers {

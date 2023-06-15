@@ -60,6 +60,7 @@ const include: Prisma.PlayerInclude = {
       team: true,
     },
   },
+  latestGrade: true,
   _count: { select: { notes: true, reports: true } },
 };
 
@@ -87,6 +88,7 @@ const singleInclude = Prisma.validator<Prisma.PlayerInclude>()({
       },
     },
   },
+  latestGrade: true,
   _count: { select: { notes: true, reports: true } },
 });
 
@@ -94,6 +96,7 @@ interface IGenerateWhereClauseArgs {
   query: FindAllPlayersDto;
   accessFilters?: Prisma.PlayerWhereInput;
   userId?: string;
+  onlyValidGrades?: boolean;
 }
 
 @Injectable()
@@ -236,6 +239,7 @@ export class PlayersService {
     query,
     accessFilters,
     userId,
+    onlyValidGrades,
   }: IGenerateWhereClauseArgs): Prisma.PlayerWhereInput {
     const {
       bornAfter,
@@ -256,6 +260,7 @@ export class PlayersService {
       maxAverageRating,
       minAverageRating,
       roleIds,
+      grades,
     } = query;
 
     const slugfiedQueryString = name
@@ -274,6 +279,16 @@ export class PlayersService {
       AND: [
         accessFilters,
         {
+          latestGrade: isIdsArrayFilterDefined(grades)
+            ? {
+                grade: { in: grades },
+                createdAt: {
+                  gte: new Date(
+                    new Date().getTime() - 183 * 24 * 60 * 60 * 1000,
+                  ), // created 183 days ago
+                },
+              }
+            : undefined,
           yearOfBirth: { gte: bornAfter, lte: bornBefore },
           orders: orderId ? { some: { id: orderId } } : undefined,
           footed,
@@ -433,6 +448,17 @@ export class PlayersService {
                 ? { id: { in: roleIds } }
                 : undefined,
             },
+            {
+              latestGrade: onlyValidGrades
+                ? {
+                    createdAt: {
+                      gte: new Date(
+                        new Date().getTime() - 183 * 24 * 60 * 60 * 1000,
+                      ), // created 183 days ago
+                    },
+                  }
+                : undefined,
+            },
           ],
         },
       ],
@@ -465,12 +491,21 @@ export class PlayersService {
         sort = { [sortBy]: { sort: sortingOrder, nulls: 'last' } };
         break;
 
+      case 'grade':
+        sort = { latestGrade: { grade: sortingOrder } };
+        break;
+
       default:
         sort = { [sortBy]: sortingOrder };
         break;
     }
 
-    const where = this.generateWhereClause({ query, userId, accessFilters });
+    const where = this.generateWhereClause({
+      query,
+      userId,
+      accessFilters,
+      onlyValidGrades: sortBy === 'grade',
+    });
 
     const players = await this.prisma.player.findMany({
       where,
@@ -681,5 +716,17 @@ export class PlayersService {
     const averagePercentageRating = sumAvgRating / countAvgRating;
 
     await this.update(playerId, { averagePercentageRating });
+  }
+
+  async setLatestGradeIfExists(playerId: string) {
+    const grade = await this.prisma.playerGrade.findMany({
+      where: { playerId },
+      orderBy: { createdAt: 'desc' },
+      take: 1,
+    });
+
+    if (grade.length) {
+      await this.update(playerId, { latestGradeId: grade[0].id });
+    }
   }
 }

@@ -4,6 +4,7 @@ import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CountryDto } from '../../countries/dto/country.dto';
 import { LikePlayerBasicDataDto } from '../../like-players/dto/like-player.dto';
+import { PlayerGradeSuperBasicDto } from '../../player-grades/dto/player-grade.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { PlayerRoleBasicDataDto } from '../../player-roles/dto/player-role.dto';
 import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
@@ -112,6 +113,9 @@ export class PlayerDto {
   )
   @Expose()
   role: PlayerRoleBasicDataDto;
+
+  @Expose()
+  latestGrade?: PlayerGradeSuperBasicDto;
 
   @Expose()
   _count: Count;
