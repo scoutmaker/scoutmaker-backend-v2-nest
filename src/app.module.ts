@@ -46,6 +46,7 @@ import { OrganizationNoteAclModule } from './modules/organization-note-acl/organ
 import { OrganizationReportAclModule } from './modules/organization-report-acl/organization-report-acl.module';
 import { OrganizationSubscriptionsModule } from './modules/organization-subscriptions/organization-subscriptions.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { PlayerGradesModule } from './modules/player-grades/player-grades.module';
 import { PlayerPositionTypesModule } from './modules/player-position-types/player-position-types.module';
 import { PlayerPositionsModule } from './modules/player-positions/player-positions.module';
 import { PlayerRoleExamplesModule } from './modules/player-role-examples/player-role-examples.module';
@@ -153,6 +154,7 @@ import { UsersModule } from './modules/users/users.module';
     PlayerRoleExamplesModule,
     ScoutProfilesModule,
     LandingModule,
+    PlayerGradesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

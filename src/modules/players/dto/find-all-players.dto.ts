@@ -11,6 +11,7 @@ import {
   Min,
 } from 'class-validator';
 
+import { PlayerGradeLevelEnum } from '../../player-grades/types';
 import { FootEnum } from '../types';
 
 export class FindAllPlayersDto {
@@ -116,4 +117,15 @@ export class FindAllPlayersDto {
   @Type(() => Number)
   @IsNumber()
   maxAverageRating?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsEnum(PlayerGradeLevelEnum, {
+    message: `Grades must be a valid enum value. Available values: ${Object.keys(
+      PlayerGradeLevelEnum,
+    ).join(', ')}`,
+    each: true,
+  })
+  grades?: PlayerGradeLevelEnum[];
 }

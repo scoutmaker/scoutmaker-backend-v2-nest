@@ -1,5 +1,5 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 import { CreatePlayerDto } from './create-player.dto';
 
@@ -9,4 +9,8 @@ export class UpdatePlayerDto extends PartialType(
   @IsOptional()
   @IsNumber()
   averagePercentageRating?: number;
+
+  @IsOptional()
+  @IsString()
+  latestGradeId?: string;
 }
