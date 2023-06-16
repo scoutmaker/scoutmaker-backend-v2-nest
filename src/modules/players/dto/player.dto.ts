@@ -9,6 +9,23 @@ import { PlayerPositionDto } from '../../player-positions/dto/player-position.dt
 import { PlayerRoleBasicDataDto } from '../../player-roles/dto/player-role.dto';
 import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
 
+class PlayerRecentAveragePercentageRatings {
+  @Expose()
+  id: string;
+
+  @Expose()
+  lastMonth?: number;
+
+  @Expose()
+  last3Months?: number;
+
+  @Expose()
+  last6Months?: number;
+
+  @Expose()
+  last12Months?: number;
+}
+
 class Count {
   notes: number;
   reports: number;
@@ -116,6 +133,9 @@ export class PlayerDto {
 
   @Expose()
   latestGrade?: PlayerGradeSuperBasicDto;
+
+  @Expose()
+  recentAveragePercentageRatings?: PlayerRecentAveragePercentageRatings;
 
   @Expose()
   _count: Count;

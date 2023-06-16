@@ -18,7 +18,7 @@ import { CreatePlayerDto } from './dto/create-player.dto';
 import { FindAllPlayersDto } from './dto/find-all-players.dto';
 import { PlayersPaginationOptionsDto } from './dto/players-pagination-options.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
-import { FootEnum } from './types';
+import { FootEnum, RecentAverageRating } from './types';
 
 type CsvFooted = 'R' | 'L' | 'both';
 interface CsvInput {
@@ -61,6 +61,7 @@ const include: Prisma.PlayerInclude = {
     },
   },
   latestGrade: true,
+  recentAveragePercentageRatings: true,
   _count: { select: { notes: true, reports: true } },
 };
 
@@ -488,7 +489,39 @@ export class PlayersService {
         break;
 
       case 'averagePercentageRating':
-        sort = { [sortBy]: { sort: sortingOrder, nulls: 'last' } };
+        switch (query.recentAverageRating) {
+          case RecentAverageRating.LASTMONTH:
+            sort = {
+              recentAveragePercentageRatings: {
+                lastMonth: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST3MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last3Months: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST6MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last6Months: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST12MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last12Months: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          default:
+            sort = { [sortBy]: { sort: sortingOrder, nulls: 'last' } };
+            break;
+        }
         break;
 
       case 'grade':
