@@ -8,6 +8,7 @@ import {
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
+import { TeamAffiliationsService } from '../team-affiliations/team-affiliations.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
@@ -49,7 +50,10 @@ const { group, season, ...listInclude } = include;
 
 @Injectable()
 export class MatchesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly teamAffiliationsService: TeamAffiliationsService,
+  ) {}
 
   create(createMatchDto: CreateMatchDto, authorId: string) {
     const {
@@ -263,5 +267,20 @@ export class MatchesService {
     return this.prisma.match.count({
       where: filters,
     });
+  }
+
+  async getPlayerTeamInMatch(
+    playerId: string,
+    matchId: string,
+  ): Promise<string | undefined> {
+    const match = await this.findOne(matchId);
+    const { docs: aff } = await this.teamAffiliationsService.findAll(
+      {},
+      { date: match.date.toString(), playerId },
+    );
+    const team = aff.find(
+      (a) => a.teamId === match.homeTeamId || a.teamId === match.awayTeamId,
+    );
+    return team?.teamId;
   }
 }
