@@ -8,4 +8,8 @@ export class FindAllTeamAffiliationsDto {
   @IsOptional()
   @IsString()
   teamId?: string;
+
+  @IsOptional()
+  @IsString()
+  date?: string;
 }

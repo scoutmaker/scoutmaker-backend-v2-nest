@@ -22,7 +22,8 @@ export function convertJwtExpiresInToNumber(expiresIn: string): number {
   );
 }
 
-export function calculateSkip(page: number, limit: number) {
+export function calculateSkip(page?: number, limit?: number) {
+  if (typeof page !== 'number' || typeof limit !== 'number') return undefined;
   return (page - 1) * limit;
 }
 

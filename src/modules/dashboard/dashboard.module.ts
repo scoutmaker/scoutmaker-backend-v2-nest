@@ -8,6 +8,7 @@ import { PlayersModule } from '../players/players.module';
 import { PlayersService } from '../players/players.service';
 import { ReportTemplatesModule } from '../report-templates/report-templates.module';
 import { ReportsService } from '../reports/reports.service';
+import { TeamAffiliationsService } from '../team-affiliations/team-affiliations.service';
 import { UsersService } from '../users/users.service';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
@@ -23,6 +24,7 @@ import { DashboardService } from './dashboard.service';
     PlayersService,
     UsersService,
     OrganizationsService,
+    TeamAffiliationsService,
   ],
   imports: [ReportTemplatesModule, PlayersModule],
 })

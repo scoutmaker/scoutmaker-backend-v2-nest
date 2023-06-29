@@ -11,6 +11,7 @@ import {
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
+import { MatchesService } from '../matches/matches.service';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -71,6 +72,7 @@ export class NotesService {
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
     private readonly usersService: UsersService,
+    private readonly matchesService: MatchesService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -126,7 +128,9 @@ export class NotesService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0]?.teamId;
+      metaTeamId =
+        teamId ||
+        (await this.matchesService.getPlayerTeamInMatch(playerId, matchId));
       metaCompetitionId =
         competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
@@ -313,13 +317,8 @@ export class NotesService {
                 : undefined,
             },
             {
-              match: isIdsArrayFilterDefined(teamIds)
-                ? {
-                    OR: [
-                      { homeTeamId: { in: teamIds } },
-                      { awayTeamId: { in: teamIds } },
-                    ],
-                  }
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { teamId: { in: teamIds } }
                 : undefined,
             },
             {
@@ -507,7 +506,12 @@ export class NotesService {
         playerId,
       );
 
-      const metaTeamId = teamId || player.teams[0]?.teamId;
+      const metaTeamId =
+        teamId ||
+        (await this.matchesService.getPlayerTeamInMatch(
+          playerId,
+          rest?.matchId || note.matchId,
+        ));
       const metaCompetitionId =
         competitionId || player.teams[0].team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
@@ -539,6 +543,18 @@ export class NotesService {
       await this.prisma.noteMeta.create({
         data: {
           note: { connect: { id } },
+        },
+      });
+    } else if (playerId && note.meta) {
+      await this.prisma.noteMeta.update({
+        where: { noteId: id },
+        data: {
+          teamId:
+            teamId ||
+            (await this.matchesService.getPlayerTeamInMatch(
+              playerId,
+              rest?.matchId || note.matchId,
+            )),
         },
       });
     }
