@@ -126,15 +126,17 @@ export class NotesService {
       const player = await this.playersService.findOneWithCurrentTeamDetails(
         playerId,
       );
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        matchId,
+      );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId =
-        teamId ||
-        (await this.matchesService.getPlayerTeamInMatch(playerId, matchId));
+      metaTeamId = teamId || team?.id;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
+        competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+        competitionGroupId || team?.team.competitions[0]?.groupId;
     }
 
     let authorRoleFinal = authorRole;
@@ -505,17 +507,16 @@ export class NotesService {
       const player = await this.playersService.findOneWithCurrentTeamDetails(
         playerId,
       );
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        rest?.matchId || note.matchId,
+      );
 
-      const metaTeamId =
-        teamId ||
-        (await this.matchesService.getPlayerTeamInMatch(
-          playerId,
-          rest?.matchId || note.matchId,
-        ));
+      const metaTeamId = teamId || team?.id;
       const metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0]?.competitionId;
+        competitionId || team.team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+        competitionGroupId || team?.team.competitions[0]?.groupId;
 
       await this.prisma.noteMeta.create({
         data: {
@@ -546,15 +547,20 @@ export class NotesService {
         },
       });
     } else if (playerId && note.meta) {
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        rest?.matchId || note.matchId,
+      );
+      const metaCompetitionId =
+        competitionId || team.team.competitions[0]?.competitionId;
+      const metaCompetitionGroupId =
+        competitionGroupId || team?.team.competitions[0]?.groupId;
       await this.prisma.noteMeta.update({
         where: { noteId: id },
         data: {
-          teamId:
-            teamId ||
-            (await this.matchesService.getPlayerTeamInMatch(
-              playerId,
-              rest?.matchId || note.matchId,
-            )),
+          teamId: teamId || team?.id,
+          competitionGroupId: metaCompetitionGroupId,
+          competitionId: metaCompetitionId,
         },
       });
     }

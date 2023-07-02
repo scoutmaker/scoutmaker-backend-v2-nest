@@ -4,9 +4,6 @@ import { PlayerGradeLevelEnum } from '../types';
 
 export class CreatePlayerGradeDto {
   @IsString()
-  competitionId: string;
-
-  @IsString()
   playerId: string;
 
   @IsEnum(PlayerGradeLevelEnum, {

@@ -183,14 +183,16 @@ export class ReportsService {
     const player = await this.playersService.findOneWithCurrentTeamDetails(
       playerId,
     );
+    const team = await this.matchesService.getPlayerTeamInMatch(
+      playerId,
+      matchId,
+    );
     const metaPositionId = positionPlayedId || player.primaryPositionId;
-    const metaTeamId =
-      teamId ||
-      (await this.matchesService.getPlayerTeamInMatch(playerId, matchId));
+    const metaTeamId = teamId || team?.id;
     const metaCompetitionId =
-      competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
+      competitionId || team?.team.competitions[0]?.competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+      competitionGroupId || team?.team.competitions[0]?.groupId;
 
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
@@ -555,18 +557,16 @@ export class ReportsService {
         this.playersService.findOneWithCurrentTeamDetails(playerId),
         this.findOne(id),
       ]);
-
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        matchId || report.matchId,
+      );
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId =
-        teamId ||
-        (await this.matchesService.getPlayerTeamInMatch(
-          playerId,
-          matchId || report.matchId,
-        ));
+      metaTeamId = teamId || team?.id;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
+        competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+        competitionGroupId || team?.team.competitions[0]?.groupId;
 
       await this.prisma.reportMeta.update({
         where: { reportId: id },
@@ -582,10 +582,12 @@ export class ReportsService {
       await this.prisma.reportMeta.update({
         where: { reportId: id },
         data: {
-          teamId: await this.matchesService.getPlayerTeamInMatch(
-            report.playerId,
-            matchId,
-          ),
+          teamId: (
+            await this.matchesService.getPlayerTeamInMatch(
+              report.playerId,
+              matchId,
+            )
+          ).id,
         },
       });
     }
