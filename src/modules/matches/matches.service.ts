@@ -269,10 +269,7 @@ export class MatchesService {
     });
   }
 
-  async getPlayerTeamInMatch(
-    playerId: string,
-    matchId: string,
-  ): Promise<string | undefined> {
+  async getPlayerTeamInMatch(playerId: string, matchId: string) {
     const match = await this.findOne(matchId);
     const { docs: aff } = await this.teamAffiliationsService.findAll(
       {},
@@ -281,6 +278,6 @@ export class MatchesService {
     const team = aff.find(
       (a) => a.teamId === match.homeTeamId || a.teamId === match.awayTeamId,
     );
-    return team?.teamId;
+    return team;
   }
 }

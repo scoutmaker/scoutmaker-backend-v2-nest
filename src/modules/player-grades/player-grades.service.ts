@@ -64,12 +64,18 @@ export class PlayerGradesService {
   }
 
   async create(createPlayerGradeDto: CreatePlayerGradeDto, authorId: string) {
-    const { competitionId, playerId, ...rest } = createPlayerGradeDto;
+    const { playerId, ...rest } = createPlayerGradeDto;
+    const player = await this.playersService.findOneWithCurrentTeamDetails(
+      playerId,
+    );
+    const competitionId = player.teams[0]?.team.competitions[0]?.competitionId;
     const created = await this.prisma.playerGrade.create({
       data: {
         ...rest,
         player: { connect: { id: playerId } },
-        competition: { connect: { id: competitionId } },
+        competition: competitionId
+          ? { connect: { id: competitionId } }
+          : undefined,
         author: { connect: { id: authorId } },
       },
     });

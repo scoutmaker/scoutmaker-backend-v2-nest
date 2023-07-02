@@ -437,8 +437,8 @@ model PlayerGrade {
   // Relation fields
   player           Player      @relation(fields: [playerId], references: [id], name: "player-grade")
   playerId         String
-  competition      Competition @relation(fields: [competitionId], references: [id])
-  competitionId    String
+  competition      Competition? @relation(fields: [competitionId], references: [id])
+  competitionId    String?
   author           User        @relation(fields: [authorId], references: [id])
   authorId         String
   asLatestInPlayer Player[]    @relation(name: "latest-grade")
