@@ -239,6 +239,7 @@ export class MatchesService {
   getList(query: FindAllMatchesDto) {
     return this.prisma.match.findMany({
       where: this.generateWhereClause(query),
+      orderBy: { date: 'desc' },
       include: listInclude,
     });
   }
