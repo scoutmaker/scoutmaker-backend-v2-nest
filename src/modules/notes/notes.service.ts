@@ -11,6 +11,7 @@ import {
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
+import { MatchesService } from '../matches/matches.service';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -71,6 +72,7 @@ export class NotesService {
     private readonly prisma: PrismaService,
     private readonly playersService: PlayersService,
     private readonly usersService: UsersService,
+    private readonly matchesService: MatchesService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -124,13 +126,17 @@ export class NotesService {
       const player = await this.playersService.findOneWithCurrentTeamDetails(
         playerId,
       );
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        matchId,
+      );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0]?.teamId;
+      metaTeamId = teamId || team?.id;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
+        competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+        competitionGroupId || team?.team.competitions[0]?.groupId;
     }
 
     let authorRoleFinal = authorRole;
@@ -313,13 +319,8 @@ export class NotesService {
                 : undefined,
             },
             {
-              match: isIdsArrayFilterDefined(teamIds)
-                ? {
-                    OR: [
-                      { homeTeamId: { in: teamIds } },
-                      { awayTeamId: { in: teamIds } },
-                    ],
-                  }
+              meta: isIdsArrayFilterDefined(teamIds)
+                ? { teamId: { in: teamIds } }
                 : undefined,
             },
             {
@@ -506,12 +507,16 @@ export class NotesService {
       const player = await this.playersService.findOneWithCurrentTeamDetails(
         playerId,
       );
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        rest?.matchId || note.matchId,
+      );
 
-      const metaTeamId = teamId || player.teams[0]?.teamId;
+      const metaTeamId = teamId || team?.id;
       const metaCompetitionId =
-        competitionId || player.teams[0].team.competitions[0]?.competitionId;
+        competitionId || team.team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+        competitionGroupId || team?.team.competitions[0]?.groupId;
 
       await this.prisma.noteMeta.create({
         data: {
@@ -539,6 +544,23 @@ export class NotesService {
       await this.prisma.noteMeta.create({
         data: {
           note: { connect: { id } },
+        },
+      });
+    } else if (playerId && note.meta) {
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        playerId,
+        rest?.matchId || note.matchId,
+      );
+      const metaCompetitionId =
+        competitionId || team.team.competitions[0]?.competitionId;
+      const metaCompetitionGroupId =
+        competitionGroupId || team?.team.competitions[0]?.groupId;
+      await this.prisma.noteMeta.update({
+        where: { noteId: id },
+        data: {
+          teamId: teamId || team?.id,
+          competitionGroupId: metaCompetitionGroupId,
+          competitionId: metaCompetitionId,
         },
       });
     }

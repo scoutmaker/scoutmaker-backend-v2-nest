@@ -104,7 +104,7 @@ export class TeamAffiliationsService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: TeamAffiliationsPaginationOptionsDto,
-    { playerId, teamId }: FindAllTeamAffiliationsDto,
+    { playerId, teamId, date }: FindAllTeamAffiliationsDto,
   ) {
     let sort: Prisma.TeamAffiliationOrderByWithRelationInput;
 
@@ -121,6 +121,8 @@ export class TeamAffiliationsService {
     const where: Prisma.TeamAffiliationWhereInput = {
       playerId,
       teamId,
+      startDate: date ? { lte: new Date(date) } : undefined,
+      endDate: date ? { gte: new Date(date) } : undefined,
     };
 
     const affiliations = await this.prisma.teamAffiliation.findMany({

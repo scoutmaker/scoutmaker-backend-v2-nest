@@ -12,6 +12,7 @@ import {
   formatPaginatedResponse,
   isIdsArrayFilterDefined,
 } from '../../utils/helpers';
+import { MatchesService } from '../matches/matches.service';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportTemplatesService } from '../report-templates/report-templates.service';
@@ -112,6 +113,7 @@ export class ReportsService {
     private readonly templatesService: ReportTemplatesService,
     private readonly playersService: PlayersService,
     private readonly usersService: UsersService,
+    private readonly matchesService: MatchesService,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -181,12 +183,16 @@ export class ReportsService {
     const player = await this.playersService.findOneWithCurrentTeamDetails(
       playerId,
     );
+    const team = await this.matchesService.getPlayerTeamInMatch(
+      playerId,
+      matchId,
+    );
     const metaPositionId = positionPlayedId || player.primaryPositionId;
-    const metaTeamId = teamId || player.teams[0]?.teamId;
+    const metaTeamId = teamId || team?.id;
     const metaCompetitionId =
-      competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
+      competitionId || team?.team.competitions[0]?.competitionId;
     const metaCompetitionGroupId =
-      competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+      competitionGroupId || team?.team.competitions[0]?.groupId;
 
     const areSkillAssessmentsIncluded =
       skillAssessments && skillAssessments.length > 0;
@@ -536,6 +542,7 @@ export class ReportsService {
       competitionId,
       competitionGroupId,
       finalRating,
+      matchId,
       ...rest
     } = updateReportDto;
 
@@ -546,16 +553,20 @@ export class ReportsService {
 
     // If there's playerId in the update, we need to update the meta with calculated values
     if (playerId) {
-      const player = await this.playersService.findOneWithCurrentTeamDetails(
+      const [player, report] = await Promise.all([
+        this.playersService.findOneWithCurrentTeamDetails(playerId),
+        this.findOne(id),
+      ]);
+      const team = await this.matchesService.getPlayerTeamInMatch(
         playerId,
+        matchId || report.matchId,
       );
-
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || player.teams[0]?.teamId;
+      metaTeamId = teamId || team?.id;
       metaCompetitionId =
-        competitionId || player.teams[0]?.team.competitions[0]?.competitionId;
+        competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || player.teams[0]?.team.competitions[0]?.groupId;
+        competitionGroupId || team?.team.competitions[0]?.groupId;
 
       await this.prisma.reportMeta.update({
         where: { reportId: id },
@@ -564,6 +575,19 @@ export class ReportsService {
           teamId: metaTeamId,
           competitionId: metaCompetitionId,
           competitionGroupId: metaCompetitionGroupId,
+        },
+      });
+    } else if (!teamId && matchId) {
+      const report = await this.findOne(id);
+      await this.prisma.reportMeta.update({
+        where: { reportId: id },
+        data: {
+          teamId: (
+            await this.matchesService.getPlayerTeamInMatch(
+              report.playerId,
+              matchId,
+            )
+          ).id,
         },
       });
     }
@@ -609,6 +633,7 @@ export class ReportsService {
       where: { id },
       data: {
         ...rest,
+        matchId,
         playerId,
         finalRating,
         avgRating,

@@ -1,0 +1,11 @@
+{
+  "CREATE_MESSAGE": "Successfully created new player grade",
+  "GET_ALL_MESSAGE": "Successfully fetched all players grades, page {currentPage} of {totalPages}",
+  "GET_LIST_MESSAGE": "Successfully fetched all player grades",
+  "GET_ONE_MESSAGE": "Successfully fetched player grade",
+  "UPDATE_MESSAGE": "Successfully updated player grade data",
+  "DELETE_MESSAGE": "Successfully deleted player grade data",
+  "GET_ONE_ACCESS_ERROR": "You are not authorized to access player grade data",
+  "UPDATE_ACCESS_ERROR": "You are not authorized to update player grade data",
+  "DELETE_ACCESS_ERROR": "You are not authorized to delete player grade data"
+}

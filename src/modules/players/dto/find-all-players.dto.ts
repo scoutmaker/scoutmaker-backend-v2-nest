@@ -11,7 +11,8 @@ import {
   Min,
 } from 'class-validator';
 
-import { FootEnum } from '../types';
+import { PlayerGradeLevelEnum } from '../../player-grades/types';
+import { FootEnum, RecentAverageRating } from '../types';
 
 export class FindAllPlayersDto {
   @IsOptional()
@@ -116,4 +117,23 @@ export class FindAllPlayersDto {
   @Type(() => Number)
   @IsNumber()
   maxAverageRating?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsArray()
+  @IsEnum(PlayerGradeLevelEnum, {
+    message: `Grades must be a valid enum value. Available values: ${Object.keys(
+      PlayerGradeLevelEnum,
+    ).join(', ')}`,
+    each: true,
+  })
+  grades?: PlayerGradeLevelEnum[];
+
+  @IsOptional()
+  @IsEnum(RecentAverageRating, {
+    message: `Recent Average Rating a valid enum value. Available values: ${Object.keys(
+      RecentAverageRating,
+    ).join(', ')}`,
+  })
+  recentAverageRating?: RecentAverageRating;
 }

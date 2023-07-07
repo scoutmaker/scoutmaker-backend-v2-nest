@@ -4,9 +4,27 @@ import { Expose, plainToInstance, Transform } from 'class-transformer';
 
 import { CountryDto } from '../../countries/dto/country.dto';
 import { LikePlayerBasicDataDto } from '../../like-players/dto/like-player.dto';
+import { PlayerGradeSuperBasicDto } from '../../player-grades/dto/player-grade.dto';
 import { PlayerPositionDto } from '../../player-positions/dto/player-position.dto';
 import { PlayerRoleBasicDataDto } from '../../player-roles/dto/player-role.dto';
 import { TeamAffiliationWithoutPlayerDto } from '../../team-affiliations/dto/team-affiliation.dto';
+
+class PlayerRecentAveragePercentageRatings {
+  @Expose()
+  id: string;
+
+  @Expose()
+  lastMonth?: number;
+
+  @Expose()
+  last3Months?: number;
+
+  @Expose()
+  last6Months?: number;
+
+  @Expose()
+  last12Months?: number;
+}
 
 class Count {
   notes: number;
@@ -112,6 +130,12 @@ export class PlayerDto {
   )
   @Expose()
   role: PlayerRoleBasicDataDto;
+
+  @Expose()
+  latestGrade?: PlayerGradeSuperBasicDto;
+
+  @Expose()
+  recentAveragePercentageRatings?: PlayerRecentAveragePercentageRatings;
 
   @Expose()
   _count: Count;
