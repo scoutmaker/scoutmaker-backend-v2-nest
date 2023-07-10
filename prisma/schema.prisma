@@ -451,9 +451,21 @@ model RecentAveragePercentageRatingsOnPlayers {
   updatedAt DateTime @updatedAt
 
   lastMonth    Float?
+  lastMonthTotalCount Float?
+  lastMonthReportsCount Float?
+  lastMonthNotesCount Float?
   last3Months  Float?
+  last3MonthsTotalCount  Float?
+  last3MonthsReportsCount  Float?
+  last3MonthsNotesCount  Float?
   last6Months  Float?
+  last6MonthsTotalCount  Float?
+  last6MonthsReportsCount  Float?
+  last6MonthsNotesCount  Float?
   last12Months Float?
+  last12MonthsTotalCount Float?
+  last12MonthsReportsCount Float?
+  last12MonthsNotesCount Float?
 
   // Relation fields
   player   Player @relation(fields: [playerId], references: [id])
