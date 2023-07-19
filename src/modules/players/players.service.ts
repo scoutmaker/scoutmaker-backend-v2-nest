@@ -174,6 +174,7 @@ export class PlayersService {
         author: { connect: { id: authorId } },
         createdByRole: authorRoleFinal,
         role: roleId ? { connect: { id: roleId } } : undefined,
+        recentAveragePercentageRatings: { create: {} },
       },
       include,
     });
