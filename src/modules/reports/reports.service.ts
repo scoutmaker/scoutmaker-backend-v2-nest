@@ -188,7 +188,7 @@ export class ReportsService {
       matchId,
     );
     const metaPositionId = positionPlayedId || player.primaryPositionId;
-    const metaTeamId = teamId || team?.id;
+    const metaTeamId = teamId || team?.teamId;
     const metaCompetitionId =
       competitionId || team?.team.competitions[0]?.competitionId;
     const metaCompetitionGroupId =
@@ -562,7 +562,7 @@ export class ReportsService {
         matchId || report.matchId,
       );
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || team?.id;
+      metaTeamId = teamId || team?.teamId;
       metaCompetitionId =
         competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
@@ -587,7 +587,7 @@ export class ReportsService {
               report.playerId,
               matchId,
             )
-          ).id,
+          ).teamId,
         },
       });
     }

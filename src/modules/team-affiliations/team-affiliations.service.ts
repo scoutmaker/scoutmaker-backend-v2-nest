@@ -121,8 +121,21 @@ export class TeamAffiliationsService {
     const where: Prisma.TeamAffiliationWhereInput = {
       playerId,
       teamId,
-      startDate: date ? { lte: new Date(date) } : undefined,
-      endDate: date ? { gte: new Date(date) } : undefined,
+      AND: [
+        date
+          ? {
+              startDate: { lte: new Date(date) },
+              OR: [
+                {
+                  endDate: { gte: new Date(date) },
+                },
+                {
+                  endDate: null,
+                },
+              ],
+            }
+          : undefined,
+      ],
     };
 
     const affiliations = await this.prisma.teamAffiliation.findMany({
