@@ -132,7 +132,7 @@ export class NotesService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || team?.id;
+      metaTeamId = teamId || team?.teamId;
       metaCompetitionId =
         competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
@@ -512,7 +512,7 @@ export class NotesService {
         rest?.matchId || note.matchId,
       );
 
-      const metaTeamId = teamId || team?.id;
+      const metaTeamId = teamId || team?.teamId;
       const metaCompetitionId =
         competitionId || team.team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
@@ -558,7 +558,7 @@ export class NotesService {
       await this.prisma.noteMeta.update({
         where: { noteId: id },
         data: {
-          teamId: teamId || team?.id,
+          teamId: teamId || team?.teamId,
           competitionGroupId: metaCompetitionGroupId,
           competitionId: metaCompetitionId,
         },
