@@ -12,12 +12,14 @@ import { UserReportAclService } from '../user-report-acl/user-report-acl.service
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
 import { UsersService } from '../users/users.service';
 import { PlayersController } from './players.controller';
+import { PlayersCronService } from './players.cron';
 import { PlayersService } from './players.service';
 
 @Module({
   controllers: [PlayersController],
   providers: [
     PlayersService,
+    PlayersCronService,
     UserSubscriptionsService,
     OrganizationSubscriptionsService,
     UserInsiderNoteAclService,
