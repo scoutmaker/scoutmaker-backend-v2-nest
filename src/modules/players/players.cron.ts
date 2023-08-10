@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class PlayersCronService {
   constructor(private readonly prisma: PrismaService) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS, {
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
     name: 'update-recent-avg-ratings-player',
   })
   async handleCron() {
