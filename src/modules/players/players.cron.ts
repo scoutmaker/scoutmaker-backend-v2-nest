@@ -11,6 +11,22 @@ export class PlayersCronService {
     name: 'update-recent-avg-ratings-player',
   })
   async handleCron() {
+    // Create RecentAveragePercentageRatingsOnPlayers for each player that doesnt have it
+    await this.prisma
+      .$queryRaw`INSERT INTO "RecentAveragePercentageRatingsOnPlayers" (id, "playerId", "createdAt", "updatedAt")
+    SELECT
+        gen_random_uuid(),
+        p.id,
+        NOW(),
+        NOW()
+    FROM
+        "Player" p
+    LEFT JOIN
+        "RecentAveragePercentageRatingsOnPlayers" r ON p.id = r."playerId"
+    WHERE
+        r.id IS NULL`;
+
+    // update all RecentAveragePercentageRatingsOnPlayers
     await this.prisma.$queryRaw`
     update "RecentAveragePercentageRatingsOnPlayers"
     SET

@@ -15,15 +15,36 @@ class PlayerRecentAveragePercentageRatings {
 
   @Expose()
   lastMonth?: number;
-
+  @Expose()
+  lastMonthTotalCount?: number;
+  @Expose()
+  lastMonthReportsCount?: number;
+  @Expose()
+  lastMonthNotesCount?: number;
   @Expose()
   last3Months?: number;
-
+  @Expose()
+  last3MonthsTotalCount?: number;
+  @Expose()
+  last3MonthsReportsCount?: number;
+  @Expose()
+  last3MonthsNotesCount?: number;
   @Expose()
   last6Months?: number;
-
+  @Expose()
+  last6MonthsTotalCount?: number;
+  @Expose()
+  last6MonthsReportsCount?: number;
+  @Expose()
+  last6MonthsNotesCount?: number;
   @Expose()
   last12Months?: number;
+  @Expose()
+  last12MonthsTotalCount?: number;
+  @Expose()
+  last12MonthsReportsCount?: number;
+  @Expose()
+  last12MonthsNotesCount?: number;
 }
 
 class Count {
