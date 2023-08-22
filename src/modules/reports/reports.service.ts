@@ -183,10 +183,9 @@ export class ReportsService {
     const player = await this.playersService.findOneWithCurrentTeamDetails(
       playerId,
     );
-    const team = await this.matchesService.getPlayerTeamInMatch(
-      playerId,
-      matchId,
-    );
+    const team = matchId
+      ? await this.matchesService.getPlayerTeamInMatch(playerId, matchId)
+      : player.teams[0];
     const metaPositionId = positionPlayedId || player.primaryPositionId;
     const metaTeamId = teamId || team?.teamId;
     const metaCompetitionId =

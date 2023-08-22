@@ -482,11 +482,75 @@ export class PlayersService {
         break;
 
       case 'reportsCount':
-        sort = { reports: { _count: sortingOrder } };
+        switch (query.recentAverageRating) {
+          case RecentAverageRating.LASTMONTH:
+            sort = {
+              recentAveragePercentageRatings: {
+                lastMonthReportsCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST3MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last3MonthsReportsCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST6MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last6MonthsReportsCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST12MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last12MonthsReportsCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          default:
+            sort = { reports: { _count: sortingOrder } };
+            break;
+        }
         break;
 
       case 'notesCount':
-        sort = { notes: { _count: sortingOrder } };
+        switch (query.recentAverageRating) {
+          case RecentAverageRating.LASTMONTH:
+            sort = {
+              recentAveragePercentageRatings: {
+                lastMonthNotesCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST3MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last3MonthsNotesCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST6MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last6MonthsNotesCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          case RecentAverageRating.LAST12MONTHS:
+            sort = {
+              recentAveragePercentageRatings: {
+                last12MonthsNotesCount: { sort: sortingOrder, nulls: 'last' },
+              },
+            };
+            break;
+          default:
+            sort = { notes: { _count: sortingOrder } };
+            break;
+        }
         break;
 
       case 'averagePercentageRating':
@@ -749,7 +813,8 @@ export class PlayersService {
 
     const averagePercentageRating = sumAvgRating / countAvgRating;
 
-    await this.update(playerId, { averagePercentageRating });
+    if (averagePercentageRating)
+      await this.update(playerId, { averagePercentageRating });
   }
 
   async setLatestGradeIfExists(playerId: string) {
