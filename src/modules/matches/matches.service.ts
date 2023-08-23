@@ -9,6 +9,7 @@ import {
 } from '../../utils/helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { TeamAffiliationsService } from '../team-affiliations/team-affiliations.service';
+import { TeamsService } from '../teams/teams.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { FindAllMatchesDto } from './dto/find-all-matches.dto';
 import { MatchesPaginationOptionsDto } from './dto/matches-pagination-options.dto';
@@ -53,6 +54,7 @@ export class MatchesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly teamAffiliationsService: TeamAffiliationsService,
+    private readonly teamsService: TeamsService,
   ) {}
 
   create(createMatchDto: CreateMatchDto, authorId: string) {
@@ -272,13 +274,41 @@ export class MatchesService {
 
   async getPlayerTeamInMatch(playerId: string, matchId: string) {
     const match = await this.findOne(matchId);
+
     const { docs: aff } = await this.teamAffiliationsService.findAll(
       {},
-      { date: match.date.toString(), playerId },
+      { clubIds: [match.homeTeam.clubId, match.awayTeam.clubId], playerId },
     );
-    const team = aff.find(
-      (a) => a.teamId === match.homeTeamId || a.teamId === match.awayTeamId,
-    );
-    return team;
+    if (
+      aff.some((e) => e.team.clubId === match.homeTeam.clubId) &&
+      aff.every((e) => e.team.clubId !== match.awayTeam.clubId)
+    ) {
+      return { team: await this.teamsService.findOne(match.homeTeamId) };
+    }
+    if (
+      aff.some((e) => e.team.clubId === match.awayTeam.clubId) &&
+      aff.every((e) => e.team.clubId !== match.homeTeam.clubId)
+    ) {
+      return { team: await this.teamsService.findOne(match.awayTeamId) };
+    }
+    if (aff.length >= 2) {
+      const matchDate = new Date(match.date);
+
+      const inDate = aff.filter(
+        (e) =>
+          (!e.endDate || new Date(e.endDate) >= matchDate) &&
+          new Date(e.startDate) <= matchDate,
+      );
+      if (inDate.length === 1) {
+        if (inDate[0].team.clubId === match.homeTeam.clubId)
+          return { team: await this.teamsService.findOne(match.homeTeamId) };
+        if (inDate[0].team.clubId === match.awayTeam.clubId)
+          return { team: await this.teamsService.findOne(match.awayTeamId) };
+      }
+    }
+    return {
+      team: await this.teamsService.findOne(match.homeTeamId),
+      notMatched: true,
+    };
   }
 }

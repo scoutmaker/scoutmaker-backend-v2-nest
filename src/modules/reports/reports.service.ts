@@ -185,9 +185,9 @@ export class ReportsService {
     );
     const team = matchId
       ? await this.matchesService.getPlayerTeamInMatch(playerId, matchId)
-      : player.teams[0];
+      : { team: player.teams[0].team, notMatched: undefined };
     const metaPositionId = positionPlayedId || player.primaryPositionId;
-    const metaTeamId = teamId || team?.teamId;
+    const metaTeamId = teamId || team?.team.id;
     const metaCompetitionId =
       competitionId || team?.team.competitions[0]?.competitionId;
     const metaCompetitionGroupId =
@@ -245,6 +245,7 @@ export class ReportsService {
             competitionGroup: metaCompetitionGroupId
               ? { connect: { id: metaCompetitionGroupId } }
               : undefined,
+            notMatched: team.notMatched,
           },
         },
       },
@@ -561,7 +562,7 @@ export class ReportsService {
         matchId || report.matchId,
       );
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || team?.teamId;
+      metaTeamId = teamId || team.team.id;
       metaCompetitionId =
         competitionId || team?.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
@@ -574,19 +575,20 @@ export class ReportsService {
           teamId: metaTeamId,
           competitionId: metaCompetitionId,
           competitionGroupId: metaCompetitionGroupId,
+          notMatched: team?.notMatched,
         },
       });
     } else if (!teamId && matchId) {
       const report = await this.findOne(id);
+      const team = await this.matchesService.getPlayerTeamInMatch(
+        report.playerId,
+        matchId,
+      );
       await this.prisma.reportMeta.update({
         where: { reportId: id },
         data: {
-          teamId: (
-            await this.matchesService.getPlayerTeamInMatch(
-              report.playerId,
-              matchId,
-            )
-          ).teamId,
+          teamId: team.team.id,
+          notMatched: team?.notMatched,
         },
       });
     }

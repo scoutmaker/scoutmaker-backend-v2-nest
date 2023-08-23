@@ -8,6 +8,7 @@ import { OrganizationSubscriptionsService } from '../organization-subscriptions/
 import { PlayersModule } from '../players/players.module';
 import { ReportTemplatesModule } from '../report-templates/report-templates.module';
 import { TeamAffiliationsService } from '../team-affiliations/team-affiliations.service';
+import { TeamsService } from '../teams/teams.service';
 import { UserReportAclService } from '../user-report-acl/user-report-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
 import { UsersService } from '../users/users.service';
@@ -25,6 +26,7 @@ import { ReportsService } from './reports.service';
     UsersService,
     MatchesService,
     TeamAffiliationsService,
+    TeamsService,
     { provide: featureServiceName, useExisting: ReportsService },
   ],
   imports: [ReportTemplatesModule, PlayersModule],
