@@ -435,13 +435,13 @@ model PlayerGrade {
   createdAt DateTime         @default(now())
 
   // Relation fields
-  player           Player      @relation(fields: [playerId], references: [id], name: "player-grade")
+  player           Player       @relation(fields: [playerId], references: [id], name: "player-grade")
   playerId         String
   competition      Competition? @relation(fields: [competitionId], references: [id])
   competitionId    String?
-  author           User        @relation(fields: [authorId], references: [id])
+  author           User         @relation(fields: [authorId], references: [id])
   authorId         String
-  asLatestInPlayer Player[]    @relation(name: "latest-grade")
+  asLatestInPlayer Player[]     @relation(name: "latest-grade")
 }
 
 model RecentAveragePercentageRatingsOnPlayers {
@@ -450,22 +450,22 @@ model RecentAveragePercentageRatingsOnPlayers {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  lastMonth    Float?
-  lastMonthTotalCount Float?
-  lastMonthReportsCount Float?
-  lastMonthNotesCount Float?
-  last3Months  Float?
-  last3MonthsTotalCount  Float?
+  lastMonth                Float?
+  lastMonthTotalCount      Float?
+  lastMonthReportsCount    Float?
+  lastMonthNotesCount      Float?
+  last3Months              Float?
+  last3MonthsTotalCount    Float?
   last3MonthsReportsCount  Float?
-  last3MonthsNotesCount  Float?
-  last6Months  Float?
-  last6MonthsTotalCount  Float?
+  last3MonthsNotesCount    Float?
+  last6Months              Float?
+  last6MonthsTotalCount    Float?
   last6MonthsReportsCount  Float?
-  last6MonthsNotesCount  Float?
-  last12Months Float?
-  last12MonthsTotalCount Float?
+  last6MonthsNotesCount    Float?
+  last12Months             Float?
+  last12MonthsTotalCount   Float?
   last12MonthsReportsCount Float?
-  last12MonthsNotesCount Float?
+  last12MonthsNotesCount   Float?
 
   // Relation fields
   player   Player @relation(fields: [playerId], references: [id])
@@ -560,9 +560,10 @@ model Note {
 }
 
 model NoteMeta {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  notMatched Boolean?
 
   // Relation fields
   note               Note              @relation(fields: [noteId], references: [id], onDelete: Cascade)
@@ -741,9 +742,10 @@ model Report {
 }
 
 model ReportMeta {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  notMatched Boolean?
 
   // Relation fields
   report             Report            @relation(fields: [reportId], references: [id], onDelete: Cascade)
