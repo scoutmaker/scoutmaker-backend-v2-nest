@@ -120,6 +120,7 @@ export class NotesService {
     let metaTeamId: string;
     let metaCompetitionId: string;
     let metaCompetitionGroupId: string | undefined;
+    let notMatched: boolean | undefined;
 
     // If there's playerId supplied, we need to create note meta
     if (playerId) {
@@ -132,11 +133,12 @@ export class NotesService {
       );
 
       metaPositionId = positionPlayedId || player.primaryPositionId;
-      metaTeamId = teamId || team?.teamId;
+      metaTeamId = teamId || team.team.id;
       metaCompetitionId =
-        competitionId || team?.team.competitions[0]?.competitionId;
+        competitionId || team.team.competitions[0]?.competitionId;
       metaCompetitionGroupId =
-        competitionGroupId || team?.team.competitions[0]?.groupId;
+        competitionGroupId || team.team.competitions[0]?.groupId;
+      notMatched = team?.notMatched;
     }
 
     let authorRoleFinal = authorRole;
@@ -167,6 +169,7 @@ export class NotesService {
                 competitionGroup: metaCompetitionGroupId
                   ? { connect: { id: metaCompetitionGroupId } }
                   : undefined,
+                notMatched,
               },
             }
           : undefined,
@@ -512,7 +515,7 @@ export class NotesService {
         rest?.matchId || note.matchId,
       );
 
-      const metaTeamId = teamId || team?.teamId;
+      const metaTeamId = teamId || team.team.id;
       const metaCompetitionId =
         competitionId || team.team.competitions[0]?.competitionId;
       const metaCompetitionGroupId =
@@ -535,6 +538,7 @@ export class NotesService {
           competitionGroup: metaCompetitionGroupId
             ? { connect: { id: metaCompetitionGroupId } }
             : undefined,
+          notMatched: team?.notMatched,
         },
       });
     } else if (
@@ -558,9 +562,10 @@ export class NotesService {
       await this.prisma.noteMeta.update({
         where: { noteId: id },
         data: {
-          teamId: teamId || team?.teamId,
+          teamId: teamId || team.team.id,
           competitionGroupId: metaCompetitionGroupId,
           competitionId: metaCompetitionId,
+          notMatched: team?.notMatched,
         },
       });
     }

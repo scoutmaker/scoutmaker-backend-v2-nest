@@ -7,6 +7,7 @@ import { OrganizationNoteAclService } from '../organization-note-acl/organizatio
 import { OrganizationSubscriptionsService } from '../organization-subscriptions/organization-subscriptions.service';
 import { PlayersModule } from '../players/players.module';
 import { TeamAffiliationsService } from '../team-affiliations/team-affiliations.service';
+import { TeamsService } from '../teams/teams.service';
 import { UserNoteAclService } from '../user-note-acl/user-note-acl.service';
 import { UserSubscriptionsService } from '../user-subscriptions/user-subscriptions.service';
 import { UsersService } from '../users/users.service';
@@ -24,6 +25,7 @@ import { NotesService } from './notes.service';
     UsersService,
     MatchesService,
     TeamAffiliationsService,
+    TeamsService,
     { provide: featureServiceName, useExisting: NotesService },
   ],
   imports: [PlayersModule],

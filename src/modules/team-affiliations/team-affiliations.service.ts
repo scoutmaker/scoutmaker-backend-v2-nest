@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, TeamAffiliation } from '@prisma/client';
 
 import { parseCsv, validateInstances } from '../../utils/csv-helpers';
-import { calculateSkip, formatPaginatedResponse } from '../../utils/helpers';
+import {
+  calculateSkip,
+  formatPaginatedResponse,
+  isIdsArrayFilterDefined,
+} from '../../utils/helpers';
 import { PlayersService } from '../players/players.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTeamAffiliationDto } from './dto/create-team-affiliation.dto';
@@ -104,7 +108,7 @@ export class TeamAffiliationsService {
 
   async findAll(
     { limit, page, sortBy, sortingOrder }: TeamAffiliationsPaginationOptionsDto,
-    { playerId, teamId, date }: FindAllTeamAffiliationsDto,
+    { playerId, teamId, date, clubIds }: FindAllTeamAffiliationsDto,
   ) {
     let sort: Prisma.TeamAffiliationOrderByWithRelationInput;
 
@@ -121,6 +125,9 @@ export class TeamAffiliationsService {
     const where: Prisma.TeamAffiliationWhereInput = {
       playerId,
       teamId,
+      team: isIdsArrayFilterDefined(clubIds)
+        ? { clubId: { in: clubIds } }
+        : undefined,
       AND: [
         date
           ? {

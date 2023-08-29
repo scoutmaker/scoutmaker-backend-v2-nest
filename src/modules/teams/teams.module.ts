@@ -11,6 +11,7 @@ import { TeamsService } from './teams.service';
     TeamsService,
     { provide: featureServiceName, useExisting: TeamsService },
   ],
+  exports: [TeamsService],
 })
 export class TeamsModule {
   configure(consumer: MiddlewareConsumer) {

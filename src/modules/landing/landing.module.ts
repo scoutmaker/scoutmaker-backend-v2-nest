@@ -6,6 +6,7 @@ import { PlayersModule } from '../players/players.module';
 import { ReportTemplatesModule } from '../report-templates/report-templates.module';
 import { ReportsService } from '../reports/reports.service';
 import { TeamAffiliationsService } from '../team-affiliations/team-affiliations.service';
+import { TeamsService } from '../teams/teams.service';
 import { UsersService } from '../users/users.service';
 import { LandingController } from './landing.controller';
 import { LandingService } from './landing.service';
@@ -19,6 +20,7 @@ import { LandingService } from './landing.service';
     UsersService,
     MatchesService,
     TeamAffiliationsService,
+    TeamsService,
   ],
   imports: [ReportTemplatesModule, PlayersModule],
 })
